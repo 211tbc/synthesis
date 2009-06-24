@@ -6,11 +6,12 @@ import sys, os
 from reader import Reader
 from zope.interface import implements
 from lxml import etree
-from sqlalchemy import create_engine, Table, Column, Integer, String, Boolean, MetaData, ForeignKey, Sequence
+from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import sessionmaker, mapper, backref, relation
 from sqlalchemy.types import DateTime, Date
 import dateutil.parser
 #import logging
+import settings
 
 class HMISXML28Reader:
     '''Implements reader interface.'''
@@ -21,7 +22,7 @@ class HMISXML28Reader:
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
 
     def __init__(self, xml_file):
-        self.pg_db = create_engine('postgres://eric:f4rk1r@localhost:5432/coastaldb', echo=False)#, server_side_cursors=True)
+        self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE) , echo=True)#, server_side_cursors=True)
         #self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
         self.xml_file = xml_file
         self.db_metadata = MetaData(self.pg_db)
@@ -37,8 +38,10 @@ class HMISXML28Reader:
         self.export_map()
         self.database_map()
         self.person_map()
+        self.person_historical_map()
         self.other_names_map()
         self.races_map()
+        
         #only client information needed for this project
         #self.site_service_map()
         
@@ -120,7 +123,7 @@ class HMISXML28Reader:
         'other_names', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
-        #Column('person_index_id', Integer, ForeignKey(Person.c.id)), 
+        Column('person_index_id', Integer, ForeignKey(Person.c.id)), 
         Column('other_first_name_unhashed', String(50)),
         Column('other_first_name_hashed', String(32)),
         Column('other_first_name_date_collected', DateTime(timezone=True)),
@@ -186,10 +189,12 @@ class HMISXML28Reader:
         #ReleaseOfInformation has its own table
         useexisting = True)
         table_metadata.create_all()
-        #mapper(Person, person_table, properties={'children': relation(OtherNames), 'children': relation(Races), 'children': relation(PersonHistorical)})
+        
+        mapper(Person, person_table, properties={'children': relation(OtherNames), 'children': relation(Races), 'children': relation(PersonHistorical)})
+        
         return 
 
-    def person_historical(self):
+    def person_historical_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
         person_historical_table = Table(
@@ -197,88 +202,84 @@ class HMISXML28Reader:
         table_metadata, 
         Column('id', Integer, primary_key=True),
         Column('person_historical_id', String(32)),
-        Column('person_index_id', String(50), ForeignKey(Person.c.person_id)), 
-        Column('barrier_code', Integer(2)),
-        Column('barrier_code_date_collected', DateTime(timezone=True)),
-        Column('barrier_code_date_effective', DateTime(timezone=True)),
-        Column('barrier_code_data_collection_stage', Integer(2)),
-        Column('barrier_other', String(50)),
-        Column('barrier_other_date_collected', DateTime(timezone=True)),
-        Column('barrier_other_date_effective', DateTime(timezone=True)),
-        Column('barrier_other_data_collection_stage', Integer(2)),
-        Column('child_currently_enrolled_in_school', Integer(2)),
-        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
-        Column('child_currently_enrolled_in_school_date_effective', DateTime(timezone=True)),
-        Column('child_currently_enrolled_in_school_data_collection_stage', Integer(2)),
-        Column('currently_employed', Integer(2)),
-        Column('currently_employed_date_collected', DateTime(timezone=True)),
-        Column('currently_employed_date_effective', DateTime(timezone=True)),
-        Column('currently_employed_data_collection_stage', Integer(2)),
-        Column('currently_in_school', Integer(2)),
-        Column('currently_in_school_date_collected', DateTime(timezone=True)),
-        Column('currently_in_school_date_effective', DateTime(timezone=True)),
-        Column('currently_in_school_data_collection_stage', Integer(2)),    
-        Column('degree_code', Integer(2)),
-        Column('degree_code_date_collected', DateTime(timezone=True)),
-        Column('degree_code_date_effective', DateTime(timezone=True)),
-        Column('degree_code_data_collection_stage', Integer(2)),    
-        Column('degree_other', String(50)),
-        Column('degree_other_date_collected', DateTime(timezone=True)),
-        Column('degree_other_date_effective', DateTime(timezone=True)),
-        Column('degree_other_data_collection_stage', Integer(2)),    
-        Column('developmental_disability',  Integer(2)),
-        Column('developmental_disability_date_collected', DateTime(timezone=True)),
-        Column('developmental_disability_date_effective', DateTime(timezone=True)),
-        Column('developmental_disability_data_collection_stage', Integer(2)),    
-        Column('domestic_violence',  Integer(2)),
-        Column('domestic_violence_date_collected', DateTime(timezone=True)),
-        Column('domestic_violence_date_effective', DateTime(timezone=True)),
-        Column('domestic_violence_data_collection_stage', Integer(2)),    
-        Column('domestic_violence',  Integer(2)),
-        Column('domestic_violence_date_collected', DateTime(timezone=True)),
-        Column('domestic_violence_date_effective', DateTime(timezone=True)),
-        Column('domestic_violence_data_collection_stage', Integer(2)),    
-        Column('domestic_violence_how_long',  Integer(2)),
-        Column('domestic_violence_how_long_date_collected', DateTime(timezone=True)),
-        Column('domestic_violence_how_long_date_effective', DateTime(timezone=True)),
-        Column('domestic_violence_how_long_data_collection_stage', Integer(2)),
-        Column('due_date',  Date(timezone=True)),
-        Column('due_date_date_collected', DateTime(timezone=True)),
-        Column('due_date_date_effective', DateTime(timezone=True)),
-        Column('due_date_data_collection_stage', Integer(2)),
-        Column('employment_tenure',  Integer(2)),
-        Column('employment_tenure_date_collected', DateTime(timezone=True)),
-        Column('employment_tenure_date_effective', DateTime(timezone=True)),
-        Column('employment_tenure_data_collection_stage', Integer(2)),
-        Column('health_status',  Integer(2)),
-        Column('health_status_date_collected', DateTime(timezone=True)),
-        Column('health_status_date_effective', DateTime(timezone=True)),
-        Column('health_status_data_collection_stage', Integer(2)),
-        Column('highest_school_level',  Integer(2)),
-        Column('highest_school_level_date_collected', DateTime(timezone=True)),
-        Column('highest_school_level_date_effective', DateTime(timezone=True)),
-        Column('highest_school_level_data_collection_stage', Integer(2)),
-        Column('hiv_aids_status',  Integer(2)),
-        Column('hiv_aids_status_date_collected', DateTime(timezone=True)),
-        Column('hiv_aids_status_date_effective', DateTime(timezone=True)),
-        Column('hiv_aids_status_data_collection_stage', Integer(2)),
-        Column('hours_worked_last_week',  Integer(3)),
-        Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
-        Column('hours_worked_last_week_date_effective', DateTime(timezone=True)),
-        Column('hours_worked_last_week_data_collection_stage', Integer(2)),   
-        Column('hud_chronic_homeless',  Integer(2)),
-        Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
-        Column('hud_chronic_homeless_date_effective', DateTime(timezone=True)),
-        Column('hud_chronic_homeless_data_collection_stage', Integer(2)),   
-        Column('hud_chronic_homeless',  Integer(2)),
-        Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
-        Column('hud_chronic_homeless_date_effective', DateTime(timezone=True)),
-        Column('hud_chronic_homeless_data_collection_stage', Integer(2)),   
+        Column('person_index_id', Integer, ForeignKey(Person.c.id)),
         
+    # dbCol: child_currently_enrolled_in_school
+        Column('child_currently_enrolled_in_school', Integer),
+        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
+
+	# dbCol: currently_employed
+		Column('currently_employed', Integer),
+		Column('currently_employed_date_collected', DateTime(timezone=True)),
+
+	# dbCol: degree_code
+		Column('degree_code', Integer),
+		Column('degree_code_date_collected', DateTime(timezone=True)),
+
+	# dbCol: employment_tenure
+		Column('employment_tenure', Integer),
+		Column('employment_tenure_date_collected', DateTime(timezone=True)),
+
+	# dbCol: health_status
+		Column('health_status', Integer),
+		Column('health_status_date_collected', DateTime(timezone=True)),
+
+	# dbCol: highest_school_level
+		Column('highest_school_level', Integer),
+		Column('highest_school_level_date_collected', DateTime(timezone=True)),
+
+	# dbCol: hivaids_status
+		Column('hivaids_status', Integer),
+		Column('hivaids_status_date_collected', DateTime(timezone=True)),
+
+	# dbCol: hours_worked_last_week
+		Column('hours_worked_last_week', Integer),
+		Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
+
+	# dbCol: hud_homeless
+		Column('hud_homeless', Integer),
+		Column('hud_homeless_date_collected', DateTime(timezone=True)),
+
+    # IncomeAndSources (has its own table) FIXME
+    
+    # dbCol: mental_health_indefinite
+        Column('mental_health_indefinite', Integer),
+        Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
+
+	# dbCol: mental_health_problem
+		Column('mental_health_problem', Integer),
+		Column('mental_health_problem_date_collected', DateTime(timezone=True)),
+
+    # PersonAddress (has its own table) FIXME
+    
+    # dbCol: physical_disability
+        Column('physical_disability', Integer),
+        Column('physical_disability_data_col_stage', Integer),
+        Column('physical_disability_date_collected', DateTime(timezone=True)),
+        Column('physical_disability_date_effective', DateTime(timezone=True)),
+
+	# dbCol: reason_for_leaving
+		Column('reason_for_leaving', Integer),
+		Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
+
+	# dbCol: substance_abuse_indefinite
+		Column('substance_abuse_indefinite', Integer),
+		Column('substance_abuse_indefinite_date_collected', DateTime(timezone=True)),
+
+	# dbCol: substance_abuse_problem
+		Column('substance_abuse_problem', Integer),
+		Column('substance_abuse_problem_date_collected', DateTime(timezone=True)),
+
+    # dbCol: total_income
+        Column('total_income', Numeric(5,2)),
+        Column('total_income_date_collected', DateTime(timezone=True)),
+        
+    # Veteran (has its own table) FIXME
+    
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(OtherNames, other_names_table)
+        mapper(PersonHistorical, person_historical_table)
         return
     
     def races_map(self):
@@ -380,13 +381,15 @@ class HMISXML28Reader:
             for item in database_id_tag:
                 self.parse_dict = {}
                 database_id_val = item.xpath(xpDatabaseIDIDNum, namespaces={'hmis': self.hmis_namespace})
+                
                 if len(database_id_val) is 0:
                     database_id_val = item.xpath(xpDatabaseIDIDStr, namespaces={'hmis': self.hmis_namespace})
                     self.parse_dict.__setitem__('database_id', database_id_val[0].text)
                     self.existence_test_and_add('database_id_date_collected', item.xpath(xpIDStrdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 else:
                     self.parse_dict.__setitem__('database_id', database_id_val[0].text)
-                    self.existence_test_and_add(item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
+                    self.existence_test_and_add('database_id', item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
+                    
                 test = item.xpath(xpExportIDIDNum, namespaces={'hmis': self.hmis_namespace})
                 if len(test) is 0:
                     self.existence_test_and_add('export_id', item.xpath(xpExportIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
@@ -527,6 +530,192 @@ class HMISXML28Reader:
         else:
             self.shred(self.parse_dict, OtherNames)
             return
+    ########################################################################
+    ########################################################################
+    #   parsing of the person_historical tag
+    ########################################################################
+    ########################################################################
+    
+    def parse_person_historical(self, person_tag):
+        '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
+        '''This code allows for multiple PersonHistorical per Person'''
+        #Xpath query strings
+        xpPersonHistorical = 'hmis:SiteServiceParticipation/hmis:PersonHistorical'
+        #I don't want the PersonID from the XML, as there could be two of the 
+        #same PersonID within the same export.  Need the Person Table Index
+        #So that's what is used.  See where this index is retrieved after the 
+        #session flush.
+        xpPersonHistoricalID = 'hmis:PersonHistoricalID/hmis:IDNum'
+        xpPersonHistoricalIDDateCollected = 'hmis:PersonHistoricalID/@hmis:dateCollected'
+        xpPersonHistoricalChildCurrentlyEnrolledInSchool = 'hmis:ChildCurrentlyEnrolledInSchool'
+        xpPersonHistoricalChildCurrentlyEnrolledInSchoolDateCollected = 'hmis:ChildCurrentlyEnrolledInSchool/@hmis:dateCollected'
+        xpPersonHistoricalCurrentlyEmployed = 'hmis:CurrentlyEmployed'
+        xpPersonHistoricalCurrentlyEmployedDateCollected = 'hmis:CurrentlyEmployed/@hmis:dateCollected'
+        xpPersonHistoricalDegreeCode = 'hmis:DegreeCode'
+        xpPersonHistoricalDegreeCodeDateCollected = 'hmis:DegreeCode/@hmis:dateCollected'
+        xpPersonHistoricalEmploymentTenure = 'hmis:EmploymentTenure'
+        xpPersonHistoricalEmploymentTenureDateCollected = 'hmis:EmploymentTenure/@hmis:dateCollected'
+        
+        xpPersonHistoricalHealthStatus = 'hmis:HealthStatus'
+        xpPersonHistoricalHealthStatusDateCollected = 'hmis:HealthStatus/@hmis:dateCollected'
+        xpPersonHistoricalHighestSchoolLevel = 'hmis:HighestSchoolLevel'
+        xpPersonHistoricalHighestSchoolLevelDateCollected = 'hmis:HighestSchoolLevel/@hmis:dateCollected'
+        xpPersonHistoricalHIVAIDSStatus = 'hmis:HIVAIDSStatus'
+        xpPersonHistoricalHIVAIDSStatusDateCollected = 'hmis:HIVAIDSStatus/@hmis:dateCollected'
+        xpPersonHistoricalHoursWorkedLastWeek = 'hmis:HoursWorkedLastWeek'
+        xpPersonHistoricalHoursWorkedLastWeekDateCollected = 'hmis:HoursWorkedLastWeek/@hmis:dateCollected'
+        xpPersonHistoricalHUDHomeless = 'hmis:HUDHomeless'
+        xpPersonHistoricalHUDHomelessDateCollected = 'hmis:HUDHomeless/@hmis:dateCollected'
+        # IncomeAndSources (separte table 1 to many) FIXME
+        
+        xpPersonHistoricalMentalHealthIndefinite = 'hmis:MentalHealthIndefinite'
+        xpPersonHistoricalMentalHealthIndefiniteDateCollected = 'hmis:MentalHealthIndefinite/@hmis:dateCollected'
+        xpPersonHistoricalMentalHealthProblem = 'hmis:MentalHealthProblem'
+        xpPersonHistoricalMentalHealthProblemDateCollected = 'hmis:MentalHealthProblem/@hmis:dateCollected'
+        #xpPersonHistoricalPersonAddress = 'hmis:PersonAddress' (Mutiple addresses - should have it's own table) FIXME
+        
+        xpPersonHistoricalPhysicalDisability = 'hmis:PhysicalDisability'
+        xpPersonHistoricalPhysicalDisabilityDataCollectionStage = 'hmis:PhysicalDisability/@hmis:dataCollectionStage'
+        xpPersonHistoricalPhysicalDisabilityDateCollected = 'hmis:PhysicalDisability/@hmis:dateCollected'
+        xpPersonHistoricalPhysicalDisabilityDateEffective = 'hmis:PhysicalDisability/@hmis:dateEffective'
+        xpPersonHistoricalReasonForLeaving = 'hmis:ReasonForLeaving'
+        xpPersonHistoricalReasonForLeavingDateCollected = 'hmis:ReasonForLeaving/@hmis:dateCollected'
+        xpPersonHistoricalSubstanceAbuseIndefinite = 'hmis:SubstanceAbuseIndefinite'
+        xpPersonHistoricalSubstanceAbuseIndefiniteDateCollected = 'hmis:SubstanceAbuseIndefinite/@hmis:dateCollected'
+        xpPersonHistoricalSubstanceAbuseProblem = 'hmis:SubstanceAbuseProblem'
+        xpPersonHistoricalSubstanceAbuseProblemDateCollected = 'hmis:SubstanceAbuseProblem/@hmis:dateCollected'
+        xpPersonHistoricalTotalIncome = 'hmis:TotalIncome'
+        xpPersonHistoricalTotalIncomeDateCollected = 'hmis:TotalIncome/@hmis:dateCollected'
+        # Veteran tag should have a table 1 to many
+        
+        person_historical = person_tag.xpath(xpPersonHistorical, namespaces={'hmis': self.hmis_namespace})
+        
+        if person_historical is not None:
+            for item in person_historical:
+                self.parse_dict = {}
+                
+                fldName='person_historical_id'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalID, namespaces={'hmis': self.hmis_namespace}), 'text')
+                
+                self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
+                
+                fldName='child_currently_enrolled_in_school'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalChildCurrentlyEnrolledInSchool, namespaces={'hmis': self.hmis_namespace}), 'text')
+                
+                
+                
+                
+                fldName='child_currently_enrolled_in_school_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalChildCurrentlyEnrolledInSchoolDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                
+                fldName='currently_employed'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalCurrentlyEmployed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='currently_employed_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalCurrentlyEmployedDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='degree_code'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalDegreeCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='degree_code_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalDegreeCodeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='employment_tenure'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalEmploymentTenure, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='employment_tenure_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalEmploymentTenureDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='health_status'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHealthStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='health_status_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHealthStatusDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='highest_school_level'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHighestSchoolLevel, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='highest_school_level_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHighestSchoolLevelDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='hivaids_status'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHIVAIDSStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='hivaids_status_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHIVAIDSStatusDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='hours_worked_last_week'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHoursWorkedLastWeek, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='hours_worked_last_week_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHoursWorkedLastWeekDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='hud_homeless'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHUDHomeless, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='hud_homeless_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHUDHomelessDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='mental_health_indefinite'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='mental_health_indefinite_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='mental_health_problem'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='mental_health_problem_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthProblemDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='physical_disability'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisability, namespaces={'hmis': self.hmis_namespace}), 'text')
+                # FIXME
+                
+                fldName='physical_disability_data_col_stage'
+                # FIXME
+                #if test is True:
+                #    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDataCollectionStage, namespaces={'hmis': self.hmis_namespace}), 'attribute_text')
+                    
+                fldName='physical_disability_date_collected'    
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='physical_disability_date_effective'    
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDateEffective, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
+                
+                fldName='reason_for_leaving'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalReasonForLeaving, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='reason_for_leaving_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalReasonForLeavingDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='substance_abuse_indefinite'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='substance_abuse_indefinite_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='substance_abuse_problem'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='substance_abuse_problem_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseProblemDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='total_income'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncome, namespaces={'hmis': self.hmis_namespace}), 'text')
+                
+                if test is True:
+                    fldName='total_income_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncomeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
+                
+                self.shred(self.parse_dict, PersonHistorical)
+                
+        else:
+            self.shred(self.parse_dict, PersonHistorical)
+            return
 
     def parse_person(self, root_element):
         '''Looks for a Person tag and related fields in the XML and persists \n
@@ -636,6 +825,7 @@ class HMISXML28Reader:
                 self.existence_test_and_add('person_social_sec_number_quality_code', item.xpath(xpPersonSocialSecNumberQualityCode, namespaces={'hmis': self.hmis_namespace}), 'text')                
                 self.existence_test_and_add('person_social_sec_number_quality_code_date_collected', item.xpath(xpPersonSocialSecNumberQualityCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')                
                 self.shred(self.parse_dict, Person)
+                self.parse_person_historical(item)
                 self.parse_other_names(item)
                 self.parse_races(item)
 #                self.session.flush()
@@ -707,6 +897,9 @@ class HMISXML28Reader:
                 self.persist(db_column, query_string = query_string)
                 return True
         elif len(query_string) is not 0 or None:
+            if handling == 'attribute_text':
+                self.persist(db_column, query_string = query_string[0])
+                return True
             if handling == 'text':
                 self.persist(db_column, query_string = query_string[0].text)
                 return True
@@ -755,6 +948,12 @@ class Person(object):
         for x, y in field_dict.iteritems():
             self.__setattr__(x,y)
    
+class PersonHistorical(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)
+   
 class Races(object):
     def __init__(self, field_dict):
         print field_dict
@@ -782,11 +981,14 @@ def main(argv=None):
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
-    if os.path.isfile("/home/eric/workspace/reposHUD/tags/HUD_HMIS_XML/HUD_HMIS_XML_2.8/Example_HUD_HMIS_2_8_Instance.xml") is True:#_adapted_further
+    inputFile = os.path.join("%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
+    
+    if os.path.isfile(inputFile) is True:#_adapted_further
         try:
-            xml_file = open('/home/eric/workspace/reposHUD/tags/HUD_HMIS_XML/HUD_HMIS_XML_2.8/Example_HUD_HMIS_2_8_Instance.xml','r') 
+            xml_file = open(inputFile,'r') 
         except:
             print "error"
+            
         reader = HMISXML28Reader(xml_file)
         tree = reader.read()
         reader.process_data(tree)

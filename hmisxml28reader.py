@@ -38,6 +38,9 @@ class HMISXML28Reader:
         self.export_map()
         self.database_map()
         self.person_map()
+        self.veteran_map()
+        self.income_and_sources_map()
+        self.person_address_map()
         self.person_historical_map()
         self.other_names_map()
         self.races_map()
@@ -141,6 +144,119 @@ class HMISXML28Reader:
         table_metadata.create_all()
         mapper(OtherNames, other_names_table)
         return
+    
+    def veteran_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        veteran_table = Table(
+        'veteran', 
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        
+    # dbCol: service_era
+        Column('service_era', Integer),
+        Column('service_era_date_collected', DateTime(timezone=True)),
+
+	# dbCol: military_service_duration
+		Column('military_service_duration', Integer),
+		Column('military_service_duration_date_collected', DateTime(timezone=True)),
+
+	# dbCol: served_in_war_zone
+		Column('served_in_war_zone', Integer),
+		Column('served_in_war_zone_date_collected', DateTime(timezone=True)),
+
+	# dbCol: war_zone
+		Column('war_zone', Integer),
+		Column('war_zone_date_collected', DateTime(timezone=True)),
+
+	# dbCol: war_zone_other
+		Column('war_zone_other', String(50)),
+		Column('war_zone_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: months_in_war_zone
+		Column('months_in_war_zone', Integer),
+		Column('months_in_war_zone_date_collected', DateTime(timezone=True)),
+
+	# dbCol: received_fire
+		Column('received_fire', Integer),
+		Column('received_fire_date_collected', DateTime(timezone=True)),
+
+	# dbCol: military_branch
+		Column('military_branch', Integer),
+		Column('military_branch_date_collected', DateTime(timezone=True)),
+
+	# dbCol: military_branch_other
+		Column('military_branch_other', String(50)),
+		Column('military_branch_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: discharge_status
+		Column('discharge_status', Integer),
+		Column('discharge_status_date_collected', DateTime(timezone=True)),
+
+    # dbCol: discharge_status_other
+        Column('discharge_status_other', String(50)),
+        Column('discharge_status_other_date_collected', DateTime(timezone=True)),
+        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Veteran, veteran_table)
+        return
+        
+    def person_address_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        person_address_table = Table(
+        'person_address', 
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        
+        Column('address_period_start_date',DateTime(timezone=True)),
+        Column('address_period_start_date_date_collected',DateTime(timezone=True)),
+        Column('pre_address_line', String(32)),
+        Column('pre_address_line_date_collected',DateTime(timezone=True)),
+        Column('line1', String(32)),
+        Column('line1_date_collected',DateTime(timezone=True)),
+        Column('line2', String(32)),
+        Column('line2_date_collected',DateTime(timezone=True)),
+        Column('city', String(32)),
+        Column('city_date_collected',DateTime(timezone=True)),
+        Column('county', String(32)),
+        Column('county_date_collected',DateTime(timezone=True)),
+        Column('state', String(32)),
+        Column('state_date_collected',DateTime(timezone=True)),
+        
+        #<xsd:element name="ZIPCode" type="hmis:zIPCode" minOccurs="0"/>
+        Column('zipcode', String(10)),          # 5+4+1 33626-1827
+        Column('zipcode_date_collected',DateTime(timezone=True)),
+        
+        Column('country', String(32)),
+        Column('country_date_collected',DateTime(timezone=True)),
+        
+        useexisting = True)
+        table_metadata.create_all()
+        mapper(PersonAddress, person_address_table)
+    
+    def income_and_sources_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        income_and_sources_table = Table(
+        'income_and_sources', 
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('amount', Integer),
+        Column('amount_date_collected', DateTime(timezone=True)),
+        Column('income_source_code', Integer),
+        Column('income_source_code_date_collected', DateTime(timezone=True)),
+        Column('income_source_other', String(32)),
+        Column('income_source_other_date_collected', DateTime(timezone=True)),
+        useexisting = True)
+        table_metadata.create_all()
+        mapper(IncomeAndSources, income_and_sources_table)
+        
+        return
+    
+    
         
     def person_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -192,7 +308,8 @@ class HMISXML28Reader:
         
         mapper(Person, person_table, properties={'children': relation(OtherNames), 'children': relation(Races), 'children': relation(PersonHistorical)})
         
-        return 
+        return
+
 
     def person_historical_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -201,20 +318,59 @@ class HMISXML28Reader:
         'person_historical', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
-        Column('person_historical_id', String(32)),
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
         
-    # dbCol: child_currently_enrolled_in_school
-        Column('child_currently_enrolled_in_school', Integer),
-        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
+    # dbCol: person_historical_id_num
+        Column('person_historical_id_num', Integer),
+        Column('person_historical_id_num_date_collected', DateTime(timezone=True)),
+
+	# dbCol: person_historical_id_str
+		Column('person_historical_id_str', String(32)),
+		Column('person_historical_id_str_date_collected', DateTime(timezone=True)),
+
+	# dbCol: barrier_code
+		Column('barrier_code', Integer),
+		Column('barrier_code_date_collected', DateTime(timezone=True)),
+
+	# dbCol: barrier_other
+		Column('barrier_other', String(50)),
+		Column('barrier_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: child_currently_enrolled_in_school
+		Column('child_currently_enrolled_in_school', Integer),
+		Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
 
 	# dbCol: currently_employed
 		Column('currently_employed', Integer),
 		Column('currently_employed_date_collected', DateTime(timezone=True)),
 
+	# dbCol: currently_in_school
+		Column('currently_in_school', Integer),
+		Column('currently_in_school_date_collected', DateTime(timezone=True)),
+
 	# dbCol: degree_code
 		Column('degree_code', Integer),
 		Column('degree_code_date_collected', DateTime(timezone=True)),
+
+	# dbCol: degree_other
+		Column('degree_other', String(50)),
+		Column('degree_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: developmental_disability
+		Column('developmental_disability', Integer),
+		Column('developmental_disability_date_collected', DateTime(timezone=True)),
+
+	# dbCol: domestic_violence
+		Column('domestic_violence', Integer),
+		Column('domestic_violence_date_collected', DateTime(timezone=True)),
+
+	# dbCol: domestic_violence_how_long
+		Column('domestic_violence_how_long', Integer),
+		Column('domestic_violence_how_long_date_collected', DateTime(timezone=True)),
+
+	# dbCol: due_date (Is this right xsd:date)
+		Column('due_date', Date),
+		Column('due_date_date_collected', DateTime(timezone=True)),
 
 	# dbCol: employment_tenure
 		Column('employment_tenure', Integer),
@@ -236,31 +392,97 @@ class HMISXML28Reader:
 		Column('hours_worked_last_week', Integer),
 		Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
 
+	# dbCol: hud_chronic_homeless
+		Column('hud_chronic_homeless', Integer),
+		Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
+
 	# dbCol: hud_homeless
 		Column('hud_homeless', Integer),
 		Column('hud_homeless_date_collected', DateTime(timezone=True)),
 
-    # IncomeAndSources (has its own table) FIXME
-    
-    # dbCol: mental_health_indefinite
-        Column('mental_health_indefinite', Integer),
-        Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
+		###HUDHomelessEpisodes (subtable)
+
+		###IncomeAndSources (subtable)
+
+	# dbCol: length_of_stay_at_prior_residence
+		Column('length_of_stay_at_prior_residence', Integer),
+		Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=True)),
+
+	# dbCol: looking_for_work
+		Column('looking_for_work', Integer),
+		Column('looking_for_work_date_collected', DateTime(timezone=True)),
+
+	# dbCol: mental_health_indefinite
+		Column('mental_health_indefinite', Integer),
+		Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
 
 	# dbCol: mental_health_problem
 		Column('mental_health_problem', Integer),
 		Column('mental_health_problem_date_collected', DateTime(timezone=True)),
 
-    # PersonAddress (has its own table) FIXME
-    
+	# dbCol: non_cash_source_code
+		Column('non_cash_source_code', Integer),
+		Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
+
+	# dbCol: non_cash_source_other
+		Column('non_cash_source_other', String(50)),
+		Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
+
+        ### person_address (subtable)
+
+	# dbCol: person_email (What is a String?  How long if undefined?  Is this VarChar(max))
+		Column('person_email', String),
+		Column('person_email_date_collected', DateTime(timezone=True)),
+
+	# dbCol: person_phone_number (What is a String?  How long if undefined?  Is this VarChar(max))
+		Column('person_phone_number', String),
+		Column('person_phone_number_date_collected', DateTime(timezone=True)),
+
     # dbCol: physical_disability
         Column('physical_disability', Integer),
         Column('physical_disability_data_col_stage', Integer),
         Column('physical_disability_date_collected', DateTime(timezone=True)),
         Column('physical_disability_date_effective', DateTime(timezone=True)),
 
+	# dbCol: pregnancy_status
+		Column('pregnancy_status', Integer),
+		Column('pregnancy_status_date_collected', DateTime(timezone=True)),
+
+	# dbCol: prior_residence
+		Column('prior_residence', Integer),
+		Column('prior_residence_date_collected', DateTime(timezone=True)),
+
+	# dbCol: prior_residence_other
+		Column('prior_residence_other', String(50)),
+		Column('prior_residence_other_date_collected', DateTime(timezone=True)),
+
 	# dbCol: reason_for_leaving
 		Column('reason_for_leaving', Integer),
 		Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
+
+	# dbCol: reason_for_leaving_other
+		Column('reason_for_leaving_other', String(50)),
+		Column('reason_for_leaving_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: school_last_enrolled_date
+		Column('school_last_enrolled_date', Date),
+		Column('school_last_enrolled_date_date_collected', DateTime(timezone=True)),
+
+	# dbCol: school_name
+		Column('school_name', String(50)),
+		Column('school_name_date_collected', DateTime(timezone=True)),
+
+	# dbCol: school_type
+		Column('school_type', Integer),
+		Column('school_type_date_collected', DateTime(timezone=True)),
+
+	# dbCol: subsidy_other
+		Column('subsidy_other', String(50)),
+		Column('subsidy_other_date_collected', DateTime(timezone=True)),
+
+	# dbCol: subsidy_type
+		Column('subsidy_type', Integer),
+		Column('subsidy_type_date_collected', DateTime(timezone=True)),
 
 	# dbCol: substance_abuse_indefinite
 		Column('substance_abuse_indefinite', Integer),
@@ -270,12 +492,16 @@ class HMISXML28Reader:
 		Column('substance_abuse_problem', Integer),
 		Column('substance_abuse_problem_date_collected', DateTime(timezone=True)),
 
-    # dbCol: total_income
-        Column('total_income', Numeric(5,2)),
-        Column('total_income_date_collected', DateTime(timezone=True)),
-        
-    # Veteran (has its own table) FIXME
-    
+	# dbCol: total_income
+		Column('total_income', Numeric(5,2)),
+		Column('total_income_date_collected', DateTime(timezone=True)),
+
+		###Veteran (subtable)
+
+	# dbCol: vocational_training
+		Column('vocational_training', Integer),
+		Column('vocational_training_date_collected', DateTime(timezone=True)),
+
         useexisting = True
         )
         table_metadata.create_all()
@@ -540,13 +766,16 @@ class HMISXML28Reader:
         '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
         '''This code allows for multiple PersonHistorical per Person'''
         #Xpath query strings
-        xpPersonHistorical = 'hmis:SiteServiceParticipation/hmis:PersonHistorical'
+        xpSvcParticipationPersonHistorical = 'hmis:SiteServiceParticipation/hmis:PersonHistorical'
+        xpPersonHistorical = 'hmis:PersonHistorical'
         #I don't want the PersonID from the XML, as there could be two of the 
         #same PersonID within the same export.  Need the Person Table Index
         #So that's what is used.  See where this index is retrieved after the 
         #session flush.
         xpPersonHistoricalID = 'hmis:PersonHistoricalID/hmis:IDNum'
-        xpPersonHistoricalIDDateCollected = 'hmis:PersonHistoricalID/@hmis:dateCollected'
+        xpPersonHistoricalIDDateCollected = 'hmis:PersonHistoricalID/hmis:IDNum/@hmis:dateCollected'
+        xpPersonHistoricalIDStr = 'hmis:PersonHistoricalID/hmis:IDStr'
+        xpPersonHistoricalIDStrDateCollected = 'hmis:PersonHistoricalID/hmis:IDStr/@hmis:dateCollected'
         xpPersonHistoricalChildCurrentlyEnrolledInSchool = 'hmis:ChildCurrentlyEnrolledInSchool'
         xpPersonHistoricalChildCurrentlyEnrolledInSchoolDateCollected = 'hmis:ChildCurrentlyEnrolledInSchool/@hmis:dateCollected'
         xpPersonHistoricalCurrentlyEmployed = 'hmis:CurrentlyEmployed'
@@ -589,21 +818,30 @@ class HMISXML28Reader:
         # Veteran tag should have a table 1 to many
         
         person_historical = person_tag.xpath(xpPersonHistorical, namespaces={'hmis': self.hmis_namespace})
+        # test if nothign was found, if so, run against the personHistorical as part of service participation
+        if len(person_historical) == 0:
+            person_historical = person_tag.xpath(xpSvcParticipationPersonHistorical, namespaces={'hmis': self.hmis_namespace})
         
-        if person_historical is not None:
+        if (person_historical is not None) and len(person_historical) > 0:
             for item in person_historical:
                 self.parse_dict = {}
                 
-                fldName='person_historical_id'
+                fldName='person_historical_id_num'
                 self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalID, namespaces={'hmis': self.hmis_namespace}), 'text')
+                
+                fldName='person_historical_id_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                
+                fldName='person_historical_id_str'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                
+                fldName='person_historical_id_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 
                 fldName='child_currently_enrolled_in_school'
                 test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalChildCurrentlyEnrolledInSchool, namespaces={'hmis': self.hmis_namespace}), 'text')
-                
-                
-                
                 
                 fldName='child_currently_enrolled_in_school_date_collected'
                 if test is True:
@@ -712,6 +950,7 @@ class HMISXML28Reader:
                     self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncomeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
                 
                 self.shred(self.parse_dict, PersonHistorical)
+                #self.parse_person_historical(item)
                 
         else:
             self.shred(self.parse_dict, PersonHistorical)
@@ -947,7 +1186,26 @@ class Person(object):
         print field_dict
         for x, y in field_dict.iteritems():
             self.__setattr__(x,y)
-   
+            
+class Veteran(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)
+
+
+class IncomeAndSources(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)
+            
+class PersonAddress(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)            
+            
 class PersonHistorical(object):
     def __init__(self, field_dict):
         print field_dict

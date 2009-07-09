@@ -38,10 +38,11 @@ class HMISXML28Reader:
         self.export_map()
         self.database_map()
         self.person_map()
-        self.veteran_map()
-        self.income_and_sources_map()
-        self.person_address_map()
         self.person_historical_map()
+        self.income_and_sources_map()
+        self.veteran_map()
+        self.hud_homeless_episodes_map()
+        self.person_address_map()
         self.other_names_map()
         self.races_map()
         
@@ -145,6 +146,32 @@ class HMISXML28Reader:
         mapper(OtherNames, other_names_table)
         return
     
+    
+    def hud_homeless_episodes_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        hud_homeless_episodes_table = Table(
+        'hud_homeless_episodes',
+        table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+        
+    # dbCol: start_date
+        Column('start_date', String(32)),
+        Column('start_date_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: end_date
+        Column('end_date', String(32)),
+        Column('end_date_date_collected', DateTime(timezone=True)),
+    
+        useexisting = True)
+        table_metadata.create_all()
+    
+        mapper(HUDHomelessEpisodes, hud_homeless_episodes_table)
+            
+        return
+    
+    
     def veteran_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
@@ -152,7 +179,7 @@ class HMISXML28Reader:
         'veteran', 
         table_metadata,
         Column('id', Integer, primary_key=True),
-        
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
     # dbCol: service_era
         Column('service_era', Integer),
         Column('service_era_date_collected', DateTime(timezone=True)),
@@ -210,9 +237,11 @@ class HMISXML28Reader:
         'person_address', 
         table_metadata,
         Column('id', Integer, primary_key=True),
-        
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         Column('address_period_start_date',DateTime(timezone=True)),
         Column('address_period_start_date_date_collected',DateTime(timezone=True)),
+        Column('address_period_end_date',DateTime(timezone=True)),
+        Column('address_period_end_date_date_collected',DateTime(timezone=True)),
         Column('pre_address_line', String(32)),
         Column('pre_address_line_date_collected',DateTime(timezone=True)),
         Column('line1', String(32)),
@@ -232,30 +261,17 @@ class HMISXML28Reader:
         
         Column('country', String(32)),
         Column('country_date_collected',DateTime(timezone=True)),
+        #*# dbCol: is_last_permanent_zip
+        Column('is_last_permanent_zip', Integer),
+        Column('is_last_permanent_zip_date_collected', DateTime(timezone=True)),
+        
+        #*# dbCol: zip_quality_code
+        Column('zip_quality_code', Integer),
+        Column('zip_quality_code_date_collected', DateTime(timezone=True)),    
         
         useexisting = True)
         table_metadata.create_all()
         mapper(PersonAddress, person_address_table)
-    
-    def income_and_sources_map(self):
-        table_metadata = MetaData(bind=self.pg_db, reflect=True)
-        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
-        income_and_sources_table = Table(
-        'income_and_sources', 
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('amount', Integer),
-        Column('amount_date_collected', DateTime(timezone=True)),
-        Column('income_source_code', Integer),
-        Column('income_source_code_date_collected', DateTime(timezone=True)),
-        Column('income_source_other', String(32)),
-        Column('income_source_other_date_collected', DateTime(timezone=True)),
-        useexisting = True)
-        table_metadata.create_all()
-        mapper(IncomeAndSources, income_and_sources_table)
-        
-        return
-    
     
         
     def person_map(self):
@@ -310,6 +326,7 @@ class HMISXML28Reader:
         
         return
 
+    
 
     def person_historical_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -505,7 +522,27 @@ class HMISXML28Reader:
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(PersonHistorical, person_historical_table)
+        mapper(PersonHistorical, person_historical_table, properties={'children': relation(IncomeAndSources), 'children': relation(Veteran),'children': relation(HUDHomelessEpisodes),'children': relation(PersonAddress)})
+        return
+    
+    def income_and_sources_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        income_and_sources_table = Table(
+        'income_and_sources', 
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+        Column('amount', Integer),
+        Column('amount_date_collected', DateTime(timezone=True)),
+        Column('income_source_code', Integer),
+        Column('income_source_code_date_collected', DateTime(timezone=True)),
+        Column('income_source_other', String(32)),
+        Column('income_source_other_date_collected', DateTime(timezone=True)),
+        useexisting = True)
+        table_metadata.create_all()
+        mapper(IncomeAndSources, income_and_sources_table)
+        
         return
     
     def races_map(self):
@@ -756,12 +793,302 @@ class HMISXML28Reader:
         else:
             self.shred(self.parse_dict, OtherNames)
             return
-    ########################################################################
-    ########################################################################
-    #   parsing of the person_historical tag
-    ########################################################################
-    ########################################################################
+        
     
+    def parse_hud_homeless_episodes(self, element):
+        ### xpPath Definitions
+            xpHudHomelessEpisodes = 'hmis:HUDHomelessEpisodes'
+        ### StartDate
+            xpStartDate = 'hmis:StartDate'
+            xpStartDateDateCollected = 'hmis:StartDate/@hmis:dateCollected'
+        ### EndDate
+            xpEndDate = 'hmis:EndDate'
+            xpEndDateDateCollected = 'hmis:EndDate/@hmis:dateCollected'
+        
+        ### xpPath Parsing
+            itemElements = element.xpath(xpHudHomelessEpisodes, namespaces={'hmis': self.hmis_namespace})
+            if itemElements is not None:
+                for item in itemElements:
+                ### StartDate
+                    fldName='start_date'
+                    self.existence_test_and_add(fldName, item.xpath(xpStartDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='start_date_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpStartDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### EndDate
+                    fldName='end_date'
+                    self.existence_test_and_add(fldName, item.xpath(xpEndDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='end_date_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    
+                    self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
+                    
+                ### HudHomelessEpisodes (Shred)
+                    self.shred(self.parse_dict, HudHomelessEpisodes)
+
+		### Parse any subtables
+    def parse_veteran(self, element):
+    ### xpPath Definitions
+        xpVeteran = 'hmis:Veteran'
+    ### ServiceEra
+        xpServiceEra = 'hmis:ServiceEra'
+        xpServiceEraDateCollected = 'hmis:ServiceEra/@hmis:dateCollected'
+    ### MilitaryServiceDuration
+        xpMilitaryServiceDuration = 'hmis:MilitaryServiceDuration'
+        xpMilitaryServiceDurationDateCollected = 'hmis:MilitaryServiceDuration/@hmis:dateCollected'
+    ### ServedInWarZone
+        xpServedInWarZone = 'hmis:ServedInWarZone'
+        xpServedInWarZoneDateCollected = 'hmis:ServedInWarZone/@hmis:dateCollected'
+    ### WarZone
+        xpWarZone = 'hmis:WarZone'
+        xpWarZoneDateCollected = 'hmis:WarZone/@hmis:dateCollected'
+    ### WarZoneOther
+        xpWarZoneOther = 'hmis:WarZoneOther'
+        xpWarZoneOtherDateCollected = 'hmis:WarZoneOther/@hmis:dateCollected'
+    ### MonthsInWarZone
+        xpMonthsInWarZone = 'hmis:MonthsInWarZone'
+        xpMonthsInWarZoneDateCollected = 'hmis:MonthsInWarZone/@hmis:dateCollected'
+    ### ReceivedFire
+        xpReceivedFire = 'hmis:ReceivedFire'
+        xpReceivedFireDateCollected = 'hmis:ReceivedFire/@hmis:dateCollected'
+    ### MilitaryBranch
+        xpMilitaryBranch = 'hmis:MilitaryBranch'
+        xpMilitaryBranchDateCollected = 'hmis:MilitaryBranch/@hmis:dateCollected'
+    ### MilitaryBranchOther
+        xpMilitaryBranchOther = 'hmis:MilitaryBranchOther'
+        xpMilitaryBranchOtherDateCollected = 'hmis:MilitaryBranchOther/@hmis:dateCollected'
+    ### DischargeStatus
+        xpDischargeStatus = 'hmis:DischargeStatus'
+        xpDischargeStatusDateCollected = 'hmis:DischargeStatus/@hmis:dateCollected'
+    ### DischargeStatusOther
+        xpDischargeStatusOther = 'hmis:DischargeStatusOther'
+        xpDischargeStatusOtherDateCollected = 'hmis:DischargeStatusOther/@hmis:dateCollected'
+        
+    ### xpPath Parsing
+        itemElements = element.xpath(xpVeteran, namespaces={'hmis': self.hmis_namespace})
+        
+        if itemElements is not None:
+            for item in itemElements:
+            ### ServiceEra
+                fldName='service_era'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEra, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_era_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEraDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MilitaryServiceDuration
+                fldName='military_service_duration'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryServiceDuration, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='military_service_duration_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryServiceDurationDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServedInWarZone
+                fldName='served_in_war_zone'
+                self.existence_test_and_add(fldName, item.xpath(xpServedInWarZone, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='served_in_war_zone_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServedInWarZoneDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### WarZone
+                fldName='war_zone'
+                self.existence_test_and_add(fldName, item.xpath(xpWarZone, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='war_zone_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpWarZoneDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### WarZoneOther
+                fldName='war_zone_other'
+                self.existence_test_and_add(fldName, item.xpath(xpWarZoneOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='war_zone_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpWarZoneOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MonthsInWarZone
+                fldName='months_in_war_zone'
+                self.existence_test_and_add(fldName, item.xpath(xpMonthsInWarZone, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='months_in_war_zone_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpMonthsInWarZoneDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ReceivedFire
+                fldName='received_fire'
+                self.existence_test_and_add(fldName, item.xpath(xpReceivedFire, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='received_fire_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpReceivedFireDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MilitaryBranch
+                fldName='military_branch'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryBranch, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='military_branch_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryBranchDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MilitaryBranchOther
+                fldName='military_branch_other'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryBranchOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='military_branch_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpMilitaryBranchOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DischargeStatus
+                fldName='discharge_status'
+                self.existence_test_and_add(fldName, item.xpath(xpDischargeStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='discharge_status_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDischargeStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DischargeStatusOther
+                fldName='discharge_status_other'
+                self.existence_test_and_add(fldName, item.xpath(xpDischargeStatusOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='discharge_status_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDischargeStatusOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                
+                self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
+    
+            ### Veteran (Shred)
+                self.shred(self.parse_dict, Veteran)
+    
+    def parse_person_address(self, element):
+        ### xpPath Definitions
+            xpPersonAddress = 'hmis:PersonAddress'
+        ### StartDate
+            xpAddressPeriodStartDate = 'hmis:AddressPeriod/hmis:StartDate'
+            xpAddressPeriodStartDateDateCollected = 'hmis:AddressPeriod/hmis:StartDate/@hmis:dateCollected'
+        ### EndDate
+            xpAddressPeriodEndDate = 'hmis:AddressPeriod/hmis:EndDate'
+            xpAddressPeriodEndDateDateCollected = 'hmis:AddressPeriod/hmis:EndDate/@hmis:dateCollected'
+        ### PreAddressLine
+            xpPreAddressLine = 'hmis:PreAddressLine'
+            xpPreAddressLineDateCollected = 'hmis:PreAddressLine/@hmis:dateCollected'
+		### Line1
+            xpLine1 = 'hmis:Line1'
+            xpLine1DateCollected = 'hmis:Line1/@hmis:dateCollected'
+		### Line2
+            xpLine2 = 'hmis:Line2'
+            xpLine2DateCollected = 'hmis:Line2/@hmis:dateCollected'
+            ### City
+            xpCity = 'hmis:City'
+            xpCityDateCollected = 'hmis:City/@hmis:dateCollected'
+            ### County
+            xpCounty = 'hmis:County'
+            xpCountyDateCollected = 'hmis:County/@hmis:dateCollected'
+            ### State
+            xpState = 'hmis:State'
+            xpStateDateCollected = 'hmis:State/@hmis:dateCollected'
+            ### ZIPCode
+            xpZIPCode = 'hmis:ZIPCode'
+            xpZIPCodeDateCollected = 'hmis:ZIPCode/@hmis:dateCollected'
+            ### Country
+            xpCountry = 'hmis:Country'
+            xpCountryDateCollected = 'hmis:Country/@hmis:dateCollected'
+            
+            #*# is_last_permanent_zip
+            xpIsLastPermanentZip = 'hmis:IsLastPermanentZIP'
+            xpIsLastPermanentZipDateCollected = 'hmis:IsLastPermanentZIP/@hmis:dateCollected'
+            
+            #*# zip_quality_code
+            xpZipQualityCode = 'hmis:ZIPQualityCode'
+            xpZipQualityCodeDateCollected = 'hmis:ZIPQualityCode/@hmis:dateCollected'
+
+            ### xpPath Parsing
+            itemElements = element.xpath(xpPersonAddress, namespaces={'hmis': self.hmis_namespace})
+            if itemElements is not None:
+                for item in itemElements:
+                    
+                ### StartDate
+                    test = item.xpath(xpAddressPeriodStartDate, namespaces={'hmis': self.hmis_namespace})
+                    if len(test) > 0:
+                        fldName='address_period_start_date'
+                        self.existence_test_and_add(fldName, item.xpath(xpAddressPeriodStartDate, namespaces={'hmis': self.hmis_namespace}), 'element_date')
+                        fldName='line2_date_collected'
+                        self.existence_test_and_add(fldName, item.xpath(xpAddressPeriodStartDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    
+                ### EndDate
+                    test = item.xpath(xpAddressPeriodEndDate, namespaces={'hmis': self.hmis_namespace})
+                    if len(test) > 0:
+                        fldName='address_period_end_date'
+                        self.existence_test_and_add(fldName, item.xpath(xpAddressPeriodEndDate, namespaces={'hmis': self.hmis_namespace}), 'element_date')
+                        fldName='address_period_end_date_date_collected'
+                        self.existence_test_and_add(fldName, item.xpath(xpAddressPeriodEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    
+                ### PreAddressLine
+                    fldName='pre_address_line'
+                    self.existence_test_and_add(fldName, item.xpath(xpPreAddressLine, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='pre_address_line_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpPreAddressLineDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Line1
+                    fldName='line1'
+                    self.existence_test_and_add(fldName, item.xpath(xpLine1, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='line1_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpLine1DateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Line2
+                    fldName='line2'
+                    self.existence_test_and_add(fldName, item.xpath(xpLine2, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='line2_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpLine2DateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### City
+                    fldName='city'
+                    self.existence_test_and_add(fldName, item.xpath(xpCity, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='city_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpCityDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### County
+                    fldName='county'
+                    self.existence_test_and_add(fldName, item.xpath(xpCounty, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='county_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpCountyDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### State
+                    fldName='state'
+                    self.existence_test_and_add(fldName, item.xpath(xpState, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='state_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpStateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### ZIPCode
+                    fldName='zip_code'
+                    self.existence_test_and_add(fldName, item.xpath(xpZIPCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='zip_code_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpZIPCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Country
+                    fldName='country'
+                    self.existence_test_and_add(fldName, item.xpath(xpCountry, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='country_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpCountryDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    
+                ### IsLastPermanentZip
+                    fldName='is_last_permanent_zip'
+                    self.existence_test_and_add(fldName, item.xpath(xpIsLastPermanentZip, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='is_last_permanent_zip_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpIsLastPermanentZipDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    
+                ### ZipQualityCode
+                    fldName='zip_quality_code'
+                    self.existence_test_and_add(fldName, item.xpath(xpZipQualityCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='zip_quality_code_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpZipQualityCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+
+                    self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
+                
+                    ### PersonAddress (Shred)
+                    self.shred(self.parse_dict, PersonAddress)
+            
+    def parse_income_and_sources(self, item):
+        ### xpPath Definitions
+        ### Amount
+            xpIncomeAndSources = 'hmis:IncomeAndSources'
+            xpAmount = 'hmis:Amount'
+            xpAmountDateCollected = 'hmis:Amount/@hmis:dateCollected'
+        ### IncomeSourceCode
+            xpIncomeSourceCode = 'hmis:IncomeSourceCode'
+            xpIncomeSourceCodeDateCollected = 'hmis:IncomeSourceCode/@hmis:dateCollected'
+        ### IncomeSourceOther
+            xpIncomeSourceOther = 'hmis:IncomeSourceOther'
+            xpIncomeSourceOtherDateCollected = 'hmis:IncomeSourceOther/@hmis:dateCollected'
+            
+        ### xpPath Parsing
+            incomeSources =  item.xpath(xpIncomeAndSources, namespaces={'hmis': self.hmis_namespace})
+            
+            if incomeSources is not None:
+                for income in incomeSources:
+                ### Amount
+                    fldName='amount'
+                    self.existence_test_and_add(fldName, income.xpath(xpAmount, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='amount_date_collected'
+                    self.existence_test_and_add(fldName, income.xpath(xpAmountDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### IncomeSourceCode
+                    fldName='income_source_code'
+                    self.existence_test_and_add(fldName, income.xpath(xpIncomeSourceCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='income_source_code_date_collected'
+                    self.existence_test_and_add(fldName, income.xpath(xpIncomeSourceCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### IncomeSourceOther
+                    fldName='income_source_other'
+                    self.existence_test_and_add(fldName, income.xpath(xpIncomeSourceOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='income_source_other_date_collected'
+                    self.existence_test_and_add(fldName, income.xpath(xpIncomeSourceOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            
+                    self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
+        
+                ### IncomeAndSources (Shred)
+                    self.shred(self.parse_dict, IncomeAndSources)
+        
     def parse_person_historical(self, person_tag):
         '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
         '''This code allows for multiple PersonHistorical per Person'''
@@ -950,7 +1277,12 @@ class HMISXML28Reader:
                     self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncomeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
                 
                 self.shred(self.parse_dict, PersonHistorical)
-                #self.parse_person_historical(item)
+            
+            ### Parse any subtables
+                self.parse_hud_homeless_episodes(item) 
+                self.parse_income_and_sources(item)
+                self.parse_person_address(item) 
+                self.parse_veteran(item)
                 
         else:
             self.shred(self.parse_dict, PersonHistorical)
@@ -1124,6 +1456,8 @@ class HMISXML28Reader:
         self.session.flush()
         #Save the indexes generated at run-time so can be used
         #in dependent tables
+        if mapping.__name__ == "PersonHistorical":
+            self.person_historical_index_id = mapped.id
         if mapping.__name__ == "Person":
             self.person_index_id = mapped.id
         self.session.commit()
@@ -1137,7 +1471,7 @@ class HMISXML28Reader:
                 return True
         elif len(query_string) is not 0 or None:
             if handling == 'attribute_text':
-                self.persist(db_column, query_string = query_string[0])
+                self.persist(db_column, query_string[0])
                 return True
             if handling == 'text':
                 self.persist(db_column, query_string = query_string[0].text)
@@ -1192,8 +1526,13 @@ class Veteran(object):
         print field_dict
         for x, y in field_dict.iteritems():
             self.__setattr__(x,y)
-
-
+            
+class HUDHomelessEpisodes(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)
+            
 class IncomeAndSources(object):
     def __init__(self, field_dict):
         print field_dict
@@ -1216,8 +1555,9 @@ class Races(object):
     def __init__(self, field_dict):
         print field_dict
         for x, y in field_dict.iteritems():
-            self.__setattr__(x,y)       
-   
+            self.__setattr__(x,y)
+        
+
 #current projects only using client sections, not resources    
 #class SiteService(object):
 #    def __init__(self, field_dict):

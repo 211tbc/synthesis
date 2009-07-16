@@ -12,6 +12,7 @@ from sqlalchemy.types import DateTime, Date
 import dateutil.parser
 #import logging
 import settings
+import clsExceptions
 
 class HMISXML28Reader:
     '''Implements reader interface.'''
@@ -22,6 +23,13 @@ class HMISXML28Reader:
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
 
     def __init__(self, xml_file):
+        
+        # Validate that we have a valid username & password to access the database
+        if settings.DB_USER == "":
+            raise clsExceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
+        if settings.DB_PASSWD == "":
+            raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
+            
         self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE) , echo=True)#, server_side_cursors=True)
         #self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
         self.xml_file = xml_file
@@ -39,12 +47,15 @@ class HMISXML28Reader:
         self.database_map()
         self.person_map()
         self.person_historical_map()
+        self.release_of_information_map()
         self.income_and_sources_map()
         self.veteran_map()
         self.hud_homeless_episodes_map()
         self.person_address_map()
         self.other_names_map()
         self.races_map()
+        self.household_map()
+        self.member_map()
         
         #only client information needed for this project
         #self.site_service_map()
@@ -322,7 +333,7 @@ class HMISXML28Reader:
         useexisting = True)
         table_metadata.create_all()
         
-        mapper(Person, person_table, properties={'children': relation(OtherNames), 'children': relation(Races), 'children': relation(PersonHistorical)})
+        mapper(Person, person_table, properties={'children': relation(OtherNames), 'children': relation(Races), 'children': relation(PersonHistorical), 'children': relation(ReleaseOfInformation)})
         
         return
 
@@ -613,6 +624,116 @@ class HMISXML28Reader:
 #        mapper(SiteService, site_service_phone_table)
 #        return
         
+    
+    
+    def member_map(self):
+		table_metadata = MetaData(bind=self.pg_db, reflect=True)
+		member_table = Table(
+		'members',
+		table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+        Column('household_index_id', Integer, ForeignKey(Household.c.id)),
+
+	# dbCol: person_id_unhashed
+		Column('person_id_unhashed', String(32)),
+		Column('person_id_unhashed_date_collected', DateTime(timezone=True)),
+
+	# dbCol: person_id_hashed
+		Column('person_id_hashed', String(32)),
+		Column('person_id_hashed_date_collected', DateTime(timezone=True)),
+
+	# dbCol: relationship_to_head_of_household
+		Column('relationship_to_head_of_household', String(32)),
+		Column('relationship_to_head_of_household_date_collected', DateTime(timezone=True)),
+
+		useexisting = True)
+		table_metadata.create_all()
+
+		mapper(Members, member_table)
+		return
+    
+    def household_map(self):
+		table_metadata = MetaData(bind=self.pg_db, reflect=True)
+		household_table = Table(
+		'household',
+		table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+
+	# dbCol: household_idid_num
+		Column('household_id_num', String(32)),
+		Column('household_id_num_date_collected', DateTime(timezone=True)),
+
+	# dbCol: household_idid_str
+		Column('household_id_str', String(32)),
+		Column('household_id_str_date_collected', DateTime(timezone=True)),
+
+	# dbCol: head_of_household_id_unhashed
+		Column('head_of_household_id_unhashed', String(32)),
+		Column('head_of_household_id_unhashed_date_collected', DateTime(timezone=True)),
+
+	# dbCol: head_of_household_id_hashed
+		Column('head_of_household_id_hashed', String(32)),
+		Column('head_of_household_id_hashed_date_collected', DateTime(timezone=True)),
+
+		###Members (subtable)
+        
+		useexisting = True)
+		table_metadata.create_all()
+
+		mapper(Household, household_table, properties={'children': relation(Members)})
+		return
+    
+    def release_of_information_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        release_of_information_table = Table(
+        'release_of_information',
+        table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+        Column('person_index_id', Integer, ForeignKey(Person.c.id)),
+
+	# dbCol: release_of_information_idid_num
+		Column('release_of_information_idid_num', String(32)),
+		Column('release_of_information_idid_num_date_collected', DateTime(timezone=True)),
+
+	# dbCol: release_of_information_idid_str
+		Column('release_of_information_idid_str', String(32)),
+		Column('release_of_information_idid_str_date_collected', DateTime(timezone=True)),
+
+	# dbCol: site_service_idid_num
+		Column('site_service_idid_num', String(32)),
+		Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
+
+	# dbCol: site_service_idid_str
+		Column('site_service_idid_str', String(32)),
+		Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
+
+	# dbCol: documentation
+		Column('documentation', String(32)),
+		Column('documentation_date_collected', DateTime(timezone=True)),
+
+	###EffectivePeriod (subtable)
+    # dbCol: start_date
+        Column('start_date', String(32)),
+        Column('start_date_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: end_date
+        Column('end_date', String(32)),
+        Column('end_date_date_collected', DateTime(timezone=True)),
+
+	# dbCol: release_granted
+		Column('release_granted', String(32)),
+		Column('release_granted_date_collected', DateTime(timezone=True)),
+
+		useexisting = True)
+
+        table_metadata.create_all()
+        
+        mapper(ReleaseOfInformation, release_of_information_table)
+        return
+
     def parse_database(self, root_element):
         '''Look for a DatabaseID and related fields in the XML and persists it.'''      
         #Now populate the mapping
@@ -671,6 +792,7 @@ class HMISXML28Reader:
                 self.shred(self.parse_dict, Database)
                 #had to hard code this to just use root element, since we're not allowing multiple database_ids per XML file
                 self.parse_person(root_element)
+                self.parse_household(root_element)
             return
     
     def parse_export(self, root_element):
@@ -1399,6 +1521,7 @@ class HMISXML28Reader:
                 self.parse_person_historical(item)
                 self.parse_other_names(item)
                 self.parse_races(item)
+                self.parse_release_of_information(item)
 #                self.session.flush()
 #                print 'export id is', Export.c.
             return
@@ -1431,7 +1554,180 @@ class HMISXML28Reader:
         else:
             self.shred(self.parse_dict, Races)
             return
+        
+    def parse_household(self, element):
+        ### xpPath Definitions
+            xpHousehold = 'hmis:Household'
+        ### HouseholdIDIDNum
+            xpHouseholdIDIDNum = 'hmis:HouseholdID/hmis:IDNum'
+            xpHouseholdIDIDNumDateCollected = 'hmis:HouseholdIDIDNum/@hmis:dateCollected'
+        ### HouseholdIDIDStr
+            xpHouseholdIDIDStr = 'hmis:HouseholdID/hmis:IDStr'
+            xpHouseholdIDIDStrDateCollected = 'hmis:HouseholdID/hmis:IDStr/@hmis:dateCollected'
+        ### HeadOfHouseholdIDUnhashed
+            xpHeadOfHouseholdIDUnhashed = 'hmis:HeadOfHouseholdID/hmis:Unhashed'
+            xpHeadOfHouseholdIDUnhashedDateCollected = 'hmis:HeadOfHouseholdID/hmis:Unhashed/@hmis:dateCollected'
+        ### HeadOfHouseholdIDHashed
+            xpHeadOfHouseholdIDHashed = 'hmis:HeadOfHouseholdID/hmis:Hashed'
+            xpHeadOfHouseholdIDHashedDateCollected = 'hmis:HeadOfHouseholdID/hmis:Hashed/@hmis:dateCollected'
+        ### xpPath Parsing
+            itemElements = element.xpath(xpHousehold, namespaces={'hmis': self.hmis_namespace})
+            if itemElements is not None:
+                for item in itemElements:
+                    self.parse_dict = {}
+                ### HouseholdIDIDNum
+                    fldName='household_id_num'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='household_id_num_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### HouseholdIDIDStr
+                    fldName='household_id_str'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='household_id_str_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### HeadOfHouseholdIDUnhashed
+                    fldName='head_of_household_id_unhashed'
+                    self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDUnhashed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='head_of_household_id_unhashed_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDUnhashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### HeadOfHouseholdIDHashed
+                    fldName='head_of_household_id_hashed'
+                    self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDHashed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='head_of_household_id_hashed_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDHashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Household (Shred)
+                    self.shred(self.parse_dict, Household)
+        
+                ### Parse any subtables
+                    self.parse_members(item)
+            
     
+    def parse_members(self, element):
+        ### xpPath Definitions
+            xpMembers = 'hmis:Members'
+            xpMember = 'hmis:Member'
+        ### PersonIDUnhashed
+            xpPersonIDUnhashed = 'hmis:PersonID/hmis:Unhashed'
+            xpPersonIDUnhashedDateCollected = 'hmis:PersonID/hmis:Unhashed/@hmis:dateCollected'
+        ### PersonIDHashed
+            xpPersonIDHashed = 'hmis:PersonID/hmis:Hashed'
+            xpPersonIDHashedDateCollected = 'hmis:PersonID/hmis:Hashed/@hmis:dateCollected'
+        ### RelationshipToHeadOfHousehold
+            xpRelationshipToHeadOfHousehold = 'hmis:RelationshipToHeadOfHousehold'
+            xpRelationshipToHeadOfHouseholdDateCollected = 'hmis:RelationshipToHeadOfHousehold/@hmis:dateCollected'
+            
+            ### xpPath Parsing
+            # put a test first
+            test = element.xpath(xpMembers, namespaces={'hmis': self.hmis_namespace})
+            if len(test) > 0:
+                # if the tag exists (under household) it will always be 1.  with many 'members' underneath it.
+                itemElements = test[0].xpath(xpMember, namespaces={'hmis': self.hmis_namespace})
+                if itemElements is not None:
+                    for item in itemElements:
+                        self.parse_dict = {}
+                    ### PersonIDUnhashed
+                        fldName='person_id_unhashed'
+                        self.existence_test_and_add(fldName, item.xpath(xpPersonIDUnhashed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                        fldName='person_id_unhashed_date_collected'
+                        self.existence_test_and_add(fldName, item.xpath(xpPersonIDUnhashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    ### PersonIDHashed
+                        fldName='person_id_hashed'
+                        self.existence_test_and_add(fldName, item.xpath(xpPersonIDHashed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                        fldName='person_id_hashed_date_collected'
+                        self.existence_test_and_add(fldName, item.xpath(xpPersonIDHashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    ### RelationshipToHeadOfHousehold
+                        fldName='relationship_to_head_of_household'
+                        self.existence_test_and_add(fldName, item.xpath(xpRelationshipToHeadOfHousehold, namespaces={'hmis': self.hmis_namespace}), 'text')
+                        fldName='relationship_to_head_of_household_date_collected'
+                        self.existence_test_and_add(fldName, item.xpath(xpRelationshipToHeadOfHouseholdDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            
+                        # Stuff the forgeign key in 
+                        self.existence_test_and_add('household_index_id', self.household_index_id, 'no_handling')
+            
+                    ### Member (Shred)
+                        self.shred(self.parse_dict, Members)
+            
+                    ### Parse any subtables
+    
+    def parse_release_of_information(self, element):
+    ### xpPath Definitions
+        xpReleaseOfInformation = 'hmis:ReleaseOfInformation'
+    ### ReleaseOfInformationIDIDNum
+        xpReleaseOfInformationIDIDNum = 'hmis:ReleaseOfInformationID/hmis:IDNum'
+        xpReleaseOfInformationIDIDNumDateCollected = 'hmis:ReleaseOfInformationID/hmis:IDNum/@hmis:dateCollected'
+    ### ReleaseOfInformationIDIDStr
+        xpReleaseOfInformationIDIDStr = 'hmis:ReleaseOfInformationID/hmis:IDStr'
+        xpReleaseOfInformationIDIDStrDateCollected = 'hmis:ReleaseOfInformationID/hmis:IDStr/@hmis:dateCollected'
+    ### SiteServiceIDIDNum
+        xpSiteServiceIDIDNum = 'hmis:SiteServiceID/hmis:IDNum'
+        xpSiteServiceIDIDNumDateCollected = 'hmis:SiteServiceID/hmis:IDNum/@hmis:dateCollected'
+    ### SiteServiceIDIDStr
+        xpSiteServiceIDIDStr = 'hmis:SiteServiceID/hmis:IDStr'
+        xpSiteServiceIDIDStrDateCollected = 'hmis:SiteServiceID/hmis:IDStr/@hmis:dateCollected'
+    ### Documentation
+        xpDocumentation = 'hmis:Documentation'
+        xpDocumentationDateCollected = 'hmis:Documentation/@hmis:dateCollected'
+    ### StartDate
+        xpStartDate = 'hmis:EffectivePeriod/hmis:StartDate'
+        xpStartDateDateCollected = 'hmis:EffectivePeriod/hmis:StartDate/@hmis:dateCollected'
+    ### EndDate
+        xpEndDate = 'hmis:EffectivePeriod/hmis:EndDate'
+        xpEndDateDateCollected = 'hmis:EffectivePeriod/hmis:EndDate/@hmis:dateCollected'
+    ### ReleaseGranted
+        xpReleaseGranted = 'hmis:ReleaseGranted'
+        xpReleaseGrantedDateCollected = 'hmis:ReleaseGranted/@hmis:dateCollected'
+
+    ### xpPath Parsing
+        itemElements = element.xpath(xpReleaseOfInformation, namespaces={'hmis': self.hmis_namespace})
+        if itemElements is not None:
+            for item in itemElements:
+                
+                self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
+                
+            ### ReleaseOfInformationIDIDNum
+                fldName='release_of_information_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseOfInformationIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='release_of_information_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseOfInformationIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ReleaseOfInformationIDIDStr
+                fldName='release_of_information_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseOfInformationIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='release_of_information_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseOfInformationIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SiteServiceIDIDNum
+                fldName='site_service_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='site_service_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SiteServiceIDIDStr
+                fldName='site_service_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='site_service_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### Documentation
+                fldName='documentation'
+                self.existence_test_and_add(fldName, item.xpath(xpDocumentation, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='documentation_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDocumentationDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ###* StartDate (DateRange)
+                fldName='start_date'
+                self.existence_test_and_add(fldName, item.xpath(xpStartDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='start_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpStartDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ###* EndDate (DateRange)
+                fldName='end_date'
+                self.existence_test_and_add(fldName, item.xpath(xpEndDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='end_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')                
+            ### ReleaseGranted
+                fldName='None'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseGranted, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='None_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+    
+            ### ReleaseOfInformation (Shred)
+                self.shred(self.parse_dict, ReleaseOfInformation)
+            
 #current projects only using client sections, not resources    
 #    def parse_site_service(self, database_id_tag):
 #        '''Looks for a SiteService and related fields in the XML and persists the data set.'''
@@ -1456,6 +1752,8 @@ class HMISXML28Reader:
         self.session.flush()
         #Save the indexes generated at run-time so can be used
         #in dependent tables
+        if mapping.__name__ == "Household":
+            self.household_index_id = mapped.id
         if mapping.__name__ == "PersonHistorical":
             self.person_historical_index_id = mapped.id
         if mapping.__name__ == "Person":
@@ -1556,7 +1854,24 @@ class Races(object):
         print field_dict
         for x, y in field_dict.iteritems():
             self.__setattr__(x,y)
-        
+            
+class ReleaseOfInformation(object):
+    def __init__(self, field_dict):
+		print field_dict
+		for x, y in field_dict.iteritems():
+			self.__setattr__(x,y)
+
+class Household(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)
+            
+class Members(object):
+    def __init__(self, field_dict):
+        print field_dict
+        for x, y in field_dict.iteritems():
+            self.__setattr__(x,y)            
 
 #current projects only using client sections, not resources    
 #class SiteService(object):
@@ -1580,6 +1895,9 @@ def main(argv=None):
     UTILS.blank_database()
 
     inputFile = os.path.join("%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
+    
+    if settings.DB_PASSWD == "":
+        settings.DB_PASSWD = raw_input("Please enter your password: ")
     
     if os.path.isfile(inputFile) is True:#_adapted_further
         try:

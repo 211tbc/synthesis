@@ -3,7 +3,7 @@ associated with this code.'''
 
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData
 from sqlalchemy.orm import sessionmaker, mapper
-import settings
+from conf import settings
 
 class Employee(object):
     def __init__(self, name, fullname, password):

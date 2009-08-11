@@ -1254,6 +1254,8 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         xpPersonHistoricalHUDHomelessDateCollected = 'hmis:HUDHomeless/@hmis:dateCollected'
         # IncomeAndSources (separte table 1 to many) FIXME
         
+        xpPersonHistoricalLookingForWork = 'hmis:LookingForWork'
+        xpPersonHistoricalLookingForWorkDateCollected = 'hmis:LookingForWork/@hmis:dateCollected'
         xpPersonHistoricalMentalHealthIndefinite = 'hmis:MentalHealthIndefinite'
         xpPersonHistoricalMentalHealthIndefiniteDateCollected = 'hmis:MentalHealthIndefinite/@hmis:dateCollected'
         xpPersonHistoricalMentalHealthProblem = 'hmis:MentalHealthProblem'
@@ -1351,6 +1353,12 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 fldName='hud_homeless_date_collected'
                 if test is True:
                     self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHUDHomelessDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
+                    
+                fldName='looking_for_work'
+                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalLookingForWork, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='looking_for_work_date_collected'
+                if test is True:
+                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalLookingForWorkDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
                     
                 fldName='mental_health_indefinite'
                 test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
@@ -1805,7 +1813,7 @@ def main(argv=None):
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
-    inputFile = os.path.join("%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
+    inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

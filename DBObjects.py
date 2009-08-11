@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, B
 from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
 from sqlalchemy.types import DateTime, Date
 import sys
-import settings
+from conf import settings
 
 
 class databaseObjects:
@@ -14,6 +14,7 @@ class databaseObjects:
         Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
         self.session = Session()
         # map the ORM
+        clear_mappers()
         self.createMappings()
         
     def queryDB(self, object):
@@ -73,7 +74,10 @@ class databaseObjects:
         )
         table_metadata.create_all()
         #mapper(Export, export_table, properties={'children': [relation(Person), relation(Database)]})
-        mapper(Export, export_table, properties={'children': relation(Person), 'children': relation(Database)})
+        mapper(Export, export_table, properties={
+            'fk_export_to_person': relation(Person, backref='fk_person_to_export')
+            ,'fk_export_to_database': relation(Database, backref='fk_database_to_export')
+            })
         return
     
     def other_names_map(self):
@@ -277,13 +281,15 @@ class databaseObjects:
         useexisting = True)
         table_metadata.create_all()
         
-        mapper(Person, person_table, properties={'other_names': relation(OtherNames), 'person_historical': relation(PersonHistorical), 'release_of_information': relation(ReleaseOfInformation), 'races': relation(Races)})
+        mapper(Person, person_table, properties={
+            'fk_person_to_other_names': relation(OtherNames, backref='fk_other_names_to_person')
+            ,'fk_person_to_person_historical': relation(PersonHistorical, backref='fk_person_historical_to_person')
+            ,'fk_person_to_release_of_information': relation(ReleaseOfInformation, backref='fk_release_of_information_to_person')
+            ,'fk_person_to_races': relation(Races, backref='fk_races_to_person')})
         #
         
         return
-
     
-
     def person_historical_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
@@ -478,7 +484,12 @@ class databaseObjects:
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(PersonHistorical, person_historical_table, properties={'income_and_sources': relation(IncomeAndSources), 'veteran': relation(Veteran),'hud_homeless_episodes': relation(HUDHomelessEpisodes),'person_address': relation(PersonAddress)})
+        mapper(PersonHistorical, person_historical_table,
+               properties={'fk_person_historical_to_income_and_sources': relation(IncomeAndSources, backref='fk_income_and_sources_to_person_historical')
+                           ,'fk_person_historical_to_veteran': relation(Veteran, backref='fk_veteran_to_person_historical')
+                           ,'fk_person_historical_to_hud_homeless_episodes': relation(HUDHomelessEpisodes, backref='fk_hud_homeless_episodes_to_person_historical')
+                           ,'fk_person_historical_to_person_address': relation(PersonAddress, backref='fk_person_address_to_person_historical')
+                           })
         return
     
     def income_and_sources_map(self):
@@ -559,7 +570,7 @@ class databaseObjects:
         useexisting = True)
         table_metadata.create_all()
     
-        mapper(Household, household_table, properties={'children': relation(Members)})
+        mapper(Household, household_table, properties={'fk_household_to_members': relation(Members, backref='fk_members_to_household')})
         return
     
     def release_of_information_map(self):
@@ -717,11 +728,15 @@ def main(argv=None):
     print 'Export'
     for export in mappedObjects.queryDB(Export):
         print export.export_software_vendor
+        dbo = export.fk_export_to_database
+        dir(dbo)
     
     # Person records
-    print 'Person'
+    print 'All Persons'
     print '-----------------------------------'
     for field in mappedObjects.queryDB(Person):
+        print "New Person"
+        print '------'
         print field.person_date_of_birth_unhashed
         print field.person_legal_first_name_unhashed
         print field.person_legal_last_name_unhashed
@@ -745,11 +760,11 @@ def main(argv=None):
     for person in mappedObjects.queryDB(Person).filter(Person.person_legal_first_name_unhashed=='George'):
         print person.person_legal_first_name_unhashed
         #print person.person_historical
-        for ph in person.person_historical:
+        for ph in person.fk_person_to_person_historical:
             print '-------'
             print ph.employment_tenure
             print '-------'
-            for ias in ph.income_and_sources:
+            for ias in ph.fk_person_historical_to_income_and_sources:
                 print "IAS:Amount: %s" % ias.amount
     print '-----------------------------------'
 

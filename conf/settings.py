@@ -7,11 +7,15 @@ DB_DATABASE = ""
 DB_USER = ""
 DB_PASSWD = ""
 
-BASE_PATH = ""
+# uses current working directory, uncomment the line if the output path needs to be elsewhere.
+#BASE_PATH = ""
+BASE_PATH = os.getcwd()
 
 # Input files Processing path
 INPUTFILES_PATH = "InputFiles"
 XSD_PATH = "InputFiles"
+
+OUTPUTFILES_PATH = "OutputFiles"
 
 PROCESSED_PATH = ""
 

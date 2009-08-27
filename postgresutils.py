@@ -55,6 +55,8 @@ class Utils:
 
     def blank_database(self):
         print 'entered the function'
+        self.session
+        
         self.db_metadata.reflect()
         self.db_metadata.drop_all()
         self.session.commit()

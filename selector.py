@@ -7,7 +7,7 @@ from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
 from lxml import etree
 import Queue
-import settings
+from conf import settings
 
 class FileHandler:#IGNORE:R0903
 	'''Sets up the watch on the directory, and handles the file once one comes \
@@ -88,8 +88,6 @@ class VendorXMLTest:#IGNORE:R0903
 		print '\nThe', self.name, 'test not implemented.'
 		print '...but intended to validate', instance_filename
 		return False
-
-
 	
 class HUDHMIS28XMLTest:#IGNORE:R0903
 	'''Load in the HUD HMIS Schema, version 2.8.'''

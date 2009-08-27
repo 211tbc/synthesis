@@ -9,10 +9,12 @@ from conf import settings
 
 class databaseObjects:
     
-    def __init__(self, pg_db):
-        self.pg_db = pg_db
-        Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
-        self.session = Session()
+    def __init__(self):
+        self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % \
+                    (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+        
+        self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
+        
         # map the ORM
         clear_mappers()
         self.createMappings()
@@ -720,9 +722,9 @@ def main(argv=None):
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")
         
-    pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+    #pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
     
-    mappedObjects = databaseObjects(pg_db)
+    mappedObjects = databaseObjects()
     
     # Query Exports for Data
     print 'Export'
@@ -771,56 +773,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())             
             
-            
-# saving this stuff below for later, might need someday            
-#current projects only using client sections, not resources    
-#    def site_service_map(self):
-#        table_metadata = MetaData(bind=self.pg_db, reflect=False)
-#        site_service_table = Table(
-#        'site_service', 
-#        table_metadata, 
-#        Column('site_service_id', String(50), primary_key=True),
-#        Column('site_service_id_date_collected', DateTime(timezone=True)),
-#        Column('site_service_fips_code', String(10)),
-#        Column('site_service_fips_code_date_collected', DateTime(timezone=True)),
-#        Column('site_service_facility_code', String(10)),
-#        Column('site_service_facility_code_date_collected', DateTime(timezone=True)),
-#        Column('site_service_coc_code', String(5)),
-#        Column('site_service_coc_code_date_collected', DateTime(timezone=True)),
-#        Column('site_service_type', Integer(3)),
-#        Column('site_service_type_date_collected', DateTime(timezone=True)),
-#        Column('site_service_type_other', String(50)),
-#        Column('site_service_type_other_date_collected', DateTime(timezone=True)),
-#        Column('site_service_individual_family_code', Integer(3)),
-#        Column('site_service_individual_family_code_date_collected', DateTime(timezone=True)),
-#        Column('site_service_target_population', String(50)),
-#        Column('site_service_target_population_date_collected', DateTime(timezone=True)),
-#        Column('site_service_site_id', String(50)), 
-#        Column('site_service_site_id_date_collected', DateTime(timezone=True)),
-#        Column('site_service_name', String(100)),         
-#        #Phone is in its own table to support many-to-one relation
-#        )
-#        table_metadata.create_all()
-#        mapper(SiteService, site_service_table)
-#        return
-
-#current projects only using client sections, not resources        
-#    def site_service_phone_map(self):
-#        table_metadata = MetaData(bind=self.pg_db, reflect=False)
-#        site_service_phone_table = Table(
-#        'site_service', 
-#        table_metadata, 
-#        Column('site_service_id', ForeignKey("site_service.site_service_id"), nullable=False),
-#        Column('phone_toll_free', Boolean),
-#        Column('phone_confidential', Boolean),
-#        Column('phone_number', String(50)),     
-#        Column('extension', String(20)),
-#        Column('description', String(200)),
-#        Column('type', String(50)),
-#        Column('function', String(50)),
-#        Column('reason_withheld', String(200)),
-#        )
-#        table_metadata.create_all()
-#        mapper(SiteService, site_service_phone_table)
-#        return
             

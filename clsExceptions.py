@@ -25,6 +25,12 @@ class Error(Exception):
     """Base class for exceptions in this module."""
     pass
 
+class DuplicateXMLDocumentError(Exception):
+    def __init__(self, *args):
+        message = "Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2])
+        print message
+        self.message = message
+
 class UndefinedXMLWriter(Exception):
     def __init__(self, *args):
         print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2])

@@ -4,6 +4,8 @@ associated with this code.'''
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData
 from sqlalchemy.orm import sessionmaker, mapper
 from conf import settings
+import sys
+import os
 
 class Employee(object):
     def __init__(self, name, fullname, password):
@@ -41,6 +43,23 @@ class Utils:
         self.employee_table.drop(bind=self.pg_db)
         self.session.commit()
         print 'cleared the database'
+        
+    def create_database(self, databaseName):
+        
+        if not databaseName == '':
+             
+            parameters = ['--host=localhost', '--username=%s' % settings.DB_USER, settings.DB_DATABASE, "Synthesis Project Database for %s" % settings.MODE]
+            compileCommand = '/usr/bin/createdb'
+            if settings.DEBUG:
+                print 'creating db with command: %s %s' % (compileCommand, parameters)
+            
+            rc = os.spawnv(os.P_WAIT, compileCommand, parameters)
+            return rc
+            
+        else:
+            raise dbCreateError()
+        
+
     
 #def create_database():
 #    '''creates a new, empty database.'''

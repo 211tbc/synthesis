@@ -3,21 +3,38 @@
 from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
 from sqlalchemy.types import DateTime, Date
+from sqlalchemy import exceptions as sqlalchemyexceptions
 import sys
 from conf import settings
+
+from fileUtils import fileUtilities
 
 
 class databaseObjects:
     
     def __init__(self):
-        self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % \
-                    (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-        
-        self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
-        
-        # map the ORM
-        clear_mappers()
-        self.createMappings()
+        try:
+            self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % \
+                        (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+            
+            self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
+            
+            # map the ORM
+            clear_mappers()
+            self.createMappings()
+            
+        except sqlalchemyexceptions.OperationalError:
+            msg = "Database [%s] does not exist." % settings.DB_DATABASE
+            FU = fileUtilities(settings.DEBUG, None)
+            FU.makeBlock(len(msg),msg)
+            rc = raw_input('Would you like to create the database now? (y/N/C)')
+            if rc == 'y':
+                import postgresutils
+                UTILS = postgresutils.Utils()
+                UTILS.create_database(settings.DB_DATABASE)
+            else:
+                msg = "Please create Database [%s] and restart process." % settings.DB_DATABASE
+                FU.makeBlock(len(msg),msg)
         
     def queryDB(self, object):
         return self.session.query(object)

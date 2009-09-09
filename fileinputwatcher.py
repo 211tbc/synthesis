@@ -42,8 +42,13 @@ else:
 class FileInputWatcher:
     '''controlling class for file monitoring'''
 
-    def __init__(self, dir_to_watch, queue): 
+    def __init__(self, dir_to_watch, queue, debug=False): 
         print 'FileInputWatcher Initialized'
+        # SBB20090903 Adding debugging capability, not processing multiple file drops into multiple directories.
+        if debug:
+            print '****************************************Debugging Monitoring..'
+        self.debug = debug
+        
         self.queue = queue
         self.dir_to_watch = dir_to_watch    
         if os.name == 'nt':   
@@ -116,9 +121,13 @@ class FileInputWatcher:
             return ['POSIX Watch Error']
         mask = EventsCodes.IN_CREATE  #watched events IGNORE:E1101
         self.notifier = ThreadedNotifier(watch_manager, EventHandler(self.queue))#IGNORE:W0201
+        # SBB20090903 Turn on verbose mode
+        self.notifier.VERBOSE = self.debug
+        
         watch_manager.add_watch(self.dir_to_watch, mask)
         print 'Starting the threaded notifier on ', self.dir_to_watch
         self.notifier.start()
+        print 'Finished...'
                 
     def watch_posix_stop(self):#IGNORE:R0201
         'os specific call to stop monitoring'

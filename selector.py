@@ -8,6 +8,11 @@ from hmisxml28reader import HMISXML28Reader
 from lxml import etree
 import Queue
 from conf import settings
+from emailProcessor import XMLProcessorNotifier
+from fileRouter import router
+from os import path
+from clsExceptions import DuplicateXMLDocumentError
+import traceback
 
 class FileHandler:#IGNORE:R0903
 	'''Sets up the watch on the directory, and handles the file once one comes \
@@ -16,30 +21,90 @@ class FileHandler:#IGNORE:R0903
 		#change this so that it gets the watch_dir from the .ini file
 		dir_to_watch = settings.INPUTFILES_PATH #IGNORE:C0301
 		self.queue = Queue.Queue(0)
-		self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue)
+		self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue, settings.DEBUG)
 		global FU
 		FU = fileUtils.fileUtilities()
+		#Check the file to see if it validates against one of the tests.
+		self.selector = Selector()
 
+	def processFiles(self, new_file):
+		self.email = XMLProcessorNotifier(new_file)
+		self.router = router()
+		try:
+			if self.selector.validate(new_file):
+				self.email.notifyValidationSuccess()
+				self.router.moveUsed(new_file)
+				return True
+			else:
+				self.email.notifyValidationFailure()
+				self.router.moveFailed(new_file)
+				return False
+		except etree.XMLSyntaxError, error:
+			self.email.notifyValidationFailure(error)
+			
+		except DuplicateXMLDocumentError, inst:
+			print type(inst)     # the exception instance
+			print inst.args      # arguments stored in .args
+			print inst           # __str__ allows args to printed directly
+
+			self.email.notifyDuplicateDocumentError(inst.message)
+			self.router.moveFailed(new_file)
+			return False
+		
+	def processExisting(self):
+		''' this function churns through the input path(s) and processes files that are already there.
+		iNotify only fires events since program was started so existing files don't get processed
+		'''
+		# get a list of files in the input path
+		listOfFiles = list()
+		# Loop over list of file locations [list]
+		for folder in settings.INPUTFILES_PATH:
+			listOfFiles.extend(FU.grabFiles(path.join(folder,'*.xml')))
+			for inputFile in listOfFiles:
+				self.processFiles(inputFile)
+	
 	def run(self): #IGNORE:R0201
 		'''This is the main method controlling this entire program.'''
 		#Start a monitoring thread.  It ends on its own.
-		new_file = self.monitor()
-		#Check the file to see if it validates against one of the tests.
-		selector = Selector()
+		new_files = self.monitor()
+		print 'monitoring..'
+		print 'monitoring..2'
+		
 		#result = selector.validate(HUDHMIS28XMLTest(), new_file)
-		selector.validate(new_file)
+		for new_file in new_files:
+			if settings.DEBUG:
+				print 'Processing: %s' % new_file
+			
+			self.processFiles(new_file)
+			
 	#ECJ 05042009 indented this block as it needs specific class attributes \n
 	#to work        
 	def monitor(self):
 		'function to start and stop the monitor' 
 		self.file_input_watcher.monitor()
-		#now make a file whilst pyinotify thread is running
-		try:
-			result = self.queue.get(block='true')
-		except Queue.Empty:
-			result = None
+		print 'waiting..'
+		print 'waiting 2'
+		
+		#now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
+		files = list()
+		_QTO = None
+		while 1:
+			try:
+				result = self.queue.get(block='true', timeout=_QTO)
+				if settings.DEBUG:
+					print 'found file: %s' % result
+				_QTO = 5
+			except Queue.Empty:
+				result = None
+				break
+			
+			# append all files into the file stack to be processed.
+			if result != None:
+				files.append(result)
+		
 		self.file_input_watcher.stop_monitoring()
-		return result        
+		#return result
+		return files
         
 class Selector:#IGNORE:R0903
 	'''Figures out which data format is being received.'''
@@ -108,7 +173,7 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 			results = schema_parsed_xsd.validate(instance_parsed)
 			if results == True:
 				#print 'The HMIS 2.8 XML successfully validated.'
-				FU.makeBlock(45, 'The HMIS 2.8 XML successfully validated.')
+				FU.makeBlock('The HMIS 2.8 XML successfully validated.')
 				return results
 			if results == False:
 				print 'The xml did not successfully validate against \
@@ -129,7 +194,7 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 		except etree.XMLSyntaxError, error:
 			print 'XML Syntax Error.  There appears to be malformed XML.  '\
 			, error
-			return
+			raise 
 
 class JFCSXMLTest:#IGNORE:R0903,W0232
     '''A stub for a specific non-profit's supplied non-standard XML format.'''
@@ -149,7 +214,10 @@ class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
 		
 	def shred(self):
 		tree = self.reader.read()
-		self.reader.process_data(tree)
+		try:
+			self.reader.process_data(tree)
+		except:
+			raise
 	
 class JFCSXMLReader():#IGNORE:R0903
 	def __init__(self, instance_doc):
@@ -172,5 +240,12 @@ class VendorXMLReader():#IGNORE:R0903
 		return False
 	
 if __name__ == '__main__':
-    FILEHANDLER = FileHandler()
-    RESULTS = FILEHANDLER.run()
+	
+	if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Test mode
+		import postgresutils
+		UTILS = postgresutils.Utils()
+		UTILS.blank_database()
+		
+	
+	FILEHANDLER = FileHandler()
+	RESULTS = FILEHANDLER.run()

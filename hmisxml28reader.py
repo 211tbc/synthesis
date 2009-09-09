@@ -9,11 +9,14 @@ from lxml import etree
 from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
 from sqlalchemy.types import DateTime, Date
+from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
 from conf import settings
 import clsExceptions
 import DBObjects
+from fileUtils import fileUtilities
+from errcatalog import catalog
 
 class HMISXML28Reader(DBObjects.databaseObjects):
     '''Implements reader interface.'''
@@ -22,6 +25,8 @@ class HMISXML28Reader(DBObjects.databaseObjects):
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
+    global FU
+    FU = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, xml_file):
         
@@ -48,7 +53,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         clear_mappers()
         
         # moved all mapping ORM logic to new module/class
-        dbo = DBObjects.databaseObjects(self.pg_db)
+        dbo = DBObjects.databaseObjects()
         
         #self.export_map()
         #self.database_map()
@@ -78,7 +83,13 @@ class HMISXML28Reader(DBObjects.databaseObjects):
     def process_data(self, tree):
         '''Shreds the XML document into the database.'''
         root_element = tree.getroot()
-        self.parse_export(root_element)
+        try:
+            self.parse_export(root_element)
+        except IntegrityError:
+            FU.makeBlock("CAUGHT INTEGRITY ERROR")
+            err = catalog.errorCatalog[1002]
+            raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data() ' + self.xml_file )
+        
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 
         #    print 'Person', u.export_id, 'Export', a.export_software_version

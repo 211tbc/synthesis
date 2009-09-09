@@ -44,7 +44,6 @@ DEBUG_DB = False								# Debug the DB layer of the application
 SMTPSERVER = 'localhost'
 SMTPPORT = 25
 SMTPSENDER = 'me@localhost'
-SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = \

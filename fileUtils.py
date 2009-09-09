@@ -225,9 +225,6 @@ class fileUtilities:
             
         # close the file
         f.close()
-        
-        
-        
     
     def grabFiles(self, directoryToProcess):
         print "Getting Files"
@@ -244,7 +241,14 @@ class fileUtilities:
         return validFiles
     
     def moveFile(self, source, destDir):
-        shutil.move(source, destDir)
+        # SBB20090831 Test if the destination exists, if not make it.  Ecapsulated w/ Try
+        try:
+            if not os.path.exists(destDir):
+                os.mkdir(destDir)
+                
+            shutil.move(source, destDir)        
+        except:
+            raise
             
     def copyFile(self, source, dest):
         shutil.copy2(source, dest)
@@ -260,8 +264,12 @@ class fileUtilities:
     def backupFile(self, project):
         # copy the file to a backup filename we are creating a new copy of the file
         self.copyFile(project, project + ".bak")    
-
-    def makeBlock(self, numChars, wording):
+        
+    def makeBlock(self, wording, numChars=0):
+        # SBB20090902 why pass in the number of characters (fixed block sizes)
+        if numChars == 0:
+            numChars = len(wording)
+            
         if len(wording) >= numChars:
             numChars = len(wording) + 4
         numSpaces = (numChars - (len(wording) + 2)) / 2

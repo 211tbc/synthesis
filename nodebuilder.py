@@ -35,7 +35,7 @@ class NodeBuilder(DBObjects.databaseObjects):
         # Load the data via DBObjects
         
         
-        for writer,validate in map(None, self.writers, self.validators):
+        for writer,validate in map(None, self.writer, self.validator):
             result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
             if result and shred:
@@ -60,7 +60,8 @@ class SvcPointXMLwriter(SVCPOINTXML20Writer):
         self.xML = SVCPOINTXML20Writer((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
 
     def write(self):
-        pass
+        self.xML.processXML()
+        self.xML.writeOutXML()
     
 class HmisXmlWriter(HMISXML28Writer):
     

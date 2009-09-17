@@ -8,9 +8,9 @@ from XMLUtilities import XMLUtilities
 #from clsExceptions import dataFormatError, ethnicityPickNotFound
 
 # Alchemy Libraries
-from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
-from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
-from sqlalchemy.types import DateTime, Date
+#from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
+#from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
+#from sqlalchemy.types import DateTime, Date
 
 from sys import version
 from conf import settings
@@ -98,24 +98,6 @@ class SVCPOINTXML20Writer():
 		print "-" * 80
 		for row in range(len(self.errorMsgs)):
 			print "%s %s" % (row, self.errorMsgs[row])
-			
-	def push_data_intakes(self, intakes):
-		if self.debug == True:
-			print "XMLModule Intakes Pushed" 
-		self.intakes = intakes
-		
-	def push_data_outcomes(self, outcomes):
-		# this is a list of dictionaries.  When formatting the output, need to iterate through the list and then take the dictionary keys to insert the values where needed
-		if self.debug == True:
-			print "XMLModule Outcomes Pushed" 
-		#print self.intakes
-		self.outcomes = outcomes
-		
-	def push_data_daily_census(self, daily_census):
-		# this is a list of dictionaries.  When formatting the output, need to iterate through the list and then take the dictionary keys to insert the values where needed
-		if self.debug == True:
-			print "XMLModule daily_census Pushed" 
-		self.daily_census = daily_census
 		
 	# SBB20071021 Set the systemID value from the DB.
 	def setSysID(self, pSysID):
@@ -1123,8 +1105,8 @@ class SVCPOINTXML20Writer():
 	#	return provider
 		
 		# wrap it in an ElementTree instance, and save as XML
-	def writeOutXML(self, root):
-		tree = ET.ElementTree(root)
+	def writeOutXML(self):
+		tree = ET.ElementTree(self.root_element)
 		if settings.DEBUG == True:
 			print "trying to write XML to: %s " % os.path.join(settings.OUTPUTFILES_PATH, "page.xml")
 			

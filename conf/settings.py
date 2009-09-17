@@ -13,6 +13,11 @@ DB_PASSWD = ""
 #BASE_PATH = ""
 BASE_PATH = os.getcwd()
 
+HOME_DIR = '/home/scottben/'
+PATH_TO_GPG = '/usr/bin/gpg'
+PGPHOMEDIR = '/home/scottben/.gnupg'
+PASSPHRASE = ''
+
 # Input files Processing path
 # New 'Customers' input file path must be put into this list.  Add it to the list mechanism.  
 INPUTFILES_PATH = [
@@ -32,7 +37,7 @@ PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(XSD_PATH, 'HUD_HMIS_2_8.xsd')}
 
-DEBUG = True									# Debug the application layer
+DEBUG = False									# Debug the application layer
 DEBUG_ALCHEMY = False							# Debug the ORM Layer
 DEBUG_DB = False								# Debug the DB layer of the application
 
@@ -53,19 +58,22 @@ SMTPRECIPIENTS = \
 		{
 		'SMTPTOADDRESS': ['sbenninghoff@yahoo.com',],
 		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': []
+		'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':''
 		}
 	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
 		{
 		'SMTPTOADDRESS': ['scott.benninghoff@openmercury.com',],
 		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': []
+		'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':''
 		}
 	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles3":
 		{
 		'SMTPTOADDRESS': ['scott@benninghoff.us',],
 		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': []
+		'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':''
 		}
 	}
 

@@ -8,6 +8,10 @@ import postgresutils
 
 class CryptTestCase(unittest.TestCase):
     '''see if the return value is a file path'''
+    def test_decrypt2Stream(self):
+        '''
+        '''
+        
     def test_decrypt_valid(self):
         '''Tests to see if we can decrypt a known file and compare that with existing 'unencrypted' version of the file'''
         security = clsSecurity()

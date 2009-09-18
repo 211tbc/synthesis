@@ -27,6 +27,8 @@ make a non-polling notification.
 # THE SOFTWARE.
 
 import os, time, exceptions
+from time import sleep
+
 # determine what environment we are running under, win32 or POSIX
 if os.name == 'nt':
     import win32file
@@ -55,6 +57,8 @@ class FileInputWatcher:
             self.osiswin32 = True
         else:
             self.osiswin32 = False
+        # make a notifier (nothing)
+        self.notifier = None
                 
     def monitor(self):
         '''The command to start monitoring a directory or set of them.'''
@@ -69,7 +73,9 @@ class FileInputWatcher:
             
     def stop_monitoring(self):  
         'os independent method to stop monitoring, but only posix uses it.'
-        self.watch_posix_stop()
+        #self.watch_posix_stop()
+        # SBB20090917 Instead of stopping, pause while stuff is being processed, with notifier stopped, any files received are not tracked or processed
+        #sleep(5)
         print 'Done Monitoring'
                 
     def watch_win32(self, dir_to_watch): #IGNORE:R0201    
@@ -114,20 +120,25 @@ class FileInputWatcher:
             
     def watch_posix_start(self): #IGNORE:R0201
         '''os-specific command to watch'''
-        try:
-            watch_manager = WatchManager()
-        except NameError:
-            print 'hey'
-            return ['POSIX Watch Error']
-        mask = EventsCodes.IN_CREATE  #watched events IGNORE:E1101
-        self.notifier = ThreadedNotifier(watch_manager, EventHandler(self.queue))#IGNORE:W0201
-        # SBB20090903 Turn on verbose mode
-        self.notifier.VERBOSE = self.debug
         
-        watch_manager.add_watch(self.dir_to_watch, mask)
-        print 'Starting the threaded notifier on ', self.dir_to_watch
-        self.notifier.start()
-        print 'Finished...'
+        # test to see if we already have a notifier object, if not, make it, otherwise we are already watching a set of folders
+        if self.notifier == None:
+            
+            try:
+                watch_manager = WatchManager()
+            except NameError:
+                print 'hey'
+                return ['POSIX Watch Error']
+            mask = EventsCodes.IN_CREATE  #watched events IGNORE:E1101
+        
+            self.notifier = ThreadedNotifier(watch_manager, EventHandler(self.queue))#IGNORE:W0201
+            # SBB20090903 Turn on verbose mode
+            self.notifier.VERBOSE = self.debug
+            
+            watch_manager.add_watch(self.dir_to_watch, mask)
+            print 'Starting the threaded notifier on ', self.dir_to_watch
+            self.notifier.start()
+            print 'Finished...'
                 
     def watch_posix_stop(self):#IGNORE:R0201
         'os specific call to stop monitoring'

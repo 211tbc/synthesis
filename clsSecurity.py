@@ -3,7 +3,7 @@ import sys
 import gnupg
 from conf import settings
 import testCase_settings
-from IPython.Shell import IPShellEmbed
+#from IPython.Shell import IPShellEmbed
 
 
 class clsSecurity:
@@ -34,6 +34,12 @@ class clsSecurity:
 		ascii_data = self.gpg.decrypt_file(stream, passphrase=settings.PASSPHRASE) # e.g. after stream = open(filename, "rb")
 		stream.close()
 		return str(ascii_data)
+		
+	def decryptFile2Stream(self, filename):
+		from StringIO import StringIO
+		uData = self.decryptFile(filename)
+		uDataStream = StringIO(uData)
+		return uDataStream
 		
 	def listKeys(self):
 		keys = self.gpg.list_keys()

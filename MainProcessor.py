@@ -3,6 +3,7 @@ import selector
 from conf import settings
 from fileUtils import fileUtilities
 from selector import FileHandler
+import traceback
 
 # run forever
 processFiles = 1
@@ -35,12 +36,16 @@ FILEHANDLER.processExisting()
 try:
     while processFiles:
             
-        
+        try:
         
         # This will wait till files arrive, once processed, it will loop and start over (unless we get ctrl-C or break
-        RESULTS = FILEHANDLER.run()
-        
+            RESULTS = FILEHANDLER.run()
+        except:
+            excString = traceback.format_exc()
+            print excString
+            continue
         # logging?
+        
         
 except KeyboardInterrupt:
 	print 'Stopping'

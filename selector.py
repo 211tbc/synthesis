@@ -13,6 +13,7 @@ from fileRouter import router
 from os import path
 from clsExceptions import DuplicateXMLDocumentError
 import traceback
+from clsSecurity import clsSecurity
 
 class FileHandler:#IGNORE:R0903
 	'''Sets up the watch on the directory, and handles the file once one comes \
@@ -26,12 +27,41 @@ class FileHandler:#IGNORE:R0903
 		FU = fileUtils.fileUtilities()
 		#Check the file to see if it validates against one of the tests.
 		self.selector = Selector()
+		self.crypto = clsSecurity()
 
+	def setProcessingOptions(self, docName):
+		''' ProcessingOptions is a dictionary on a perfile/sender basis.
+		Dictionary contains settings like does the sender use encryption etc.
+		self.ProcessingOptions = 
+			{
+				'SMTPTOADDRESS': ['sbenninghoff@yahoo.com',],
+				'SMTPTOADDRESSCC': [],
+				'SMTPTOADDRESSBCC': [],
+				'FINGERPRINT':'',
+				'USES_ENCRYPTION':True
+			}
+		'''
+		folderName = path.split(docName)[0]
+		try:
+			self.ProcessingOptions = settings.SMTPRECIPIENTS[folderName]
+		except:
+			raise
+		
 	def processFiles(self, new_file):
+		self.setProcessingOptions(new_file)
 		self.email = XMLProcessorNotifier(new_file)
 		self.router = router()
+		
+		# test if the sender encrypts data, if so, decrypt, if not, just process
+		if self.ProcessingOptions['USES_ENCRYPTION']:
+			# decrypt the file
+			fileStream = self.crypto.decryptFile2Stream(new_file)
+		else:
+			# just open the file
+			fileStream = open(new_file,'r')
+			
 		try:
-			if self.selector.validate(new_file):
+			if self.selector.validate(fileStream):
 				self.email.notifyValidationSuccess()
 				self.router.moveUsed(new_file)
 				return True
@@ -41,6 +71,7 @@ class FileHandler:#IGNORE:R0903
 				return False
 		except etree.XMLSyntaxError, error:
 			self.email.notifyValidationFailure(error)
+			self.router.moveFailed(new_file)
 			
 		except DuplicateXMLDocumentError, inst:
 			print type(inst)     # the exception instance
@@ -105,15 +136,18 @@ class FileHandler:#IGNORE:R0903
 		self.file_input_watcher.stop_monitoring()
 		#return result
 		return files
-        
+		
 class Selector:#IGNORE:R0903
 	'''Figures out which data format is being received.'''
 	#local_schema = {'hud_hmis_2_8_xml':'/home/eric/Alexandria_Consulting/Suncoast/JFCS/src/hmisparse/schema/HUD_HMIS_2_8.xsd'} #IGNORE:C0301
 	local_schema = settings.SCHEMA_DOCS
 	def __init__(self):
 		#need to put this attribute in the .ini file
+		
 		pass
 
+	# SBB20090917 modified to take a stream instead of a file
+	#def validate(self, instance_doc, shred=True): #IGNORE:R0201
 	def validate(self, instance_doc, shred=True): #IGNORE:R0201
 		'''Validates against the various available schema and csv records.\
 		If not specified in the configs, it keeps trying each available \
@@ -162,14 +196,14 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 		print 'running the', name, 'test'
 		self.schema_filename = Selector.local_schema['hud_hmis_2_8_xml']
 	
-	def validate(self, instance_filename):
+	def validate(self, instance_stream):
 		'''This specific data format's validation process.'''
 		schema = open(self.schema_filename,'r')
-		instance = open(instance_filename,'r')
+		
 		schema_parsed = etree.parse(schema)
 		schema_parsed_xsd = etree.XMLSchema(schema_parsed)
 		try:
-			instance_parsed = etree.parse(instance)
+			instance_parsed = etree.parse(instance_stream)
 			results = schema_parsed_xsd.validate(instance_parsed)
 			if results == True:
 				#print 'The HMIS 2.8 XML successfully validated.'
@@ -197,17 +231,17 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 			raise 
 
 class JFCSXMLTest:#IGNORE:R0903,W0232
-    '''A stub for a specific non-profit's supplied non-standard XML format.'''
-    def __init__(self):
-        self.name = 'JFCS'
-        print 'running the', self.name, 'test'
-        
-    def validate(self, instance_filename):
-        '''implementation of interface's validate method'''
-        print '\nThe', self.name, 'test not implemented.'
-        print '...but intended to validate', instance_filename
-        return False
-    
+	'''A stub for a specific non-profit's supplied non-standard XML format.'''
+	def __init__(self):
+		self.name = 'JFCS'
+		print 'running the', self.name, 'test'
+		
+	def validate(self, instance_filename):
+		'''implementation of interface's validate method'''
+		print '\nThe', self.name, 'test not implemented.'
+		print '...but intended to validate', instance_filename
+		return False
+	
 class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
 	def __init__(self, instance_filename):
 		self.reader = HMISXML28Reader(instance_filename)

@@ -88,7 +88,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         except IntegrityError:
             FU.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data() ' + self.xml_file )
+            raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 

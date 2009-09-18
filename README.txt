@@ -12,6 +12,7 @@ System Requirements:
 	pyinotify
 	inotify (kernel extensions)
 	cElementTree (improves performance)
+	python-gnupg (http://python-gnupg.googlecode.com/files/gnupg-0.2.1.tar.gz)
 
 Main entry point to program is:
 

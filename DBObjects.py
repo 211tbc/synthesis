@@ -26,7 +26,7 @@ class databaseObjects:
         except sqlalchemyexceptions.OperationalError:
             msg = "Database [%s] does not exist." % settings.DB_DATABASE
             FU = fileUtilities(settings.DEBUG, None)
-            FU.makeBlock(len(msg),msg)
+            FU.makeBlock(msg)
             rc = raw_input('Would you like to create the database now? (y/N/C)')
             if rc == 'y':
                 import postgresutils
@@ -34,7 +34,7 @@ class databaseObjects:
                 UTILS.create_database(settings.DB_DATABASE)
             else:
                 msg = "Please create Database [%s] and restart process." % settings.DB_DATABASE
-                FU.makeBlock(len(msg),msg)
+                FU.makeBlock(msg)
         
     def queryDB(self, object):
         return self.session.query(object)

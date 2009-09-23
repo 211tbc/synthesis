@@ -36,7 +36,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         if settings.DB_PASSWD == "":
             raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
             
-        self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+        self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
         #self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
         self.xml_file = xml_file
         self.db_metadata = MetaData(self.pg_db)

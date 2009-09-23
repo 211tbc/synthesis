@@ -6,16 +6,23 @@ from sqlalchemy.types import DateTime, Date
 from sqlalchemy import exceptions as sqlalchemyexceptions
 import sys
 from conf import settings
+import clsLogger
 
 from fileUtils import fileUtilities
-
 
 class databaseObjects:
     
     def __init__(self):
         try:
-            self.pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % \
-                        (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+            self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % \
+                        (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+
+            log = clsLogger.clsLogger()
+            #logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+            #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
+            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('debug'))
+            #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
+            #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
             
             self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
             

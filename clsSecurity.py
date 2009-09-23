@@ -31,7 +31,10 @@ class clsSecurity:
 	
 	def decryptFile(self, filename):
 		stream = open(filename, "rb")
-		ascii_data = self.gpg.decrypt_file(stream, passphrase=settings.PASSPHRASE) # e.g. after stream = open(filename, "rb")
+		if settings.PASSPHRASE == "":
+			ascii_data = self.gpg.decrypt_file(stream, always_trust=True) 
+		else:
+			ascii_data = self.gpg.decrypt_file(stream, passphrase=settings.PASSPHRASE) # e.g. after stream = open(filename, "rb")
 		stream.close()
 		return str(ascii_data)
 		
@@ -52,7 +55,7 @@ class clsSecurity:
 		
 	def encryptFile(self, filename, encryptedFile):
 		#ipshell = IPShellEmbed()
-		stream = open(filename, "rb")
+		stream = open(filename, "r")
 		encrypted_ascii_data = self.gpg.encrypt_file(stream, self.fingerprint) # e.g. after stream = open(filename, "rb")
 		#ipshell()
 		outFile = open(encryptedFile, 'w')
@@ -62,9 +65,10 @@ class clsSecurity:
 		#print encrypted_ascii_data
 		stream.close()
 		
+		
 def main():
 	cls = clsSecurity()
-	inputFile = os.path.join(testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_VALID)
+	inputFile = os.path.join(testCase_settings.INPUTFILES_PATH, testCase_settings.XML_DECRYPTED_FILE)
 	outputFile = inputFile + ".gpg"
 	cls.setFingerprint('97A798CF9E8D9F470292975E70DE787C6B57800F')
 	cls.encryptFile(inputFile, outputFile)

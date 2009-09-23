@@ -8,6 +8,7 @@ MODE = 'PROD'                               # This is the switch that runs the p
 DB_DATABASE = ""
 DB_USER = ""
 DB_PASSWD = ""
+DB_PORT = 5432
 
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
 BASE_PATH = os.getcwd()
@@ -32,6 +33,7 @@ XSD_PATH = "xsd"
 OUTPUTFILES_PATH = "OutputFiles"
 USEDFILES = os.path.join(BASE_PATH, "Used")
 FAILEDFILES = os.path.join(BASE_PATH, "Failed")
+LOGS = os.path.join(BASE_PATH, "logs")
 
 PROCESSED_PATH = ""
 
@@ -59,30 +61,30 @@ SMTPRECIPIENTS = \
 		'SMTPTOADDRESS': ['email@domain.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':True
+		'FINGERPRINT':'',
+		'USES_ENCRYPTION':True
 		}
 	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
 		{
 		'SMTPTOADDRESS': ['admin@superhost.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':True
+		'FINGERPRINT':'',
+		'USES_ENCRYPTION':True
 		}
 	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles3":
 		{
 		'SMTPTOADDRESS': ['sammy.davis@jr.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
+		'FINGERPRINT':'',
+		'USES_ENCRYPTION':False
 		}
 	}
 
 try:
-    from local_settings import *
+	from local_settings import *
 except ImportError:
-    pass
+	pass
 
 

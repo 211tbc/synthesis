@@ -95,62 +95,66 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         #    print 'Person', u.export_id, 'Export', a.export_software_version
         return
 
-    def parse_database(self, root_element):
+    def parse_source(self, root_element):
         '''Look for a DatabaseID and related fields in the XML and persists it.'''      
         #Now populate the mapping
         #Xpath query strings
-        xpDatabaseID = '/hmis:SourceDatabase/hmis:DatabaseID'
-        xpDatabaseIDIDNum = 'hmis:IDNum'
-        xpDatabaseIDIDStr = 'hmis:IDStr'
+        xpSourceID = '/hmis:SourceDatabase/hmis:DatabaseID'
+        xpSourceIDIDNum = 'hmis:IDNum'
+        xpSourceIDIDStr = 'hmis:IDStr'
         xpExportIDIDNum = '../hmis:Export/hmis:ExportID/hmis:IDNum'
         xpExportIDIDStr = '../hmis:Export/hmis:ExportID/hmis:IDStr'
         xpIDNumdateCollected = 'hmis:IDNum/@hmis:dateCollected'
         xpIDStrdateCollected = 'hmis:IDStr/@hmis:dateCollected'
-        xpDatabaseContactEmail = '../hmis:DatabaseContactEmail'
-        xpDatabaseContactEmaildateCollected = '../hmis:DatabaseContactEmail/@hmis:dateCollected'
-        xpDatabaseContactExtension = '../hmis:DatabaseContactExtension'
-        xpDatabaseContactExtensiondateCollected = '../hmis:DatabaseContactExtension/@hmis:dateCollected'
-        xpDatabaseContactLast = '../hmis:DatabaseContactLast'        
-        xpDatabaseContactLastdateCollected = '../hmis:DatabaseContactLast/@hmis:dateCollected'        
-        xpDatabaseContactPhone = '../hmis:DatabaseContactPhone'
-        xpDatabaseContactPhonedateCollected = '../hmis:DatabaseContactPhone/@hmis:dateCollected'
-        xpDatabaseName = '../hmis:DatabaseName'
-        xpDatabaseNamedateCollected = '../hmis:DatabaseName/@hmis:dateCollected'
+        xpSourceContactEmail = '../hmis:DatabaseContactEmail'
+        xpSourceContactEmaildateCollected = '../hmis:DatabaseContactEmail/@hmis:dateCollected'
+        xpSourceContactExtension = '../hmis:DatabaseContactExtension'
+        xpSourceContactExtensiondateCollected = '../hmis:DatabaseContactExtension/@hmis:dateCollected'
+        xpSourceContactFirst = '../hmis:DatabaseContactFirst'        
+        xpSourceContactFirstdateCollected = '../hmis:DatabaseContactFirst/@hmis:dateCollected'        
+        xpSourceContactLast = '../hmis:DatabaseContactLast'        
+        xpSourceContactLastdateCollected = '../hmis:DatabaseContactLast/@hmis:dateCollected'        
+        xpSourceContactPhone = '../hmis:DatabaseContactPhone'
+        xpSourceContactPhonedateCollected = '../hmis:DatabaseContactPhone/@hmis:dateCollected'
+        xpSourceName = '../hmis:DatabaseName'
+        xpSourceNamedateCollected = '../hmis:DatabaseName/@hmis:dateCollected'
         #find each occurrence of database_id in the XML, make a new table 
         #schema allows for multiple database tags, but that's both unlikely and problematic.
         #enforce only one database tag (by only taking the first element in the list in the next line [0])
-        database_id_tag = root_element.xpath(xpDatabaseID, namespaces={'hmis': self.hmis_namespace})[0]
+        database_id_tag = root_element.xpath(xpSourceID, namespaces={'hmis': self.hmis_namespace})[0]
         #and make a fake list so the code still works
         database_id_tag = [database_id_tag]
         if database_id_tag is not None:
             for item in database_id_tag:
                 self.parse_dict = {}
-                database_id_val = item.xpath(xpDatabaseIDIDNum, namespaces={'hmis': self.hmis_namespace})
+                database_id_val = item.xpath(xpSourceIDIDNum, namespaces={'hmis': self.hmis_namespace})
                 
                 if len(database_id_val) is 0:
-                    database_id_val = item.xpath(xpDatabaseIDIDStr, namespaces={'hmis': self.hmis_namespace})
-                    self.parse_dict.__setitem__('database_id', database_id_val[0].text)
-                    self.existence_test_and_add('database_id_date_collected', item.xpath(xpIDStrdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                    database_id_val = item.xpath(xpSourceIDIDStr, namespaces={'hmis': self.hmis_namespace})
+                    self.parse_dict.__setitem__('source_id', database_id_val[0].text)
+                    self.existence_test_and_add('source_id_date_collected', item.xpath(xpIDStrdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 else:
-                    self.parse_dict.__setitem__('database_id', database_id_val[0].text)
-                    self.existence_test_and_add('database_id', item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
+                    self.parse_dict.__setitem__('source_id', database_id_val[0].text)
+                    self.existence_test_and_add('source_id', item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
                     
                 test = item.xpath(xpExportIDIDNum, namespaces={'hmis': self.hmis_namespace})
                 if len(test) is 0:
                     self.existence_test_and_add('export_id', item.xpath(xpExportIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
                 else:
                     self.existence_test_and_add('export_id', test, 'text')
-                self.existence_test_and_add('database_email', item.xpath(xpDatabaseContactEmail, namespaces={'hmis': self.hmis_namespace}), 'text')
-                self.existence_test_and_add('database_email_date_collected', item.xpath(xpDatabaseContactEmaildateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.existence_test_and_add('database_contact_extension', item.xpath(xpDatabaseContactExtension, namespaces={'hmis': self.hmis_namespace}), 'text')
-                self.existence_test_and_add('database_contact_extension_date_collected', item.xpath(xpDatabaseContactExtensiondateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.existence_test_and_add('database_contact_last', item.xpath(xpDatabaseContactLast, namespaces={'hmis': self.hmis_namespace}), 'text')
-                self.existence_test_and_add('database_contact_last_date_collected', item.xpath(xpDatabaseContactLastdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.existence_test_and_add('database_contact_phone', item.xpath(xpDatabaseContactPhone, namespaces={'hmis': self.hmis_namespace}), 'text')
-                self.existence_test_and_add('database_contact_phone_date_collected', item.xpath(xpDatabaseContactPhonedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.existence_test_and_add('database_name', item.xpath(xpDatabaseName, namespaces={'hmis': self.hmis_namespace}), 'text')
-                self.existence_test_and_add('database_name_date_collected', item.xpath(xpDatabaseNamedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, DBObjects.Database)
+                self.existence_test_and_add('source_email', item.xpath(xpSourceContactEmail, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_email_date_collected', item.xpath(xpSourceContactEmaildateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_contact_extension', item.xpath(xpSourceContactExtension, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_contact_extension_date_collected', item.xpath(xpSourceContactExtensiondateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_contact_first', item.xpath(xpSourceContactFirst, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_contact_first_date_collected', item.xpath(xpSourceContactFirstdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_contact_last', item.xpath(xpSourceContactLast, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_contact_last_date_collected', item.xpath(xpSourceContactLastdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_contact_phone', item.xpath(xpSourceContactPhone, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_contact_phone_date_collected', item.xpath(xpSourceContactPhonedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_name', item.xpath(xpSourceName, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add('source_name_date_collected', item.xpath(xpSourceNamedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                self.shred(self.parse_dict, DBObjects.Source)
                 #had to hard code this to just use root element, since we're not allowing multiple database_ids per XML file
                 self.parse_person(root_element)
                 self.parse_household(root_element)
@@ -208,7 +212,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
 #                self.session.flush()
 #                print 'export id is', Export.c.id
                 self.shred(self.parse_dict, DBObjects.Export)
-                self.parse_database(root_element)
+                self.parse_source(root_element)
                 #current projects only using client sections, not resources    
                 #self.parse_site_service(database_id_tag)
 
@@ -891,6 +895,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.parse_other_names(item)
                 self.parse_races(item)
                 self.parse_release_of_information(item)
+                self.parse_site_service_participation(item)
 #                self.session.flush()
 #                print 'export id is', Export.c.
             return
@@ -1097,6 +1102,112 @@ class HMISXML28Reader(DBObjects.databaseObjects):
             ### ReleaseOfInformation (Shred)
                 self.shred(self.parse_dict, DBObjects.ReleaseOfInformation)
             
+
+    def parse_site_service_participation(self, element):
+        ### xpPath Definitions
+            xpSiteServiceParticipation = 'hmis:SiteServiceParticipation'
+        ### SiteServiceParticipationIDIDNum
+            xpSiteServiceParticipationIDIDNum = 'hmis:SiteServiceParticipationID/hmis:IDNum'
+            xpSiteServiceParticipationIDIDNumDateCollected = 'hmis:SiteServiceParticipationID/hmis:IDNum/@hmis:dateCollected'
+        ### SiteServiceParticipationIDIDStr
+            xpSiteServiceParticipationIDIDStr = 'hmis:SiteServiceParticipationID/hmis:IDStr'
+            xpSiteServiceParticipationIDIDStrDateCollected = 'hmis:SiteServiceParticipationID/hmis:IDStr/@hmis:dateCollected'
+        ### SiteServiceIDIDNum
+            xpSiteServiceIDIDNum = 'hmis:SiteServiceID/hmis:IDNum'
+            xpSiteServiceIDIDNumDateCollected = 'hmis:SiteServiceID/hmis:IDNum/@hmis:dateCollected'
+        ### SiteServiceIDIDStr
+            xpSiteServiceIDIDStr = 'hmis:SiteServiceID/hmis:IDStr'
+            xpSiteServiceIDIDStrDateCollected = 'hmis:SiteServiceID/hmis:IDStr/@hmis:dateCollected'
+        ### HouseholdIDIDNum
+            xpHouseholdIDIDNum = 'hmis:HouseholdID/hmis:IDNum'
+            xpHouseholdIDIDNumDateCollected = 'hmis:HouseholdID/hmis:IDNum/@hmis:dateCollected'
+        ### HouseholdIDIDStr
+            xpHouseholdIDIDStr = 'hmis:HouseholdID/hmis:IDStr'
+            xpHouseholdIDIDStrDateCollected = 'hmis:HouseholdID/hmis:IDStr/@hmis:dateCollected'
+        ### Destination
+            xpDestination = 'hmis:Destination'
+            xpDestinationDateCollected = 'hmis:Destination/@hmis:dateCollected'
+        ### DestinationOther
+            xpDestinationOther = 'hmis:DestinationOther'
+            xpDestinationOtherDateCollected = 'hmis:DestinationOther/@hmis:dateCollected'
+        ### DestinationTenure
+            xpDestinationTenure = 'hmis:DestinationTenure'
+            xpDestinationTenureDateCollected = 'hmis:DestinationTenure/@hmis:dateCollected'
+        ### DisablingCondition
+            xpDisablingCondition = 'hmis:DisablingCondition'
+            xpDisablingConditionDateCollected = 'hmis:DisablingCondition/@hmis:dateCollected'
+        ### VeteranStatus
+            xpVeteranStatus = 'hmis:VeteranStatus'
+            xpVeteranStatusDateCollected = 'hmis:VeteranStatus/@hmis:dateCollected'
+
+        ### xpPath Parsing
+            itemElements = element.xpath(xpSiteServiceParticipation, namespaces={'hmis': self.hmis_namespace})
+            if itemElements is not None:
+                for item in itemElements:
+                ### SiteServiceParticipationIDIDNum
+                    fldName='site_service_participation_idid_num'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceParticipationIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='site_service_participation_idid_num_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceParticipationIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### SiteServiceParticipationIDIDStr
+                    fldName='site_service_participation_idid_str'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceParticipationIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='site_service_participation_idid_str_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceParticipationIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### SiteServiceIDIDNum
+                    fldName='site_service_idid_num'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='site_service_idid_num_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### SiteServiceIDIDStr
+                    fldName='site_service_idid_str'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='site_service_idid_str_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### HouseholdIDIDNum
+                    fldName='household_idid_num'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='household_idid_num_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### HouseholdIDIDStr
+                    fldName='household_idid_str'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='household_idid_str_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Destination
+                    fldName='destination'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestination, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='destination_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestinationDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### DestinationOther
+                    fldName='destination_other'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestinationOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='destination_other_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestinationOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### DestinationTenure
+                    fldName='destination_tenure'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestinationTenure, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='destination_tenure_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpDestinationTenureDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### DisablingCondition
+                    fldName='disabling_condition'
+                    self.existence_test_and_add(fldName, item.xpath(xpDisablingCondition, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='disabling_condition_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpDisablingConditionDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### VeteranStatus
+                    fldName='veteran_status'
+                    self.existence_test_and_add(fldName, item.xpath(xpVeteranStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='veteran_status_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpVeteranStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+        
+                ### SiteServiceParticipation (Shred)
+                    self.shred(self.parse_dict, DBObjects.SiteServiceParticipation)
+        
+                ### Parse any subtables
+                    #self.parse_participation_dates(item)
+                    #self.parse_person_historical(item)
+                    #self.parse_need(item)
+            
 #current projects only using client sections, not resources    
 #    def parse_site_service(self, database_id_tag):
 #        '''Looks for a SiteService and related fields in the XML and persists the data set.'''
@@ -1166,7 +1277,9 @@ def main(argv=None):
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
-    inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
+    #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles/Example_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

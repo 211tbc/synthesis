@@ -42,14 +42,17 @@ class databaseObjects:
             else:
                 msg = "Please create Database [%s] and restart process." % settings.DB_DATABASE
                 FU.makeBlock(msg)
+
+
         
     def queryDB(self, object):
         return self.session.query(object)
         
     def createMappings(self):
         self.export_map()
-        self.database_map()
+        self.source_map()
         self.person_map()
+        self.site_service_participation_map()
         self.person_historical_map()
         self.release_of_information_map()
         self.income_and_sources_map()
@@ -60,6 +63,70 @@ class databaseObjects:
         self.races_map()
         self.household_map()
         self.member_map()
+
+    def site_service_participation_map(self):
+            table_metadata = MetaData(bind=self.pg_db, reflect=True)
+            site_service_participation_table = Table(
+            'site_service_participation',
+            table_metadata,
+            
+            Column('id', Integer, primary_key=True),
+
+        # dbCol: site_service_participation_idid_num
+            Column('site_service_participation_idid_num', String(32)),
+            Column('site_service_participation_idid_num_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: site_service_participation_idid_str
+            Column('site_service_participation_idid_str', String(32)),
+            Column('site_service_participation_idid_str_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: site_service_idid_num
+            Column('site_service_idid_num', String(32)),
+            Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: site_service_idid_str
+            Column('site_service_idid_str', String(32)),
+            Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: household_idid_num
+            Column('household_idid_num', String(32)),
+            Column('household_idid_num_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: household_idid_str
+            Column('household_idid_str', String(32)),
+            Column('household_idid_str_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: destination
+            Column('destination', String(32)),
+            Column('destination_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: destination_other
+            Column('destination_other', String(32)),
+            Column('destination_other_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: destination_tenure
+            Column('destination_tenure', String(32)),
+            Column('destination_tenure_date_collected', DateTime(timezone=True)),
+    
+        # dbCol: disabling_condition
+            Column('disabling_condition', String(32)),
+            Column('disabling_condition_date_collected', DateTime(timezone=True)),
+    
+            ###ParticipationDates (subtable)
+    
+        # dbCol: veteran_status
+            Column('veteran_status', String(32)),
+            Column('veteran_status_date_collected', DateTime(timezone=True)),
+            
+            ###Need (subtable)
+    
+            ###ServiceEvent (subtable)
+    
+            useexisting = True)
+            table_metadata.create_all()
+            
+            mapper(SiteServiceParticipation, site_service_participation_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
+            return
         
     def races_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -102,7 +169,7 @@ class databaseObjects:
         #mapper(Export, export_table, properties={'children': [relation(Person), relation(Database)]})
         mapper(Export, export_table, properties={
             'fk_export_to_person': relation(Person, backref='fk_person_to_export')
-            ,'fk_export_to_database': relation(Database, backref='fk_database_to_export')
+            ,'fk_export_to_database': relation(Source, backref='fk_database_to_export')
             })
         return
     
@@ -648,31 +715,33 @@ class databaseObjects:
         mapper(ReleaseOfInformation, release_of_information_table)
         return
 
-    def database_map(self):
+    def source_map(self):
         '''Set up mapping'''
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
-        self.database_table = Table(
-        'database', 
+        self.source_table = Table(
+        'source', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
         Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
-        Column('database_id', String(50)), 
-        Column('database_id_date_collected', DateTime(timezone=True)),
-        Column('database_email', String(50)),
-        Column('database_email_date_collected', DateTime(timezone=True)),
-        Column('database_contact_extension', String(10)),
-        Column('database_contact_extension_date_collected', DateTime(timezone=True)),
-        Column('database_contact_last', String(20)),
-        Column('database_contact_last_date_collected', DateTime(timezone=True)),
-        Column('database_contact_phone', String(20)),
-        Column('database_contact_phone_date_collected', DateTime(timezone=True)),
-        Column('database_name', String(50)),
-        Column('database_name_date_collected', DateTime(timezone=True)), 
+        Column('source_id', String(50)), 
+        Column('source_id_date_collected', DateTime(timezone=True)),
+        Column('source_email', String(50)),
+        Column('source_email_date_collected', DateTime(timezone=True)),
+        Column('source_contact_extension', String(10)),
+        Column('source_contact_extension_date_collected', DateTime(timezone=True)),
+        Column('source_contact_first', String(20)),
+        Column('source_contact_first_date_collected', DateTime(timezone=True)),
+        Column('source_contact_last', String(20)),
+        Column('source_contact_last_date_collected', DateTime(timezone=True)),
+        Column('source_contact_phone', String(20)),
+        Column('source_contact_phone_date_collected', DateTime(timezone=True)),
+        Column('source_name', String(50)),
+        Column('source_name_date_collected', DateTime(timezone=True)), 
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(Database, self.database_table)
+        mapper(Source, self.source_table)
 #        assign_mapper(Database, database_table, properties=dict(
 #designs=relation(Design, private=True, backref="type")
 #))
@@ -699,7 +768,7 @@ class baseObject(object):
         else:
             return ''
         
-class Database(baseObject):
+class Source(baseObject):
     pass
 
 class Export(baseObject):
@@ -709,6 +778,9 @@ class OtherNames(baseObject):
     pass
 
 class Person(baseObject):
+    pass
+
+class SiteServiceParticipation(baseObject):
     pass
                         
 class Veteran(baseObject):

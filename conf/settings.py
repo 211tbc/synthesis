@@ -62,7 +62,7 @@ SMTPRECIPIENTS = \
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
-		'USES_ENCRYPTION':True
+		'USES_ENCRYPTION':False
 		}
 	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
 		{

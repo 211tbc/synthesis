@@ -4,7 +4,9 @@ from setuptools import setup # this is new
 
 setup(name='synthesis',
 version='1.0',
-py_modules=['clsExceptions'
+py_modules=['borg'
+,'clsLogger'
+,'clsExceptions'
 ,'DBObjects'
 ,'DBObjects_unit_test'
 ,'emailProcessor'

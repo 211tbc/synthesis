@@ -1,1 +1,2 @@
 prune UML/
+include logging.ini

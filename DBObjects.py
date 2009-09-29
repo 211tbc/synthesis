@@ -112,7 +112,12 @@ class databaseObjects:
             Column('disabling_condition', String(32)),
             Column('disabling_condition_date_collected', DateTime(timezone=True)),
     
-            ###ParticipationDates (subtable)
+        # ParticipationDates (Start Date/End Date)
+            Column('participation_dates_start_date', DateTime(timezone=True)),
+            Column('participation_dates_start_date_date_collected', DateTime(timezone=True)),
+            
+            Column('participation_dates_end_date', DateTime(timezone=True)),
+            Column('participation_dates_end_date_date_collected', DateTime(timezone=True)),
     
         # dbCol: veteran_status
             Column('veteran_status', String(32)),

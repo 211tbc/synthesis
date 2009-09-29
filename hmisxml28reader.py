@@ -1136,6 +1136,12 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         ### DisablingCondition
             xpDisablingCondition = 'hmis:DisablingCondition'
             xpDisablingConditionDateCollected = 'hmis:DisablingCondition/@hmis:dateCollected'
+        ### Participation Dates (Start Date)
+            xpStartDate = 'hmis:ParticipationDates/hmis:StartDate'
+            xpStartDateDateCollected = 'hmis:ParticipationDates/hmis:StartDate/@hmis:dateCollected'
+        ### Participation Dates (End Date)
+            xpEndDate = 'hmis:ParticipationDates/hmis:EndDate'
+            xpEndDateDateCollected = 'hmis:ParticipationDates/hmis:EndDate/@hmis:dateCollected'
         ### VeteranStatus
             xpVeteranStatus = 'hmis:VeteranStatus'
             xpVeteranStatusDateCollected = 'hmis:VeteranStatus/@hmis:dateCollected'
@@ -1194,6 +1200,16 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpDisablingCondition, namespaces={'hmis': self.hmis_namespace}), 'text')
                     fldName='disabling_condition_date_collected'
                     self.existence_test_and_add(fldName, item.xpath(xpDisablingConditionDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Participation Dates (Start Date)
+                    fldName='participation_dates_start_date'
+                    self.existence_test_and_add(fldName, item.xpath(xpStartDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='participation_dates_start_date_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpStartDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+                ### Participation Dates (End Date)
+                    fldName='participation_dates_end_date'
+                    self.existence_test_and_add(fldName, item.xpath(xpEndDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                    fldName='participation_dates_end_date_date_collected'
+                    self.existence_test_and_add(fldName, item.xpath(xpEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 ### VeteranStatus
                     fldName='veteran_status'
                     self.existence_test_and_add(fldName, item.xpath(xpVeteranStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
@@ -1278,8 +1294,8 @@ def main(argv=None):
     UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
-    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
-    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles/Example_HUD_HMIS_2_8_Instance.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles/Example_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

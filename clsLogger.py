@@ -6,10 +6,8 @@ from borg import Borg
 
 _defaultConfig = {}
 
-
-
 class clsLogger(Borg):
-    def __init__(self, configFile='logging.ini', loglevel=0):
+    def __init__(self, configFile='logging.ini', loglevel=5):
         # make our class a singleton
         Borg.__init__(self)
         

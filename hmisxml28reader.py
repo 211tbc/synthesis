@@ -1103,6 +1103,84 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.shred(self.parse_dict, DBObjects.ReleaseOfInformation)
             
 
+    def parse_need(self, element):
+    ### xpPath Definitions
+        xpNeed = 'hmis:Need'
+    ### NeedIDIDNum
+        xpNeedIDIDNum = 'hmis:NeedID/hmis:IDNum'
+        xpNeedIDIDNumDateCollected = 'hmis:NeedID/hmis:IDNum/@hmis:dateCollected'
+    ### NeedIDIDStr
+        xpNeedIDIDStr = 'hmis:NeedIDIDStr'
+        xpNeedIDIDStrDateCollected = 'hmis:NeedID/hmis:IDStr/@hmis:dateCollected'
+    ### SiteServiceIDIDNum
+        xpSiteServiceIDIDNum = 'hmis:SiteServiceID/hmis:IDNum'
+        xpSiteServiceIDIDNumDateCollected = 'hmis:SiteServiceID/hmis:IDNum/@hmis:dateCollected'
+    ### SiteServiceIDIDStr
+        xpSiteServiceIDIDStr = 'hmis:SiteServiceID/hmis:IDStr'
+        xpSiteServiceIDIDStrDateCollected = 'hmis:SiteServiceIDIDStr/@hmis:dateCollected'
+    ### ServiceEventIDIDNum
+        xpServiceEventIDIDNum = 'hmis:ServiceEventID/hmis:IDNum'
+        xpServiceEventIDIDNumDateCollected = 'hmis:ServiceEventIDIDNum/@hmis:dateCollected'
+    ### ServiceEventIDIDStr
+        xpServiceEventIDIDStr = 'hmis:ServiceEventID/hmis:IDStr'
+        xpServiceEventIDIDStrDateCollected = 'hmis:ServiceEventID/hmis:IDStr/@hmis:dateCollected'
+    ### NeedStatus
+        xpNeedStatus = 'hmis:NeedStatus'
+        xpNeedStatusDateCollected = 'hmis:NeedStatus/@hmis:dateCollected'
+    ### Taxonomy
+        xpTaxonomy = 'hmis:Taxonomy/airs:Code'
+        xpTaxonomyDateCollected = 'hmis:Taxonomy/airs:Code/@hmis:dateCollected'
+
+    ### xpPath Parsing
+        itemElements = element.xpath(xpNeed, namespaces={'hmis': self.hmis_namespace})
+        if itemElements is not None:
+            for item in itemElements:
+            ### foreign key value
+                self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
+            ### NeedIDIDNum
+                fldName='need_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='need_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### NeedIDIDStr
+                fldName='need_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='need_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SiteServiceIDIDNum
+                fldName='site_service_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='site_service_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SiteServiceIDIDStr
+                fldName='site_service_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='site_service_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSiteServiceIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServiceEventIDIDNum
+                fldName='service_event_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_event_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServiceEventIDIDStr
+                fldName='service_event_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_event_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### NeedStatus
+                fldName='need_status'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='need_status_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpNeedStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### Taxonomy
+                fldName='taxonomy'
+                self.existence_test_and_add(fldName, item.xpath(xpTaxonomy, namespaces=self.nsmap), 'text')
+        
+            ### Need (Shred)
+                self.shred(self.parse_dict, DBObjects.Need)
+        
+            ### Parse any subtables
+
     def parse_site_service_participation(self, element):
         ### xpPath Definitions
             xpSiteServiceParticipation = 'hmis:SiteServiceParticipation'
@@ -1222,8 +1300,129 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 ### Parse any subtables
                     #self.parse_participation_dates(item)
                     #self.parse_person_historical(item)
-                    #self.parse_need(item)
+                    self.parse_need(item)
+                    self.parse_service_event(item)
+
+    def parse_service_event(self, element):
+    ### xpPath Definitions
+        xpServiceEvent = 'hmis:ServiceEvent'
+    ### ServiceEventIDIDNum
+        xpServiceEventIDIDNum = 'hmis:ServiceEventID/hmis:IDNum'
+        xpServiceEventIDIDNumDateCollected = 'hmis:ServiceEventID/hmis:IDNum/@hmis:dateCollected'
+    ### ServiceEventIDIDStr
+        xpServiceEventIDIDStr = 'hmis:ServiceEventID/hmis:IDStr'
+        xpServiceEventIDIDStrDateCollected = 'hmis:ServiceEventID/hmis:IDStr/@hmis:dateCollected'
+    ### HouseholdIDIDNum
+        xpHouseholdIDIDNum = 'hmis:HouseholdID/hmis:IDNum'
+        xpHouseholdIDIDNumDateCollected = 'hmis:HouseholdID/hmis:IDNum/@hmis:dateCollected'
+    ### HouseholdIDIDStr
+        xpHouseholdIDIDStr = 'hmis:HouseholdID/hmis:IDStr'
+        xpHouseholdIDIDStrDateCollected = 'hmis:HouseholdIDIDStr/@hmis:dateCollected'
+    ### IsReferral
+        xpIsReferral = 'hmis:IsReferral'
+        xpIsReferralDateCollected = 'hmis:IsReferral/@hmis:dateCollected'
+    ### QuantityOfService
+        xpQuantityOfService = 'hmis:QuantityOfService'
+        xpQuantityOfServiceDateCollected = 'hmis:QuantityOfService/@hmis:dateCollected'
+    ### QuantityOfServiceMeasure
+        xpQuantityOfServiceMeasure = 'hmis:QuantityOfServiceMeasure'
+        xpQuantityOfServiceMeasureDateCollected = 'hmis:QuantityOfServiceMeasure/@hmis:dateCollected'
+    ### ServiceAIRSCode
+        xpServiceAIRSCode = 'hmis:ServiceAIRSCode'
+        xpServiceAIRSCodeDateCollected = 'hmis:ServiceAIRSCode/@hmis:dateCollected'
+    ###
+        xpServicePeriodStartDate = 'hmis:ServicePeriod/hmis:StartDate'
+        xpServicePeriodStartDateDateCollected = 'hmis:ServicePeriod/hmis:StartDate/@hmis:dateCollected'
+    
+        xpServicePeriodEndDate = 'hmis:ServicePeriod/hmis:EndDate'
+        xpServicePeriodEndDateDateCollected = 'hmis:ServicePeriod/hmis:EndDate/@hmis:dateCollected'
+        
+    ### ServiceUnit
+        xpServiceUnit = 'hmis:ServiceUnit'
+        xpServiceUnitDateCollected = 'hmis:ServiceUnit/@hmis:dateCollected'
+    ### TypeOfService
+        xpTypeOfService = 'hmis:TypeOfService'
+        xpTypeOfServiceDateCollected = 'hmis:TypeOfService/@hmis:dateCollected'
+    ### TypeOfServiceOther
+        xpTypeOfServiceOther = 'hmis:TypeOfServiceOther'
+        xpTypeOfServiceOtherDateCollected = 'hmis:TypeOfServiceOther/@hmis:dateCollected'
+    
+    ### xpPath Parsing
+        itemElements = element.xpath(xpServiceEvent, namespaces={'hmis': self.hmis_namespace})
+        if itemElements is not None:
+            for item in itemElements:
+            ### ServiceEventIDIDNum
+                fldName='service_event_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_event_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServiceEventIDIDStr
+                fldName='service_event_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_event_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceEventIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HouseholdIDIDNum
+                fldName='household_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='household_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HouseholdIDIDStr
+                fldName='household_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='household_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### IsReferral
+                fldName='is_referral'
+                self.existence_test_and_add(fldName, item.xpath(xpIsReferral, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='is_referral_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpIsReferralDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### QuantityOfService
+                fldName='quantity_of_service'
+                self.existence_test_and_add(fldName, item.xpath(xpQuantityOfService, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='quantity_of_service_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpQuantityOfServiceDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### QuantityOfServiceMeasure
+                fldName='quantity_of_service_measure'
+                self.existence_test_and_add(fldName, item.xpath(xpQuantityOfServiceMeasure, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='quantity_of_service_measure_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpQuantityOfServiceMeasureDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServiceAIRSCode
+                fldName='service_airs_code'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceAIRSCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_airs_code_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceAIRSCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### Service Period (Start Date)
+                fldName='service_period_start_date'
+                self.existence_test_and_add(fldName, item.xpath(xpServicePeriodStartDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_period_start_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServicePeriodStartDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### Service Period (End Date)
+                fldName='service_period_end_date'
+                self.existence_test_and_add(fldName, item.xpath(xpServicePeriodEndDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_period_end_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServicePeriodEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ServiceUnit
+                fldName='service_unit'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceUnit, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='service_unit_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpServiceUnitDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### TypeOfService
+                fldName='type_of_service'
+                self.existence_test_and_add(fldName, item.xpath(xpTypeOfService, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='type_of_service_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpTypeOfServiceDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### TypeOfServiceOther
+                fldName='type_of_service_other'
+                self.existence_test_and_add(fldName, item.xpath(xpTypeOfServiceOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='type_of_service_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpTypeOfServiceOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
             
+            ### ServiceEvent (Shred)
+                self.shred(self.parse_dict, DBObjects.ServiceEvent)
+            
+            ### Parse any subtables
+                #self.parse_service_period(item)
+                        
 #current projects only using client sections, not resources    
 #    def parse_site_service(self, database_id_tag):
 #        '''Looks for a SiteService and related fields in the XML and persists the data set.'''
@@ -1254,6 +1453,8 @@ class HMISXML28Reader(DBObjects.databaseObjects):
             self.person_historical_index_id = mapped.id
         if mapping.__name__ == "Person":
             self.person_index_id = mapped.id
+        if mapping.__name__ == "SiteServiceParticipation":
+            self.site_service_index_id = mapped.id
         self.session.commit()
         return
     
@@ -1294,8 +1495,8 @@ def main(argv=None):
     UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
-    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
-    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles/Example_HUD_HMIS_2_8_Instance.xml"
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/Example_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

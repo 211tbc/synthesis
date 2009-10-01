@@ -20,7 +20,7 @@ class databaseObjects:
             log = clsLogger.clsLogger()
             #logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
-            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('debug'))
+            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('error'))
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
             
@@ -53,6 +53,8 @@ class databaseObjects:
         self.source_map()
         self.person_map()
         self.site_service_participation_map()
+        self.need_map()
+        self.service_event_map()
         self.person_historical_map()
         self.release_of_information_map()
         self.income_and_sources_map()
@@ -63,75 +65,191 @@ class databaseObjects:
         self.races_map()
         self.household_map()
         self.member_map()
+        
+    def service_event_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        service_event_table = Table(
+        'service_event',
+        table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
+
+    # dbCol: service_event_idid_num
+        Column('service_event_idid_num', String(32)),
+        Column('service_event_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: service_event_idid_str
+        Column('service_event_idid_str', String(32)),
+        Column('service_event_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: household_idid_num
+        Column('household_idid_num', String(32)),
+        Column('household_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: household_idid_str
+        Column('household_idid_str', String(32)),
+        Column('household_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: is_referral
+        Column('is_referral', String(32)),
+        Column('is_referral_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: quantity_of_service
+        Column('quantity_of_service', String(32)),
+        Column('quantity_of_service_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: quantity_of_service_measure
+        Column('quantity_of_service_measure', String(32)),
+        Column('quantity_of_service_measure_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: service_airs_code
+        Column('service_airs_code', String(32)),
+        Column('service_airs_code_date_collected', DateTime(timezone=True)),
+    
+        ###ServicePeriod (subtable)
+    ### ServicePeriod
+    # ParticipationDates (Start Date/End Date)
+        Column('service_period_start_date', DateTime(timezone=True)),
+        Column('service_period_start_date_date_collected', DateTime(timezone=True)),
+        
+        Column('service_period_end_date', DateTime(timezone=True)),
+        Column('service_period_end_date_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: service_unit
+        Column('service_unit', String(32)),
+        Column('service_unit_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: type_of_service
+        Column('type_of_service', String(32)),
+        Column('type_of_service_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: type_of_service_other
+        Column('type_of_service_other', String(32)),
+        Column('type_of_service_other_date_collected', DateTime(timezone=True)),
+    
+        useexisting = True)
+        table_metadata.create_all()
+    
+        mapper(ServiceEvent, service_event_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
+        return
+
+    def need_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        need_table = Table(
+        'need',
+        table_metadata,
+        
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
+    
+    # dbCol: need_idid_num
+        Column('need_idid_num', String(32)),
+        Column('need_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: need_idid_str
+        Column('need_idid_str', String(32)),
+        Column('need_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: site_service_idid_num
+        Column('site_service_idid_num', String(32)),
+        Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: site_service_idid_str
+        Column('site_service_idid_str', String(32)),
+        Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: service_event_idid_num
+        Column('service_event_idid_num', String(32)),
+        Column('service_event_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: service_event_idid_str
+        Column('service_event_idid_str', String(32)),
+        Column('service_event_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: need_status
+        Column('need_status', String(32)),
+        Column('need_status_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: taxonomy
+        Column('taxonomy', String(32)),
+    
+        useexisting = True)
+        table_metadata.create_all()
+    
+        mapper(Need, need_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
+        return
 
     def site_service_participation_map(self):
-            table_metadata = MetaData(bind=self.pg_db, reflect=True)
-            site_service_participation_table = Table(
-            'site_service_participation',
-            table_metadata,
-            
-            Column('id', Integer, primary_key=True),
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        site_service_participation_table = Table(
+        'site_service_participation',
+        table_metadata,
+        
+        Column('id', Integer, primary_key=True),
 
-        # dbCol: site_service_participation_idid_num
-            Column('site_service_participation_idid_num', String(32)),
-            Column('site_service_participation_idid_num_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: site_service_participation_idid_str
-            Column('site_service_participation_idid_str', String(32)),
-            Column('site_service_participation_idid_str_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: site_service_idid_num
-            Column('site_service_idid_num', String(32)),
-            Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: site_service_idid_str
-            Column('site_service_idid_str', String(32)),
-            Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: household_idid_num
-            Column('household_idid_num', String(32)),
-            Column('household_idid_num_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: household_idid_str
-            Column('household_idid_str', String(32)),
-            Column('household_idid_str_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: destination
-            Column('destination', String(32)),
-            Column('destination_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: destination_other
-            Column('destination_other', String(32)),
-            Column('destination_other_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: destination_tenure
-            Column('destination_tenure', String(32)),
-            Column('destination_tenure_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: disabling_condition
-            Column('disabling_condition', String(32)),
-            Column('disabling_condition_date_collected', DateTime(timezone=True)),
-    
-        # ParticipationDates (Start Date/End Date)
-            Column('participation_dates_start_date', DateTime(timezone=True)),
-            Column('participation_dates_start_date_date_collected', DateTime(timezone=True)),
-            
-            Column('participation_dates_end_date', DateTime(timezone=True)),
-            Column('participation_dates_end_date_date_collected', DateTime(timezone=True)),
-    
-        # dbCol: veteran_status
-            Column('veteran_status', String(32)),
-            Column('veteran_status_date_collected', DateTime(timezone=True)),
-            
-            ###Need (subtable)
-    
-            ###ServiceEvent (subtable)
-    
-            useexisting = True)
-            table_metadata.create_all()
-            
-            mapper(SiteServiceParticipation, site_service_participation_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
-            return
+    # dbCol: site_service_participation_idid_num
+        Column('site_service_participation_idid_num', String(32)),
+        Column('site_service_participation_idid_num_date_collected', DateTime(timezone=True)),
+
+    # dbCol: site_service_participation_idid_str
+        Column('site_service_participation_idid_str', String(32)),
+        Column('site_service_participation_idid_str_date_collected', DateTime(timezone=True)),
+
+    # dbCol: site_service_idid_num
+        Column('site_service_idid_num', String(32)),
+        Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
+
+    # dbCol: site_service_idid_str
+        Column('site_service_idid_str', String(32)),
+        Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
+
+    # dbCol: household_idid_num
+        Column('household_idid_num', String(32)),
+        Column('household_idid_num_date_collected', DateTime(timezone=True)),
+
+    # dbCol: household_idid_str
+        Column('household_idid_str', String(32)),
+        Column('household_idid_str_date_collected', DateTime(timezone=True)),
+
+    # dbCol: destination
+        Column('destination', String(32)),
+        Column('destination_date_collected', DateTime(timezone=True)),
+
+    # dbCol: destination_other
+        Column('destination_other', String(32)),
+        Column('destination_other_date_collected', DateTime(timezone=True)),
+
+    # dbCol: destination_tenure
+        Column('destination_tenure', String(32)),
+        Column('destination_tenure_date_collected', DateTime(timezone=True)),
+
+    # dbCol: disabling_condition
+        Column('disabling_condition', String(32)),
+        Column('disabling_condition_date_collected', DateTime(timezone=True)),
+
+    # ParticipationDates (Start Date/End Date)
+        Column('participation_dates_start_date', DateTime(timezone=True)),
+        Column('participation_dates_start_date_date_collected', DateTime(timezone=True)),
+        
+        Column('participation_dates_end_date', DateTime(timezone=True)),
+        Column('participation_dates_end_date_date_collected', DateTime(timezone=True)),
+
+    # dbCol: veteran_status
+        Column('veteran_status', String(32)),
+        Column('veteran_status_date_collected', DateTime(timezone=True)),
+        
+        ###Need (subtable)
+
+        ###ServiceEvent (subtable)
+
+        useexisting = True)
+        table_metadata.create_all()
+        
+        mapper(SiteServiceParticipation, site_service_participation_table, properties={'fk_participation_to_need': relation(Need, backref='fk_need_to_participation'),
+                                                                                       'fk_participation_to_serviceevent' : relation(ServiceEvent) }
+               )#, 'children': relation(#tablename#), 'children': relation(#tablename#)})
+        return
         
     def races_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -754,7 +872,8 @@ class databaseObjects:
 
 class baseObject(object):
     def __init__(self, field_dict):
-        print "Base Class created: %s" % self.__class__.__name__
+        if settings.DEBUG:
+            print "Base Class created: %s" % self.__class__.__name__
     #def __init__(self, field_dict):
         if settings.DEBUG:
             print field_dict
@@ -783,6 +902,12 @@ class OtherNames(baseObject):
     pass
 
 class Person(baseObject):
+    pass
+
+class ServiceEvent(baseObject):
+    pass
+
+class Need(baseObject):
     pass
 
 class SiteServiceParticipation(baseObject):

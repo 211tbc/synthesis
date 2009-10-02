@@ -5,11 +5,11 @@ class Export
   static mapping = {
     version false
 
-    startDate column: 'export_period_start_date'
-    startDateDateCollected column: 'export_period_start_date_date_collected'
+    periodStartDate column: 'export_period_start_date'
+    periodStartDateDateCollected column: 'export_period_start_date_date_collected'
 
-    endDate column: 'export_period_end_date'
-    endDateDateCollected column: 'export_period_end_date_date_collected'
+    periodEndDate column: 'export_period_end_date'
+    periodEndDateDateCollected column: 'export_period_end_date_date_collected'
 
     softwareVendor column: 'export_software_vendor'
     softwareVendorDateCollected column: 'export_software_vendor_date_collected'
@@ -17,9 +17,11 @@ class Export
     softwareVersion column: 'export_software_version'
     softwareVersionDateCollected column: 'export_software_version_date_collected'
 
-    // just can't do this with the way grails is currently busted
-    // person lazy: false
-    // sourceDatabase column: 'export_id'
+    // this really should be working
+    // people column: 'export_id'
+
+    // because of the reversedness of the relation between Source and Export this isn't currently working
+    // source column: 'export_id'
   }
 
   String exportId
@@ -28,11 +30,11 @@ class Export
   Date   exportDate
   Date   exportDateDateCollected
 
-  Date   startDate
-  Date   startDateDateCollected
+  Date   periodDtartDate
+  Date   periodStartDateDateCollected
 
-  Date   endDate
-  Date   endDateDateCollected
+  Date   periodEndDate
+  Date   periodEndDateDateCollected
 
   String softwareVendor
   Date   softwareVendorDateCollected
@@ -41,8 +43,8 @@ class Export
   Date   softwareVersionDateCollected
 
   // see above
-  // Source sourceDatabase
+  // static hasOne = [source:Source]
 
-  // gotta figure this part out...
+  // this really should be working
   // static hasMany = [people:Person]
 }

@@ -1,10 +1,8 @@
 import groovy.xml.MarkupBuilder
-import synthesis.xml.PersonToXml
 import synthesis.Person
 import synthesis.Source
 import synthesis.Export
-import synthesis.xml.SourceDatabaseToXml
-import synthesis.Source
+import synthesis.xml.SourceToXml
 
 class XmlController
 {
@@ -19,7 +17,7 @@ class XmlController
     Export export = Export.findByExportId(person.exportId)
     Source source = Source.findByExportId(export.exportId)
 
-    def xml = new SourceDatabaseToXml()
+    def xml = new SourceToXml()
     xml.people = [person]
     xml.export = export
     xml.source = source
@@ -51,7 +49,7 @@ class XmlController
     def export = Export.findByExportId(source.exportId)
     def people = Person.findAllByExportId(export.exportId)
 
-    def xml = new SourceDatabaseToXml()
+    def xml = new SourceToXml()
     xml.source = source
     xml.export = export
     xml.people = people

@@ -6,8 +6,11 @@
 package synthesis.xml
 
 import groovy.xml.StreamingMarkupBuilder
-import synthesis.OtherNames
-import synthesis.ReleaseOfInformation
+import synthesis.Source
+import synthesis.Export
+import synthesis.Person
+import synthesis.Household
+import synthesis.SiteService
 
 /**
  * The root util class for taking groovy objects that have been imported from the database
@@ -15,23 +18,23 @@ import synthesis.ReleaseOfInformation
  *
  * @author dglidden
  */
-class SourceDatabaseToXml
+class SourceToXml
 {
   def namespaces = [:]
   def xml
 
   // this is the root element
-  def source
+  Source      source
   // these are the direct child elements of SourceDatabase
-  def export
-  def siteService
-  def people // list
-  def household
+  Export       export
+  SiteService  siteService
+  List<Person> people
+  Household    household
 
   /**
    * Default constructor
    */
-  SourceDatabaseToXml()
+  SourceToXml()
   {
     namespaces.hmis = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd"
     namespaces.airs = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
@@ -60,7 +63,7 @@ class SourceDatabaseToXml
         }
         hmis.DatabaseContactEmail(['hmis:DateCollected':source.emailDateCollected], source.email)
         hmis.DatabaseContactExtension(['hmis:DateCollected':source.contactExtensionDateCollected], source.contactExtension)
-        hmis.DatabaseContactFirst()
+        hmis.DatabaseContactFirst(['hmis:DateCollected':source.contactFirstDateCollected], source.contactFirst)
         hmis.DatabaseContactLast(['hmis:DateCollected':source.contactLastDateCollected], source.contactLast)
         hmis.DatabaseContactPhone(['hmis:DateCollected':source.contactPhoneDateCollected], source.contactPhone)
         hmis.DatabaseName(['hmis:DateCollected':source.nameDateCollected], source.name)

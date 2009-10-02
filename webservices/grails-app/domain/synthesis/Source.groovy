@@ -13,20 +13,20 @@ class Source
   static mapping = {
     version false
 
-    email column: 'database_email'
-    emailDateCollected column: 'database_email_date_collected'
+    email column: 'source_email'
+    emailDateCollected column: 'source_email_date_collected'
 
-    contactExtension column: 'database_contact_extension'
-    contactExtensionDateCollected column: 'database_contact_extension_date_collected'
+    contactExtension column: 'source_contact_extension'
+    contactExtensionDateCollected column: 'source_contact_extension_date_collected'
 
-    contactLast column: 'database_contact_last'
-    contactLastDateCollected column: 'database_contact_last_date_collected'
+    contactLast column: 'source_contact_last'
+    contactLastDateCollected column: 'source_contact_last_date_collected'
 
-    contactPhone column: 'database_contact_phone'
-    contactPhoneDateCollected column: 'database_contact_phone_date_collected'
+    contactPhone column: 'source_contact_phone'
+    contactPhoneDateCollected column: 'source_contact_phone_date_collected'
 
-    name column: 'database_name'
-    nameDateCollected column: 'database_name_date_collected'
+    name column: 'source_name'
+    nameDateCollected column: 'source_name_date_collected'
   }
 
   // don't really know what the difference between 'id' and 'database_id'

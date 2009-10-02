@@ -29,9 +29,9 @@ class Source
     nameDateCollected column: 'source_name_date_collected'
   }
 
-  // don't really know what the difference between 'id' and 'database_id'
-  String databaseId
-  Date   databaseIdDateCollected
+  // don't really know what the difference is between 'id' and 'source_id'
+  String sourceId
+  Date   sourceIdDateCollected
 
   String exportId
 

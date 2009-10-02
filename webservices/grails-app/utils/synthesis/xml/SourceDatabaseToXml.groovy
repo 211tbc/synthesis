@@ -56,7 +56,7 @@ class SourceDatabaseToXml
       hmis.SourceDatabase {
         hmis.DatabaseID {
           // TODO check if it's IDNum or IDStr
-          hmis.IDNum(['hmis:DateCollected':source.databaseIdDateCollected], source.databaseId)
+          hmis.IDNum(['hmis:DateCollected':source.sourceIdDateCollected], source.sourceId)
         }
         hmis.DatabaseContactEmail(['hmis:DateCollected':source.emailDateCollected], source.email)
         hmis.DatabaseContactExtension(['hmis:DateCollected':source.contactExtensionDateCollected], source.contactExtension)

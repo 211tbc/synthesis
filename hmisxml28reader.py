@@ -580,59 +580,146 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
         '''This code allows for multiple PersonHistorical per Person'''
         #Xpath query strings
+        
+    ### xpPath Definitions
         xpSvcParticipationPersonHistorical = 'hmis:SiteServiceParticipation/hmis:PersonHistorical'
         xpPersonHistorical = 'hmis:PersonHistorical'
         #I don't want the PersonID from the XML, as there could be two of the 
         #same PersonID within the same export.  Need the Person Table Index
         #So that's what is used.  See where this index is retrieved after the 
         #session flush.
-        xpPersonHistoricalID = 'hmis:PersonHistoricalID/hmis:IDNum'
-        xpPersonHistoricalIDDateCollected = 'hmis:PersonHistoricalID/hmis:IDNum/@hmis:dateCollected'
-        xpPersonHistoricalIDStr = 'hmis:PersonHistoricalID/hmis:IDStr'
-        xpPersonHistoricalIDStrDateCollected = 'hmis:PersonHistoricalID/hmis:IDStr/@hmis:dateCollected'
-        xpPersonHistoricalChildCurrentlyEnrolledInSchool = 'hmis:ChildCurrentlyEnrolledInSchool'
-        xpPersonHistoricalChildCurrentlyEnrolledInSchoolDateCollected = 'hmis:ChildCurrentlyEnrolledInSchool/@hmis:dateCollected'
-        xpPersonHistoricalCurrentlyEmployed = 'hmis:CurrentlyEmployed'
-        xpPersonHistoricalCurrentlyEmployedDateCollected = 'hmis:CurrentlyEmployed/@hmis:dateCollected'
-        xpPersonHistoricalDegreeCode = 'hmis:DegreeCode'
-        xpPersonHistoricalDegreeCodeDateCollected = 'hmis:DegreeCode/@hmis:dateCollected'
-        xpPersonHistoricalEmploymentTenure = 'hmis:EmploymentTenure'
-        xpPersonHistoricalEmploymentTenureDateCollected = 'hmis:EmploymentTenure/@hmis:dateCollected'
         
-        xpPersonHistoricalHealthStatus = 'hmis:HealthStatus'
-        xpPersonHistoricalHealthStatusDateCollected = 'hmis:HealthStatus/@hmis:dateCollected'
-        xpPersonHistoricalHighestSchoolLevel = 'hmis:HighestSchoolLevel'
-        xpPersonHistoricalHighestSchoolLevelDateCollected = 'hmis:HighestSchoolLevel/@hmis:dateCollected'
-        xpPersonHistoricalHIVAIDSStatus = 'hmis:HIVAIDSStatus'
-        xpPersonHistoricalHIVAIDSStatusDateCollected = 'hmis:HIVAIDSStatus/@hmis:dateCollected'
-        xpPersonHistoricalHoursWorkedLastWeek = 'hmis:HoursWorkedLastWeek'
-        xpPersonHistoricalHoursWorkedLastWeekDateCollected = 'hmis:HoursWorkedLastWeek/@hmis:dateCollected'
-        xpPersonHistoricalHUDHomeless = 'hmis:HUDHomeless'
-        xpPersonHistoricalHUDHomelessDateCollected = 'hmis:HUDHomeless/@hmis:dateCollected'
-        # IncomeAndSources (separte table 1 to many) FIXME
+    ### PersonHistoricalIDIDNum
+        xpPersonHistoricalIDIDNum = 'hmis:PersonHistoricalID/hmis:IDNum'
+        xpPersonHistoricalIDIDNumDateCollected = 'hmis:PersonHistoricalID/hmis:IDNum/@hmis:dateCollected'
+    ### PersonHistoricalIDIDStr
+        xpPersonHistoricalIDIDStr = 'hmis:PersonHistoricalID/hmis:IDStr'
+        xpPersonHistoricalIDIDStrDateCollected = 'hmis:PersonHistoricalID/hmis:IDStr/@hmis:dateCollected'
+    ### BarrierCode
+        xpBarrierCode = 'hmis:BarrierCode'
+        xpBarrierCodeDateCollected = 'hmis:BarrierCode/@hmis:dateCollected'
+    ### BarrierOther
+        xpBarrierOther = 'hmis:BarrierOther'
+        xpBarrierOtherDateCollected = 'hmis:BarrierOther/@hmis:dateCollected'
+    ### ChildCurrentlyEnrolledInSchool
+        xpChildCurrentlyEnrolledInSchool = 'hmis:ChildCurrentlyEnrolledInSchool'
+        xpChildCurrentlyEnrolledInSchoolDateCollected = 'hmis:ChildCurrentlyEnrolledInSchool/@hmis:dateCollected'
+    ### CurrentlyEmployed
+        xpCurrentlyEmployed = 'hmis:CurrentlyEmployed'
+        xpCurrentlyEmployedDateCollected = 'hmis:CurrentlyEmployed/@hmis:dateCollected'
+    ### CurrentlyInSchool
+        xpCurrentlyInSchool = 'hmis:CurrentlyInSchool'
+        xpCurrentlyInSchoolDateCollected = 'hmis:CurrentlyInSchool/@hmis:dateCollected'
+    ### DegreeCode
+        xpDegreeCode = 'hmis:DegreeCode'
+        xpDegreeCodeDateCollected = 'hmis:DegreeCode/@hmis:dateCollected'
+    ### DegreeOther
+        xpDegreeOther = 'hmis:DegreeOther'
+        xpDegreeOtherDateCollected = 'hmis:DegreeOther/@hmis:dateCollected'
+    ### DevelopmentalDisability
+        xpDevelopmentalDisability = 'hmis:DevelopmentalDisability'
+        xpDevelopmentalDisabilityDateCollected = 'hmis:DevelopmentalDisability/@hmis:dateCollected'
+    ### DomesticViolence
+        xpDomesticViolence = 'hmis:DomesticViolence'
+        xpDomesticViolenceDateCollected = 'hmis:DomesticViolence/@hmis:dateCollected'
+    ### DomesticViolenceHowLong
+        xpDomesticViolenceHowLong = 'hmis:DomesticViolenceHowLong'
+        xpDomesticViolenceHowLongDateCollected = 'hmis:DomesticViolenceHowLong/@hmis:dateCollected'
+    ### DueDate
+        xpDueDate = 'hmis:DueDate'
+        xpDueDateDateCollected = 'hmis:DueDate/@hmis:dateCollected'
+    ### EmploymentTenure
+        xpEmploymentTenure = 'hmis:EmploymentTenure'
+        xpEmploymentTenureDateCollected = 'hmis:EmploymentTenure/@hmis:dateCollected'
+    ### HealthStatus
+        xpHealthStatus = 'hmis:HealthStatus'
+        xpHealthStatusDateCollected = 'hmis:HealthStatus/@hmis:dateCollected'
+    ### HighestSchoolLevel
+        xpHighestSchoolLevel = 'hmis:HighestSchoolLevel'
+        xpHighestSchoolLevelDateCollected = 'hmis:HighestSchoolLevel/@hmis:dateCollected'
+    ### HIVAIDSStatus
+        xpHIVAIDSStatus = 'hmis:HIVAIDSStatus'
+        xpHIVAIDSStatusDateCollected = 'hmis:HIVAIDSStatus/@hmis:dateCollected'
+    ### HoursWorkedLastWeek
+        xpHoursWorkedLastWeek = 'hmis:HoursWorkedLastWeek'
+        xpHoursWorkedLastWeekDateCollected = 'hmis:HoursWorkedLastWeek/@hmis:dateCollected'
+    ### HUDChronicHomeless
+        xpHUDChronicHomeless = 'hmis:HUDChronicHomeless'
+        xpHUDChronicHomelessDateCollected = 'hmis:HUDChronicHomeless/@hmis:dateCollected'
+    ### HUDHomeless
+        xpHUDHomeless = 'hmis:HUDHomeless'
+        xpHUDHomelessDateCollected = 'hmis:HUDHomeless/@hmis:dateCollected'
+    ### LengthOfStayAtPriorResidence
+        xpLengthOfStayAtPriorResidence = 'hmis:LengthOfStayAtPriorResidence'
+        xpLengthOfStayAtPriorResidenceDateCollected = 'hmis:LengthOfStayAtPriorResidence/@hmis:dateCollected'
+    ### LookingForWork
+        xpLookingForWork = 'hmis:LookingForWork'
+        xpLookingForWorkDateCollected = 'hmis:LookingForWork/@hmis:dateCollected'
+    ### MentalHealthIndefinite
+        xpMentalHealthIndefinite = 'hmis:MentalHealthIndefinite'
+        xpMentalHealthIndefiniteDateCollected = 'hmis:MentalHealthIndefinite/@hmis:dateCollected'
+    ### MentalHealthProblem
+        xpMentalHealthProblem = 'hmis:MentalHealthProblem'
+        xpMentalHealthProblemDateCollected = 'hmis:MentalHealthProblem/@hmis:dateCollected'
+    ### NonCashSourceCode
+        xpNonCashSourceCode = 'hmis:NonCashSourceCode'
+        xpNonCashSourceCodeDateCollected = 'hmis:NonCashSourceCode/@hmis:dateCollected'
+    ### NonCashSourceOther
+        xpNonCashSourceOther = 'hmis:NonCashSourceOther'
+        xpNonCashSourceOtherDateCollected = 'hmis:NonCashSourceOther/@hmis:dateCollected'
+    ### PersonEmail
+        xpPersonEmail = 'hmis:PersonEmail'
+        xpPersonEmailDateCollected = 'hmis:PersonEmail/@hmis:dateCollected'
+    ### PersonPhoneNumber
+        xpPersonPhoneNumber = 'hmis:PersonPhoneNumber'
+        xpPersonPhoneNumberDateCollected = 'hmis:PersonPhoneNumber/@hmis:dateCollected'
+    ### PhysicalDisability
+        xpPhysicalDisability = 'hmis:PhysicalDisability'
+        xpPhysicalDisabilityDateCollected = 'hmis:PhysicalDisability/@hmis:dateCollected'
+    ### PregnancyStatus
+        xpPregnancyStatus = 'hmis:PregnancyStatus'
+        xpPregnancyStatusDateCollected = 'hmis:PregnancyStatus/@hmis:dateCollected'
+    ### PriorResidence
+        xpPriorResidence = 'hmis:PriorResidence'
+        xpPriorResidenceDateCollected = 'hmis:PriorResidence/@hmis:dateCollected'
+    ### PriorResidenceOther
+        xpPriorResidenceOther = 'hmis:PriorResidenceOther'
+        xpPriorResidenceOtherDateCollected = 'hmis:PriorResidenceOther/@hmis:dateCollected'
+    ### ReasonForLeaving
+        xpReasonForLeaving = 'hmis:ReasonForLeaving'
+        xpReasonForLeavingDateCollected = 'hmis:ReasonForLeaving/@hmis:dateCollected'
+    ### ReasonForLeavingOther
+        xpReasonForLeavingOther = 'hmis:ReasonForLeavingOther'
+        xpReasonForLeavingOtherDateCollected = 'hmis:ReasonForLeavingOther/@hmis:dateCollected'
+    ### SchoolLastEnrolledDate
+        xpSchoolLastEnrolledDate = 'hmis:SchoolLastEnrolledDate'
+        xpSchoolLastEnrolledDateDateCollected = 'hmis:SchoolLastEnrolledDate/@hmis:dateCollected'
+    ### SchoolName
+        xpSchoolName = 'hmis:SchoolName'
+        xpSchoolNameDateCollected = 'hmis:SchoolName/@hmis:dateCollected'
+    ### SchoolType
+        xpSchoolType = 'hmis:SchoolType'
+        xpSchoolTypeDateCollected = 'hmis:SchoolType/@hmis:dateCollected'
+    ### SubsidyOther
+        xpSubsidyOther = 'hmis:SubsidyOther'
+        xpSubsidyOtherDateCollected = 'hmis:SubsidyOther/@hmis:dateCollected'
+    ### SubsidyType
+        xpSubsidyType = 'hmis:SubsidyType'
+        xpSubsidyTypeDateCollected = 'hmis:SubsidyType/@hmis:dateCollected'
+    ### SubstanceAbuseIndefinite
+        xpSubstanceAbuseIndefinite = 'hmis:SubstanceAbuseIndefinite'
+        xpSubstanceAbuseIndefiniteDateCollected = 'hmis:SubstanceAbuseIndefinite/@hmis:dateCollected'
+    ### SubstanceAbuseProblem
+        xpSubstanceAbuseProblem = 'hmis:SubstanceAbuseProblem'
+        xpSubstanceAbuseProblemDateCollected = 'hmis:SubstanceAbuseProblem/@hmis:dateCollected'
+    ### TotalIncome
+        xpTotalIncome = 'hmis:TotalIncome'
+        xpTotalIncomeDateCollected = 'hmis:TotalIncome/@hmis:dateCollected'
+    ### VocationalTraining
+        xpVocationalTraining = 'hmis:VocationalTraining'
+        xpVocationalTrainingDateCollected = 'hmis:VocationalTraining/@hmis:dateCollected'
         
-        xpPersonHistoricalLookingForWork = 'hmis:LookingForWork'
-        xpPersonHistoricalLookingForWorkDateCollected = 'hmis:LookingForWork/@hmis:dateCollected'
-        xpPersonHistoricalMentalHealthIndefinite = 'hmis:MentalHealthIndefinite'
-        xpPersonHistoricalMentalHealthIndefiniteDateCollected = 'hmis:MentalHealthIndefinite/@hmis:dateCollected'
-        xpPersonHistoricalMentalHealthProblem = 'hmis:MentalHealthProblem'
-        xpPersonHistoricalMentalHealthProblemDateCollected = 'hmis:MentalHealthProblem/@hmis:dateCollected'
-        #xpPersonHistoricalPersonAddress = 'hmis:PersonAddress' (Mutiple addresses - should have it's own table) FIXME
-        
-        xpPersonHistoricalPhysicalDisability = 'hmis:PhysicalDisability'
-        xpPersonHistoricalPhysicalDisabilityDataCollectionStage = 'hmis:PhysicalDisability/@hmis:dataCollectionStage'
-        xpPersonHistoricalPhysicalDisabilityDateCollected = 'hmis:PhysicalDisability/@hmis:dateCollected'
-        xpPersonHistoricalPhysicalDisabilityDateEffective = 'hmis:PhysicalDisability/@hmis:dateEffective'
-        xpPersonHistoricalReasonForLeaving = 'hmis:ReasonForLeaving'
-        xpPersonHistoricalReasonForLeavingDateCollected = 'hmis:ReasonForLeaving/@hmis:dateCollected'
-        xpPersonHistoricalSubstanceAbuseIndefinite = 'hmis:SubstanceAbuseIndefinite'
-        xpPersonHistoricalSubstanceAbuseIndefiniteDateCollected = 'hmis:SubstanceAbuseIndefinite/@hmis:dateCollected'
-        xpPersonHistoricalSubstanceAbuseProblem = 'hmis:SubstanceAbuseProblem'
-        xpPersonHistoricalSubstanceAbuseProblemDateCollected = 'hmis:SubstanceAbuseProblem/@hmis:dateCollected'
-        xpPersonHistoricalTotalIncome = 'hmis:TotalIncome'
-        xpPersonHistoricalTotalIncomeDateCollected = 'hmis:TotalIncome/@hmis:dateCollected'
-        # Veteran tag should have a table 1 to many
-        
+        # First test for the real 'PersonHistorical' subelement of person, if not found, test to see if we can get it from the SiteServiceParticipation
         person_historical = person_tag.xpath(xpPersonHistorical, namespaces={'hmis': self.hmis_namespace})
         # test if nothign was found, if so, run against the personHistorical as part of service participation
         if len(person_historical) == 0:
@@ -642,134 +729,226 @@ class HMISXML28Reader(DBObjects.databaseObjects):
             for item in person_historical:
                 self.parse_dict = {}
                 
-                fldName='person_historical_id_num'
-                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalID, namespaces={'hmis': self.hmis_namespace}), 'text')
-                
-                fldName='person_historical_id_num_date_collected'
-                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                
-                fldName='person_historical_id_str'
-                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
-                
-                fldName='person_historical_id_str_date_collected'
-                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                
+                # Foreign key to Person
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
+                # Foreign key to SiteServiceParticipation
+                self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
+            ### PersonHistoricalIDIDNum
+                fldName='person_historical_idid_num'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='person_historical_idid_num_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDIDNumDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PersonHistoricalIDIDStr
+                fldName='person_historical_idid_str'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDIDStr, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='person_historical_idid_str_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalIDIDStrDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### BarrierCode
+                fldName='barrier_code'
+                self.existence_test_and_add(fldName, item.xpath(xpBarrierCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='barrier_code_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpBarrierCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### BarrierOther
+                fldName='barrier_other'
+                self.existence_test_and_add(fldName, item.xpath(xpBarrierOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='barrier_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpBarrierOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ChildCurrentlyEnrolledInSchool
                 fldName='child_currently_enrolled_in_school'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalChildCurrentlyEnrolledInSchool, namespaces={'hmis': self.hmis_namespace}), 'text')
-                
+                self.existence_test_and_add(fldName, item.xpath(xpChildCurrentlyEnrolledInSchool, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='child_currently_enrolled_in_school_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalChildCurrentlyEnrolledInSchoolDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                
+                self.existence_test_and_add(fldName, item.xpath(xpChildCurrentlyEnrolledInSchoolDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### CurrentlyEmployed
                 fldName='currently_employed'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalCurrentlyEmployed, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpCurrentlyEmployed, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='currently_employed_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalCurrentlyEmployedDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpCurrentlyEmployedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### CurrentlyInSchool
+                fldName='currently_in_school'
+                self.existence_test_and_add(fldName, item.xpath(xpCurrentlyInSchool, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='currently_in_school_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpCurrentlyInSchoolDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DegreeCode
                 fldName='degree_code'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalDegreeCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpDegreeCode, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='degree_code_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalDegreeCodeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpDegreeCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DegreeOther
+                fldName='degree_other'
+                self.existence_test_and_add(fldName, item.xpath(xpDegreeOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='degree_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDegreeOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DevelopmentalDisability
+                fldName='developmental_disability'
+                self.existence_test_and_add(fldName, item.xpath(xpDevelopmentalDisability, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='developmental_disability_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDevelopmentalDisabilityDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DomesticViolence
+                fldName='domestic_violence'
+                self.existence_test_and_add(fldName, item.xpath(xpDomesticViolence, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='domestic_violence_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDomesticViolenceDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DomesticViolenceHowLong
+                fldName='domestic_violence_how_long'
+                self.existence_test_and_add(fldName, item.xpath(xpDomesticViolenceHowLong, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='domestic_violence_how_long_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDomesticViolenceHowLongDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### DueDate
+                fldName='due_date'
+                self.existence_test_and_add(fldName, item.xpath(xpDueDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='due_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpDueDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### EmploymentTenure
                 fldName='employment_tenure'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalEmploymentTenure, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpEmploymentTenure, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='employment_tenure_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalEmploymentTenureDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpEmploymentTenureDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HealthStatus
                 fldName='health_status'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHealthStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpHealthStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='health_status_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHealthStatusDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpHealthStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HighestSchoolLevel
                 fldName='highest_school_level'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHighestSchoolLevel, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpHighestSchoolLevel, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='highest_school_level_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHighestSchoolLevelDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpHighestSchoolLevelDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HIVAIDSStatus
                 fldName='hivaids_status'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHIVAIDSStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpHIVAIDSStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='hivaids_status_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHIVAIDSStatusDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpHIVAIDSStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HoursWorkedLastWeek
                 fldName='hours_worked_last_week'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHoursWorkedLastWeek, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpHoursWorkedLastWeek, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='hours_worked_last_week_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHoursWorkedLastWeekDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpHoursWorkedLastWeekDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HUDChronicHomeless
+                fldName='hud_chronic_homeless'
+                self.existence_test_and_add(fldName, item.xpath(xpHUDChronicHomeless, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='hud_chronic_homeless_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpHUDChronicHomelessDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### HUDHomeless
                 fldName='hud_homeless'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHUDHomeless, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpHUDHomeless, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='hud_homeless_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalHUDHomelessDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpHUDHomelessDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### LengthOfStayAtPriorResidence
+                fldName='length_of_stay_at_prior_residence'
+                self.existence_test_and_add(fldName, item.xpath(xpLengthOfStayAtPriorResidence, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='length_of_stay_at_prior_residence_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpLengthOfStayAtPriorResidenceDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### LookingForWork
                 fldName='looking_for_work'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalLookingForWork, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpLookingForWork, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='looking_for_work_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalLookingForWorkDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpLookingForWorkDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MentalHealthIndefinite
                 fldName='mental_health_indefinite'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpMentalHealthIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='mental_health_indefinite_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpMentalHealthIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### MentalHealthProblem
                 fldName='mental_health_problem'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpMentalHealthProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='mental_health_problem_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalMentalHealthProblemDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpMentalHealthProblemDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### NonCashSourceCode
+                fldName='non_cash_source_code'
+                self.existence_test_and_add(fldName, item.xpath(xpNonCashSourceCode, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='non_cash_source_code_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpNonCashSourceCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### NonCashSourceOther
+                fldName='non_cash_source_other'
+                self.existence_test_and_add(fldName, item.xpath(xpNonCashSourceOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='non_cash_source_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpNonCashSourceOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PersonEmail
+                fldName='person_email'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonEmail, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='person_email_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonEmailDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PersonPhoneNumber
+                fldName='person_phone_number'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonPhoneNumber, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='person_phone_number_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPersonPhoneNumberDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PhysicalDisability
                 fldName='physical_disability'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisability, namespaces={'hmis': self.hmis_namespace}), 'text')
-                # FIXME
-                
-                fldName='physical_disability_data_col_stage'
-                # FIXME
-                #if test is True:
-                #    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDataCollectionStage, namespaces={'hmis': self.hmis_namespace}), 'attribute_text')
-                    
-                fldName='physical_disability_date_collected'    
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
-                fldName='physical_disability_date_effective'    
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalPhysicalDisabilityDateEffective, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
-                
+                self.existence_test_and_add(fldName, item.xpath(xpPhysicalDisability, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='physical_disability_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPhysicalDisabilityDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PregnancyStatus
+                fldName='pregnancy_status'
+                self.existence_test_and_add(fldName, item.xpath(xpPregnancyStatus, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='pregnancy_status_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPregnancyStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PriorResidence
+                fldName='prior_residence'
+                self.existence_test_and_add(fldName, item.xpath(xpPriorResidence, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='prior_residence_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPriorResidenceDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### PriorResidenceOther
+                fldName='prior_residence_other'
+                self.existence_test_and_add(fldName, item.xpath(xpPriorResidenceOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='prior_residence_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpPriorResidenceOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ReasonForLeaving
                 fldName='reason_for_leaving'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalReasonForLeaving, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpReasonForLeaving, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='reason_for_leaving_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalReasonForLeavingDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpReasonForLeavingDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### ReasonForLeavingOther
+                fldName='reason_for_leaving_other'
+                self.existence_test_and_add(fldName, item.xpath(xpReasonForLeavingOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='reason_for_leaving_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpReasonForLeavingOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SchoolLastEnrolledDate
+                fldName='school_last_enrolled_date'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolLastEnrolledDate, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='school_last_enrolled_date_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolLastEnrolledDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SchoolName
+                fldName='school_name'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolName, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='school_name_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolNameDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SchoolType
+                fldName='school_type'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolType, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='school_type_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSchoolTypeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SubsidyOther
+                fldName='subsidy_other'
+                self.existence_test_and_add(fldName, item.xpath(xpSubsidyOther, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='subsidy_other_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSubsidyOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SubsidyType
+                fldName='subsidy_type'
+                self.existence_test_and_add(fldName, item.xpath(xpSubsidyType, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='subsidy_type_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpSubsidyTypeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SubstanceAbuseIndefinite
                 fldName='substance_abuse_indefinite'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpSubstanceAbuseIndefinite, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='substance_abuse_indefinite_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpSubstanceAbuseIndefiniteDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### SubstanceAbuseProblem
                 fldName='substance_abuse_problem'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
+                self.existence_test_and_add(fldName, item.xpath(xpSubstanceAbuseProblem, namespaces={'hmis': self.hmis_namespace}), 'text')
                 fldName='substance_abuse_problem_date_collected'
-                if test is True:
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalSubstanceAbuseProblemDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                    
+                self.existence_test_and_add(fldName, item.xpath(xpSubstanceAbuseProblemDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### TotalIncome
                 fldName='total_income'
-                test = self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncome, namespaces={'hmis': self.hmis_namespace}), 'text')
-                
-                if test is True:
-                    fldName='total_income_date_collected'
-                    self.existence_test_and_add(fldName, item.xpath(xpPersonHistoricalTotalIncomeDateCollected, namespaces={'hmis': self.hmis_namespace}),'attribute_date')                    
+                self.existence_test_and_add(fldName, item.xpath(xpTotalIncome, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='total_income_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpTotalIncomeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
+            ### VocationalTraining
+                fldName='vocational_training'
+                self.existence_test_and_add(fldName, item.xpath(xpVocationalTraining, namespaces={'hmis': self.hmis_namespace}), 'text')
+                fldName='vocational_training_date_collected'
+                self.existence_test_and_add(fldName, item.xpath(xpVocationalTrainingDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 
                 self.shred(self.parse_dict, DBObjects.PersonHistorical)
             
@@ -1094,9 +1273,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 fldName='end_date_date_collected'
                 self.existence_test_and_add(fldName, item.xpath(xpEndDateDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')                
             ### ReleaseGranted
-                fldName='None'
+                fldName='release_granted'
                 self.existence_test_and_add(fldName, item.xpath(xpReleaseGranted, namespaces={'hmis': self.hmis_namespace}), 'text')
-                fldName='None_date_collected'
+                fldName='release_granted_date_collected'
                 self.existence_test_and_add(fldName, item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
     
             ### ReleaseOfInformation (Shred)
@@ -1453,6 +1632,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
             self.person_historical_index_id = mapped.id
         if mapping.__name__ == "Person":
             self.person_index_id = mapped.id
+            self.site_service_index_id = None
         if mapping.__name__ == "SiteServiceParticipation":
             self.site_service_index_id = mapped.id
         self.session.commit()
@@ -1495,8 +1675,8 @@ def main(argv=None):
     UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
-    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
-    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/Example_HUD_HMIS_2_8_Instance.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

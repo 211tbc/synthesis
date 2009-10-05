@@ -247,7 +247,9 @@ class databaseObjects:
         table_metadata.create_all()
         
         mapper(SiteServiceParticipation, site_service_participation_table, properties={'fk_participation_to_need': relation(Need, backref='fk_need_to_participation'),
-                                                                                       'fk_participation_to_serviceevent' : relation(ServiceEvent) }
+                                                                                       'fk_participation_to_serviceevent' : relation(ServiceEvent),
+                                                                                       'fk_participation_to_personhistorical' : relation(PersonHistorical)
+                                                                                       }
                )#, 'children': relation(#tablename#), 'children': relation(#tablename#)})
         return
         
@@ -274,7 +276,7 @@ class databaseObjects:
         export_table = Table(
         'export', 
         table_metadata, 
-        Column('export_id', String(50), primary_key=True), 
+        Column('export_id', String(50), primary_key=True, unique=True), 
         Column('export_id_date_collected', DateTime(timezone=True)),
         Column('export_date', DateTime(timezone=True)),
         Column('export_date_date_collected', DateTime(timezone=True)),
@@ -514,188 +516,187 @@ class databaseObjects:
         table_metadata, 
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
+        Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
         
-    # dbCol: person_historical_id_num
-        Column('person_historical_id_num', Integer),
-        Column('person_historical_id_num_date_collected', DateTime(timezone=True)),
-
-	# dbCol: person_historical_id_str
-		Column('person_historical_id_str', String(32)),
-		Column('person_historical_id_str_date_collected', DateTime(timezone=True)),
-
-	# dbCol: barrier_code
-		Column('barrier_code', Integer),
-		Column('barrier_code_date_collected', DateTime(timezone=True)),
-
-	# dbCol: barrier_other
-		Column('barrier_other', String(50)),
-		Column('barrier_other_date_collected', DateTime(timezone=True)),
-
-	# dbCol: child_currently_enrolled_in_school
-		Column('child_currently_enrolled_in_school', Integer),
-		Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
-
-	# dbCol: currently_employed
-		Column('currently_employed', Integer),
-		Column('currently_employed_date_collected', DateTime(timezone=True)),
-
-	# dbCol: currently_in_school
-		Column('currently_in_school', Integer),
-		Column('currently_in_school_date_collected', DateTime(timezone=True)),
-
-	# dbCol: degree_code
-		Column('degree_code', Integer),
-		Column('degree_code_date_collected', DateTime(timezone=True)),
-
-	# dbCol: degree_other
-		Column('degree_other', String(50)),
-		Column('degree_other_date_collected', DateTime(timezone=True)),
-
-	# dbCol: developmental_disability
-		Column('developmental_disability', Integer),
-		Column('developmental_disability_date_collected', DateTime(timezone=True)),
-
-	# dbCol: domestic_violence
-		Column('domestic_violence', Integer),
-		Column('domestic_violence_date_collected', DateTime(timezone=True)),
-
-	# dbCol: domestic_violence_how_long
-		Column('domestic_violence_how_long', Integer),
-		Column('domestic_violence_how_long_date_collected', DateTime(timezone=True)),
-
-	# dbCol: due_date (Is this right xsd:date)
-		Column('due_date', Date),
-		Column('due_date_date_collected', DateTime(timezone=True)),
-
-	# dbCol: employment_tenure
-		Column('employment_tenure', Integer),
-		Column('employment_tenure_date_collected', DateTime(timezone=True)),
-
-	# dbCol: health_status
-		Column('health_status', Integer),
-		Column('health_status_date_collected', DateTime(timezone=True)),
-
-	# dbCol: highest_school_level
-		Column('highest_school_level', Integer),
-		Column('highest_school_level_date_collected', DateTime(timezone=True)),
-
-	# dbCol: hivaids_status
-		Column('hivaids_status', Integer),
-		Column('hivaids_status_date_collected', DateTime(timezone=True)),
-
-	# dbCol: hours_worked_last_week
-		Column('hours_worked_last_week', Integer),
-		Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
-
-	# dbCol: hud_chronic_homeless
-		Column('hud_chronic_homeless', Integer),
-		Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
-
-	# dbCol: hud_homeless
-		Column('hud_homeless', Integer),
-		Column('hud_homeless_date_collected', DateTime(timezone=True)),
-
-		###HUDHomelessEpisodes (subtable)
-
-		###IncomeAndSources (subtable)
-
-	# dbCol: length_of_stay_at_prior_residence
-		Column('length_of_stay_at_prior_residence', Integer),
-		Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=True)),
-
-	# dbCol: looking_for_work
-		Column('looking_for_work', Integer),
-		Column('looking_for_work_date_collected', DateTime(timezone=True)),
-
-	# dbCol: mental_health_indefinite
-		Column('mental_health_indefinite', Integer),
-		Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
-
-	# dbCol: mental_health_problem
-		Column('mental_health_problem', Integer),
-		Column('mental_health_problem_date_collected', DateTime(timezone=True)),
-
-	# dbCol: non_cash_source_code
-		Column('non_cash_source_code', Integer),
-		Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
-
-	# dbCol: non_cash_source_other
-		Column('non_cash_source_other', String(50)),
-		Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
-
-        ### person_address (subtable)
-
-	# dbCol: person_email (What is a String?  How long if undefined?  Is this VarChar(max))
-		Column('person_email', String),
-		Column('person_email_date_collected', DateTime(timezone=True)),
-
-	# dbCol: person_phone_number (What is a String?  How long if undefined?  Is this VarChar(max))
-		Column('person_phone_number', String),
-		Column('person_phone_number_date_collected', DateTime(timezone=True)),
-
+    # dbCol: person_historical_idid_num
+        Column('person_historical_idid_num', String(32)),
+        Column('person_historical_idid_num_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: person_historical_idid_str
+        Column('person_historical_idid_str', String(32)),
+        Column('person_historical_idid_str_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: barrier_code
+        Column('barrier_code', String(32)),
+        Column('barrier_code_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: barrier_other
+        Column('barrier_other', String(32)),
+        Column('barrier_other_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: child_currently_enrolled_in_school
+        Column('child_currently_enrolled_in_school', String(32)),
+        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: currently_employed
+        Column('currently_employed', String(32)),
+        Column('currently_employed_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: currently_in_school
+        Column('currently_in_school', String(32)),
+        Column('currently_in_school_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: degree_code
+        Column('degree_code', String(32)),
+        Column('degree_code_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: degree_other
+        Column('degree_other', String(32)),
+        Column('degree_other_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: developmental_disability
+        Column('developmental_disability', String(32)),
+        Column('developmental_disability_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: domestic_violence
+        Column('domestic_violence', String(32)),
+        Column('domestic_violence_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: domestic_violence_how_long
+        Column('domestic_violence_how_long', String(32)),
+        Column('domestic_violence_how_long_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: due_date
+        Column('due_date', String(32)),
+        Column('due_date_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: employment_tenure
+        Column('employment_tenure', String(32)),
+        Column('employment_tenure_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: health_status
+        Column('health_status', String(32)),
+        Column('health_status_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: highest_school_level
+        Column('highest_school_level', String(32)),
+        Column('highest_school_level_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: hivaids_status
+        Column('hivaids_status', String(32)),
+        Column('hivaids_status_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: hours_worked_last_week
+        Column('hours_worked_last_week', String(32)),
+        Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: hud_chronic_homeless
+        Column('hud_chronic_homeless', String(32)),
+        Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: hud_homeless
+        Column('hud_homeless', String(32)),
+        Column('hud_homeless_date_collected', DateTime(timezone=True)),
+    
+        ###HUDHomelessEpisodes (subtable)
+    
+        ###IncomeAndSources (subtable)
+    
+    # dbCol: length_of_stay_at_prior_residence
+        Column('length_of_stay_at_prior_residence', String(32)),
+        Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: looking_for_work
+        Column('looking_for_work', String(32)),
+        Column('looking_for_work_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: mental_health_indefinite
+        Column('mental_health_indefinite', String(32)),
+        Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: mental_health_problem
+        Column('mental_health_problem', String(32)),
+        Column('mental_health_problem_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: non_cash_source_code
+        Column('non_cash_source_code', String(32)),
+        Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: non_cash_source_other
+        Column('non_cash_source_other', String(32)),
+        Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
+    
+        ###PersonAddress (subtable)
+    
+    # dbCol: person_email
+        Column('person_email', String(32)),
+        Column('person_email_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: person_phone_number
+        Column('person_phone_number', String(32)),
+        Column('person_phone_number_date_collected', DateTime(timezone=True)),
+    
     # dbCol: physical_disability
-        Column('physical_disability', Integer),
-        Column('physical_disability_data_col_stage', Integer),
+        Column('physical_disability', String(32)),
         Column('physical_disability_date_collected', DateTime(timezone=True)),
-        Column('physical_disability_date_effective', DateTime(timezone=True)),
-
-	# dbCol: pregnancy_status
-		Column('pregnancy_status', Integer),
-		Column('pregnancy_status_date_collected', DateTime(timezone=True)),
-
-	# dbCol: prior_residence
-		Column('prior_residence', Integer),
-		Column('prior_residence_date_collected', DateTime(timezone=True)),
-
-	# dbCol: prior_residence_other
-		Column('prior_residence_other', String(50)),
-		Column('prior_residence_other_date_collected', DateTime(timezone=True)),
-
-	# dbCol: reason_for_leaving
-		Column('reason_for_leaving', Integer),
-		Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
-
-	# dbCol: reason_for_leaving_other
-		Column('reason_for_leaving_other', String(50)),
-		Column('reason_for_leaving_other_date_collected', DateTime(timezone=True)),
-
-	# dbCol: school_last_enrolled_date
-		Column('school_last_enrolled_date', Date),
-		Column('school_last_enrolled_date_date_collected', DateTime(timezone=True)),
-
-	# dbCol: school_name
-		Column('school_name', String(50)),
-		Column('school_name_date_collected', DateTime(timezone=True)),
-
-	# dbCol: school_type
-		Column('school_type', Integer),
-		Column('school_type_date_collected', DateTime(timezone=True)),
-
-	# dbCol: subsidy_other
-		Column('subsidy_other', String(50)),
-		Column('subsidy_other_date_collected', DateTime(timezone=True)),
-
-	# dbCol: subsidy_type
-		Column('subsidy_type', Integer),
-		Column('subsidy_type_date_collected', DateTime(timezone=True)),
-
-	# dbCol: substance_abuse_indefinite
-		Column('substance_abuse_indefinite', Integer),
-		Column('substance_abuse_indefinite_date_collected', DateTime(timezone=True)),
-
-	# dbCol: substance_abuse_problem
-		Column('substance_abuse_problem', Integer),
-		Column('substance_abuse_problem_date_collected', DateTime(timezone=True)),
-
-	# dbCol: total_income
-		Column('total_income', Numeric(5,2)),
-		Column('total_income_date_collected', DateTime(timezone=True)),
-
-		###Veteran (subtable)
-
-	# dbCol: vocational_training
-		Column('vocational_training', Integer),
-		Column('vocational_training_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: pregnancy_status
+        Column('pregnancy_status', String(32)),
+        Column('pregnancy_status_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: prior_residence
+        Column('prior_residence', String(32)),
+        Column('prior_residence_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: prior_residence_other
+        Column('prior_residence_other', String(32)),
+        Column('prior_residence_other_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: reason_for_leaving
+        Column('reason_for_leaving', String(32)),
+        Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: reason_for_leaving_other
+        Column('reason_for_leaving_other', String(32)),
+        Column('reason_for_leaving_other_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: school_last_enrolled_date
+        Column('school_last_enrolled_date', String(32)),
+        Column('school_last_enrolled_date_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: school_name
+        Column('school_name', String(32)),
+        Column('school_name_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: school_type
+        Column('school_type', String(32)),
+        Column('school_type_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: subsidy_other
+        Column('subsidy_other', String(32)),
+        Column('subsidy_other_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: subsidy_type
+        Column('subsidy_type', String(32)),
+        Column('subsidy_type_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: substance_abuse_indefinite
+        Column('substance_abuse_indefinite', String(32)),
+        Column('substance_abuse_indefinite_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: substance_abuse_problem
+        Column('substance_abuse_problem', String(32)),
+        Column('substance_abuse_problem_date_collected', DateTime(timezone=True)),
+    
+    # dbCol: total_income
+        Column('total_income', String(32)),
+        Column('total_income_date_collected', DateTime(timezone=True)),
+    
+        ###Veteran (subtable)
+    
+    # dbCol: vocational_training
+        Column('vocational_training', String(32)),
+        Column('vocational_training_date_collected', DateTime(timezone=True)),
 
         useexisting = True
         )

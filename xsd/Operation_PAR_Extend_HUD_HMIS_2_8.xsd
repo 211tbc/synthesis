@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-xmlns="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"          
+xmlns="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"          
+xmlns:ext="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
 xmlns:hmis="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd"
-targetNamespace="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
-elementFormDefault="qualified"
-xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Operation_PAR_Extend_HUD_HMIS_2_8.xsd">
+targetNamespace="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
+elementFormDefault="qualified">
     
     <xsd:import namespace="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" schemaLocation="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd"/>
     
-    <xsd:element name="SourceDatabase" type="ext:sourceDatabase">
+    <xsd:element name="SourceDatabase" type="sourceDatabase">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
         </xsd:annotation>
@@ -21,12 +21,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
-    
-    <xsd:simpleType name="annualPersonalIncomeBase">
-        <xsd:restriction base="xsd:nonNegativeInteger">
-            <xsd:pattern value="[0-9][0-9]"/>
-        </xsd:restriction>
-    </xsd:simpleType>
     
     <xsd:complexType name="dischargeType">
         <xsd:simpleContent>
@@ -42,7 +36,413 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
                 <xsd:attributeGroup ref="hmis:dateStampGroup"/>
             </xsd:extension>
         </xsd:simpleContent>
+    </xsd:complexType> 
+   
+    <xsd:complexType name="drugHistory">
+        <xsd:sequence>
+            <xsd:element name="DrugHistoryID" type="hmis:id"/>
+            <xsd:element name="DrugCode" type="ext:drugCode">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Drug History 44. Drug Code</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DrugUseFrequency" type="ext:drugUseFrequency">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Drug History 45. Frequency</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
     </xsd:complexType>
+    
+    <xsd:complexType name="drugUseFrequency">
+        <xsd:simpleContent>
+            <xsd:extension base="drugUseFrequencyBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="emergencyContact">
+        <xsd:sequence>
+            <xsd:element name="EmergencyContactID" type="hmis:id"/>
+            <xsd:element name="EmergencyContactName" type="hmis:string" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 24 and 27. Emergency Contact Name</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="EmergencyContactPhoneNumber" type="ext:phoneNumber" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 25, 26, 32, and 33. Emergency Contact Phone</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="EmergencyContactAddress" type="hmis:address">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 28, 29, 30, and 31. Emergency Contact Address</xsd:documentation>
+                </xsd:annotation>                
+            </xsd:element>
+            <xsd:element name="EmergencyContactRelationToClient" type="ext:relation">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 34. Emergency Contact Relation To Client</xsd:documentation>
+                </xsd:annotation>    
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="emergencyContacts">
+        <xsd:sequence>
+            <xsd:element name="EmergencyContact" type="emergencyContact" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="employmentStatus">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:employmentStatusBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+      
+    <xsd:complexType name="familySize">
+        <xsd:simpleContent>
+            <xsd:restriction base="hmis:integer">
+                <xsd:minInclusive value="1"/>
+                <xsd:maxInclusive value="9"/>
+            </xsd:restriction>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="healthStatusAtDischarge">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:healthStatusAtDischargeBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="maritalStatus">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:maritalStatusBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="person">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: III.5.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="PersonID" type="hmis:hashingChoice" >
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.12</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DateOfBirth" type="hmis:dOBHashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.3</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Ethnicity" type="hmis:twoValHashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.4.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Gender" type="hmis:twoValHashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.5</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="LegalFirstName" type="hmis:hashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="LegalLastName" type="hmis:hashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="LegalMiddleName" type="hmis:hashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="LegalSuffix" type="hmis:hashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="OtherNames" type="hmis:otherNames" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Race" type="hmis:fiveValHashingChoice" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.4.2</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="SocialSecurityNumber" type="hmis:sSNHashingChoice" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.2</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>  
+            <xsd:element name="PersonHistorical" type="ext:personHistorical" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: V.7.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="SiteServiceParticipation" type="ext:siteServiceParticipation" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: IV.6.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="ReleaseOfInformation" type="hmis:releaseOfInformation" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VII.12.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="personHistorical">
+        <xsd:complexContent>
+            <xsd:extension base="hmis:personHistorical">
+                <xsd:sequence>
+                    <xsd:element name="AnnualPersonalIncome" type="ext:annualPersonalIncome" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 20. Annual Personal Income</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="DrugHistory" type="ext:drugHistory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="EmergencyContacts" type="ext:emergencyContacts" minOccurs="0"/>
+                    <xsd:element name="EmploymentStatus" type="ext:employmentStatus" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 15. Employment Status</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="FamilySize" type="ext:familySize" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 18. Family Size</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="HearingImpaired" type="hmis:twoVal">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 15. Hearing Impaired?</xsd:documentation>
+                        </xsd:annotation>    
+                    </xsd:element>
+                    <xsd:element name="MaritalStatus" type="ext:maritalStatus">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 17. Marital Status</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="Non-ambulatory" type="hmis:twoVal">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 13. Non-Ambulatory?</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="ResidentialStatus" type="ext:residentialStatus" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 17. Residential Status</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="VisuallyImpaired" type="hmis:twoVal">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 14. Visually Impaired?</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>        
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="relation">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:relationBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="sourceDatabase">
+        <xsd:annotation>
+            <xsd:documentation>See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded">                    
+            <xsd:element name="DatabaseID" type="hmis:id">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseContactEmail" type="hmis:string50" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseContactExtension" type="hmis:extension" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseContactFirst" type="hmis:string20" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseContactLast" type="hmis:string20" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseContactPhone" type="hmis:phoneNumber" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatabaseName" type="hmis:string50">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Export" type="hmis:export" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.2.</xsd:documentation>
+                </xsd:annotation>                   
+            </xsd:element>
+            <xsd:element name="Person" type="ext:person" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: III.4.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Household" type="hmis:household" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VIII.13.</xsd:documentation>
+                </xsd:annotation>   
+            </xsd:element>
+        </xsd:sequence> 
+    </xsd:complexType>
+    
+    <xsd:complexType name="phoneNumber">
+        <xsd:complexContent>
+            <xsd:extension base="hmis:phoneNumber">
+                <xsd:attribute name="phoneNumberType" type="phoneNumberType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="residentialStatus">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:residentialStatusBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>  
+    
+    <xsd:complexType name="serviceEvent">
+        <xsd:complexContent>
+            <xsd:extension base="hmis:serviceEvent">
+                <xsd:sequence>
+                    <xsd:element name="TypeOfServicePAR" type="ext:typeOfServicePAR" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 9. Services Provided or Referred</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="siteServiceParticipation">
+        <xsd:sequence>
+            <xsd:element name="SiteServiceParticipationID" type="hmis:id">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">Not at this location: See Data Integration Package Cumulative Overview, Section 3: IV.7.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="SiteServiceID" type="hmis:id">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Appendix 1.10.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="HouseholdID" type="hmis:id" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.14 </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>          
+            <xsd:element name="Destination" type="hmis:residence" minOccurs="0">    
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10.</xsd:documentation>
+                </xsd:annotation>   
+            </xsd:element>  
+            <xsd:element name="DestinationOther" type="hmis:string50" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10. See also Section 5.1.3 for treatment of "other" elements.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DestinationTenure" type="hmis:twoValPlus" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DisablingCondition" type="hmis:noYesPlus" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.7 </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>  
+            <xsd:element name="ParticipationDates" type="hmis:dateRangeOpen">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.10 and 2.11</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="VeteranStatus" type="hmis:noYesPlus" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.6 </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>          
+            <xsd:element name="PersonHistorical" type="hmis:personHistorical" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: V.8.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Need" type="hmis:need" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="ServiceEvent" type="ext:serviceEvent" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VI.11.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <!-- additional elements add for Operation PAR -->
+            <xsd:element name="DischargeType" type="ext:dischargeType">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 10. Discharge Type
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="HealthStatusAtDischarge" type="ext:healthStatusAtDischarge" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 8. Health Status at Discharge</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="VAEligibility" type="ext:vAEligibility">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 13. VA Eligibility</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="vAEligibility">
+        <xsd:simpleContent>
+            <xsd:extension base="ext:maritalStatusBase">
+                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="annualPersonalIncomeBase">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:pattern value="[0-9][0-9]"/>
+        </xsd:restriction>
+    </xsd:simpleType>
     
     <xsd:simpleType name="dischargeTypeBase">
         <xsd:restriction base="xsd:nonNegativeInteger">
@@ -414,30 +814,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
         </xsd:restriction>
     </xsd:simpleType>
     
-    <xsd:complexType name="drugHistory">
-        <xsd:sequence>
-            <xsd:element name="DrugHistoryID" type="hmis:id"/>
-            <xsd:element name="DrugCode" type="ext:drugCode">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Drug History 44. Drug Code</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DrugUseFrequency" type="ext:drugUseFrequency">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Drug History 45. Frequency</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
-    
-    <xsd:complexType name="drugUseFrequency">
-        <xsd:simpleContent>
-            <xsd:extension base="drugUseFrequencyBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
     <xsd:simpleType name="drugUseFrequencyBase">
         <xsd:restriction base="xsd:nonNegativeInteger">
             <xsd:enumeration value="1">
@@ -467,46 +843,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
             </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>
-    
-    <xsd:complexType name="emergencyContacts">
-        <xsd:sequence>
-            <xsd:element name="EmergencyContact" type="emergencyContact" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
-    
-    <xsd:complexType name="emergencyContact">
-        <xsd:sequence>
-            <xsd:element name="EmergencyContactID" type="hmis:id"/>
-            <xsd:element name="EmergencyContactName" type="hmis:string" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 24 and 27. Emergency Contact Name</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="EmergencyContactPhoneNumber" type="ext:phoneNumber" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 25, 26, 32, and 33. Emergency Contact Phone</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="EmergencyContactAddress" type="hmis:address">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 28, 29, 30, and 31. Emergency Contact Address</xsd:documentation>
-                </xsd:annotation>                
-            </xsd:element>
-            <xsd:element name="EmergencyContactRelationToClient" type="ext:relation">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 34. Emergency Contact Relation To Client</xsd:documentation>
-                </xsd:annotation>    
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
-    
-    <xsd:complexType name="employmentStatus">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:employmentStatusBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
     
     <xsd:simpleType name="employmentStatusBase">
         <xsd:restriction base="xsd:nonNegativeInteger">
@@ -583,23 +919,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
         </xsd:restriction>
     </xsd:simpleType>
     
-    <xsd:complexType name="familySize">
-        <xsd:simpleContent>
-            <xsd:restriction base="hmis:integer">
-                <xsd:minInclusive value="1"/>
-                <xsd:maxInclusive value="9"/>
-            </xsd:restriction>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
-    <xsd:complexType name="healthStatusAtDischarge">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:healthStatusAtDischargeBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
     <xsd:simpleType name="healthStatusAtDischargeBase">
         <xsd:restriction base="xsd:nonNegativeInteger">
             <xsd:enumeration value="1">
@@ -644,14 +963,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
             </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>
-    
-    <xsd:complexType name="maritalStatus">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:maritalStatusBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
     
     <xsd:simpleType name="maritalStatusBase">
         <xsd:restriction base="xsd:nonNegativeInteger">
@@ -705,14 +1016,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
         </xsd:restriction>
     </xsd:simpleType>
     
-    <xsd:complexType name="relation">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:relationBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
     <xsd:simpleType name="relationBase">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="child"/>
@@ -721,228 +1024,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
             <xsd:enumeration value="other non-family"/>       
             <xsd:enumeration value="parent or guardian"/>
             <xsd:enumeration value="spouse"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-    
-    <xsd:complexType name="sourceDatabase">
-        <xsd:annotation>
-            <xsd:documentation>See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-        </xsd:annotation>
-        <xsd:sequence maxOccurs="unbounded">                    
-            <xsd:element name="DatabaseID" type="hmis:id">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseContactEmail" type="hmis:string50" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseContactExtension" type="hmis:extension" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseContactFirst" type="hmis:string20" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseContactLast" type="hmis:string20" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseContactPhone" type="hmis:phoneNumber" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DatabaseName" type="hmis:string50">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.1.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Export" type="hmis:export" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: I.2.</xsd:documentation>
-                </xsd:annotation>                   
-            </xsd:element>
-            <xsd:element name="SiteService" type="hmis:siteService" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: II.3.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Person" type="ext:person" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: III.4.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Household" type="hmis:household" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VIII.13.</xsd:documentation>
-                </xsd:annotation>   
-            </xsd:element>
-        </xsd:sequence> 
-    </xsd:complexType>
-    
-    <xsd:complexType name="person">
-        <xsd:annotation>
-            <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: III.5.</xsd:documentation>
-        </xsd:annotation>
-        <xsd:sequence>
-            <xsd:element name="PersonID" type="hmis:hashingChoice" >
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.12</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DateOfBirth" type="hmis:dOBHashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.3</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Ethnicity" type="hmis:twoValHashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.4.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Gender" type="hmis:twoValHashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.5</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="LegalFirstName" type="hmis:hashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="LegalLastName" type="hmis:hashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="LegalMiddleName" type="hmis:hashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="LegalSuffix" type="hmis:hashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="OtherNames" type="hmis:otherNames" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.1</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Race" type="hmis:fiveValHashingChoice" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.4.2</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="SocialSecurityNumber" type="hmis:sSNHashingChoice" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.2</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>  
-            <xsd:element name="PersonHistorical" type="ext:personHistorical" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: V.7.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="SiteServiceParticipation" type="ext:siteServiceParticipation" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: IV.6.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="ReleaseOfInformation" type="hmis:releaseOfInformation" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VII.12.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
-    
-    <xsd:complexType name="personHistorical">
-        <xsd:complexContent>
-            <xsd:extension base="hmis:personHistorical">
-                <xsd:sequence>
-                    <xsd:element name="AnnualPersonalIncome" type="ext:annualPersonalIncome" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 20. Annual Personal Income</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="DrugHistory" type="ext:drugHistory" minOccurs="0" maxOccurs="unbounded"/>
-                    <xsd:element name="EmergencyContacts" type="ext:emergencyContacts" minOccurs="0"/>
-                    <xsd:element name="EmploymentStatus" type="ext:employmentStatus" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 15. Employment Status</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="FamilySize" type="ext:familySize" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 18. Family Size</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="HearingImpaired" type="hmis:twoVal">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 15. Hearing Impaired?</xsd:documentation>
-                        </xsd:annotation>    
-                    </xsd:element>
-                    <xsd:element name="MaritalStatus" type="ext:maritalStatus">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 17. Marital Status</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="Non-ambulatory" type="hmis:twoVal">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 13. Non-Ambulatory?</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="ResidentialStatus" type="ext:residentialStatus" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 17. Residential Status</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                    <xsd:element name="VisuallyImpaired" type="hmis:twoVal">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Admission 14. Visually Impaired?</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>        
-        </xsd:complexContent>
-    </xsd:complexType>
-    
-    <xsd:complexType name="phoneNumber">
-        <xsd:complexContent>
-            <xsd:extension base="hmis:phoneNumber">
-                <xsd:attribute name="phoneNumberType" type="phoneNumberType"/>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-    
-    <xsd:complexType name="vAEligibility">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:maritalStatusBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
-    <xsd:complexType name="residentialStatus">
-        <xsd:simpleContent>
-            <xsd:extension base="ext:residentialStatusBase">
-                <xsd:attributeGroup ref="hmis:dateStampGroup"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
-    <xsd:simpleType name="twoIntPattern">
-        <xsd:restriction base="xsd:integer">
-            <xsd:pattern value="[0-9][0-9]"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -1030,20 +1111,6 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
             </xsd:enumeration>
         </xsd:restriction>    
     </xsd:simpleType>
-    
-    <xsd:complexType name="serviceEvent">
-        <xsd:complexContent>
-            <xsd:extension base="hmis:serviceEvent">
-                <xsd:sequence>
-                    <xsd:element name="TypeOfServicePAR" type="ext:typeOfServicePAR" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 9. Services Provided or Referred</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
     
     <xsd:simpleType name="typeOfServicePAR">
         <xsd:restriction base="xsd:nonNegativeInteger">
@@ -1165,83 +1232,11 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/tags/synthesis/Operation_PAR/Oper
         </xsd:restriction>
     </xsd:simpleType>
     
-    <xsd:complexType name="siteServiceParticipation">
-        <xsd:sequence>
-            <xsd:element name="SiteServiceParticipationID" type="hmis:id">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">Not at this location: See Data Integration Package Cumulative Overview, Section 3: IV.7.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="SiteServiceID" type="hmis:id">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Appendix 1.10.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="HouseholdID" type="hmis:id" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.14 </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>          
-            <xsd:element name="Destination" type="hmis:residence" minOccurs="0">    
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10.</xsd:documentation>
-                </xsd:annotation>   
-            </xsd:element>  
-            <xsd:element name="DestinationOther" type="hmis:string50" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation>HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10. See also Section 5.1.3 for treatment of "other" elements.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DestinationTenure" type="hmis:twoValPlus" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Program-Specific Data Element 3.10.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="DisablingCondition" type="hmis:noYesPlus" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.7 </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>  
-            <xsd:element name="ParticipationDates" type="hmis:dateRangeOpen">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.10 and 2.11</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="VeteranStatus" type="hmis:noYesPlus" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">HMIS Data and Technical Standards, July 30, 2004, Universal Data Element 2.6 </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>          
-            <xsd:element name="PersonHistorical" type="hmis:personHistorical" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: V.8.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="Need" type="hmis:need" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="ServiceEvent" type="ext:serviceEvent" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en">See Data Integration Package Cumulative Overview, Section 3: VI.11.</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <!-- additional elements add for Operation PAR -->
-            <xsd:element name="DischargeType" type="ext:dischargeType">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 10. Discharge Type
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="HealthStatusAtDischarge" type="ext:healthStatusAtDischarge" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Discharge Form 8. Health Status at Discharge</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="VAEligibility" type="ext:vAEligibility">
-                <xsd:annotation>
-                    <xsd:documentation xml:lang="en" source="Operation PAR Data Dictionary, Registration, Admission and Discharge Forms Manual Revision Date – 6/26/2008">Client Registration 13. VA Eligibility</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
+    <xsd:simpleType name="twoIntPattern">
+        <xsd:restriction base="xsd:integer">
+            <xsd:pattern value="[0-9][0-9]"/>
+        </xsd:restriction>
+    </xsd:simpleType>
     
     <xsd:simpleType name="vAEligibilityBase">
         <xsd:restriction base="xsd:positiveInteger">

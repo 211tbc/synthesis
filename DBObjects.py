@@ -26,6 +26,7 @@ class databaseObjects:
             
             self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
             
+            
             # map the ORM
             clear_mappers()
             self.createMappings()
@@ -42,11 +43,10 @@ class databaseObjects:
             else:
                 msg = "Please create Database [%s] and restart process." % settings.DB_DATABASE
                 FU.makeBlock(msg)
-
-
-        
+                
     def queryDB(self, object):
-        return self.session.query(object)
+        session = self.session()
+        return session.query(object)
         
     def createMappings(self):
         self.export_map()
@@ -187,6 +187,7 @@ class databaseObjects:
         table_metadata,
         
         Column('id', Integer, primary_key=True),
+        Column('person_index_id', Integer, ForeignKey(Person.c.id)),
 
     # dbCol: site_service_participation_idid_num
         Column('site_service_participation_idid_num', String(32)),
@@ -501,6 +502,7 @@ class databaseObjects:
         
         mapper(Person, person_table, properties={
             'fk_person_to_other_names': relation(OtherNames, backref='fk_other_names_to_person')
+            ,'fk_person_to_site_svc_part': relation(SiteServiceParticipation, backref='fk_site_svc_part_to_person')
             ,'fk_person_to_person_historical': relation(PersonHistorical, backref='fk_person_historical_to_person')
             ,'fk_person_to_release_of_information': relation(ReleaseOfInformation, backref='fk_release_of_information_to_person')
             ,'fk_person_to_races': relation(Races, backref='fk_races_to_person')})

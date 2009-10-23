@@ -126,8 +126,6 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	# generate the SystemID Number based on the Current Users Data, You must pass in the word 'system' in order to create the current users key.
 	self.SystemID = self.xmlU.generateSystemID('system')
 
-	
-	
 	# start the clients
 	
 	self.root_element = self.createDoc() #makes root element with XML header attributes
@@ -145,7 +143,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    self.ph = self.person.fk_person_to_person_historical
 	    self.race = self.person.fk_person_to_races
 	    self.site_service_part = self.person.fk_person_to_site_svc_part
-	    information_release = self.person.fk_person_to_release_of_information
+	    information_releases = self.person.fk_person_to_release_of_information
 	    
 	    # Instead of generating a number (above), use the client number that is already provided in the legacy system
 	    # or
@@ -173,22 +171,43 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 				self.customizeNeed(need)
 				
 	    # Release of Information
-	    if len(information_release) > 0:
+	    if len(information_releases) > 0:
 		info_releases = self.createInfo_releases(client)
-		info_release = self.createInfo_release(info_releases)
-		self.customizeInfo_release(info_release)
+		for self.IR in information_releases:
+		    info_release = self.createInfo_release(info_releases)
+		    self.customizeInfo_release(info_release)
 			
 		# SBB20091014 Removed creation of Dynamic Content since this is per agency structure.  
 		#dynamiccontent = self.createDynamic_content(client)
 		#self.customizeDynamiccontent(dynamiccontent)
-	    
-	    continue	# FIXME (Remove when done)
 	
-	    if not self.intakes == None and not self.outcomes == None:
-		for self.intake in self.intakes:
-		    client = self.createClient(records)
-		    self.customizeClientForEntryExit(client)
-		    self.customizeClientPersonalIdentifiersForEntryExit(client,self.intake)
+	# HouseHolds
+	# first get the export object then get it's related objects
+	Household = mappedObjects.queryDB(DBObjects.Household)
+	
+	if Household <> None:
+	    
+	    households = self.createHouseholds(records)
+	    
+	    for self.eachHouse in Household:
+		
+		Members = self.eachHouse.fk_household_to_members
+		household = self.createHousehold(households)
+		
+		# attach the members (if they exist)
+		if len(Members) > 0:
+		    members = self.createMembers(household)
+		    for self.eachMember in Members:
+			member = self.createMember(members)
+			self.customizeMember(member)
+	    
+	    #continue	# FIXME (Remove when done)
+	
+	#    if not self.intakes == None and not self.outcomes == None:
+	#	for self.intake in self.intakes:
+	#	    client = self.createClient(records)
+	#	    self.customizeClientForEntryExit(client)
+	#	    self.customizeClientPersonalIdentifiersForEntryExit(client,self.intake)
 	
 	# SBB20070627 we are only going to create needs/services records for daily census entries.  
 	#If there aren't any, we'll skip this portion of the code
@@ -668,11 +687,16 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	return info_release
 	    
     def customizeInfo_release(self, info_release):
-	provider_id = ET.SubElement(info_release, "provider_id")
+	# self.IR
+	#provider_id = ET.SubElement(info_release, "provider_id")
 	date_started = ET.SubElement(info_release, "date_started")
+	date_started.text = self.IR.start_date
 	date_ended = ET.SubElement(info_release, "date_ended")
-	permission = ET.SubElement(info_release, "permission")
+	date_ended.text = self.IR.end_date
+	#permission = ET.SubElement(info_release, "permission")
+	#permission.text = self.IR.release_granted
 	documentation = ET.SubElement(info_release, "documentation")
+	documentation.text = self.pickList.getValue("ROIDocumentationPickOption", str(self.IR.documentation))
 	witness = ET.SubElement(info_release, "witness")
 	witness.text = "tok50Type"
 	    
@@ -1117,15 +1141,23 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     
     def customizeMember(self, member):
 	client_id = ET.SubElement(member, "client_id")
+	client_id.text = self.eachMember.person_id_unhashed
 
 	date_entered = ET.SubElement(member, "date_entered")
+	date_entered.text = self.fixDate(self.eachMember.person_id_unhashed_date_collected)
 
-	date_ended = ET.SubElement(member, "date_ended")
-
-	head_of_household = ET.SubElement(member, "head_of_household")
+	# We don't have this?
+	#date_ended = ET.SubElement(member, "date_ended")
 
 	relationship = ET.SubElement(member, "relationship")
-
+	if str(self.eachMember.relationship_to_head_of_household) <> "" and self.eachMember.relationship_to_head_of_household <> None:
+	    relationship.text = self.pickList.getValue("RELATIONSHIPSPickOption", str(self.eachMember.relationship_to_head_of_household))
+	else:
+	    if (self.eachHouse.head_of_household_id_unhashed == self.eachMember.person_id_unhashed) \
+		or (self.eachHouse.head_of_household_id_hashed == self.eachMember.person_id_hashed):
+		head_of_household = ET.SubElement(member, "head_of_household")
+		head_of_household.text = "TRUE"
+		relationship.text = 'self'
 	    
     #	return provider
 	    

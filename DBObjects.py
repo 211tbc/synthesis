@@ -295,6 +295,7 @@ class databaseObjects:
         #mapper(Export, export_table, properties={'children': [relation(Person), relation(Database)]})
         mapper(Export, export_table, properties={
             'fk_export_to_person': relation(Person, backref='fk_person_to_export')
+            ,'fk_export_to_household': relation(Household, backref='fk_household_to_export')
             ,'fk_export_to_database': relation(Source, backref='fk_database_to_export')
             })
         return
@@ -767,22 +768,24 @@ class databaseObjects:
         table_metadata,
         
         Column('id', Integer, primary_key=True),
+        
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)),
 
 	# dbCol: household_idid_num
-		Column('household_id_num', String(32)),
-		Column('household_id_num_date_collected', DateTime(timezone=True)),
+            Column('household_id_num', String(32)),
+            Column('household_id_num_date_collected', DateTime(timezone=True)),
 
 	# dbCol: household_idid_str
-		Column('household_id_str', String(32)),
-		Column('household_id_str_date_collected', DateTime(timezone=True)),
+            Column('household_id_str', String(32)),
+            Column('household_id_str_date_collected', DateTime(timezone=True)),
 
 	# dbCol: head_of_household_id_unhashed
-		Column('head_of_household_id_unhashed', String(32)),
-		Column('head_of_household_id_unhashed_date_collected', DateTime(timezone=True)),
+            Column('head_of_household_id_unhashed', String(32)),
+            Column('head_of_household_id_unhashed_date_collected', DateTime(timezone=True)),
 
 	# dbCol: head_of_household_id_hashed
-		Column('head_of_household_id_hashed', String(32)),
-		Column('head_of_household_id_hashed_date_collected', DateTime(timezone=True)),
+            Column('head_of_household_id_hashed', String(32)),
+            Column('head_of_household_id_hashed_date_collected', DateTime(timezone=True)),
 
         ###Members (subtable)
         
@@ -801,25 +804,25 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
 
-	# dbCol: release_of_information_idid_num
-		Column('release_of_information_idid_num', String(32)),
-		Column('release_of_information_idid_num_date_collected', DateTime(timezone=True)),
+    # dbCol: release_of_information_idid_num
+        Column('release_of_information_idid_num', String(32)),
+        Column('release_of_information_idid_num_date_collected', DateTime(timezone=True)),
 
-	# dbCol: release_of_information_idid_str
-		Column('release_of_information_idid_str', String(32)),
-		Column('release_of_information_idid_str_date_collected', DateTime(timezone=True)),
+    # dbCol: release_of_information_idid_str
+        Column('release_of_information_idid_str', String(32)),
+        Column('release_of_information_idid_str_date_collected', DateTime(timezone=True)),
 
-	# dbCol: site_service_idid_num
-		Column('site_service_idid_num', String(32)),
-		Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
+    # dbCol: site_service_idid_num
+        Column('site_service_idid_num', String(32)),
+        Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
 
-	# dbCol: site_service_idid_str
-		Column('site_service_idid_str', String(32)),
-		Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
+    # dbCol: site_service_idid_str
+        Column('site_service_idid_str', String(32)),
+        Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
 
-	# dbCol: documentation
-		Column('documentation', String(32)),
-		Column('documentation_date_collected', DateTime(timezone=True)),
+    # dbCol: documentation
+        Column('documentation', String(32)),
+        Column('documentation_date_collected', DateTime(timezone=True)),
 
     ###EffectivePeriod (subtable)
     # dbCol: start_date
@@ -830,11 +833,11 @@ class databaseObjects:
         Column('end_date', String(32)),
         Column('end_date_date_collected', DateTime(timezone=True)),
 
-	# dbCol: release_granted
-		Column('release_granted', String(32)),
-		Column('release_granted_date_collected', DateTime(timezone=True)),
+    # dbCol: release_granted
+        Column('release_granted', String(32)),
+        Column('release_granted_date_collected', DateTime(timezone=True)),
 
-		useexisting = True)
+	useexisting = True)
 
         table_metadata.create_all()
         

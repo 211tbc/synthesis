@@ -27,7 +27,37 @@ class interpretPickList:
 	def __init__(self):
 		print "started interpretPickList"
 		self.pickList = {
-		    "MILITARYBRANCHPickOption":
+		    # SBB20091021 HMIS only defines 1-4, I enumerated the remaining types
+		    "RELATIONSHIPSPickOption":
+			{
+			"5":"daughter",
+			"6":"father",
+			"7":"granddaughter",
+			"8":"grandfather",
+			"9":"grandmother",
+			"10":"grandson",
+			"11":"husband",
+			"12":"mother",
+			"13":"other non-relative",
+			"3":"other relative",
+			"14":"self",
+			"4":"significant other",
+			"1":"son",
+			"15":"step-daughter",
+			"16":"step-son",
+			"17":"unknown",
+			"2":"wife"
+			}
+		    
+		    ,"ROIDocumentationPickOption":
+			{
+			"4":"none",
+			"3":"other",
+			"1":"signed statement from client",
+			"2":"verbal consent",
+			"5":"verification from other institiution"
+			}
+		    ,"MILITARYBRANCHPickOption":
 			{
 			    '2':"air force (hud)",
 			    '1':"army (hud)",

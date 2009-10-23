@@ -1128,6 +1128,8 @@ class HMISXML28Reader(DBObjects.databaseObjects):
             if itemElements is not None:
                 for item in itemElements:
                     self.parse_dict = {}
+                    # Foreign Key
+                    self.existence_test_and_add('export_id', self.export_id, 'text')
                 ### HouseholdIDIDNum
                     fldName='household_id_num'
                     self.existence_test_and_add(fldName, item.xpath(xpHouseholdIDIDNum, namespaces={'hmis': self.hmis_namespace}), 'text')

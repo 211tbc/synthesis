@@ -7,11 +7,6 @@ from XMLUtilities import XMLUtilities
 # SBB20070920 Adding exceptions class
 #from clsExceptions import dataFormatError, ethnicityPickNotFound
 
-# Alchemy Libraries
-from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
-from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers, eagerload
-from sqlalchemy.types import DateTime, Date
-
 from sys import version
 from conf import settings
 import clsExceptions
@@ -86,6 +81,12 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     #SBB20070626 Breaking this function into 2 parts one for the intakes and a second (one) for the outcomes (many) Relationship is 1 to many
     #def push_data(self, intakes, outcomes):
     #push_data takes a matched set of information (intakes and outcomes) to generate the XML
+    
+    def write(self):
+	self.processXML()
+	self.prettify()
+	self.writeOutXML()
+
 
     def prettify(self):
 	self.xmlU.indent(self.root_element)
@@ -1348,6 +1349,4 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 			
 if __name__ == "__main__":
     vld = SVCPOINTXML20Writer(".")
-    files = vld.processXML()
-    vld.prettify()
-    vld.writeOutXML()
+    vld.write()

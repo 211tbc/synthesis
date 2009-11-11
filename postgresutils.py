@@ -83,6 +83,6 @@ class Utils:
         
 if __name__ == '__main__':
     UTILS = Utils()
-#    UTILS.create_test_table()
-#    UTILS.blank_table()
+    UTILS.create_test_table()
+    UTILS.blank_table()
     UTILS.blank_database()

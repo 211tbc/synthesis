@@ -14,7 +14,9 @@ Configuration = \
         {
             'outputFormat': 'svcpoint',
             'destinationURL': 'crusty.penguix.net',
-            'transportConfiguration': 'sftp'
+            'transportConfiguration': 'sftp',
+            'username': 'scottben',
+            'password': 'nx9353#'
         }
 
 }

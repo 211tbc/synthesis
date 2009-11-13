@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import clsIniUtils
+#import clsIniUtils
 from clsLogger import clsLogger
 # The MIT License
 # 
@@ -28,12 +28,16 @@ import fileUtils
 import os
 import ftplib
 from clsExceptions import FTPUploadFailureError, VPNFailure
+from conf import settings
+import paramiko
+from conf import outputConfiguration
+
 
 class clsPostProcessing(FTPUploadFailureError, VPNFailure):
-    def __init__(self, iniSettings, processor):
-        self.settings = iniSettings
-        self.systemMode = self.settings['options.systemmode']
-        debug = iniSettings['options.debug']
+    def __init__(self, processor, vendorID):
+        self.settings = settings
+        self.systemMode = settings.MODE
+        debug = settings.DEBUG
         if debug == '1':
             self.debug = True
         
@@ -41,6 +45,10 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         self.debugMessages = clsLogger(iniFile)
 
         self.processor = processor
+        
+        # pull the vendor output parameters (this is a Dictionary)
+        self.outputConfig = outputConfiguration.Configuration[vendorID]
+        
     
     def processFile(self):
         #self.fileName = pFileName
@@ -63,6 +71,45 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         
         print 'Processing completed'
     
+    def establishSFTP(self):
+        ssh = paramiko.SSHClient()
+
+        ssh.set_missing_host_key_policy(
+            paramiko.AutoAddPolicy())
+        
+        #ssh.connect('192.168.0.208', username='scottben', password='nx9353')
+        # establish an SSH connection to the host
+        try:
+            ssh.connect(self.outputConfig['destinationURL'],
+                    username=self.outputConfig['username'],
+                    password=self.outputConfig['password']
+                    )
+        except:
+            pass
+        
+        # Create FTP Object
+        self.ftp = ssh.open_sftp()
+        
+    def transferSFTP(self, filesToTransfer):
+        
+        # first change locations on remote system
+        destPath = self.outputConfig['outputpath']
+        if destPath <> "":
+            self.ftp.chdir(destPath)
+        
+        # put this source on the server
+        for file in filesToTransfer:
+            self.ftp.put(file, file)
+        
+        # see if the file is there
+        print ftp.listdir(path=destPath)
+        
+        path='testfile.py'
+        print ftp.stat(path)
+    
+    def disconnectSFTP(self):
+        self.ftp.close()
+        
     def establishVPN(self):
         #command = 'vpnc baisix'
         command = self.settings['%s_options.vpnconnect' % (self.systemMode)]

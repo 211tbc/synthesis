@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-xmlns="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"          
-xmlns:ext="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
+xmlns="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"          
+xmlns:ext="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
 xmlns:hmis="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd"
-targetNamespace="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/343/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
+targetNamespace="http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
 elementFormDefault="qualified">
     
     <xsd:import namespace="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" schemaLocation="http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd"/>

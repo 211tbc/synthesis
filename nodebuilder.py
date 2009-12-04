@@ -14,6 +14,7 @@ import sys
 from queryObject import queryObject
 from conf import outputConfiguration
 import clsPostProcessing
+import fileUtils
 
 class NodeBuilder(DBObjects.databaseObjects):
 
@@ -22,10 +23,10 @@ class NodeBuilder(DBObjects.databaseObjects):
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
         # this should then pull the correct module below and run the process.
         generateOutputformat = outputConfiguration.Configuration[queryOptions.vendorID]['outputFormat']
-        transport = outputConfiguration.Configuration[queryOptions.vendorID]['transportConfiguration']
+        self.transport = outputConfiguration.Configuration[queryOptions.vendorID]['transportConfiguration']
         
         if generateOutputformat == 'svcpoint':
-            self.writer = SVCPOINTXML20Writer(".")
+            self.writer = SVCPOINTXML20Writer(settings.OUTPUTFILES_PATH)
             self.validator = VendorXMLTest()               
         elif generateOutputformat == 'hmisxml':
             self.writer = HmisXmlWriter()                   
@@ -37,19 +38,12 @@ class NodeBuilder(DBObjects.databaseObjects):
             # new error cataloging scheme, pull the error from the catalog, then raise the exception (centralize error catalog management)
             err = catalog.errorCatalog[1001]
             raise clsExceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + generateOutputformat)
-            
-        # how to transport the files
-        if transport == 'sftp':
-            postprocess = clsPostProcessing()
-            postprocess
-        elif transport == 'email':
-            pass
-        elif transport == 'vpnftp':
-            pass
-        elif transport == 'vpncp':
-            pass
         
-    def run(self, ):
+        # setup the postprocessing module    
+        self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.vendorID)
+        self.FU = fileUtils.fileUtilities()
+        
+    def run(self):
         '''This is the main method controlling this entire program.'''
         
         # Load the data via DBObjects
@@ -62,6 +56,18 @@ class NodeBuilder(DBObjects.databaseObjects):
         if self.writer.write():
             if self.validator.validate(xmlDoc):
                 print 'oK'        
+        
+        filesToTransfer = self.FU.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
+        
+        # how to transport the files
+        if self.transport == 'sftp':
+            self.pprocess.processFileSFTP(filesToTransfer)
+        elif self.transport == 'email':
+            pass
+        elif self.transport == 'vpnftp':
+            self.pprocess.processXML()
+        elif self.transport == 'vpncp':
+            pass
             
         #print results
         #print 'This is the result before it goes back to the test_unit:', \
@@ -100,6 +106,7 @@ if __name__ == '__main__':
         try:
             NODEBUILDER = NodeBuilder(options)
             RESULTS = NODEBUILDER.run()
+            
         except clsExceptions.UndefinedXMLWriter:
             print "Please specify a format for outputting your XML"
             raise

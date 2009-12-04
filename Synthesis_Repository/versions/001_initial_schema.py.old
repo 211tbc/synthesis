@@ -1,0 +1,17 @@
+from sqlalchemy import *
+from migrate import *
+import DBObjects
+
+metadata = MetaData(migrate_engine)
+person_table = Table("person", metadata,
+            Column("reported", Boolean)
+            )
+
+def upgrade():
+    # Upgrade operations go here. Don't create your own engine; use the engine
+    # named 'migrate_engine' imported from migrate.
+    person_table.reported.create()    
+
+def downgrade():
+    # Operations to reverse the above upgrade go here.
+    person_table.reported.drop() 

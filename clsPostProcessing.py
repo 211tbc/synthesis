@@ -34,23 +34,31 @@ from conf import outputConfiguration
 
 
 class clsPostProcessing(FTPUploadFailureError, VPNFailure):
-    def __init__(self, processor, vendorID):
+    def __init__(self, vendorID):
         self.settings = settings
         self.systemMode = settings.MODE
         debug = settings.DEBUG
-        if debug == '1':
+        if debug == True:
             self.debug = True
         
         iniFile = 'logging.ini'
         self.debugMessages = clsLogger(iniFile)
 
-        self.processor = processor
+        #self.processor = processor
+        self.processor = fileUtils.fileUtilities()
         
         # pull the vendor output parameters (this is a Dictionary)
         self.outputConfig = outputConfiguration.Configuration[vendorID]
         
-    
     def processFile(self):
+        pass
+    
+    def processFileSFTP(self, filesToTransfer=[]):
+        self.establishSFTP()
+        self.transferSFTP(filesToTransfer)
+        self.disconnectSFTP()
+    
+    def processFileVPN(self):
         #self.fileName = pFileName
         rc = self.establishVPN() 
         if rc <> 0:
@@ -72,15 +80,15 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         print 'Processing completed'
     
     def establishSFTP(self):
-        ssh = paramiko.SSHClient()
+        self.ssh = paramiko.SSHClient()
 
-        ssh.set_missing_host_key_policy(
+        self.ssh.set_missing_host_key_policy(
             paramiko.AutoAddPolicy())
         
         #ssh.connect('192.168.0.208', username='scottben', password='nx9353')
         # establish an SSH connection to the host
         try:
-            ssh.connect(self.outputConfig['destinationURL'],
+            self.ssh.connect(self.outputConfig['destinationURL'],
                     username=self.outputConfig['username'],
                     password=self.outputConfig['password']
                     )
@@ -88,7 +96,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
             pass
         
         # Create FTP Object
-        self.ftp = ssh.open_sftp()
+        self.ftp = self.ssh.open_sftp()
         
     def transferSFTP(self, filesToTransfer):
         
@@ -99,13 +107,28 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         
         # put this source on the server
         for file in filesToTransfer:
-            self.ftp.put(file, file)
+            if self.debug:
+                print 'writing file: %s to server: %s to dest file: %s' % (file, destPath, os.path.split(file)[1])
+            # split the filename from the path.
+            
+            destFile = os.path.split(file)[1]
+            self.ftp.put(file, destFile)
+            # test if we need to change owner
+            if self.outputConfig['owner'] <> '':
+                pass
+            # test if we need to change the MODe
+            if self.outputConfig['chmod'] <> '':
+                self.ftp.chmod(destFile, self.outputConfig['chmod'])
+            if self.outputConfig['group'] <> '':
+                pass
+        
+            
+            print self.ftp.stat(destFile)
         
         # see if the file is there
-        print ftp.listdir(path=destPath)
-        
-        path='testfile.py'
-        print ftp.stat(path)
+        self.ftp.chdir('..')
+        print self.ftp.listdir(path=destPath)
+            
     
     def disconnectSFTP(self):
         self.ftp.close()
@@ -133,7 +156,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         
     def ftp(self):
         #processor = fileUtils.fileUtilities(debug=debug, debugMessages=debugMessages)
-        processor = fileUtils.fileUtilities()
+        #processor = fileUtils.fileUtilities()
         outputDir = self.settings['filelocations.outputlocation']
         # fixme (take out the hardcoded extension and put into the INI file)
         filesList = processor.grabFiles(os.path.join(outputDir, '*.xml'))
@@ -239,8 +262,8 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
     
 if __name__ == '__main__':
     processor = fileUtils.fileUtilities()
-    cp = clsIniUtils.clsConfigParser('fileConverter.ini')
-    pd = cp.getConfig()
-    pprocess = clsPostProcessing(pd, processor)
+    #cp = clsIniUtils.clsConfigParser('fileConverter.ini')
+    #pd = cp.getConfig()
+    pprocess = clsPostProcessing('5678')
     pprocess.processFile()
     

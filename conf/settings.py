@@ -30,10 +30,21 @@ INPUTFILES_PATH = [
 XSD_PATH = "xsd"
 
 # file path subdirectories
-OUTPUTFILES_PATH = "OutputFiles"
+OUTPUTFILES_PATH = os.path.join(BASE_PATH, "OutputFiles")
+if not os.path.exists(OUTPUTFILES_PATH):
+    os.mkdir(OUTPUTFILES_PATH)
+    
 USEDFILES = os.path.join(BASE_PATH, "Used")
+if not os.path.exists(USEDFILES):
+    os.mkdir(USEDFILES)
+    
 FAILEDFILES = os.path.join(BASE_PATH, "Failed")
+if not os.path.exists(FAILEDFILES ):
+    os.mkdir(FAILEDFILES )
+    
 LOGS = os.path.join(BASE_PATH, "logs")
+if not os.path.exists(LOGS):
+    os.mkdir(LOGS)
 
 PROCESSED_PATH = ""
 

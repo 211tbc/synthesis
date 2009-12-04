@@ -26,7 +26,6 @@ class databaseObjects:
             
             self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
             
-            
             # map the ORM
             clear_mappers()
             self.createMappings()
@@ -127,6 +126,9 @@ class databaseObjects:
     # dbCol: type_of_service_other
         Column('type_of_service_other', String(32)),
         Column('type_of_service_other_date_collected', DateTime(timezone=True)),
+        
+    # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
     
         useexisting = True)
         table_metadata.create_all()
@@ -498,6 +500,10 @@ class databaseObjects:
         #PersonHistorical has its own table
         #SiteServiceParticipation has its own table
         #ReleaseOfInformation has its own table
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
+        
         useexisting = True)
         table_metadata.create_all()
         

@@ -2,14 +2,29 @@
 
 from optparse import OptionParser
 
+'''
+Formats the processing options for "nodebuilder.py" module.
+
+Usage: nodebuilder.py [options] arg
+
+Options:
+  -h, --help            show this help message and exit
+  -i ID, --IDvendor=ID  ID of vendor requesting report
+  -s StartDate, --startdate=StartDate
+                        start date of reporting
+  -e EndDate, --enddate=EndDate
+                        end date of reporting
+                        
+'''
+
 class queryObject:
     def __init__(self):
         
         usage = "usage: %prog [options] arg"
         
         parser = OptionParser(usage)
-        parser.add_option("-i", "--IDvendor", dest="vendorID", type="string",
-                          help="ID of vendor requesting report", metavar="ID")
+        parser.add_option("-i", "--IDconfig", dest="configID", type="string",
+                          help="Configuration ID of Vendor requesting report", metavar="ID")
         parser.add_option("-s", "--startdate", dest="startDate", type="string",
                           help="start date of reporting", metavar="StartDate")
         
@@ -22,7 +37,7 @@ class queryObject:
         #print "arg:", arg
         
         #print 'options.vendorID=%s' % options.vendorID
-        if self.options.vendorID == None or self.options.startDate == None or self.options.endDate == None:
+        if self.options.configID == None or self.options.startDate == None or self.options.endDate == None:
             parser.print_help()
             self.options = None
             #raise 'error'

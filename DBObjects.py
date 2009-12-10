@@ -11,21 +11,22 @@ import clsLogger
 from fileUtils import fileUtilities
 
 class databaseObjects:
+
+    # instance variables
+    pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % \
+            (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+    # this is needed to do real work.
+    session = sessionmaker(bind=pg_db, autoflush=True, transactional=True)
     
     def __init__(self):
         try:
-            self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % \
-                        (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-
             log = clsLogger.clsLogger()
-            #logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+            log.getLogger('sqlalchemy.engine').setLevel(log.LEVELS.get('info'))
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
-            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('error'))
+            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('info'))
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
-            
-            self.session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
-            
+                    
             # map the ORM
             clear_mappers()
             self.createMappings()
@@ -44,8 +45,8 @@ class databaseObjects:
                 FU.makeBlock(msg)
                 
     def queryDB(self, object):
-        session = self.session()
-        return session.query(object)
+        #session = self.session()
+        return self.session().query(object)
         
     def createMappings(self):
         self.export_map()
@@ -175,6 +176,9 @@ class databaseObjects:
     
     # dbCol: taxonomy
         Column('taxonomy', String(32)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
     
         useexisting = True)
         table_metadata.create_all()
@@ -245,6 +249,9 @@ class databaseObjects:
         ###Need (subtable)
 
         ###ServiceEvent (subtable)
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
 
         useexisting = True)
         table_metadata.create_all()
@@ -267,6 +274,9 @@ class databaseObjects:
         Column('race_unhashed', Integer(2)),
         Column('race_hashed', String(32)),
         Column('race_date_collected', DateTime(timezone=True)),
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
+        
         useexisting = True
         )
         table_metadata.create_all()
@@ -366,44 +376,47 @@ class databaseObjects:
         Column('service_era_date_collected', DateTime(timezone=True)),
 
 	# dbCol: military_service_duration
-		Column('military_service_duration', Integer),
-		Column('military_service_duration_date_collected', DateTime(timezone=True)),
+        Column('military_service_duration', Integer),
+        Column('military_service_duration_date_collected', DateTime(timezone=True)),
 
 	# dbCol: served_in_war_zone
-		Column('served_in_war_zone', Integer),
-		Column('served_in_war_zone_date_collected', DateTime(timezone=True)),
+        Column('served_in_war_zone', Integer),
+        Column('served_in_war_zone_date_collected', DateTime(timezone=True)),
 
 	# dbCol: war_zone
-		Column('war_zone', Integer),
-		Column('war_zone_date_collected', DateTime(timezone=True)),
+        Column('war_zone', Integer),
+        Column('war_zone_date_collected', DateTime(timezone=True)),
 
 	# dbCol: war_zone_other
-		Column('war_zone_other', String(50)),
-		Column('war_zone_other_date_collected', DateTime(timezone=True)),
+        Column('war_zone_other', String(50)),
+        Column('war_zone_other_date_collected', DateTime(timezone=True)),
 
 	# dbCol: months_in_war_zone
-		Column('months_in_war_zone', Integer),
-		Column('months_in_war_zone_date_collected', DateTime(timezone=True)),
+        Column('months_in_war_zone', Integer),
+        Column('months_in_war_zone_date_collected', DateTime(timezone=True)),
 
 	# dbCol: received_fire
-		Column('received_fire', Integer),
-		Column('received_fire_date_collected', DateTime(timezone=True)),
+        Column('received_fire', Integer),
+        Column('received_fire_date_collected', DateTime(timezone=True)),
 
 	# dbCol: military_branch
-		Column('military_branch', Integer),
-		Column('military_branch_date_collected', DateTime(timezone=True)),
+        Column('military_branch', Integer),
+        Column('military_branch_date_collected', DateTime(timezone=True)),
 
 	# dbCol: military_branch_other
-		Column('military_branch_other', String(50)),
-		Column('military_branch_other_date_collected', DateTime(timezone=True)),
+        Column('military_branch_other', String(50)),
+        Column('military_branch_other_date_collected', DateTime(timezone=True)),
 
 	# dbCol: discharge_status
-		Column('discharge_status', Integer),
-		Column('discharge_status_date_collected', DateTime(timezone=True)),
+        Column('discharge_status', Integer),
+        Column('discharge_status_date_collected', DateTime(timezone=True)),
 
     # dbCol: discharge_status_other
         Column('discharge_status_other', String(50)),
         Column('discharge_status_other_date_collected', DateTime(timezone=True)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
         
         useexisting = True
         )
@@ -448,7 +461,10 @@ class databaseObjects:
         
         #*# dbCol: zip_quality_code
         Column('zip_quality_code', Integer),
-        Column('zip_quality_code_date_collected', DateTime(timezone=True)),    
+        Column('zip_quality_code_date_collected', DateTime(timezone=True)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
         
         useexisting = True)
         table_metadata.create_all()
@@ -706,6 +722,9 @@ class databaseObjects:
     # dbCol: vocational_training
         Column('vocational_training', String(32)),
         Column('vocational_training_date_collected', DateTime(timezone=True)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
 
         useexisting = True
         )
@@ -738,8 +757,6 @@ class databaseObjects:
         
         return
     
-    
-    
     def member_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         member_table = Table(
@@ -750,16 +767,19 @@ class databaseObjects:
         Column('household_index_id', Integer, ForeignKey(Household.c.id)),
 
 	# dbCol: person_id_unhashed
-		Column('person_id_unhashed', String(32)),
-		Column('person_id_unhashed_date_collected', DateTime(timezone=True)),
+        Column('person_id_unhashed', String(32)),
+        Column('person_id_unhashed_date_collected', DateTime(timezone=True)),
 
 	# dbCol: person_id_hashed
-		Column('person_id_hashed', String(32)),
-		Column('person_id_hashed_date_collected', DateTime(timezone=True)),
+        Column('person_id_hashed', String(32)),
+        Column('person_id_hashed_date_collected', DateTime(timezone=True)),
 
     # dbCol: relationship_to_head_of_household
         Column('relationship_to_head_of_household', String(32)),
         Column('relationship_to_head_of_household_date_collected', DateTime(timezone=True)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
         
         useexisting = True)
         table_metadata.create_all()
@@ -794,6 +814,9 @@ class databaseObjects:
             Column('head_of_household_id_hashed_date_collected', DateTime(timezone=True)),
 
         ###Members (subtable)
+        
+            # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+            Column('reported', Boolean),
         
         useexisting = True)
         table_metadata.create_all()
@@ -842,6 +865,9 @@ class databaseObjects:
     # dbCol: release_granted
         Column('release_granted', String(32)),
         Column('release_granted_date_collected', DateTime(timezone=True)),
+        
+        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('reported', Boolean),
 
 	useexisting = True)
 
@@ -999,6 +1025,12 @@ def main(argv=None):
     print '-----------------------------------'
     for person in mappedObjects.queryDB(Person).filter(Person.person_legal_first_name_unhashed=='George'):
         print person.person_legal_first_name_unhashed
+        person.reported = True
+        person.person_legal_first_name_unhashed = "Scott"
+        mappedObjects.session().commit()
+        print 'Person: George Washington (SCOTT)'
+        print '-----------------------------------'
+        print person
         #print person.person_historical
         for ph in person.fk_person_to_person_historical:
             print '-------'

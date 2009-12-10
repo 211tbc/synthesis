@@ -7,12 +7,16 @@ from XMLUtilities import XMLUtilities
 # SBB20070920 Adding exceptions class
 #from clsExceptions import dataFormatError, ethnicityPickNotFound
 
+import logging
+
 from sys import version
 from conf import settings
 import clsExceptions
 import DBObjects
 from writer import Writer
 from zope.interface import implements
+
+from sqlalchemy import or_
 
 # py 2.5 support
 # dynamic import of modules
@@ -70,9 +74,18 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	self.xmlU = XMLUtilities()
 	# adding a debug switch that is managed in the INI
 	self.debug = debug
+	#self.debug = settings.DEBUG
 	# SBB20071023 Adding Debugging Messages class to XMLDumper
 	#if debug == True:
 	#	print "Debug switch is: %s" % debug
+	
+	self.mappedObjects = DBObjects.databaseObjects()
+	
+	#import logging
+	#
+	#logging.basicConfig()
+	#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+	#logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
 
 	if debug == True:
 	    print "Debug switch is: %s" % debug
@@ -83,10 +96,23 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     #push_data takes a matched set of information (intakes and outcomes) to generate the XML
     
     def write(self):
+	self.startTransaction()
 	self.processXML()
 	self.prettify()
 	self.writeOutXML()
+	self.commitTransaction()
 
+    def updateReported(self, currentObject):
+	# update the reported field of the currentObject being passed in.  These should all exist.
+	try:
+	    print 'Updating reporting for object: %s' % currentObject.__class__
+	    currentObject.reported = True
+	    #currentObject.update()
+	    #self.session.save(currentObject)
+	    
+	except:
+	    print "Exception occured during update the 'reported' flag"
+	    pass
 
     def prettify(self):
 	self.xmlU.indent(self.root_element)
@@ -120,6 +146,19 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	self.sysID = pSysID
     # SBB20071021
 
+    def commitTransaction(self):
+	self.session.commit()
+	#self.transaction.commit()
+	#pass
+	
+    def startTransaction(self):
+	# instantiate DB Object layer
+	# Create the transaction
+	# get a handle to our session object
+	self.session = self.mappedObjects.session(echo_uow=True)
+	#self.transaction = self.session.create_transaction()
+	#pass
+	
     def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
 	if self.debug == True:
 	    print "Appending XML to Base Record"
@@ -135,11 +174,19 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	
 	# Clear the session
 	#session.clear()
-
-	mappedObjects = DBObjects.databaseObjects()
+	
+	
+	
 	# first get the export object then get it's related objects
-	Persons = mappedObjects.queryDB(DBObjects.Person)
+	Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
+	#or_(User.name == 'ed', User.name == 'wendy')
+	#Persons = self.session.query(DBObjects.Person)
+	#Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == None) (works)
+	
 	for self.person in Persons:
+	    
+	    # update the reported flag for person (This needs to be applied to all objects that we are getting data from)
+	    self.updateReported(self.person)
 	    
 	    self.ph = self.person.fk_person_to_person_historical
 	    self.race = self.person.fk_person_to_races
@@ -158,6 +205,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 		# EntryExits
 		entry_exits = self.createEntryExits(client)
 		for EE in self.site_service_part:
+		    
+		    # Reporting Update
+		    self.updateReported(EE)
+		    
 		    self.createEntryExit(entry_exits, EE)
 		    
 		    self.need = None
@@ -167,6 +218,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 			# Needs (only create this if we have a 'Need')
 			if not Needs == None:
 			    for self.need in Needs:
+				
+				# Reporting Update
+				self.updateReported(self.need)
+				
 				needs = self.createNeeds(client) 
 				need = self.createNeed(needs)
 				self.customizeNeed(need)
@@ -175,6 +230,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    if len(information_releases) > 0:
 		info_releases = self.createInfo_releases(client)
 		for self.IR in information_releases:
+		    
+		    # Reporting Update
+		    self.updateReported(self.IR)
+		    
 		    info_release = self.createInfo_release(info_releases)
 		    self.customizeInfo_release(info_release)
 			
@@ -184,13 +243,17 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	
 	# HouseHolds
 	# first get the export object then get it's related objects
-	Household = mappedObjects.queryDB(DBObjects.Household)
+	#Household = self.mappedObjects.session.query(DBObjects.Household)
+	Household = self.session.query(DBObjects.Household).filter(or_(DBObjects.Household.reported == False, DBObjects.Household.reported == None))
 	
 	if Household <> None:
 	    
 	    households = self.createHouseholds(records)
 	    
 	    for self.eachHouse in Household:
+		
+		# Reporting Update
+		self.updateReported(self.eachHouse)
 		
 		Members = self.eachHouse.fk_household_to_members
 		household = self.createHousehold(households)
@@ -199,6 +262,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 		if len(Members) > 0:
 		    members = self.createMembers(household)
 		    for self.eachMember in Members:
+			
+			# Reporting Update
+			self.updateReported(self.eachMember)
+			
 			member = self.createMember(members)
 			self.customizeMember(member)
 	    
@@ -235,6 +302,8 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 #		members = self.createMembers(household)
 #		member = self.createMember(members)
 #		self.customizeMember(member)
+
+	#self.session.commit()
 	    
     def createDoc(self):
 	root_element = ET.Element("records")
@@ -620,12 +689,9 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	keyval = "client"
 	client_id.text = self.xmlU.generateSysID2(keyval,self.sysID)
 
-	
-
 	if self.fixDate(self.outcom['Exit Date']) is not None:
 		exit_date = ET.SubElement(member, "exit_date")
 		exit_date.text = self.fixDate(self.outcom['Exit Date'])
-	
 		
 	#Shelter does not provide a reason leaving in outcom.csv
 	#if self.pickList.getValue("EereasonLeavingPick", self.outcom['Code']) <> "":
@@ -712,6 +778,9 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 
 	for ph in self.ph:
 	    
+	    # Reporting Update
+	    self.updateReported(ph)
+	    
 	    dbo_address = ph.fk_person_historical_to_person_address
 	    dbo_veteran = ph.fk_person_historical_to_veteran
 	    
@@ -777,6 +846,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 		    
 	    if len(dbo_address) > 0:
 		if dbo_address[0].line1 <> "":
+		    
+		    # Reporting Update
+		    self.updateReported(dbo_address[0])
+		    
 		    address_2 = ET.SubElement(dynamiccontent,"address_2")
 		    address_2.attrib["date_added"] = datetime.now().isoformat()
 		    address_2.attrib["date_effective"] = self.fixDate(dbo_address[0].line1_date_collected)
@@ -798,6 +871,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    # Multiple occurences of Site Service Particpation, Only need to flag vet status once?
 	    if len(self.site_service_part) > 0:
 		for ssp in self.site_service_part:
+		    
+		    # Reporting Update
+		    self.updateReported(ssp)
+		    
 		    vet = ssp.veteran_status
 		    
 		    if vet <> "" and vet <> None:
@@ -810,6 +887,9 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    if len(dbo_veteran) > 0:
 		hud_militarybranchinfo = None
 		for dbv in dbo_veteran:
+		    
+		    # Reporting Update
+		    self.updateReported(dbv)
 		    
 		    branch = dbv.military_branch
 		    if str(branch) <> "" and dbv.military_branch <> None:
@@ -995,6 +1075,10 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	#5 = White
 	if len(self.race) > 0:
 	    race = self.race[0].race_unhashed
+	
+	    # Reporting Update
+	    self.updateReported(self.race[0])
+		    
 	    if race <> "" and race <> None:
 		if self.pickList.getValue("RacePick",str(race)) <> "":
 		    svpprofrace = ET.SubElement(dynamiccontent, "svpprofrace")

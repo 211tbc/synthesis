@@ -6,9 +6,9 @@ import sys, os
 from reader import Reader
 from zope.interface import implements
 from lxml import etree
-from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
-from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
-from sqlalchemy.types import DateTime, Date
+#from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
+#from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
+#from sqlalchemy.types import DateTime, Date
 from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
@@ -31,30 +31,31 @@ class HMISXML28Reader(DBObjects.databaseObjects):
     def __init__(self, xml_file):
         
         # Validate that we have a valid username & password to access the database
-        if settings.DB_USER == "":
-            raise clsExceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
-        if settings.DB_PASSWD == "":
-            raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
-            
-        self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-        #self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
+        #if settings.DB_USER == "":
+        #    raise clsExceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
+        #if settings.DB_PASSWD == "":
+        #    raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
+        #    
+        #self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+        ##self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
         self.xml_file = xml_file
-        self.db_metadata = MetaData(self.pg_db)
-        #self.db_metadata = MetaData(self.sqlite_db)
-        Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
-        #Session = sessionmaker(bind=self.sqlite_db, autoflush=True, transactional=True)
+        #self.db_metadata = MetaData(self.pg_db)
+        ##self.db_metadata = MetaData(self.sqlite_db)
+        #Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
+        ##Session = sessionmaker(bind=self.sqlite_db, autoflush=True, transactional=True)
+        #
+        #self.session = Session()
         
-        self.session = Session()
-        #logging.basicConfig(filename='./sql.log')
-        #logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
-        #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG) 
-
-        # good practice to clear the mapper.  Especially when we are running our tests
-        clear_mappers()
+        ##logging.basicConfig(filename='./sql.log')
+        ##logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+        ##logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG) 
+        #
+        ## good practice to clear the mapper.  Especially when we are running our tests
+        #clear_mappers()
         
         # moved all mapping ORM logic to new module/class
         dbo = DBObjects.databaseObjects()
-        
+        self.session = dbo.session()
         #self.export_map()
         #self.database_map()
         #self.person_map()
@@ -1672,14 +1673,14 @@ class HMISXML28Reader(DBObjects.databaseObjects):
 def main(argv=None):  
     if argv is None:
         argv = sys.argv
-    import postgresutils
-    UTILS = postgresutils.Utils()
-    UTILS.blank_database()
+    #import postgresutils
+    #UTILS = postgresutils.Utils()
+    #UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
-    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
     #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_10-07-2009v2.xml"
-    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

@@ -50,9 +50,9 @@ PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd')}
 
-DEBUG = False									# Debug the application layer
-DEBUG_ALCHEMY = False							# Debug the ORM Layer
-DEBUG_DB = False								# Debug the DB layer of the application
+DEBUG = True									# Debug the application layer
+DEBUG_ALCHEMY = True							# Debug the ORM Layer
+DEBUG_DB = True								# Debug the DB layer of the application
 
 # This mechanism provides an override to the settings above.  create a file called local_settings.py and simply
 # override the values like BASE_PATH='/home/mypath'.  Then import like this: from conf import settings

@@ -22,11 +22,11 @@ class NodeBuilder(DBObjects.databaseObjects):
         
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
         # this should then pull the correct module below and run the process.
-        generateOutputformat = outputConfiguration.Configuration[queryOptions.vendorID]['outputFormat']
-        self.transport = outputConfiguration.Configuration[queryOptions.vendorID]['transportConfiguration']
+        generateOutputformat = outputConfiguration.Configuration[queryOptions.configID]['outputFormat']
+        self.transport = outputConfiguration.Configuration[queryOptions.configID]['transportConfiguration']
         
         if generateOutputformat == 'svcpoint':
-            self.writer = SVCPOINTXML20Writer(settings.OUTPUTFILES_PATH)
+            self.writer = SVCPOINTXML20Writer(settings.OUTPUTFILES_PATH, queryOptions)
             self.validator = VendorXMLTest()               
         elif generateOutputformat == 'hmisxml':
             self.writer = HmisXmlWriter()                   
@@ -40,7 +40,7 @@ class NodeBuilder(DBObjects.databaseObjects):
             raise clsExceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + generateOutputformat)
         
         # setup the postprocessing module    
-        self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.vendorID)
+        self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.configID)
         self.FU = fileUtils.fileUtilities()
         
     def run(self):

@@ -16,7 +16,7 @@ import DBObjects
 from writer import Writer
 from zope.interface import implements
 
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, between
 
 # py 2.5 support
 # dynamic import of modules
@@ -56,7 +56,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}	
     
-    def __init__(self, poutDirectory, debug=False, debugMessages=None):
+    def __init__(self, poutDirectory, processingOptions, debug=False, debugMessages=None):
 	#print "%s Class Initialized" % self.__name__
 	if settings.DEBUG:
 	    print "XML File to be dumped to: %s" % poutDirectory
@@ -67,6 +67,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	self.intakes = {}
 	self.outcomes = None
 	self.daily_census = []
+	self.options = processingOptions
 	
 	# SBB20070628 adding a buffer for errors to be displayed at the end of the process.
 	self.errorMsgs = []
@@ -175,10 +176,21 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	# Clear the session
 	#session.clear()
 	
-	
-	
 	# first get the export object then get it's related objects
-	Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
+	
+	if self.options.reported == True:
+	    Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
+	elif self.options.reported == False:
+	    Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
+	elif self.options.reported == None:
+	    Persons = self.session.query(DBObjects.Person)
+	else:
+	    pass
+	
+	# try to append the filter object to the predefined result set
+	# this works, it now applies the dates to the result set.
+	Persons = Persons.filter(between(DBObjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
+	
 	#or_(User.name == 'ed', User.name == 'wendy')
 	#Persons = self.session.query(DBObjects.Person)
 	#Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == None) (works)

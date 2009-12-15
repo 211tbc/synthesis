@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser
+from datetime import datetime
 
 '''
 Formats the processing options for "nodebuilder.py" module.
@@ -14,6 +15,8 @@ Options:
                         start date of reporting
   -e EndDate, --enddate=EndDate
                         end date of reporting
+  -r Reported, --reported=True or False
+                        if the data has been reported before
                         
 '''
 
@@ -31,6 +34,14 @@ class queryObject:
         parser.add_option("-e", "--enddate", dest="endDate", type="string",
                           help="end date of reporting", metavar="EndDate")
         
+        #parser.add_option("-r", "--reported", dest="reported",
+        #                  help="1=True or 0=False use the reported boolean indicator in the tables for data selection", metavar="Reported")
+        parser.add_option("-r", "--reported", action="store_true", dest="reported",
+                          help="Select data that has already been reported (reported = True).  Omit both -r and -u to simply use date selection", metavar="Reported")
+        
+        parser.add_option("-u", "--unreported", action="store_false", dest="reported",
+                          help="Select data that has never been reported (reported = False or None).  Omit both -r and -u to simply use date selection", metavar="Reported")    
+        
         (self.options, self.arg) = parser.parse_args()
         
         #print 'options' ,options
@@ -42,6 +53,13 @@ class queryObject:
             self.options = None
             #raise 'error'
             
+        # convert the date strings to date values
+        try:
+            self.options.startDate = datetime.strptime(self.options.startDate, '%Y-%m-%d')
+            self.options.endDate = datetime.strptime(self.options.endDate, '%Y-%m-%d')
+        except:
+            parser.print_help()
+            raise
         
     def getOptions(self):
         return self.options
@@ -50,7 +68,7 @@ def main():
     optParse = queryObject()
     options = optParse.getOptions()
     if options != None:
-        print options.vendorID
+        print options.configID
     
 if __name__ == '__main__':
     main()

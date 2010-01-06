@@ -4,6 +4,9 @@ from conf import settings
 from fileUtils import fileUtilities
 from selector import FileHandler
 import traceback
+import os
+import sys
+from clsLogger import clsLogger
 
 # run forever
 processFiles = 1
@@ -28,6 +31,24 @@ if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Tes
     import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()    
+
+# setup logging
+if not os.path.exists(settings.LOGS):
+    os.mkdir(settings.LOGS)
+else:
+    if settings.DEBUG:
+        print "Logs Dir exists:"
+iniFile = 'logging.ini'
+
+# command argument set's log level or Settings.py
+if len(sys.argv) > 1:
+    level = sys.argv[1]
+else:
+    level = 0
+
+debugMessages = clsLogger(iniFile, level)
+if settings.DEBUG:
+    debugMessages.log("Logging System Online", 0)
 
 # first try to process existing files, then start the loop for ongoing processing            
 FILEHANDLER = FileHandler()

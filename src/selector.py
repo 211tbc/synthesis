@@ -14,6 +14,8 @@ from os import path
 from clsExceptions import DuplicateXMLDocumentError
 import traceback
 from clsSecurity import clsSecurity
+import copy
+from StringIO import StringIO
 
 class FileHandler:#IGNORE:R0903
 	'''Sets up the watch on the directory, and handles the file once one comes \
@@ -59,6 +61,8 @@ class FileHandler:#IGNORE:R0903
 		else:
 			# just open the file
 			fileStream = open(new_file,'r')
+			# Work around bug? file object is not same as CstringIO object in that you can't copy a fileStream to another one, CStringIO you can.  So we conver this to a CStringIO object and we can make true copies.
+			fileStream = StringIO(fileStream.read())
 			
 		try:
 			if self.selector.validate(fileStream):
@@ -202,8 +206,10 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 		
 		schema_parsed = etree.parse(schema)
 		schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+		# make a copy of the stream, validate against the copy not the real stream
+		copy_instance_stream = copy.copy(instance_stream)
 		try:
-			instance_parsed = etree.parse(instance_stream)
+			instance_parsed = etree.parse(copy_instance_stream)
 			results = schema_parsed_xsd.validate(instance_parsed)
 			if results == True:
 				#print 'The HMIS 2.8 XML successfully validated.'

@@ -27,7 +27,45 @@ class interpretPickList:
 	def __init__(self):
 		print "started interpretPickList"
 		self.pickList = {
-		"INCOMETYPESPickOption":{
+		    # SBB20091021 HMIS only defines 1-4, I enumerated the remaining types
+		    "RELATIONSHIPSPickOption":
+			{
+			"5":"daughter",
+			"6":"father",
+			"7":"granddaughter",
+			"8":"grandfather",
+			"9":"grandmother",
+			"10":"grandson",
+			"11":"husband",
+			"12":"mother",
+			"13":"other non-relative",
+			"3":"other relative",
+			"14":"self",
+			"4":"significant other",
+			"1":"son",
+			"15":"step-daughter",
+			"16":"step-son",
+			"17":"unknown",
+			"2":"wife"
+			}
+		    
+		    ,"ROIDocumentationPickOption":
+			{
+			"4":"none",
+			"3":"other",
+			"1":"signed statement from client",
+			"2":"verbal consent",
+			"5":"verification from other institiution"
+			}
+		    ,"MILITARYBRANCHPickOption":
+			{
+			    '2':"air force (hud)",
+			    '1':"army (hud)",
+			    '4':"marines (hud)",
+			    '3':"navy (hud)",
+			    '5':"other (hud)"						# Coast Guard, National Reserve...
+			}
+		,"INCOMETYPESPickOption":{
 			"":"a veteran&apos;s disability payment (hud)",
 			"":"alimony",
 			"":"alimony or other spousal support (hud)",
@@ -91,9 +129,14 @@ class interpretPickList:
 		}
 		,"ENHANCEDYESNOPickOption":{
 			"dontknow":"don&apos;t know (hud)",
+			"8":"don&apos;t know (hud)",
 			"FALSE":"no (hud)",
 			"?":"refused (hud)",
+			"9":"refused (hud)",
 			"TRUE":"yes (hud)",
+			"1":"yes (hud)",
+			"0":"no (hud)",
+			"":"no (hud)",
 			"other":"ENHANCEDYESNOPickOption"
 		}
 		,"HOMELESSREASONPickOption":{
@@ -170,23 +213,30 @@ class interpretPickList:
 			}
 		,"RacePick":{
 			'alaskan':"american indian or alaska native (hud)"
+			,'1':"american indian or alaska native (hud)"
 			,'american indian black':"american indian/alaskan native &amp; black/african american (hud 40118)"
 			,'american indian white':"american indian/alaskan native &amp; white (hud 40118)"
 			,'asian white':"asian &amp; white (hud 40118)"
 			,'asian':"asian (hud)"
+			,'2':"asian (hud)"
 			,'black':"black or african american (hud)"
+			,'3':"black or african american (hud)"
 			,'black white':"black/african american &amp; white (hud 40118)"
 			,'native hawaiian':"native hawaiian/other pacific islander (hud 40118)"
+			,'4':"native hawaiian/other pacific islander (hud 40118)"
 			,'other':"other"
 			,'other multi-racial':"other multi-racial (hud 40118)"
 			,'pacific islander':"native hawaiian/other pacific islander (hud 40118)"
 			,'white':"white (hud)"
+			,'5':"white (hud)"
 			,'hispanic':"other"
 			,'':'other'
 			}
 		,"SexPick":{
 			"female":"female",
+			"0":"female",
 			"male":"male",
+			"1":"male",
 			"confused":"transgender",
 			"other":"unknown"
 			}
@@ -200,9 +250,11 @@ class interpretPickList:
 			,'School':'seasonal work'
 			,'Unemployed':'seasonal work'
 			}
-		,"EthinictyPick":{
+		,"EthnicityPick":{
 			"latino":"hispanic/latino",
-			"other":"other"
+			"1":"hispanic/latino",
+			"other":"other",
+			"0":"other"
 			}
 		}
 

@@ -1,6 +1,7 @@
 import os
 import smtplib
 from conf import settings
+from clsLogger import clsLogger
 
 # Import the email modules we'll need
 from email.MIMEMultipart import MIMEMultipart
@@ -27,6 +28,7 @@ class smtpInterface:
     def __init__(self, settings):
         print "SMTP Server Started"
         self.settings = settings
+        self.log = clsLogger()
         
     def prompt(prompt):
         return raw_input(prompt).strip()
@@ -78,10 +80,10 @@ class smtpInterface:
             self.ccaddrs = self.SMTPRECIPIENTS['SMTPTOADDRESSCC']
             self.bccaddrs = self.SMTPRECIPIENTS['SMTPTOADDRESSBCC']
         except KeyError:
-            print 'Unable to locate an Address'
+            self.log.logger.exception('Unable to locate an Address')
             
-        print "self.toaddrs"
-        print self.toaddrs
+        self.log.logger.info("self.toaddrs")
+        self.log.logger.info(self.toaddrs)
         
         # Add the From: and To: headers at the start!
         #self.msg = ("From: %s\r\nTo: %s\r\n\r\n"
@@ -109,6 +111,7 @@ class smtpInterface:
             try:
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
             except smtplib.SMTPRecipientsRefused:
+                self.log.logger.exception('smtplib.SMTPRecipientsRefused')
                 raise
         server.set_debuglevel(0)
         server.sendmail(self.fromaddr, self.toaddrs, self.msg.as_string())

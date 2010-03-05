@@ -48,11 +48,14 @@ if not os.path.exists(LOGS):
 
 PROCESSED_PATH = ""
 
-SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd')}
+SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'),
+                'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'),
+                'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd')
+                }
 
-DEBUG = True									# Debug the application layer
-DEBUG_ALCHEMY = True							# Debug the ORM Layer
-DEBUG_DB = True								# Debug the DB layer of the application
+DEBUG = True                                    # Debug the application layer
+DEBUG_ALCHEMY = True                            # Debug the ORM Layer
+DEBUG_DB = True                                # Debug the DB layer of the application
 
 # This mechanism provides an override to the settings above.  create a file called local_settings.py and simply
 # override the values like BASE_PATH='/home/mypath'.  Then import like this: from conf import settings
@@ -66,36 +69,36 @@ SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = \
-	{
-	"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles":
-		{
-		'SMTPTOADDRESS': ['email@domain.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
-		{
-		'SMTPTOADDRESS': ['admin@superhost.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':True
-		}
-	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles3":
-		{
-		'SMTPTOADDRESS': ['sammy.davis@jr.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-	}
+    {
+    "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles":
+        {
+        'SMTPTOADDRESS': ['email@domain.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    ,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
+        {
+        'SMTPTOADDRESS': ['admin@superhost.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':True
+        }
+    ,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles3":
+        {
+        'SMTPTOADDRESS': ['sammy.davis@jr.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    }
 
 try:
-	from local_settings import *
+    from local_settings import *
 except ImportError:
-	pass
+    pass
 
 

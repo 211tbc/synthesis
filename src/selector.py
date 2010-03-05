@@ -3,8 +3,8 @@ or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 import fileUtils 
 from fileinputwatcher import FileInputWatcher
-#import hmisxml28reader
 from hmisxml28reader import HMISXML28Reader
+from jfcsxmlreader import JFCSXMLReader
 from lxml import etree
 import Queue
 from conf import settings
@@ -36,7 +36,7 @@ class FileHandler:#IGNORE:R0903
 		Dictionary contains settings like does the sender use encryption etc.
 		self.ProcessingOptions = 
 			{
-				'SMTPTOADDRESS': ['sbenninghoff@yahoo.com',],
+				'SMTPTOADDRESS': ['joe@t3ch.com,],
 				'SMTPTOADDRESSCC': [],
 				'SMTPTOADDRESSBCC': [],
 				'FINGERPRINT':'',
@@ -55,9 +55,13 @@ class FileHandler:#IGNORE:R0903
 		self.router = router()
 		
 		# test if the sender encrypts data, if so, decrypt, if not, just process
+		
+		print "crypto",self.ProcessingOptions['USES_ENCRYPTION']
+		
 		if self.ProcessingOptions['USES_ENCRYPTION']:
 			# decrypt the file
 			fileStream = self.crypto.decryptFile2Stream(new_file)
+			print "stream",fileStream
 		else:
 			# just open the file
 			fileStream = open(new_file,'r')
@@ -163,8 +167,10 @@ class Selector:#IGNORE:R0903
 		#if had a config specified
 		FILEHANDLER = FileHandler()
 		
-		tests = [VendorXMLTest(), HUDHMIS28XMLTest(), JFCSXMLTest()]
-		readers = [VendorXMLReader(instance_doc), HUDHMIS28XMLReader(instance_doc), JFCSXMLReader(instance_doc)]
+		## tests = [VendorXMLTest(), HUDHMIS28XMLTest(), JFCSXMLTest()]  ## JOE
+		tests = [HUDHMIS28XMLTest(), JFCSXMLTest()]
+		## readers = [VendorXMLReader(instance_doc), HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]  ## JOE
+		readers = [HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]
 		results = []
 		#for item in tests:
 		for item,read in map(None, tests, readers):
@@ -237,16 +243,79 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 			raise 
 
 class JFCSXMLTest:#IGNORE:R0903,W0232
-	'''A stub for a specific non-profit's supplied non-standard XML format.'''
+	''' Tests for JFCS data 
+		* There are 2 possible data source types ('service' or 'client')
+		Steps: (will stop and return True on first success)
+			1 - Attempt to validate against 'service' schema: 'JFCS_service.xsd'
+			2 - Attempt to validate against 'client' schema: 'JFCS_client.xsd'
+			3 - Check for known 'service' elements anywhere in the tree
+			4 - Check for known 'client' elements anywhere in the tree
+	'''
+	
 	def __init__(self):
 		self.name = 'JFCS'
 		print 'running the', self.name, 'test'
 		
-	def validate(self, instance_filename):
-		'''implementation of interface's validate method'''
-		print '\nThe', self.name, 'test not implemented.'
-		print '...but intended to validate', instance_filename
+		''' Define schemas and elements for testing '''
+		self.service_schema_filename = Selector.local_schema['jfcs_service_xml']
+		self.client_schema_filename = Selector.local_schema['jfcs_client_xml']
+		self.service_elements = ['c4clientid','qprogram','serv_code','trdate','end_date','cunits']
+		self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno','c4last_s01']
+		
+	def validate(self, instance_filename, ):
+		'''JCFS data format validation process'''
+		
+		copy_instance_stream = copy.copy(instance_filename)
+		
+		results = self.schemaTest(copy_instance_stream, self.service_schema_filename)
+		if results == True:
+			FU.makeBlock('JFCS service XML data found.  Determined by service schema.')
+			JFCSXMLInputReader.data_type = 'service'
+			return results
+		
+		results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
+		if results == True:
+			FU.makeBlock('JFCS client XML data found.  Determined by client schema.')
+			JFCSXMLInputReader.data_type = 'client'
+			return results
+
+		results = self.elementTest(copy_instance_stream, self.service_elements)
+		if results == True:
+			FU.makeBlock('JFCS service XML data found.  Determined by service elements.')
+			JFCSXMLInputReader.data_type = 'service'
+			return results
+		
+		results = self.elementTest(copy_instance_stream, self.client_elements)
+		if results == True:
+			FU.makeBlock('JFCS client XML data found.  Determined by client elements.')
+			JFCSXMLInputReader.data_type = 'client'
+			return results	
+		
 		return False
+	
+	def schemaTest(self, copy_instance_stream, schema_filename):
+		'''Attempt to validate input file against specific schema'''
+		schema = open(schema_filename,'r')
+		schema_parsed = etree.parse(schema)
+		schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+		try:
+			instance_parsed = etree.parse(copy_instance_stream)
+			results = schema_parsed_xsd.validate(instance_parsed)
+			return results
+		except etree.XMLSyntaxError, error:
+			print 'XML Syntax Error.  There appears to be malformed XML.	'\
+			, error
+			raise
+		return False
+		
+	def elementTest(self, copy_instance_stream, elements):
+		'''Attempt to find elements in the input file by searching the tree'''
+		xml_doc = etree.parse(copy_instance_stream)
+		for e in elements:
+			search_term = ".//" + e
+			if xml_doc.find(search_term) is None:
+				return False
+		return True
 	
 class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
 	def __init__(self, instance_filename):
@@ -258,17 +327,20 @@ class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
 			self.reader.process_data(tree)
 		except:
 			raise
-	
-class JFCSXMLReader():#IGNORE:R0903
-	def __init__(self, instance_doc):
-		pass
-	
+
+class JFCSXMLInputReader(JFCSXMLReader):#IGNORE:R0903
+	def __init__(self, instance_filename):
+		self.reader = JFCSXMLReader(instance_filename)
+		
 	def shred(self):
-		'''implementation of interface's shred method'''
-		print '\nThe', self.name, 'test not implemented.'
-		print '...but intended to shred the XML Document: %s' % instance_filename
-		return False
-	
+		tree = self.reader.read()
+		try:
+			self.reader.process_data(tree, self.data_type)
+		except:
+			raise
+		
+## JOE - disabled non-existant class
+"""		
 class VendorXMLReader():#IGNORE:R0903
 	def __init__(self, instance_doc):
 		pass
@@ -278,6 +350,7 @@ class VendorXMLReader():#IGNORE:R0903
 		print '\nThe', self.name, 'test not implemented.'
 		print '...but intended to shred the XML Document: %s' % instance_filename
 		return False
+"""
 	
 if __name__ == '__main__':
 	

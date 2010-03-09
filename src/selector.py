@@ -149,6 +149,10 @@ class Selector:#IGNORE:R0903
 	'''Figures out which data format is being received.'''
 	#local_schema = {'hud_hmis_2_8_xml':'/home/eric/Alexandria_Consulting/Suncoast/JFCS/src/hmisparse/schema/HUD_HMIS_2_8.xsd'} #IGNORE:C0301
 	local_schema = settings.SCHEMA_DOCS
+	
+	global FU
+	FU = fileUtils.fileUtilities()
+	
 	def __init__(self):
 		#need to put this attribute in the .ini file
 		
@@ -168,7 +172,7 @@ class Selector:#IGNORE:R0903
 		FILEHANDLER = FileHandler()
 		
 		## tests = [VendorXMLTest(), HUDHMIS28XMLTest(), JFCSXMLTest()]  ## JOE
-		tests = [HUDHMIS28XMLTest(), JFCSXMLTest()]
+		tests = [HUDHMIS28XMLTest(), JFCSXMLTest(), SVCPOINT20XMLTest()]
 		## readers = [VendorXMLReader(instance_doc), HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]  ## JOE
 		readers = [HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]
 		results = []
@@ -214,6 +218,9 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 		schema_parsed_xsd = etree.XMLSchema(schema_parsed)
 		# make a copy of the stream, validate against the copy not the real stream
 		copy_instance_stream = copy.copy(instance_stream)
+		
+		
+		
 		try:
 			instance_parsed = etree.parse(copy_instance_stream)
 			results = schema_parsed_xsd.validate(instance_parsed)
@@ -242,6 +249,51 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
 			, error
 			raise 
 
+class SVCPOINT20XMLTest:
+	'''Load in the SVCPoint Schema, version 2.0.'''
+	def __init__(self):
+		global name
+		self.name = 'SVCPOINT20XML'
+		print 'running the', self.name, 'test'
+		self.schema_filename = Selector.local_schema['svcpoint_2_0_xml']
+	
+	def validate(self, instance_stream):
+		'''This specific data format's validation process.'''
+		schema = open(self.schema_filename,'r')
+		
+		schema_parsed = etree.parse(schema)
+		schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+		# make a copy of the stream, validate against the copy not the real stream
+		#copy_instance_stream = copy.copy(instance_stream)
+		
+		try:
+			instance_parsed = etree.parse(instance_stream)
+			results = schema_parsed_xsd.validate(instance_parsed)
+			if results == True:
+				#print 'The HMIS 2.8 XML successfully validated.'
+				FU.makeBlock('The %s successfully validated.' % self.name)
+				return results
+			if results == False:
+				print 'The xml did not successfully validate against %s' % self.name
+				try:
+					detailed_results = schema_parsed_xsd.assertValid\
+					(instance_parsed)
+					print detailed_results
+					return results
+				except etree.DocumentInvalid, error:
+					print 'Document Invalid Exception.  Here is the detail:'
+					print error
+					return results
+			if results == None:
+				print "The validator erred and couldn't determine if the xml \
+				was either valid or invalid."
+				return results
+		except etree.XMLSyntaxError, error:
+			print 'XML Syntax Error.  There appears to be malformed XML.  '\
+			, error
+			raise 
+
+	
 class JFCSXMLTest:#IGNORE:R0903,W0232
 	''' Tests for JFCS data 
 		* There are 2 possible data source types ('service' or 'client')

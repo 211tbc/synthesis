@@ -31,7 +31,7 @@ class Utils:
         mapper(Employee, self.employee_table)
         print 'entered the module'
         #self.pg_db = create_engine('postgres://eric:f4rk1r@localhost:5432/coastaldb')
-        self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
+        self.pg_db = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
         
         self.db_metadata = MetaData(self.pg_db)
         Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)

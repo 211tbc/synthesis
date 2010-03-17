@@ -8,6 +8,7 @@ MODE = 'PROD'                               # This is the switch that runs the p
 DB_DATABASE = ""
 DB_USER = ""
 DB_PASSWD = ""
+DB_HOST = ""
 DB_PORT = 5432
 
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
@@ -50,7 +51,8 @@ PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'),
                 'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'),
-                'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd')
+                'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
+                'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd')
                 }
 
 DEBUG = True                                    # Debug the application layer

@@ -78,35 +78,35 @@ class databaseObjects:
         Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
 
     # dbCol: service_event_idid_num
-        Column('service_event_idid_num', String(128)),
+        Column('service_event_idid_num', String(32)),
         Column('service_event_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: service_event_idid_str
-        Column('service_event_idid_str', String(128)),
+        Column('service_event_idid_str', String(32)),
         Column('service_event_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: household_idid_num
-        Column('household_idid_num', String(128)),
+        Column('household_idid_num', String(32)),
         Column('household_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: household_idid_str
-        Column('household_idid_str', String(128)),
+        Column('household_idid_str', String(32)),
         Column('household_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: is_referral
-        Column('is_referral', String(128)),
+        Column('is_referral', String(32)),
         Column('is_referral_date_collected', DateTime(timezone=True)),
     
     # dbCol: quantity_of_service
-        Column('quantity_of_service', String(128)),
+        Column('quantity_of_service', String(32)),
         Column('quantity_of_service_date_collected', DateTime(timezone=True)),
     
     # dbCol: quantity_of_service_measure
-        Column('quantity_of_service_measure', String(128)),
+        Column('quantity_of_service_measure', String(32)),
         Column('quantity_of_service_measure_date_collected', DateTime(timezone=True)),
     
     # dbCol: service_airs_code
-        Column('service_airs_code', String(128)),
+        Column('service_airs_code', String(32)),
         Column('service_airs_code_date_collected', DateTime(timezone=True)),
     
         ###ServicePeriod (subtable)
@@ -119,15 +119,15 @@ class databaseObjects:
         Column('service_period_end_date_date_collected', DateTime(timezone=True)),
     
     # dbCol: service_unit
-        Column('service_unit', String(128)),
+        Column('service_unit', String(32)),
         Column('service_unit_date_collected', DateTime(timezone=True)),
     
     # dbCol: type_of_service
-        Column('type_of_service', String(128)),
+        Column('type_of_service', String(32)),
         Column('type_of_service_date_collected', DateTime(timezone=True)),
     
     # dbCol: type_of_service_other
-        Column('type_of_service_other', String(128)),
+        Column('type_of_service_other', String(32)),
         Column('type_of_service_other_date_collected', DateTime(timezone=True)),
         
     # dbCol: type_of_service_par (Operations PARS)
@@ -152,35 +152,35 @@ class databaseObjects:
         Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
     
     # dbCol: need_idid_num
-        Column('need_idid_num', String(128)),
+        Column('need_idid_num', String(32)),
         Column('need_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: need_idid_str
-        Column('need_idid_str', String(128)),
+        Column('need_idid_str', String(32)),
         Column('need_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: site_service_idid_num
-        Column('site_service_idid_num', String(128)),
+        Column('site_service_idid_num', String(32)),
         Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: site_service_idid_str
-        Column('site_service_idid_str', String(128)),
+        Column('site_service_idid_str', String(32)),
         Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: service_event_idid_num
-        Column('service_event_idid_num', String(128)),
+        Column('service_event_idid_num', String(32)),
         Column('service_event_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: service_event_idid_str
-        Column('service_event_idid_str', String(128)),
+        Column('service_event_idid_str', String(32)),
         Column('service_event_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: need_status
-        Column('need_status', String(128)),
+        Column('need_status', String(32)),
         Column('need_status_date_collected', DateTime(timezone=True)),
     
     # dbCol: taxonomy
-        Column('taxonomy', String(128)),
+        Column('taxonomy', String(32)),
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
@@ -201,43 +201,43 @@ class databaseObjects:
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
 
     # dbCol: site_service_participation_idid_num
-        Column('site_service_participation_idid_num', String(128)),
+        Column('site_service_participation_idid_num', String(32)),
         Column('site_service_participation_idid_num_date_collected', DateTime(timezone=True)),
 
     # dbCol: site_service_participation_idid_str
-        Column('site_service_participation_idid_str', String(128)),
+        Column('site_service_participation_idid_str', String(32)),
         Column('site_service_participation_idid_str_date_collected', DateTime(timezone=True)),
 
     # dbCol: site_service_idid_num
-        Column('site_service_idid_num', String(128)),
+        Column('site_service_idid_num', String(32)),
         Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
 
     # dbCol: site_service_idid_str
-        Column('site_service_idid_str', String(128)),
+        Column('site_service_idid_str', String(32)),
         Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
 
     # dbCol: household_idid_num
-        Column('household_idid_num', String(128)),
+        Column('household_idid_num', String(32)),
         Column('household_idid_num_date_collected', DateTime(timezone=True)),
 
     # dbCol: household_idid_str
-        Column('household_idid_str', String(128)),
+        Column('household_idid_str', String(32)),
         Column('household_idid_str_date_collected', DateTime(timezone=True)),
 
     # dbCol: destination
-        Column('destination', String(128)),
+        Column('destination', String(32)),
         Column('destination_date_collected', DateTime(timezone=True)),
 
     # dbCol: destination_other
-        Column('destination_other', String(128)),
+        Column('destination_other', String(32)),
         Column('destination_other_date_collected', DateTime(timezone=True)),
 
     # dbCol: destination_tenure
-        Column('destination_tenure', String(128)),
+        Column('destination_tenure', String(32)),
         Column('destination_tenure_date_collected', DateTime(timezone=True)),
 
     # dbCol: disabling_condition
-        Column('disabling_condition', String(128)),
+        Column('disabling_condition', String(32)),
         Column('disabling_condition_date_collected', DateTime(timezone=True)),
 
     # ParticipationDates (Start Date/End Date)
@@ -248,7 +248,7 @@ class databaseObjects:
         Column('participation_dates_end_date_date_collected', DateTime(timezone=True)),
 
     # dbCol: veteran_status
-        Column('veteran_status', String(128)),
+        Column('veteran_status', String(32)),
         Column('veteran_status_date_collected', DateTime(timezone=True)),
 
     # dbCol: discharge_type (Operations PARS)
@@ -262,7 +262,7 @@ class databaseObjects:
     # dbCol: va_eligibility (Operations PARS)
         Column('va_eligibility', Integer(2)),
         Column('va_eligibility_date_collected', DateTime(timezone=True)),
-                    
+        
         ###Need (subtable)
 
         ###ServiceEvent (subtable)
@@ -289,7 +289,7 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
         Column('race_unhashed', Integer(2)),
-        Column('race_hashed', String(128)),
+        Column('race_hashed', String(32)),
         Column('race_date_collected', DateTime(timezone=True)),
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
@@ -316,7 +316,7 @@ class databaseObjects:
         Column('export_period_end_date_date_collected', DateTime(timezone=True)),
         Column('export_software_vendor', String(50)),
         Column('export_software_vendor_date_collected', DateTime(timezone=True)),
-        Column('export_software_version', String(50)),
+        Column('export_software_version', String(10)),
         Column('export_software_version_date_collected', DateTime(timezone=True)),
         useexisting = True
         )
@@ -338,16 +338,16 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.c.id)), 
         Column('other_first_name_unhashed', String(50)),
-        Column('other_first_name_hashed', String(128)),
+        Column('other_first_name_hashed', String(32)),
         Column('other_first_name_date_collected', DateTime(timezone=True)),
         Column('other_middle_name_unhashed', String(50)),
-        Column('other_middle_name_hashed', String(128)),
+        Column('other_middle_name_hashed', String(32)),
         Column('other_middle_name_date_collected', DateTime(timezone=True)),
         Column('other_last_name_unhashed', String(50)),
-        Column('other_last_name_hashed', String(128)),
+        Column('other_last_name_hashed', String(32)),
         Column('other_last_name_date_collected', DateTime(timezone=True)),
         Column('other_suffix_unhashed', String(50)),
-        Column('other_suffix_hashed', String(128)),
+        Column('other_suffix_hashed', String(32)),
         Column('other_suffix_date_collected', DateTime(timezone=True)),
         useexisting = True
         )
@@ -366,11 +366,11 @@ class databaseObjects:
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         
     # dbCol: start_date
-        Column('start_date', String(128)),
+        Column('start_date', String(32)),
         Column('start_date_date_collected', DateTime(timezone=True)),
     
     # dbCol: end_date
-        Column('end_date', String(128)),
+        Column('end_date', String(32)),
         Column('end_date_date_collected', DateTime(timezone=True)),
     
         useexisting = True)
@@ -392,39 +392,39 @@ class databaseObjects:
         Column('service_era', Integer),
         Column('service_era_date_collected', DateTime(timezone=True)),
 
-	# dbCol: military_service_duration
+    # dbCol: military_service_duration
         Column('military_service_duration', Integer),
         Column('military_service_duration_date_collected', DateTime(timezone=True)),
 
-	# dbCol: served_in_war_zone
+    # dbCol: served_in_war_zone
         Column('served_in_war_zone', Integer),
         Column('served_in_war_zone_date_collected', DateTime(timezone=True)),
 
-	# dbCol: war_zone
+    # dbCol: war_zone
         Column('war_zone', Integer),
         Column('war_zone_date_collected', DateTime(timezone=True)),
 
-	# dbCol: war_zone_other
+    # dbCol: war_zone_other
         Column('war_zone_other', String(50)),
         Column('war_zone_other_date_collected', DateTime(timezone=True)),
 
-	# dbCol: months_in_war_zone
+    # dbCol: months_in_war_zone
         Column('months_in_war_zone', Integer),
         Column('months_in_war_zone_date_collected', DateTime(timezone=True)),
 
-	# dbCol: received_fire
+    # dbCol: received_fire
         Column('received_fire', Integer),
         Column('received_fire_date_collected', DateTime(timezone=True)),
 
-	# dbCol: military_branch
+    # dbCol: military_branch
         Column('military_branch', Integer),
         Column('military_branch_date_collected', DateTime(timezone=True)),
 
-	# dbCol: military_branch_other
+    # dbCol: military_branch_other
         Column('military_branch_other', String(50)),
         Column('military_branch_other_date_collected', DateTime(timezone=True)),
 
-	# dbCol: discharge_status
+    # dbCol: discharge_status
         Column('discharge_status', Integer),
         Column('discharge_status_date_collected', DateTime(timezone=True)),
 
@@ -521,7 +521,7 @@ class databaseObjects:
         table_metadata.create_all()
         mapper(EmergencyContact, emergency_contact_table)
         return
-        
+                
     def person_address_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
@@ -534,24 +534,24 @@ class databaseObjects:
         Column('address_period_start_date_date_collected',DateTime(timezone=True)),
         Column('address_period_end_date',DateTime(timezone=True)),
         Column('address_period_end_date_date_collected',DateTime(timezone=True)),
-        Column('pre_address_line', String(128)),
+        Column('pre_address_line', String(32)),
         Column('pre_address_line_date_collected',DateTime(timezone=True)),
-        Column('line1', String(128)),
+        Column('line1', String(32)),
         Column('line1_date_collected',DateTime(timezone=True)),
-        Column('line2', String(128)),
+        Column('line2', String(32)),
         Column('line2_date_collected',DateTime(timezone=True)),
-        Column('city', String(128)),
+        Column('city', String(32)),
         Column('city_date_collected',DateTime(timezone=True)),
-        Column('county', String(128)),
+        Column('county', String(32)),
         Column('county_date_collected',DateTime(timezone=True)),
-        Column('state', String(128)),
+        Column('state', String(32)),
         Column('state_date_collected',DateTime(timezone=True)),
         
         #<xsd:element name="ZIPCode" type="hmis:zIPCode" minOccurs="0"/>
-        Column('zipcode', String(50)),          # 5+4+1 33626-1827
+        Column('zipcode', String(10)),          # 5+4+1 33626-1827
         Column('zipcode_date_collected',DateTime(timezone=True)),
         
-        Column('country', String(128)),
+        Column('country', String(32)),
         Column('country_date_collected',DateTime(timezone=True)),
         #*# dbCol: is_last_permanent_zip
         Column('is_last_permanent_zip', Integer),
@@ -580,33 +580,33 @@ class databaseObjects:
         #So remove primary key, as that will bar dups.
         Column('id', Integer, primary_key=True),
         Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
-        Column('person_id_hashed', String(128)),
+        Column('person_id_hashed', String(32)),
         Column('person_id_unhashed', String(50)),
         Column('person_id_date_collected', DateTime(timezone=True)),
-        Column('person_date_of_birth_hashed', String(128)),
+        Column('person_date_of_birth_hashed', String(32)),
         Column('person_date_of_birth_unhashed', Date(timezone=False)),
         Column('person_date_of_birth_date_collected', DateTime(timezone=True)),
-        Column('person_ethnicity_hashed', String(128)),
+        Column('person_ethnicity_hashed', String(32)),
         Column('person_ethnicity_unhashed', Integer(2)),
         Column('person_ethnicity_date_collected', DateTime(timezone=True)),
-        Column('person_gender_hashed', String(128)),
+        Column('person_gender_hashed', String(32)),
         Column('person_gender_unhashed', Integer(2)),
         Column('person_gender_date_collected', DateTime(timezone=True)),
-        Column('person_legal_first_name_hashed', String(128)),   
+        Column('person_legal_first_name_hashed', String(32)),   
         Column('person_legal_first_name_unhashed', String(50)),
         Column('person_legal_first_name_date_collected', DateTime(timezone=True)),
-        Column('person_legal_last_name_hashed', String(128)),
+        Column('person_legal_last_name_hashed', String(32)),
         Column('person_legal_last_name_unhashed', String(50)),
         Column('person_legal_last_name_date_collected', DateTime(timezone=True)),
-        Column('person_legal_middle_name_hashed', String(128)),
+        Column('person_legal_middle_name_hashed', String(32)),
         Column('person_legal_middle_name_unhashed', String(50)),
         Column('person_legal_middle_name_date_collected', DateTime(timezone=True)),
-        Column('person_legal_suffix_hashed', String(128)),
+        Column('person_legal_suffix_hashed', String(32)),
         Column('person_legal_suffix_unhashed', String(50)),
         Column('person_legal_suffix_date_collected', DateTime(timezone=True)),
         #OtherNames is in its own table as there can be multiple OtherNames
         #Race is in its own table as there can be multiple races
-        Column('person_social_security_number_hashed', String(128)),
+        Column('person_social_security_number_hashed', String(32)),
         Column('person_social_security_number_unhashed', String(9)),
         Column('person_social_security_number_date_collected', DateTime(timezone=True)),
         Column('person_social_sec_number_quality_code', String(2)),
@@ -642,83 +642,83 @@ class databaseObjects:
         Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)),
         
     # dbCol: person_historical_idid_num
-        Column('person_historical_idid_num', String(128)),
+        Column('person_historical_idid_num', String(32)),
         Column('person_historical_idid_num_date_collected', DateTime(timezone=True)),
     
     # dbCol: person_historical_idid_str
-        Column('person_historical_idid_str', String(128)),
+        Column('person_historical_idid_str', String(32)),
         Column('person_historical_idid_str_date_collected', DateTime(timezone=True)),
     
     # dbCol: barrier_code
-        Column('barrier_code', String(128)),
+        Column('barrier_code', String(32)),
         Column('barrier_code_date_collected', DateTime(timezone=True)),
     
     # dbCol: barrier_other
-        Column('barrier_other', String(128)),
+        Column('barrier_other', String(32)),
         Column('barrier_other_date_collected', DateTime(timezone=True)),
     
     # dbCol: child_currently_enrolled_in_school
-        Column('child_currently_enrolled_in_school', String(128)),
+        Column('child_currently_enrolled_in_school', String(32)),
         Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),
     
     # dbCol: currently_employed
-        Column('currently_employed', String(128)),
+        Column('currently_employed', String(32)),
         Column('currently_employed_date_collected', DateTime(timezone=True)),
     
     # dbCol: currently_in_school
-        Column('currently_in_school', String(128)),
+        Column('currently_in_school', String(32)),
         Column('currently_in_school_date_collected', DateTime(timezone=True)),
     
     # dbCol: degree_code
-        Column('degree_code', String(128)),
+        Column('degree_code', String(32)),
         Column('degree_code_date_collected', DateTime(timezone=True)),
     
     # dbCol: degree_other
-        Column('degree_other', String(128)),
+        Column('degree_other', String(32)),
         Column('degree_other_date_collected', DateTime(timezone=True)),
     
     # dbCol: developmental_disability
-        Column('developmental_disability', String(128)),
+        Column('developmental_disability', String(32)),
         Column('developmental_disability_date_collected', DateTime(timezone=True)),
     
     # dbCol: domestic_violence
-        Column('domestic_violence', String(128)),
+        Column('domestic_violence', String(32)),
         Column('domestic_violence_date_collected', DateTime(timezone=True)),
     
     # dbCol: domestic_violence_how_long
-        Column('domestic_violence_how_long', String(128)),
+        Column('domestic_violence_how_long', String(32)),
         Column('domestic_violence_how_long_date_collected', DateTime(timezone=True)),
     
     # dbCol: due_date
-        Column('due_date', String(128)),
+        Column('due_date', String(32)),
         Column('due_date_date_collected', DateTime(timezone=True)),
     
     # dbCol: employment_tenure
-        Column('employment_tenure', String(128)),
+        Column('employment_tenure', String(32)),
         Column('employment_tenure_date_collected', DateTime(timezone=True)),
     
     # dbCol: health_status
-        Column('health_status', String(128)),
+        Column('health_status', String(32)),
         Column('health_status_date_collected', DateTime(timezone=True)),
     
     # dbCol: highest_school_level
-        Column('highest_school_level', String(128)),
+        Column('highest_school_level', String(32)),
         Column('highest_school_level_date_collected', DateTime(timezone=True)),
     
     # dbCol: hivaids_status
-        Column('hivaids_status', String(128)),
+        Column('hivaids_status', String(32)),
         Column('hivaids_status_date_collected', DateTime(timezone=True)),
     
     # dbCol: hours_worked_last_week
-        Column('hours_worked_last_week', String(128)),
+        Column('hours_worked_last_week', String(32)),
         Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
     
     # dbCol: hud_chronic_homeless
-        Column('hud_chronic_homeless', String(128)),
+        Column('hud_chronic_homeless', String(32)),
         Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
     
     # dbCol: hud_homeless
-        Column('hud_homeless', String(128)),
+        Column('hud_homeless', String(32)),
         Column('hud_homeless_date_collected', DateTime(timezone=True)),
     
         ###HUDHomelessEpisodes (subtable)
@@ -726,101 +726,101 @@ class databaseObjects:
         ###IncomeAndSources (subtable)
     
     # dbCol: length_of_stay_at_prior_residence
-        Column('length_of_stay_at_prior_residence', String(128)),
+        Column('length_of_stay_at_prior_residence', String(32)),
         Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=True)),
     
     # dbCol: looking_for_work
-        Column('looking_for_work', String(128)),
+        Column('looking_for_work', String(32)),
         Column('looking_for_work_date_collected', DateTime(timezone=True)),
     
     # dbCol: mental_health_indefinite
-        Column('mental_health_indefinite', String(128)),
+        Column('mental_health_indefinite', String(32)),
         Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
     
     # dbCol: mental_health_problem
-        Column('mental_health_problem', String(128)),
+        Column('mental_health_problem', String(32)),
         Column('mental_health_problem_date_collected', DateTime(timezone=True)),
     
     # dbCol: non_cash_source_code
-        Column('non_cash_source_code', String(128)),
+        Column('non_cash_source_code', String(32)),
         Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
     
     # dbCol: non_cash_source_other
-        Column('non_cash_source_other', String(128)),
+        Column('non_cash_source_other', String(32)),
         Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
     
         ###PersonAddress (subtable)
     
     # dbCol: person_email
-        Column('person_email', String(128)),
+        Column('person_email', String(32)),
         Column('person_email_date_collected', DateTime(timezone=True)),
     
     # dbCol: person_phone_number
-        Column('person_phone_number', String(128)),
+        Column('person_phone_number', String(32)),
         Column('person_phone_number_date_collected', DateTime(timezone=True)),
     
     # dbCol: physical_disability
-        Column('physical_disability', String(128)),
+        Column('physical_disability', String(32)),
         Column('physical_disability_date_collected', DateTime(timezone=True)),
     
     # dbCol: pregnancy_status
-        Column('pregnancy_status', String(128)),
+        Column('pregnancy_status', String(32)),
         Column('pregnancy_status_date_collected', DateTime(timezone=True)),
     
     # dbCol: prior_residence
-        Column('prior_residence', String(128)),
+        Column('prior_residence', String(32)),
         Column('prior_residence_date_collected', DateTime(timezone=True)),
     
     # dbCol: prior_residence_other
-        Column('prior_residence_other', String(128)),
+        Column('prior_residence_other', String(32)),
         Column('prior_residence_other_date_collected', DateTime(timezone=True)),
     
     # dbCol: reason_for_leaving
-        Column('reason_for_leaving', String(128)),
+        Column('reason_for_leaving', String(32)),
         Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
     
     # dbCol: reason_for_leaving_other
-        Column('reason_for_leaving_other', String(128)),
+        Column('reason_for_leaving_other', String(32)),
         Column('reason_for_leaving_other_date_collected', DateTime(timezone=True)),
     
     # dbCol: school_last_enrolled_date
-        Column('school_last_enrolled_date', String(128)),
+        Column('school_last_enrolled_date', String(32)),
         Column('school_last_enrolled_date_date_collected', DateTime(timezone=True)),
     
     # dbCol: school_name
-        Column('school_name', String(128)),
+        Column('school_name', String(32)),
         Column('school_name_date_collected', DateTime(timezone=True)),
     
     # dbCol: school_type
-        Column('school_type', String(128)),
+        Column('school_type', String(32)),
         Column('school_type_date_collected', DateTime(timezone=True)),
     
     # dbCol: subsidy_other
-        Column('subsidy_other', String(128)),
+        Column('subsidy_other', String(32)),
         Column('subsidy_other_date_collected', DateTime(timezone=True)),
     
     # dbCol: subsidy_type
-        Column('subsidy_type', String(128)),
+        Column('subsidy_type', String(32)),
         Column('subsidy_type_date_collected', DateTime(timezone=True)),
     
     # dbCol: substance_abuse_indefinite
-        Column('substance_abuse_indefinite', String(128)),
+        Column('substance_abuse_indefinite', String(32)),
         Column('substance_abuse_indefinite_date_collected', DateTime(timezone=True)),
     
     # dbCol: substance_abuse_problem
-        Column('substance_abuse_problem', String(128)),
+        Column('substance_abuse_problem', String(32)),
         Column('substance_abuse_problem_date_collected', DateTime(timezone=True)),
     
     # dbCol: total_income
-        Column('total_income', String(128)),
+        Column('total_income', String(32)),
         Column('total_income_date_collected', DateTime(timezone=True)),
     
         ###Veteran (subtable)
     
     # dbCol: vocational_training
-        Column('vocational_training', String(128)),
+        Column('vocational_training', String(32)),
         Column('vocational_training_date_collected', DateTime(timezone=True)),
-                
+        
     # dbCol: annual_personal_income
         Column('annual_personal_income', Integer(2)),
         Column('annual_personal_income_date_collected', DateTime(timezone=True)),
@@ -856,10 +856,6 @@ class databaseObjects:
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
-        ##DrugHistory  (subtable)
-
-        ##EmergencyContacts (subtable)
-
         useexisting = True
         )
         table_metadata.create_all()
@@ -883,7 +879,7 @@ class databaseObjects:
         Column('amount_date_collected', DateTime(timezone=True)),
         Column('income_source_code', Integer),
         Column('income_source_code_date_collected', DateTime(timezone=True)),
-        Column('income_source_other', String(128)),
+        Column('income_source_other', String(32)),
         Column('income_source_other_date_collected', DateTime(timezone=True)),
         useexisting = True)
         table_metadata.create_all()
@@ -900,16 +896,16 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('household_index_id', Integer, ForeignKey(Household.c.id)),
 
-	# dbCol: person_id_unhashed
-        Column('person_id_unhashed', String(128)),
+    # dbCol: person_id_unhashed
+        Column('person_id_unhashed', String(32)),
         Column('person_id_unhashed_date_collected', DateTime(timezone=True)),
 
-	# dbCol: person_id_hashed
-        Column('person_id_hashed', String(128)),
+    # dbCol: person_id_hashed
+        Column('person_id_hashed', String(32)),
         Column('person_id_hashed_date_collected', DateTime(timezone=True)),
 
     # dbCol: relationship_to_head_of_household
-        Column('relationship_to_head_of_household', String(128)),
+        Column('relationship_to_head_of_household', String(32)),
         Column('relationship_to_head_of_household_date_collected', DateTime(timezone=True)),
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
@@ -931,20 +927,20 @@ class databaseObjects:
         
         Column('export_id', String(50), ForeignKey(Export.c.export_id)),
 
-	# dbCol: household_idid_num
-            Column('household_id_num', String(128)),
+    # dbCol: household_idid_num
+            Column('household_id_num', String(32)),
             Column('household_id_num_date_collected', DateTime(timezone=True)),
 
-	# dbCol: household_idid_str
-            Column('household_id_str', String(128)),
+    # dbCol: household_idid_str
+            Column('household_id_str', String(32)),
             Column('household_id_str_date_collected', DateTime(timezone=True)),
 
-	# dbCol: head_of_household_id_unhashed
-            Column('head_of_household_id_unhashed', String(128)),
+    # dbCol: head_of_household_id_unhashed
+            Column('head_of_household_id_unhashed', String(32)),
             Column('head_of_household_id_unhashed_date_collected', DateTime(timezone=True)),
 
-	# dbCol: head_of_household_id_hashed
-            Column('head_of_household_id_hashed', String(128)),
+    # dbCol: head_of_household_id_hashed
+            Column('head_of_household_id_hashed', String(32)),
             Column('head_of_household_id_hashed_date_collected', DateTime(timezone=True)),
 
         ###Members (subtable)
@@ -968,42 +964,42 @@ class databaseObjects:
         Column('person_index_id', Integer, ForeignKey(Person.c.id)),
 
     # dbCol: release_of_information_idid_num
-        Column('release_of_information_idid_num', String(128)),
+        Column('release_of_information_idid_num', String(32)),
         Column('release_of_information_idid_num_date_collected', DateTime(timezone=True)),
 
     # dbCol: release_of_information_idid_str
-        Column('release_of_information_idid_str', String(128)),
+        Column('release_of_information_idid_str', String(32)),
         Column('release_of_information_idid_str_date_collected', DateTime(timezone=True)),
 
     # dbCol: site_service_idid_num
-        Column('site_service_idid_num', String(128)),
+        Column('site_service_idid_num', String(32)),
         Column('site_service_idid_num_date_collected', DateTime(timezone=True)),
 
     # dbCol: site_service_idid_str
-        Column('site_service_idid_str', String(128)),
+        Column('site_service_idid_str', String(32)),
         Column('site_service_idid_str_date_collected', DateTime(timezone=True)),
 
     # dbCol: documentation
-        Column('documentation', String(128)),
+        Column('documentation', String(32)),
         Column('documentation_date_collected', DateTime(timezone=True)),
 
     ###EffectivePeriod (subtable)
     # dbCol: start_date
-        Column('start_date', String(128)),
+        Column('start_date', String(32)),
         Column('start_date_date_collected', DateTime(timezone=True)),
     
     # dbCol: end_date
-        Column('end_date', String(128)),
+        Column('end_date', String(32)),
         Column('end_date_date_collected', DateTime(timezone=True)),
 
     # dbCol: release_granted
-        Column('release_granted', String(128)),
+        Column('release_granted', String(32)),
         Column('release_granted_date_collected', DateTime(timezone=True)),
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
-	useexisting = True)
+    useexisting = True)
 
         table_metadata.create_all()
         
@@ -1023,7 +1019,7 @@ class databaseObjects:
         Column('source_id_date_collected', DateTime(timezone=True)),
         Column('source_email', String(50)),
         Column('source_email_date_collected', DateTime(timezone=True)),
-        Column('source_contact_extension', String(50)),
+        Column('source_contact_extension', String(10)),
         Column('source_contact_extension_date_collected', DateTime(timezone=True)),
         Column('source_contact_first', String(20)),
         Column('source_contact_first_date_collected', DateTime(timezone=True)),
@@ -1087,13 +1083,13 @@ class SiteServiceParticipation(baseObject):
                         
 class Veteran(baseObject):
     pass    
-        
+
 class DrugHistory(baseObject):
     pass
       
 class EmergencyContact(baseObject):
     pass
-    
+                
 class HUDHomelessEpisodes(baseObject):
     pass
             
@@ -1126,7 +1122,7 @@ def main(argv=None):
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")
         
-    #pg_db = create_engine('postgres://%s:%s@localhost:54128/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+    #pg_db = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
     
     mappedObjects = databaseObjects()
     

@@ -378,31 +378,80 @@ class PARXMLTest:
         name = 'PARXML'
         print 'running the', name, 'test'
         self.schema_filename = Selector.local_schema['operation_par_xml']
+
+    '''Find elements with or without specific xsd type'''
+    def find_elements_by_type(self, schema_doc, type_content):
+        element_names = schema_doc.xpath("//xsd:element[@type != $n]/@name", namespaces={"xsd":"http://www.w3.org/2001/XMLSchema", 'ext':'http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd', 'hmis':'http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd'},n=type_content)
+        return element_names
     
     def validate(self, instance_stream):
-        #return True  ## use this to skip the validation test
-        '''This specific data format's validation process.'''
-        schema = open(self.schema_filename,'r')
         
+        #return True  ## use this to skip the validation test
+        #return False ## use this to fail validation test
+        
+        '''This specific data format's validation process.'''
+
+        '''Import schema for Operation PARS'''
+        schema = open(self.schema_filename,'r')
         schema_parsed = etree.parse(schema)
         schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        
         ## if schema fails to compile, catch exception here (except Exception, e: print e.error_log)
         
-        # make a copy of the stream, validate against the copy not the real stream
+        # make a copy of the file stream, validate against the copy not the real stream
         copy_instance_stream = copy.copy(instance_stream)
+        xml_doc = etree.parse(copy_instance_stream)
         
         ''' 
             Explicit check for 'ext' namespace since HUD_HMIS_2.8 xml
             validates against the extended Operation PAR schema
         '''
-        xml_doc = etree.parse(copy_instance_stream)
-        ext_namespace = xml_doc.xpath('/ext:SourceDatabase', namespaces={'ext': 'http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd'})
-        if len(ext_namespace) != 1: return False
+        ext_namespace_check = xml_doc.xpath('/ext:SourceDatabase', namespaces={'ext': 'http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd'})
+        if len(ext_namespace_check) != 1: return False
         
         try:
             instance_parsed = etree.parse(copy_instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
+                ''' 
+                    Elements that do not have the maxLength attribute
+                    in schema must be checked to ensure string length
+                    conforms to database field.  Lengths exceeding 32
+                    characters will cause the xml to be deemed invalid.
+                    This adds extra weight to this process and should
+                    be removed if maxLength is implemented for all 
+                    elements in the schema.
+                '''
+                
+                '''import original HUD HMIS 2.8 xsd that Operation PARS extended'''
+                schema_hudhmis_filename = Selector.local_schema['hud_hmis_2_8_xml']
+                schema_hudhmis_raw = open(schema_hudhmis_filename,'r')
+                schema_hudhmis_parsed = etree.parse(schema_hudhmis_raw)
+                
+                '''get lists of elements with maxLength attribute greater than 32'''
+                elements_string50 = self.find_elements_by_type(schema_parsed, 'hmis:string50')
+                elements_string50_ns = []
+                for e in elements_string50:
+                    elem_with_ns = '{http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd}' + e
+                    elements_string50_ns.append(elem_with_ns)
+                elements_string50 = self.find_elements_by_type(schema_hudhmis_parsed, 'hmis:string50')
+                for e in elements_string50:
+                    elem_with_ns = '{http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd}' + e
+                    elements_string50_ns.append(elem_with_ns)
+
+                '''combine lists if your looking for multiple types'''
+                elements_maxlength = elements_string50_ns
+
+                '''find elements without specific attribute and check length'''
+                xml_root = xml_doc.getroot()
+                for e in xml_root.iter():
+                    if str(e.tag) in elements_maxlength:
+                        if len(e.text) > 32:
+                            print 'XML Error.  Value %s exceeds database field length.' % str(e.tag)
+                            #return False    ## remove this when testing and perform manual truncate in PARXMLReader()
+                
+                #return False ## return invalid, use this to only test validation of string lengths and exit                        
+                
                 FU.makeBlock('The Operation PAR XML successfully validated.')
                 return results
             if results == False:

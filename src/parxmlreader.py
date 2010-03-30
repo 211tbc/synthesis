@@ -1953,6 +1953,18 @@ class PARXMLReader(DBObjects.databaseObjects):
 #                #parse_dict.__setitem__('export_id_date_collected', dateutil.parser.parse(root_element.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0]))
 #                self.shred(parse_dict, SiteService)
 #        return
+        
+    def convertFloat(self, x):
+        if '.' in x:
+            try:
+                x = int(float(x))
+                return str(x)
+            except ValueError:
+                #if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
+                return x
+        else:
+                #if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
+                return x            
 
     def shred(self, parse_dict, mapping):
         '''Commits the record set to the database'''
@@ -1981,10 +1993,18 @@ class PARXMLReader(DBObjects.databaseObjects):
                 return True
         elif len(query_string) is not 0 or None:
             if handling == 'attribute_text':
-                self.persist(db_column, query_string[0])
+                '''convert floats to integers'''
+                query_converted = self.convertFloat(query_string[0])
+                self.persist(db_column, query_converted)
+                #print '#### attribute_text - pre',query_string[0]
+                #print '#### attribute_text - post',query_converted                
                 return True
             if handling == 'text':
-                self.persist(db_column, query_string = query_string[0].text)
+                '''convert floats to integers'''
+                query_converted = self.convertFloat(query_string[0].text)
+                self.persist(db_column, query_string = query_converted)
+                #print '#### attribute_text - pre',query_string[0].text
+                #print '#### attribute_text - post',query_converted               
                 return True
             elif handling == 'attribute_date':
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string[0]))

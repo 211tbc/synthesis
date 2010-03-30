@@ -13,7 +13,8 @@ System Requirements:
 	inotify (kernel extensions)
 	cElementTree (improves performance)
 	python-gnupg (http://python-gnupg.googlecode.com/files/gnupg-0.2.1.tar.gz)
-
+	sqlalchemy-migrate 0.4.5 (http://sqlalchemy-migrate.googlecode.com/files/sqlalchemy-migrate-0.4.5.tar.gz)
+	
 Main entry point to program is:
 
 	MainProcessor.py

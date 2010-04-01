@@ -697,7 +697,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                         fldName='emergency_contact_address_period_end_date_date_collected'
                         self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactAddressPeriodEndDateDateCollected, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')
                     
-
+                
                 ### EmergencyContactID
                     fldName='emergency_contact_id'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactID, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
@@ -709,7 +709,6 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactName, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
                     fldName='emergency_contact_name_date_collected'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactNameDateCollected, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')
-
                 ### EmergencyContactPhoneNumber-0
                     fldName='emergency_contact_phone_number_0'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumber0, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
@@ -717,7 +716,6 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumberDateCollected0, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')                    
                     fldName='emergency_contact_phone_number_type_0'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumberType0, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_text')
-
                 ### EmergencyContactPhoneNumber-1
                     fldName='emergency_contact_phone_number_1'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumber1, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
@@ -725,7 +723,6 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumberDateCollected1, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')                    
                     fldName='emergency_contact_phone_number_type_1'
                     self.existence_test_and_add(fldName, item.xpath(xpEmergencyContactPhoneNumberType1, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_text')         
-                                        
                 ### Line1
                     fldName='emergency_contact_address_line1'
                     self.existence_test_and_add(fldName, item.xpath(xpLine1, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
@@ -746,6 +743,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpState, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'text')
                     fldName='emergency_contact_address_state_date_collected'
                     self.existence_test_and_add(fldName, item.xpath(xpStateDateCollected, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')
+                    
 
                 ### EmergencyContactRelationToClient
                     fldName='emergency_contact_relation_to_client'
@@ -1960,10 +1958,10 @@ class PARXMLReader(DBObjects.databaseObjects):
                 x = int(float(x))
                 return str(x)
             except ValueError:
-                #if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
+                if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
                 return x
         else:
-                #if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
+                if len(x) > 32: x = 'OVERLIMIT'     ## use this to remove strings > 32 in testing
                 return x            
 
     def shred(self, parse_dict, mapping):
@@ -1989,22 +1987,19 @@ class PARXMLReader(DBObjects.databaseObjects):
         '''checks that the query actually has a result and adds to dict'''
         #if len(query_string) is not 0:
         if handling == 'no_handling':
+                print 'NO HANDLE'
                 self.persist(db_column, query_string = query_string)
                 return True
         elif len(query_string) is not 0 or None:
             if handling == 'attribute_text':
-                '''convert floats to integers'''
-                query_converted = self.convertFloat(query_string[0])
-                self.persist(db_column, query_converted)
-                #print '#### attribute_text - pre',query_string[0]
-                #print '#### attribute_text - post',query_converted                
+                self.persist(db_column, str(query_string[0]))
                 return True
             if handling == 'text':
                 '''convert floats to integers'''
                 query_converted = self.convertFloat(query_string[0].text)
                 self.persist(db_column, query_string = query_converted)
-                #print '#### attribute_text - pre',query_string[0].text
-                #print '#### attribute_text - post',query_converted               
+                #print '#### text - pre',query_string[0].text
+                #print '#### text - post',query_converted               
                 return True
             elif handling == 'attribute_date':
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string[0]))

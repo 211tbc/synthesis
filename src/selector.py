@@ -448,7 +448,7 @@ class PARXMLTest:
                     if str(e.tag) in elements_maxlength:
                         if len(e.text) > 32:
                             print 'XML Error.  Value %s exceeds database field length.' % str(e.tag)
-                            #return False    ## remove this when testing and perform manual truncate in PARXMLReader()
+                            return False    ## remove this when testing and perform manual truncate in PARXMLReader()
                 
                 #return False ## return invalid, use this to only test validation of string lengths and exit                        
                 

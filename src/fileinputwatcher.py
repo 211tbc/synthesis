@@ -37,6 +37,7 @@ if os.name == 'nt':
 else:
     # POSIX
     try:
+        import pyinotify
         from pyinotify import WatchManager, ThreadedNotifier, ProcessEvent, EventsCodes
     except ImportError:
         print 'Could not import pyinotify modules.'
@@ -123,7 +124,11 @@ class FileInputWatcher:
         
         # test to see if we already have a notifier object, if not, make it, otherwise we are already watching a set of folders
         if self.notifier == None:
-            
+            try:
+                pyinotify.compatibility_mode()
+                print 'pyinotify running in compatbility mode'
+            except:
+                print 'pyinotify running in standard mode'
             try:
                 watch_manager = WatchManager()
             except NameError:

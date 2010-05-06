@@ -1,15 +1,9 @@
 
+## setup Python
+msiexec /i packages/python-2.5.msi TARGETDIR=C:\synthesis\python
+PYTHON_HOME = C:\synthesis\python
 
-## check for python
-msiexec /i python-2.5.msi TARGETDIR=r:\python25
-
- TARGETDIR=R:\python25
-PYTHON_HOME = C:\Python26
-
-## check for postgres
-
-
-## unpack synthesis
+## setup Postgresql server
 
 
 ## bootstrap

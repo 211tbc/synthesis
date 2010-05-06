@@ -1,0 +1,19 @@
+
+This is the installer for Synthesis
+
+
+## Linux ##
+
+chmod a+x install-linux.sh
+./install-linux.sh <options>
+
+Examples:
+
+	./install-linux.sh -d os -f /opt/synthesis
+	./install-linux.sh -d ignore -f /opt/synthesis
+
+
+
+## Windows ##
+
+Run 'install-windows.bat'

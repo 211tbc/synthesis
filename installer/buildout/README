@@ -2,9 +2,9 @@ Buildout (www.buildout.org)
 
 ## Automated Setup ##
 
-Install wrapper:
-sh installer.sh
-install.bat
+Install wrappers:
+install-linux.sh
+install-windows.bat
 
 ## Manual ##
 python bootstrap.py

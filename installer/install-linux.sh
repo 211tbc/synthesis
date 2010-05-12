@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ## supports: debian, ubuntu, rhel, centos
 ## should run on most *nix platforms

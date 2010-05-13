@@ -136,7 +136,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('source_id_date_collected', item.xpath(xpIDStrdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 else:
                     self.parse_dict.__setitem__('source_id', database_id_val[0].text)
-                    self.existence_test_and_add('source_id', item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
+                    self.existence_test_and_add('source_id_date_collected', item.xpath(xpIDNumdateCollected, namespaces={'hmis': self.hmis_namespace})[0], 'attribute_date')
                     
                 test = item.xpath(xpExportIDIDNum, namespaces={'hmis': self.hmis_namespace})
                 if len(test) is 0:
@@ -1678,9 +1678,14 @@ def main(argv=None):
     #UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "Example_HUD_HMIS_2_8_Instance.xml")
-    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
-    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_10-07-2009v2.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_8-27-2009.xml"
     #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance_dupTest1.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance_dupTest2.xml"
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance_dupTest3.xml"
+    
+    #inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_10-07-2009v2.xml"
+    inputFile = "/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/Example_HUD_HMIS_2_8_Instance.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

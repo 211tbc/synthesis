@@ -12,18 +12,30 @@ from fileUtils import fileUtilities
 
 class databaseObjects:
 
+    
     # instance variables
     pg_db = create_engine('postgres://%s:%s@%s:%s/%s' % \
-            (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
+            (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) ,echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
     # this is needed to do real work.
     session = sessionmaker(bind=pg_db, autoflush=True, transactional=True)
     
     def __init__(self):
         try:
-            log = clsLogger.clsLogger()
-            log.getLogger('sqlalchemy.engine').setLevel(log.LEVELS.get('info'))
-            #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
-            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get('info'))
+            
+            # SBB20100210 Change the logging level based on configuration file.
+            if settings.DEBUG_ALCHEMY:
+                loglevel = 'info'
+            else:
+                loglevel = 'error'
+                
+            log = clsLogger.clsLogger(loglevel=loglevel)
+                
+            ###log.getLogger('sqlalchemy.engine').setLevel(log.LEVELS.get(loglevel))
+            
+            #log.getLogger('sqlalchemy.orm').setLevel(log.LEVELS.get(loglevel))
+            #log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get(loglevel))
+            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.logger.info)
+            ###log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.LEVELS.get(loglevel))
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
             #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
                     
@@ -67,7 +79,46 @@ class databaseObjects:
         self.races_map()
         self.household_map()
         self.member_map()
+        # SBB20100303 Adding objects to deduplicate the DB Entries
+	self.dedup_link_map()
+	# SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
+	self.system_configuration_map()
         
+    def system_configuration_map(self):
+	table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        system_configuration_table = Table(
+        'sender_system_configuration', 
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('vendor_name', String(50)),
+	Column('processing_mode', String(4)),					# TEST or PROD
+        Column('source_id', String(50)),
+        Column('odbid', Integer),
+        Column('providerid', Integer),
+        Column('userid', Integer),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(SystemConfiguration, system_configuration_table) 
+        return
+        
+    def dedup_link_map(self):
+	table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        dedup_link_table = Table(
+        'dedup_link', 
+        table_metadata, 
+        Column('source_rec_id', String(50), primary_key=True),
+	Column('destination_rec_id', String(50)), 
+        Column('weight_factor', Integer),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        #mapper(dedup_link, export_table, properties={'children': [relation(Person), relation(Database)]})
+        #mapper(Export, export_table, properties={'children': relation(Person), 'children': relation(Database)})
+        return
+    
     def service_event_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         service_event_table = Table(
@@ -252,16 +303,16 @@ class databaseObjects:
         Column('veteran_status_date_collected', DateTime(timezone=True)),
 
     # dbCol: discharge_type (Operations PARS)
-        Column('discharge_type', Integer(2)),
-        Column('discharge_type_date_collected', DateTime(timezone=True)),
-
-    # dbCol: health_status_at_discharge (Operations PARS)
-        Column('health_status_at_discharge', Integer(2)),
-        Column('health_status_at_discharge_date_collected', DateTime(timezone=True)),
-
-    # dbCol: va_eligibility (Operations PARS)
-        Column('va_eligibility', Integer(2)),
-        Column('va_eligibility_date_collected', DateTime(timezone=True)),
+    #    Column('discharge_type', Integer(2)),
+    #    Column('discharge_type_date_collected', DateTime(timezone=True)),
+    #
+    ## dbCol: health_status_at_discharge (Operations PARS)
+    #    Column('health_status_at_discharge', Integer(2)),
+    #    Column('health_status_at_discharge_date_collected', DateTime(timezone=True)),
+    #
+    ## dbCol: va_eligibility (Operations PARS)
+    #    Column('va_eligibility', Integer(2)),
+    #    Column('va_eligibility_date_collected', DateTime(timezone=True)),
         
         ###Need (subtable)
 
@@ -275,7 +326,8 @@ class databaseObjects:
         
         mapper(SiteServiceParticipation, site_service_participation_table, properties={'fk_participation_to_need': relation(Need, backref='fk_need_to_participation'),
                                                                                        'fk_participation_to_serviceevent' : relation(ServiceEvent),
-                                                                                       'fk_participation_to_personhistorical' : relation(PersonHistorical)
+                                                                                       'fk_participation_to_personhistorical' : relation(PersonHistorical),
+                                                                                       'fk_participation_to_person' : relation(Person)
                                                                                        }
                )#, 'children': relation(#tablename#), 'children': relation(#tablename#)})
         return
@@ -822,36 +874,36 @@ class databaseObjects:
         Column('vocational_training_date_collected', DateTime(timezone=True)),
         
     # dbCol: annual_personal_income
-        Column('annual_personal_income', Integer(2)),
-        Column('annual_personal_income_date_collected', DateTime(timezone=True)),
+        #Column('annual_personal_income', Integer(2)),
+        #Column('annual_personal_income_date_collected', DateTime(timezone=True)),
         
     # dbCol: employment_status
-        Column('employment_status', Integer(2)),
-        Column('employment_status_date_collected', DateTime(timezone=True)),
+        #Column('employment_status', Integer(2)),
+        #Column('employment_status_date_collected', DateTime(timezone=True)),
         
     # dbCol: family_size
-        Column('family_size', Integer(2)),
-        Column('family_size_date_collected', DateTime(timezone=True)),
+        #Column('family_size', Integer(2)),
+        #Column('family_size_date_collected', DateTime(timezone=True)),
 
     # dbCol: hearing_impaired
-        Column('hearing_impaired', Integer(2)),
-        Column('hearing_impaired_date_collected', DateTime(timezone=True)),            
+        #Column('hearing_impaired', Integer(2)),
+        #Column('hearing_impaired_date_collected', DateTime(timezone=True)),            
 
     # dbCol: marital_status
-        Column('marital_status', Integer(2)),
-        Column('marital_status_date_collected', DateTime(timezone=True)),
+        #Column('marital_status', Integer(2)),
+        #Column('marital_status_date_collected', DateTime(timezone=True)),
 
     # dbCol: non_ambulatory
-        Column('non_ambulatory', Integer(2)),
-        Column('non_ambulatory_date_collected', DateTime(timezone=True)),
-
-    # dbCol: residential_status
-        Column('residential_status', Integer(2)),
-        Column('residential_status_date_collected', DateTime(timezone=True)),
-
-    # dbCol: visually_impaired
-        Column('visually_impaired', Integer(2)),
-        Column('visually_impaired_date_collected', DateTime(timezone=True)),
+    #    Column('non_ambulatory', Integer(2)),
+    #    Column('non_ambulatory_date_collected', DateTime(timezone=True)),
+    #
+    ## dbCol: residential_status
+    #    Column('residential_status', Integer(2)),
+    #    Column('residential_status_date_collected', DateTime(timezone=True)),
+    #
+    ## dbCol: visually_impaired
+    #    Column('visually_impaired', Integer(2)),
+    #    Column('visually_impaired_date_collected', DateTime(timezone=True)),
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
@@ -1059,6 +1111,9 @@ class baseObject(object):
             return "<%s(%s)>" % (self.__class__.__name__, out)
         else:
             return ''
+
+class SystemConfiguration(baseObject):
+    pass
         
 class Source(baseObject):
     pass

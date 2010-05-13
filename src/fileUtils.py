@@ -249,7 +249,16 @@ class fileUtilities:
             shutil.move(source, destDir)        
         except:
             raise
-            
+        
+    def renameFile(self, source, dest):
+        # SBB20100421 rename was only doing a copy to new name, leaving old file, wrong.  Fixed to remove source
+        try:
+            shutil.copy(source, dest)
+            self.deleteFile(source)
+        except:
+            pass
+        
+        
     def copyFile(self, source, dest):
         shutil.copy2(source, dest)
 

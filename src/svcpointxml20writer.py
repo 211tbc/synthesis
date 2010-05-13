@@ -54,10 +54,16 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
-    nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}	
+    nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
+    
+    servicepoint_version = '4.06'
     
     def __init__(self, poutDirectory, processingOptions, debug=False, debugMessages=None):
 	#print "%s Class Initialized" % self.__name__
+	
+	# SBB20100225 Adding a default iso format string to class
+	self.isIsoTimeFormat = '%Y-%m-%dT%H:%M:%S'
+	
 	if settings.DEBUG:
 	    print "XML File to be dumped to: %s" % poutDirectory
 		
@@ -102,11 +108,13 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	self.prettify()
 	self.writeOutXML()
 	self.commitTransaction()
+	return True
 
     def updateReported(self, currentObject):
 	# update the reported field of the currentObject being passed in.  These should all exist.
 	try:
-	    print 'Updating reporting for object: %s' % currentObject.__class__
+	    if self.debug:
+		print 'Updating reporting for object: %s' % currentObject.__class__
 	    currentObject.reported = True
 	    #currentObject.update()
 	    #self.session.save(currentObject)
@@ -143,6 +151,9 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	self.daily_census = daily_census
 	
     # SBB20071021 Set the systemID value from the DB.
+    #rowID = bz.getRowID(dsRec[0]['Client ID'])
+    #xML.setSysID(rowID)
+    
     def setSysID(self, pSysID):
 	self.sysID = pSysID
     # SBB20071021
@@ -180,7 +191,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	
 	if self.options.reported == True:
 	    Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
-	elif self.options.reported == False:
+	elif self.options.unreported == True:
 	    Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
 	elif self.options.reported == None:
 	    Persons = self.session.query(DBObjects.Person)
@@ -212,31 +223,23 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 
 	    if not self.person == None and self.outcomes == None:
 		client = self.createClient(records)
+		
 		self.customizeClient(client)
 		self.customizeClientPersonalIdentifiers(client, self.person)
 		# EntryExits
-		entry_exits = self.createEntryExits(client)
-		for EE in self.site_service_part:
-		    
-		    # Reporting Update
-		    self.updateReported(EE)
-		    
-		    self.createEntryExit(entry_exits, EE)
-		    
-		    self.need = None
-		    if not EE == None:
-			Needs = EE.fk_participation_to_need
+		# SBB20100311 These need to be at Document Level not client level
+		#entry_exits = self.createEntryExits(client)
 		
-			# Needs (only create this if we have a 'Need')
-			if not Needs == None:
-			    for self.need in Needs:
-				
-				# Reporting Update
-				self.updateReported(self.need)
-				
-				needs = self.createNeeds(client) 
-				need = self.createNeed(needs)
-				self.customizeNeed(need)
+	    entry_exits = self.createEntryExits(self.root_element)
+	    
+	    for EE in self.site_service_part:
+		
+		# Reporting Update
+		self.updateReported(EE)
+		
+		entry_exit = self.createEntryExit(entry_exits, EE)
+		    	    
+		
 				
 	    # Release of Information
 	    if len(information_releases) > 0:
@@ -252,15 +255,40 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 		# SBB20091014 Removed creation of Dynamic Content since this is per agency structure.  
 		#dynamiccontent = self.createDynamic_content(client)
 		#self.customizeDynamiccontent(dynamiccontent)
+		
+	# Now process the needs
+	#Needs = Need.filter(between(DBObjects.Need.need_idid_num_date_collected, self.options.startDate, self.options.endDate))
+	Needs = self.session.query(DBObjects.Need).filter(or_(DBObjects.Need.reported == False, DBObjects.Need.reported == None))
+	# SBB20100316 Need new Grouping Element to stick all the needs
+	grouped_needs = self.createGroupedNeeds(self.root_element)
 	
+	self.need = None
+	if not EE == None:
+	    Needs = EE.fk_participation_to_need
+    
+	    # Needs (only create this if we have a 'Need')
+	    if not Needs == None:
+		for self.need in Needs:
+		    
+		    #grouped_needs = ET.SubElement(client, "grouped_needs")
+		    
+		    # Reporting Update
+		    self.updateReported(self.need)
+		    
+		    #needs = self.createNeeds(grouped_needs) 
+		    need = self.createNeed(grouped_needs)
+		    self.customizeNeed(need, self.need)
+		    
 	# HouseHolds
 	# first get the export object then get it's related objects
 	#Household = self.mappedObjects.session.query(DBObjects.Household)
 	Household = self.session.query(DBObjects.Household).filter(or_(DBObjects.Household.reported == False, DBObjects.Household.reported == None))
 	
-	if Household <> None:
+	if Household <> None and Household.count() > 0:
 	    
-	    households = self.createHouseholds(records)
+	    # SBB20100310 Households need to be same level as clients with new xml
+	    #households = self.createHouseholds(records)
+	    households = self.createHouseholds(self.root_element)
 	    
 	    for self.eachHouse in Household:
 		
@@ -273,13 +301,13 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 		# attach the members (if they exist)
 		if len(Members) > 0:
 		    members = self.createMembers(household)
-		    for self.eachMember in Members:
+		    for eachMember in Members:
 			
 			# Reporting Update
 			self.updateReported(self.eachMember)
 			
 			member = self.createMember(members)
-			self.customizeMember(member)
+			self.customizeMember(member, eachMember)
 	    
 	    #continue	# FIXME (Remove when done)
 	
@@ -467,6 +495,9 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	clientszip_1.attrib["date_effective"] = self.fixDate(dbo_address.zipcode_date_collected)									
 	clientszip_1.text = dbo_address.zipcode
     
+    def createGroupedNeeds(self, base):
+	return ET.SubElement(base, "grouped_needs")
+	
     def createNeeds(self, client):
 	needs = ET.SubElement(client, "needs")
 	
@@ -483,43 +514,58 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	date_object_format = self.fixDate(self.need.need_idid_num_date_collected)
 	sysID = sysID + str(date_object_format)
 	recID = self.xmlU.generateRecID(keyval)
+	# fixme (need odbid) / is this OK as fixed value or needs to be calculated.
+	#odbid = self.xmlU.generateRecID(keyval)
+	
 	
 	need = ET.SubElement(needs, "need")
 	need.attrib["record_id"] = recID 
 	need.attrib["system_id"] = sysID
-	
+	need.attrib["odbid"] = "5"
 	need.attrib["date_added"] = datetime.now().isoformat()
 	need.attrib["date_updated"] = datetime.now().isoformat()
 	
 	
 	return need
     
-    def customizeNeed(self, need):
-
+    def customizeNeed(self, need, needData):
+	'''
+	Data Elements needed are:
+	
+	<xsd:element name="provider_id"                  type="legacyIDType"                 minOccurs="1" maxOccurs="1" nillable="false"/>
+	<xsd:element name="status"                       type="statusPickOption"             minOccurs="1" maxOccurs="1" nillable="false"/>
+	<xsd:element name="code"                         type="serviceCodeType"              minOccurs="1" maxOccurs="1" nillable="false"/>
+	<xsd:element name="date_set"                     type="xsd:dateTime"                 minOccurs="1" maxOccurs="1" nillable="false"/>
+	<xsd:element name="amount"                       type="positiveDecimalType"          minOccurs="0" maxOccurs="1" nillable="true"/>
+	<xsd:element name="outcome"                      type="serviceoutcomePickOption"     minOccurs="0" maxOccurs="1" nillable="true"/>
+	<xsd:element name="reason_unmet"                 type="reasonunmetneedPickOption"    minOccurs="0" maxOccurs="1" nillable="true"/>
+	<xsd:element name="family_id"                    type="legacyIDType"                 minOccurs="0" maxOccurs="1" nillable="true"/>
+	<xsd:element name="need_notes"                   type="xsd:string"                   minOccurs="0" maxOccurs="1" nillable="true"/>
+	'''
+	
+	# Hardwired, don't have this in our Table.
 	provider_id = ET.SubElement(need, "provider_id")
 	provider_id.text = "14"
 	
-	
 	status = ET.SubElement(need, "status")
-	status.text = "closed"
-	
+	status.text = needData.need_status
 	
 	code = ET.SubElement(need, "code")
 	code.attrib["type"] = "airs taxonomy"
-	code.text = "BH-180"
+	code.text = needData.taxonomy
 	
-	
-	if self.debug == True:
-		notes = ET.SubElement(need, "notes")
-		notes.text = 'Client ID: %s' % self.dsRec['Client ID']
-		notes.tail = '\n'
-		
 	date_set = ET.SubElement(need, "date_set")
-	# ECJ20071114: The Need date_set will be the same day as the service provided date
-	orig_format = self.need.need_idid_num_date_collected
-	#We should have the shelter switch to a 4 digit year, then change the %y to %Y
-	date_set_datetime_object_format = self.fixDate(orig_format) 
-	date_set.text = date_set_datetime_object_format
+	date_set.text = self.fixDate(needData.need_status_date_collected)
+	
+	# Create these but we don't have data for them (validation)
+	amount = ET.SubElement(need, "amount")
+	amount.text = '0.00'
+	subelement = ET.SubElement(need, "outcome")
+	subelement = ET.SubElement(need, "reason_unmet")
+	subelement = ET.SubElement(need, "family_id")
+	subelement = ET.SubElement(need, "need_notes")
+	subelement = ET.SubElement(need, "need_clients")
+	subelement = ET.SubElement(need, "services")
 	
 	    
     def createServices(self, need):
@@ -673,9 +719,12 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	recID = self.xmlU.generateRecID(keyval)
 	entry_exit = ET.SubElement(entry_exits, "entry_exit")
 	
-	entry_exit.attrib["odbid"] = "5"
+	# SBB20100225 Removing this, not allowed for Service Point (SP) validation
+	#entry_exit.attrib["odbid"] = "5"
 	entry_exit.attrib["record_id"] = recID
-	entry_exit.attrib["system_id"] = sysID	
+	entry_exit.attrib["system_id"] = sysID
+	# SBB20100311 EE needs this, it's required.
+	entry_exit.attrib["odbid"] = "5"
 	entry_exit.attrib["date_added"] = datetime.now().isoformat()
 	entry_exit.attrib["date_updated"] = datetime.now().isoformat()
 	self.customizeEntryExit(entry_exit, EE)
@@ -742,6 +791,22 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	if EE.participation_dates_start_date <> "" and EE.participation_dates_start_date <> None:
 	    entry_date = ET.SubElement(entry_exit, "entry_date")
 	    entry_date.text = self.fixDate(EE.participation_dates_start_date)
+	    
+	    # now grab the PersonID from Participation
+	    EEperson = EE.fk_site_svc_part_to_person
+	    
+	    # This creates the subelement for members under Entry Exits.
+	    mbrs = self.createMembers(entry_exit)
+	    
+	    # SBB20100315 From there grab the PersonIDunhashed and try to use that to pull the members,
+	    # DEBUG this to figure out why we are failing to make mbr 
+	    if EEperson.person_id_unhashed <> None:				# and EEperson.person_id_hashed <> None:
+		mbr = self.createMember(mbrs)
+		self.customizeMember(mbr, EE, EEperson)
+		
+	    # Hold off on this for the moment.  Just use Members.
+	    # from there grab the HouseHoldID and try to pull the Household record
+	    # These get stuffed into the EntryExit Record
 	    
     def createInfo_releases(self, client):
 	# info_releases Section
@@ -1233,30 +1298,60 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	member.attrib["record_id"] = recID
 	member.attrib["date_added"] = datetime.now().isoformat()
 	member.attrib["date_updated"] = datetime.now().isoformat()
+	member.attrib["system_id"] = self.xmlU.generateSysID2('service', self.sysID)
 	
 	return member
     
-    def customizeMember(self, member):
+    def customizeMember(self, member, EEActivity, eachMember):
 	client_id = ET.SubElement(member, "client_id")
-	client_id.text = self.eachMember.person_id_unhashed
+	# or Hashed?
+	client_id.text = eachMember.person_id_unhashed
 
-	date_entered = ET.SubElement(member, "date_entered")
-	date_entered.text = self.fixDate(self.eachMember.person_id_unhashed_date_collected)
+	#date_entered = ET.SubElement(member, "date_entered")
+	#date_entered.text = self.fixDate(eachMember.person_id_unhashed_date_collected)
+	
+	# SBB20100315 Fixing EE to include member information
+#<xsd:element name="client_id"               type="legacyIDType"                         minOccurs="1" maxOccurs="1" nillable="false"/>
+#<xsd:element name="entry_date"            type="xsd:dateTime"                           minOccurs="0" maxOccurs="1" nillable="false"/>
+#<xsd:element name="exit_date"               type="xsd:dateTime"                         minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="reason_leaving"          type="eereasonleavingPickOption"            minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="reason_leaving_other"    type="xsd:string"                           minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="destination"             type="eedestinationPickOption"              minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="destination_other"       type="xsd:string"                           minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="notes"                   type="xsd:string"                           minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="tenure"                type="eetenurePickOption"                     minOccurs="0" maxOccurs="1" nillable="true"/>
+#<xsd:element name="subsidy"               type="eesubsidyPickOption"                    minOccurs="0" maxOccurs="1" nillable="true"/>
 
+	entry_date = ET.SubElement(member, "entry_date")
+	entry_date.text = self.fixDate(EEActivity.participation_dates_start_date)
+	
+	# exit_date
+	exit_date = ET.SubElement(member, "exit_date")
+	exit_date.text = self.fixDate(EEActivity.participation_dates_end_date)
+	
+	#reason_leaving= ET.SubElement(member, "reason_leaving")
+	#reason_leaving.text = "reason_leaving"
+	
+	#reason_leaving_other= ET.SubElement(member, "reason_leaving_other")
+	#reason_leaving_other.text = "reason_leaving_other"
+	
+	destination= ET.SubElement(member, "destination")
+	destination.text = EEActivity.destination
+	
+	destination_other= ET.SubElement(member, "destination_other")
+	destination_other.text = EEActivity.destination_other
+	
+	#notes= ET.SubElement(member, "notes")
+	#notes.text = "notes"
+	
+	tenure= ET.SubElement(member, "tenure")
+	tenure.text = EEActivity.destination_tenure
+	
+	#subsidy= ET.SubElement(member, "subsidy")
+	#subsidy.text = "subsidy"
+	
 	# We don't have this?
 	#date_ended = ET.SubElement(member, "date_ended")
-
-	relationship = ET.SubElement(member, "relationship")
-	if str(self.eachMember.relationship_to_head_of_household) <> "" and self.eachMember.relationship_to_head_of_household <> None:
-	    relationship.text = self.pickList.getValue("RELATIONSHIPSPickOption", str(self.eachMember.relationship_to_head_of_household))
-	else:
-	    if (self.eachHouse.head_of_household_id_unhashed == self.eachMember.person_id_unhashed) \
-		or (self.eachHouse.head_of_household_id_hashed == self.eachMember.person_id_hashed):
-		head_of_household = ET.SubElement(member, "head_of_household")
-		head_of_household.text = "TRUE"
-		relationship.text = 'self'
-	    
-    #	return provider
 	    
 	    # wrap it in an ElementTree instance, and save as XML
     def writeOutXML(self):
@@ -1301,12 +1396,17 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	# test the inputDate length, it might be 08/08/2007 or 08/08/07
 	# SBB20091007 if the incoming date is already a Datetimeobject simply send back the isoformat
 	if isinstance(inputDate, datetime) or isinstance(inputDate, date):
-	    return inputDate.isoformat()
+	    # SBB20100225 Replaceing isoformat() with less precision, same format just dropping the Microseconds.
+	    #return inputDate.isoformat()
+	    return inputDate.strftime(self.isIsoTimeFormat)
 	    
+	# SBB20100225 Replaceing isoformat() with less precision, same format just dropping the Microseconds.
 	if inputDate == "" or inputDate == None:
-	    return datetime.now().isoformat()
+	    #return datetime.now().isoformat()
+	    return datetime.now().strftime(self.isIsoTimeFormat)
 	else:
-	    newDate = self.getDateTimeObj(inputDate).isoformat()
+	    #newDate = self.getDateTimeObj(inputDate).isoformat()
+	    newDate = self.getDateTimeObj(inputDate).strftime(self.isIsoTimeFormat)
 	    if self.debug == True:
 		self.debugMessages.log("FUNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
 	    return newDate

@@ -78,6 +78,7 @@ class Utils:
         
         self.db_metadata.reflect()
         self.db_metadata.drop_all()
+        self.db_metadata.create_all(bind=self.pg_db)
         self.session.commit()
         print 'all tables dropped'
         

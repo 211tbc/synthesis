@@ -39,7 +39,7 @@ class queryObject:
         parser.add_option("-r", "--reported", action="store_true", dest="reported",
                           help="Select data that has already been reported (reported = True).  Omit both -r and -u to simply use date selection", metavar="Reported")
         
-        parser.add_option("-u", "--unreported", action="store_false", dest="reported",
+        parser.add_option("-u", "--unreported", action="store_true", dest="unreported",
                           help="Select data that has never been reported (reported = False or None).  Omit both -r and -u to simply use date selection", metavar="Reported")    
         
         (self.options, self.arg) = parser.parse_args()

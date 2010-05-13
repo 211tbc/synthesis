@@ -59,7 +59,7 @@ class smtpInterface:
         #self.msg.attach( MIMEText(fp.read()) )
         # now attach the attachment
         
-        part = MIMEText(fp.read())
+        att = MIMEText(fp.read())
         fp.close()
         #part.set_payload( open(file,"r").read() )
         #Encoders.encode_base64(part)
@@ -67,8 +67,8 @@ class smtpInterface:
         # SBB20070427 splitting out the filename from the full path (shows better in the heading of outlook)
         fileNameOnly = os.path.basename(textfile)
         #part.add_header('Content-Disposition', 'attachment', filename=textfile)
-        part.add_header('Content-Disposition', 'attachment', filename=fileNameOnly)
-        self.msg.attach(part)        
+        att.add_header('Content-Disposition', 'attachment', filename=fileNameOnly)
+        self.msg.attach(att)        
         
     def formatMessage(self):
         self.msg = MIMEMultipart()
@@ -95,7 +95,6 @@ class smtpInterface:
         self.msg['Date'] = formatdate(localtime=True)
         self.msg['Subject'] = self.messageSubject 
         self.msg.attach(MIMEText(self.message))
-        self.msg.preamble = 'ODS SuperBuild Process'
         # Guarantees the message ends in a newline
         self.msg.epilogue = ''
      
@@ -114,6 +113,7 @@ class smtpInterface:
                 self.log.logger.exception('smtplib.SMTPRecipientsRefused')
                 raise
         server.set_debuglevel(0)
+        self.formatMessage()
         server.sendmail(self.fromaddr, self.toaddrs, self.msg.as_string())
         server.quit()
 

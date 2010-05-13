@@ -31,7 +31,7 @@ from clsExceptions import FTPUploadFailureError, VPNFailure
 from conf import settings
 import paramiko
 from conf import outputConfiguration
-
+from datetime import datetime
 
 class clsPostProcessing(FTPUploadFailureError, VPNFailure):
     def __init__(self, vendorID):
@@ -40,6 +40,8 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         debug = settings.DEBUG
         if debug == True:
             self.debug = True
+        else:
+            self.debug = False
         
         iniFile = 'logging.ini'
         self.debugMessages = clsLogger(iniFile)
@@ -53,13 +55,17 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
     def processFile(self):
         pass
     
+    def setINI(self, iniSettings):
+        self.settings = iniSettings
+        self.systemMode = iniSettings['options.systemmode']
+    
     def processFileSFTP(self, filesToTransfer=[]):
         self.establishSFTP()
         self.transferSFTP(filesToTransfer)
         self.disconnectSFTP()
     
-    def processFileVPN(self):
-        #self.fileName = pFileName
+    def processFileVPN(self, pFiles):
+        #self.fileList = pFiles
         rc = self.establishVPN() 
         if rc <> 0:
             # failure out
@@ -67,7 +73,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
             theError = (1095, 'VPN Process failed to connect with command: %s.  Return from command was: %s.  Stopping processing until this can be resolved.  In order to complete processing you can execute command python clsPostProcessing.py which will upload the XML files for Bowman Processing.' % (comm, rc), 'processFile(self)')            
             raise VPNFailure, theError
         
-        rc = self.establishFTP()
+        rc = self.establishFTP(pFiles)
 
         # disconnect from the VPN
         rc = self.disconnectVPN()
@@ -81,7 +87,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
     
     def establishSFTP(self):
         self.ssh = paramiko.SSHClient()
-
+    
         self.ssh.set_missing_host_key_policy(
             paramiko.AutoAddPolicy())
         
@@ -141,10 +147,10 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         #rc = os.system(command)
         return rc
         
-    def establishFTP(self):
+    def establishFTP(self, pFiles):
         command = 'ftp baisix.servicept.com'
         print 'Connecting to FTP '
-        self.ftp()
+        self.ftp(pFiles)
     
     def disconnectVPN(self):
         print 'Disconnecting from VPN'
@@ -154,17 +160,10 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         rc = self.spawnProcess(command)
         return rc
         
-    def ftp(self):
+    def ftp(self, pFiles):
         #processor = fileUtils.fileUtilities(debug=debug, debugMessages=debugMessages)
         #processor = fileUtils.fileUtilities()
         outputDir = self.settings['filelocations.outputlocation']
-        # fixme (take out the hardcoded extension and put into the INI file)
-        filesList = processor.grabFiles(os.path.join(outputDir, '*.xml'))
-        if len(filesList) < 1:
-            print "No Files to be uploaded exiting normally"
-            return 0
-        # Change the local directory to where you want to put the data
-        #ddir = os.chdir(outputDir)
         
         # login to FTP
         url = self.settings['%s_options.ftpxmlupload' % (self.systemMode)]
@@ -175,6 +174,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         # SBB20071012 adding sleep and retries to the process
         ftpsleep = self.settings['options.ftpsleep']
         ftpretries = self.settings['options.ftpretries']
+        ftpinitialsleep = self.settings['options.ftpinitialsleep']
         
         if self.debug:
             self.debugMessages.log('url: %s\n' % url, 1)
@@ -186,6 +186,9 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         attempt = 0
         ftpUploaded = False
         
+        # SBB20100210 Adding an initial sleep (maybe the vpn is taking a while to establish the tunnel)
+        self.processor.sleep(int(ftpinitialsleep))
+        
         while not ftpUploaded:
             print "Connecting to: %s" % url
             attempt =+ 1
@@ -196,12 +199,12 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
                 theError = (1090, 'FTP Process failed to upload file: %s.  Process timeout parm: %s and sleep parm: %s.  Please check the VPN Connection or the FTP Server at: %s' % (str(filesList), ftpretries, ftpsleep, url), 'ftp(self)')
                 raise FTPUploadFailureError, theError
             
-            try:
+            try:        
                 f=ftplib.FTP(url, uname, passwd)
             except ftplib.all_errors:
                 # sleep the process.  VPN/FTP happening too quickly
                 self.debugMessages.log("General FTP Error.  Possibly process is happening too quickly.  Sleeping for %s seconds and trying again." % ftpsleep, 1)
-                processor.sleep(int(ftpsleep))
+                self.processor.sleep(int(ftpsleep))
                 continue
             
             print "Connected"
@@ -209,13 +212,13 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
             print 'Changing Directories to: %s' % destdir
             print f.cwd(destdir)
             
-            # loop through years
-            if len(filesList) > 0:
-                for file in filesList:
+            if len(pFiles) > 0:
+                for file in pFiles:
                     print 'Uploading file: %s' % file
                     fo = open(file, 'r')
                     fname = os.path.basename(file)
                     rc = f.storlines('STOR '+fname, fo)
+            
                     if rc == '226 Transfer complete.':
                         # rename the file
                         self.renameFile(file, True)
@@ -223,19 +226,15 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
                         badFile = self.renameFile(file, False)
                         theError = (1080, 'FTP Error during upload of file: %s.  FTP Server returned: %s.  Stopping the upload process.  Please investigate and start the process again to complete the upload.  File was renamed to: %s' % (fname, rc, badFile), 'ftp(self)')
                         raise FTPUploadFailureError, rc    
-                print 'Done uploading files'
-                
-                fo.close()
+                        print 'Done uploading files'
+                        
+                        fo.close()
             
             ftpUploaded = True
             
             
             break
             
-            
-                
-            
-        
         # Close FTP connection
         # Echo the result of the close command
         print f.close()
@@ -249,8 +248,17 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         else:
             renameExt = self.settings['filelocations.uploaded_failed_file_extensions']
             
-        destFile = "%s%s" % (fileName, renameExt)
-        self.processor.moveFile(fileName, destFile)
+        # make the filename unique (use ISO format for stamping)
+        lsNowISO = datetime.now().isoformat()
+        
+        # craft up the name
+        destFile = "%s.%s.%s" % (fileName, lsNowISO, renameExt)
+        
+        # rename the file
+        self.processor.renameFile(fileName, destFile)
+        
+        #self.processor.moveFile(fileName, destFile)
+        
         return destFile
     
     def spawnProcess(self, command):

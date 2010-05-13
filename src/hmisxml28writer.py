@@ -23,26 +23,26 @@ from zope.interface import implements
 # dynamic import of modules
 thisVersion = version[0:3]
 
-if thisVersion  == '2.5':
-    try:
-	import xml.etree.cElementTree as ET
-	from xml.etree.ElementTree import Element, SubElement, dump
-    except ImportError:
-	import xml.etree.ElementTree as ET
-	from xml.etree.ElementTree import Element, SubElement
-elif thisVersion == '2.4':
-    try:
-	# Try to use the much faster C-based ET.
-	import cElementTree as ET
-	from elementtree.ElementTree import Element, SubElement, dump
-    except ImportError:
-	# Fall back on the pure python one.
-	import elementtree.ElementTree as ET
-	from elementtree.ElementTree import Element, SubElement
-else:
-    print 'Sorry, please see the minimum requirements to run this Application'
-    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise SoftwareCompatibilityError, theError
+#if thisVersion  == '2.5':
+#    try:
+#	import xml.etree.cElementTree as ET
+#	from xml.etree.ElementTree import Element, SubElement, dump
+#    except ImportError:
+#	import xml.etree.ElementTree as ET
+#	from xml.etree.ElementTree import Element, SubElement
+#elif thisVersion == '2.4':
+#    try:
+#	# Try to use the much faster C-based ET.
+#	import cElementTree as ET
+#	from elementtree.ElementTree import Element, SubElement, dump
+#    except ImportError:
+#	# Fall back on the pure python one.
+#	import elementtree.ElementTree as ET
+#	from elementtree.ElementTree import Element, SubElement
+#else:
+#    print 'Sorry, please see the minimum requirements to run this Application'
+#    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+#    raise SoftwareCompatibilityError, theError
 
 def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()

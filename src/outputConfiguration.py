@@ -4,6 +4,20 @@
 
 Configuration = \
 {
+    '8888':
+        {
+            'vendor': 'System Operator',
+            'outputFormat': 'svcpoint',
+            'destinationURL': 'localhost',
+            'transportConfiguration': ''
+        },
+    '9999':
+        {
+            'vendor': 'System Operator',
+            'outputFormat': 'svcpoint',
+            'destinationURL': 'localhost',
+            'transportConfiguration': 'sys.stdout'
+        },
     '1234':
         {
             'vendor': 'Orlando Shelter Society',

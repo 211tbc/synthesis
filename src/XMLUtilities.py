@@ -74,7 +74,9 @@ class XMLUtilities:
 		return IDNumber
 	
 	def generateSysID(self, sequenceName):
-		IDNumber = "%s%010da" % (self.recIDLookup[sequenceName], self.getsystemID())
+		# SBB20100225 Length too long, shortening this by removing some of the leading zeros
+		#IDNumber = "%s%010da" % (self.recIDLookup[sequenceName], self.getsystemID())
+		IDNumber = "%s%08da" % (self.recIDLookup[sequenceName], self.getsystemID())
 		return IDNumber
 	
 	# SBB20071021 Added new function to take the "RowID" from the database and stuff into the XML system_id field

@@ -251,11 +251,11 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
             , error
             raise 
 
-class SVCPOINT20XMLTest:
+class SVCPOINTXMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
     def __init__(self):
         global name
-        self.name = 'SVCPOINT20XML'
+        self.name = 'SVCPOINT_%s_XML' % settings.SERVICEPOINT_VERSION
         print 'running the', self.name, 'test'
         self.schema_filename = Selector.local_schema['svcpoint_2_0_xml']
     

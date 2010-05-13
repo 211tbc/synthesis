@@ -15,6 +15,24 @@ System Requirements:
 	python-gnupg (http://python-gnupg.googlecode.com/files/gnupg-0.2.1.tar.gz)
 	sqlalchemy-migrate 0.4.5 (http://sqlalchemy-migrate.googlecode.com/files/sqlalchemy-migrate-0.4.5.tar.gz)
 	
+Installation
+
+	Install virtualenv
+	virtualenv --no-site-packages Synthesis					# Create an environment for the Project (mine is Synthesis)
+	easy_install "SqlAlchemy==0.4.5"					# Install the correct (required) version of SQLAlchemy
+	easy_install psycopg2							# Install the Postgres driver
+	easy_install zope.interface
+	easy_install pyinotify
+	
+	Under Ubuntu you'll need:
+		sudo apt-get install libxml2-dev
+		sudo apt-get install libxslt1-dev
+	
+	easy_install lxml
+	easy_install python-dateutil
+	easy_install python-gnupg
+	easy_install paramiko
+	
 Main entry point to program is:
 
 	MainProcessor.py

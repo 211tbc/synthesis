@@ -4,12 +4,13 @@ import gnupg
 from conf import settings
 import testCase_settings
 #from IPython.Shell import IPShellEmbed
+from borg import Borg
 
-
-class clsSecurity:
+class clsSecurity(Borg):
 
 	def __init__(self):
 		print "Class created: %s" % self.__class__.__name__
+		Borg.__init__(self)
 		
 		self.gpg = gnupg.GPG(gnupghome=settings.PGPHOMEDIR)
 		

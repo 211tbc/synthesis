@@ -11,6 +11,8 @@ class clsLogger(Borg):
         # make our class a singleton
         Borg.__init__(self)
         
+        print "Logging with INIFile: %s" % (configFile)
+        
         self.LEVELS = {'debug': logging.DEBUG,
           'info': logging.INFO,
           'warning': logging.WARNING,
@@ -51,7 +53,7 @@ if __name__ == "__main__":
     
     # get the log level from the command line (args)
     if len(sys.argv) > 1:
-        level_name = sys.argv[1]
+        level = sys.argv[1]
         #level = LEVELS.get(level_name, logging.NOTSET)
     else:
         level = logging.NOTSET

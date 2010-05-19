@@ -12,3 +12,5 @@ python bootstrap.py
 
 ## Whenever you change buildout.cfg ##
 ./bin/buildout
+
+## Process to create distributable package ##

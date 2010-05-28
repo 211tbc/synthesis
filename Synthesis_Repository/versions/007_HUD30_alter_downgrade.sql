@@ -78,10 +78,10 @@ ALTER TABLE release_of_information DROP COLUMN release_granted_date_effective_20
 ALTER TABLE release_of_information DROP COLUMN release_granted_data_collection_stage_2010;
 
 --service_event
-ALTER TABLE export DROP COLUMN person_index_id_2010;
-ALTER TABLE export DROP CONSTRAINT "person_index_id_fkey";
-ALTER TABLE export DROP COLUMN need_index_id_2010;
-ALTER TABLE export DROP CONSTRAINT "need_index_id_fkey";
+ALTER TABLE service_event DROP COLUMN person_index_id_2010;
+ALTER TABLE service_event DROP CONSTRAINT "person_index_id_fkey";
+ALTER TABLE service_event DROP COLUMN need_index_id_2010;
+ALTER TABLE service_event DROP CONSTRAINT "need_index_id_fkey";
 ALTER TABLE service_event DROP COLUMN service_event_id_delete_2010;
 ALTER TABLE service_event DROP COLUMN service_event_id_delete_occurred_date_2010;
 ALTER TABLE service_event DROP COLUMN service_event_id_delete_effective_2010;

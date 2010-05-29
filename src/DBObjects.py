@@ -63,6 +63,13 @@ class databaseObjects:
     def createMappings(self):
         self.export_map()
         self.source_map()
+        self.source_export_link_2010_map()
+        self.region_2010_map()
+        self.agency_2010_map()
+        self.agency_child_2010_map()
+        self.service_2010_map()
+        self.site_2010_map()
+        self.site_service_2010_map()
         self.person_map()
         self.site_service_participation_map()
         self.need_map()
@@ -78,25 +85,24 @@ class databaseObjects:
         self.other_names_map()
         self.races_map()
         self.household_map()
-        self.member_map()
-        
-        # new tables for HUD 3.0 data standard
-        
-        
+        self.member_map()       
+        self.funding_source_2010_map()       
+        self.inventory_2010_map()       
+                
         # SBB20100303 Adding objects to deduplicate the DB Entries
-    self.dedup_link_map()
-    # SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
-    self.system_configuration_map()
+        self.dedup_link_map()
+        # SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
+        self.system_configuration_map()
         
     def system_configuration_map(self):
-    table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         system_configuration_table = Table(
         'sender_system_configuration', 
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('vendor_name', String(50)),
-    Column('processing_mode', String(4)),                   # TEST or PROD
+        Column('processing_mode', String(4)),                   # TEST or PROD
         Column('source_id', String(50)),
         Column('odbid', Integer),
         Column('providerid', Integer),
@@ -108,13 +114,13 @@ class databaseObjects:
         return
         
     def dedup_link_map(self):
-    table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         dedup_link_table = Table(
         'dedup_link', 
         table_metadata, 
         Column('source_rec_id', String(50), primary_key=True),
-    Column('destination_rec_id', String(50)), 
+        Column('destination_rec_id', String(50)), 
         Column('weight_factor', Integer),
         useexisting = True
         )
@@ -410,7 +416,6 @@ class databaseObjects:
         Column('export_software_version_date_collected', DateTime(timezone=True)),
 
         ## HUD 3.0
-        Column('source_index_id_2010', Integer, ForeignKey(Source.c.id)), 
         Column('export_id_id_id_num_2010', String(50)),
         Column('export_id_id_id_str_2010', String(50)),
         Column('export_id_id_delete_occurred_date_2010', DateTime(timezone=True)),
@@ -1191,7 +1196,268 @@ class databaseObjects:
 #designs=relation(Design, private=True, backref="type")
 #))
         return
+        
+        
+        ## HUD 3.0 NEW TABLES
 
+    def source_export_link_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        source_export_link_2010_table = Table(
+        'source_export_link_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('source_index_id', Integer, ForeignKey(Source.c.id)),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(SourceExportLink, source_export_link_2010_table)
+        return    
+                
+    def region_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        region_2010_table = Table(
+        'region_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('region_id_id_num', String(50)),
+        Column('region_id_id_str', String(50)),
+        Column('site_service_id', String(50)),
+        Column('region_type', String(50)),
+        Column('region_type_date_collected', DateTime(timezone=True)),
+        Column('region_type_date_effective', DateTime(timezone=True)),
+        Column('region_type_data_collection_stage', Integer),
+        Column('region_description', String(50)),
+        Column('region_description_date_collected', DateTime(timezone=True)),
+        Column('region_description_date_effective', DateTime(timezone=True)),
+        Column('region_description_data_collection_stage', Integer),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Region, region_2010_table)
+        return
+ 
+    def agency_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        agency_2010_table = Table(
+        'agency_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('region_id_id_num', String(50)),
+        Column('region_id_id_str', String(50)),
+        Column('site_service_id', String(50)),
+        Column('region_type', String(50)),
+        Column('region_type_date_collected', DateTime(timezone=True)),
+        Column('region_type_date_effective', DateTime(timezone=True)),
+        Column('region_type_data_collection_stage', Integer),
+        Column('region_description', String(50)),
+        Column('region_description_date_collected', DateTime(timezone=True)),
+        Column('region_description_date_effective', DateTime(timezone=True)),
+        Column('region_description_data_collection_stage', Integer),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Agency, agency_2010_table)
+        return       
+
+    def agency_child_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        agency_child_2010_table = Table(
+        'agency_child_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AgencyChild, agency_child_2010_table)
+        return       
+
+    def service_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        service_2010_table = Table(
+        'service_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('airs_key', String(50)),
+        Column('airs_name', String(50)),
+        Column('coc_code', String(50)),
+        Column('configuration', String(50)),
+        Column('direct_service_code', String(50)),
+        Column('grantee_identifier', String(50)),
+        Column('individual_family_code', String(50)),
+        Column('residential_tracking_method', String(50)),
+        Column('service_type', String(50)),
+        Column('service_effective_period_start_date', DateTime(timezone=True)),
+        Column('service_effective_period_end_date', DateTime(timezone=True)),
+        Column('service_recorded_date', DateTime(timezone=True)),
+        Column('target_population_a', String(50)),
+        Column('target_population_b', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Service, service_2010_table)
+        return
+
+    def site_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        site_2010_table = Table(
+        'site_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)), 
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('airs_key', String(50)),
+        Column('airs_name', String(50)),
+        Column('site_description', String(50)),
+        Column('physical_address_pre_address_line', String(50)),
+        Column('physical_address_line_1', String(50)),
+        Column('physical_address_line_2', String(50)),
+        Column('physical_address_city', String(50)),
+        Column('physical_address_country', String(50)),
+        Column('physical_address_state', String(50)),
+        Column('physical_address_zip_code', String(50)),
+        Column('physical_address_country', String(50)),
+        Column('physical_address_reason_withheld', String(50)),
+        Column('physical_address_confidential', String(50)),
+        Column('physical_address_description', String(50)),
+        Column('mailing_address_pre_address_line', String(50)),
+        Column('mailing_address_line_1', String(50)),
+        Column('mailing_address_line_2', String(50)),
+        Column('mailing_address_city', String(50)),
+        Column('mailing_address_country', String(50)),
+        Column('mailing_address_state', String(50)),
+        Column('mailing_address_zip_code', String(50)),
+        Column('mailing_address_country', String(50)),
+        Column('mailing_address_reason_withheld', String(50)),
+        Column('mailing_address_confidential', String(50)),
+        Column('mailing_address_description', String(50)),
+        Column('no_physical_address_description', String(50)),
+        Column('no_physical_address_explanation', String(50)),
+        Column('disabilities_access', String(50)),
+        Column('physical_location_description', String(50)),
+        Column('bus_service_access', String(50)),
+        Column('public_access_to_transportation', String(50)),
+        Column('year_inc', String(50)),
+        Column('annual_budget_total', String(50)),
+        Column('legal_status', String(50)),
+        Column('exclude_from_website', String(50)),
+        Column('exclude_from_directory', String(50)),
+        Column('agency_key', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Site, site_2010_table)
+        return
+
+    def site_service_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        site_service_2010_table = Table(
+        'site_service_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('name', String(50)),
+        Column('key', String(50)),
+        Column('description', String(50)),
+        Column('fee_structure', String(50)),
+        Column('gender_requirements', String(50)),
+        Column('area_flexibility', String(50)),
+        Column('service_not_always_available', String(50)),
+        Column('service_group_key', String(50)),
+        Column('service_id', String(50)),
+        Column('site_id', String(50)),
+        Column('geographic_code', String(50)),
+        Column('geographic_code_date_collected', DateTime(timezone=True)),
+        Column('geographic_code_date_effective', DateTime(timezone=True)),        
+        Column('geographic_code_data_collection_stage', String(50)),
+        Column('housing_type', String(50)),
+        Column('housing_type_date_collected', DateTime(timezone=True)),
+        Column('housing_type_date_effective', DateTime(timezone=True)),
+        Column('housing_type_data_collection_stage', String(50)),
+        Column('principal', String(50)),
+        Column('site_service_effective_period_start_date', DateTime(timezone=True)),
+        Column('site_service_effective_period_end_date', DateTime(timezone=True)),
+        Column('site_service_recorded_date', DateTime(timezone=True)),
+        Column('site_service_type', String(50)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(SiteService, site_service_2010_table)
+        return
+
+    def funding_source_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        funding_source_2010_table = Table(
+        'funding_source_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('service_index_id', Integer, ForeignKey(Service.c.id)), 
+        Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.c.id)), 
+        Column('funding_source_id_id_num', String(50)),
+        Column('funding_source_id_id_str', String(50)),
+        Column('funding_source_id_delete', String(50)),
+        Column('funding_source_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('funding_source_id_delete_effective', DateTime(timezone=True)),
+        Column('federal_cfda_number', String(50)),
+        Column('receives_mckinney_funding', String(50)),
+        Column('advance_or_arrears', String(50)),
+        Column('financial_assistance_amount', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(FundingSource, funding_source_2010_table)
+        return
+        
+    def inventory_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        inventory_2010_table = Table(
+        'inventory_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('service_index_id', Integer, ForeignKey(Service.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('hmis_participation_period_start_date', DateTime(timezone=True)),
+        Column('hmis_participation_period_end_date', DateTime(timezone=True)),
+        Column('inventory_id_id_num', String(50)),
+        Column('inventory_id_id_str', String(50)),
+        Column('bed_availability', String(50)),
+        Column('bed_type', String(50)),
+        Column('bed_individual_family_type', String(50)),
+        Column('chronic_homeless_bed', String(50)),
+        Column('domestic_violence_shelter_bed', String(50)),
+        Column('household_type', String(50)),
+        Column('hmis_participating_beds', String(50)),        
+        Column('inventory_effective_period_start_date', DateTime(timezone=True)),
+        Column('inventory_effective_period_end_date', DateTime(timezone=True)),
+        Column('inventory_recorded_date', DateTime(timezone=True)),
+        Column('unit_inventory', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Inventory, inventory_2010_table)
+        return
+
+        
+        
 class baseObject(object):
     def __init__(self, field_dict):
         if settings.DEBUG:
@@ -1270,8 +1536,35 @@ class Household(baseObject):
             
 class Members(baseObject):
     pass
+
+class SourceExportLink(baseObject):
+    pass
+    
+class Region(baseObject):
+    pass
             
-            
+class Agency(baseObject):
+    pass  
+              
+class AgencyChild(baseObject):
+    pass  
+
+class Service(baseObject):
+    pass 
+
+class Site(baseObject):
+    pass 
+
+class SiteService(baseObject):
+    pass 
+      
+class FundingSource(baseObject):
+    pass 
+
+class Inventory(baseObject):
+    pass 
+    
+        
 def main(argv=None):  
     if argv is None:
         argv = sys.argv

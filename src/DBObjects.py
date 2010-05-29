@@ -79,20 +79,24 @@ class databaseObjects:
         self.races_map()
         self.household_map()
         self.member_map()
+        
+        # new tables for HUD 3.0 data standard
+        
+        
         # SBB20100303 Adding objects to deduplicate the DB Entries
-	self.dedup_link_map()
-	# SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
-	self.system_configuration_map()
+    self.dedup_link_map()
+    # SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
+    self.system_configuration_map()
         
     def system_configuration_map(self):
-	table_metadata = MetaData(bind=self.pg_db, reflect=True)
+    table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         system_configuration_table = Table(
         'sender_system_configuration', 
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('vendor_name', String(50)),
-	Column('processing_mode', String(4)),					# TEST or PROD
+    Column('processing_mode', String(4)),                   # TEST or PROD
         Column('source_id', String(50)),
         Column('odbid', Integer),
         Column('providerid', Integer),
@@ -104,13 +108,13 @@ class databaseObjects:
         return
         
     def dedup_link_map(self):
-	table_metadata = MetaData(bind=self.pg_db, reflect=True)
+    table_metadata = MetaData(bind=self.pg_db, reflect=True)
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         dedup_link_table = Table(
         'dedup_link', 
         table_metadata, 
         Column('source_rec_id', String(50), primary_key=True),
-	Column('destination_rec_id', String(50)), 
+    Column('destination_rec_id', String(50)), 
         Column('weight_factor', Integer),
         useexisting = True
         )
@@ -186,7 +190,23 @@ class databaseObjects:
         
     # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
-    
+
+        ## HUD 3.0
+        Column('person_index_id_2010', Integer, ForeignKey(Person.c.id)),
+        Column('need_index_id_2010', Integer, ForeignKey(Need.c.id)),
+        Column('service_event_id_delete_2010', Integer),
+        Column('service_event_ind_fam_2010', Integer),
+        Column('site_service_id_2010', String(50)),
+        Column('hmis_service_event_code_type_of_service_2010', String(50)),
+        Column('hmis_service_event_code_type_of_service_other_2010', String(50)),
+        Column('hprp_financial_assistance_service_event_code_2010', String(50)),
+        Column('hprp_relocation_stabilization_service_event_code_2010', String(50)),
+        Column('service_event_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('service_event_id_delete_effective_2010', DateTime(timezone=True)),
+        Column('service_event_provision_date_2010', DateTime(timezone=True)),
+        Column('service_event_recorded_date_2010', DateTime(timezone=True)),
+
+
         useexisting = True)
         table_metadata.create_all()
     
@@ -235,7 +255,16 @@ class databaseObjects:
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
-    
+
+        ## HUD 3.0
+        Column('person_index_id_2010', Integer, ForeignKey(Person.c.id)),
+        Column('need_id_delete_2010', Integer),
+        Column('need_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('need_id_delete_delete_effective_2010', DateTime(timezone=True)),
+        Column('need_effective_period_start_date_2010', DateTime(timezone=True)),
+        Column('need_effective_period_end_date_2010', DateTime(timezone=True)),
+        Column('need_recorded_date_2010', DateTime(timezone=True)),
+
         useexisting = True)
         table_metadata.create_all()
     
@@ -321,6 +350,11 @@ class databaseObjects:
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
+        ## HUD 3.0
+        Column('site_service_participation_id_delete_2010', Integer),
+        Column('site_service_participation_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('site_service_participation_id_delete_effective_2010', DateTime(timezone=True)),
+        
         useexisting = True)
         table_metadata.create_all()
         
@@ -345,7 +379,11 @@ class databaseObjects:
         Column('race_date_collected', DateTime(timezone=True)),
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
-        
+
+        ## HUD 3.0
+        Column('race_data_collection_stage_2010', Integer),
+        Column('race_date_effective_2010', DateTime(timezone=True)),
+                
         useexisting = True
         )
         table_metadata.create_all()
@@ -370,6 +408,14 @@ class databaseObjects:
         Column('export_software_vendor_date_collected', DateTime(timezone=True)),
         Column('export_software_version', String(10)),
         Column('export_software_version_date_collected', DateTime(timezone=True)),
+
+        ## HUD 3.0
+        Column('source_index_id_2010', Integer, ForeignKey(Source.c.id)), 
+        Column('export_id_id_id_num_2010', String(50)),
+        Column('export_id_id_id_str_2010', String(50)),
+        Column('export_id_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('export_id_id_delete_effective_2010', DateTime(timezone=True)),        
+        Column('export_id_id_delete_2010', Integer),        
         useexisting = True
         )
         table_metadata.create_all()
@@ -615,6 +661,11 @@ class databaseObjects:
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
+
+        ## HUD 3.0
+        Column('attr_delete_2010', Integer),
+        Column('attr_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('attr_effective_2010', DateTime(timezone=True)),        
         
         useexisting = True)
         table_metadata.create_all()
@@ -669,6 +720,13 @@ class databaseObjects:
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
+        
+        ## HUD 3.0
+        Column('person_id_id_num_2010', String(50)),
+        Column('person_id_id_str_2010', String(50)),
+        Column('person_id_delete_2010', Integer),
+        Column('person_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_id_delete_effective_2010', DateTime(timezone=True)),
         
         useexisting = True)
         table_metadata.create_all()
@@ -908,6 +966,12 @@ class databaseObjects:
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
+        ## HUD 3.0
+        Column('person_historical_id_delete_2010', Integer),
+        Column('person_historical_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_historical_id_delete_effective_2010', DateTime(timezone=True)),        
+        Column('site_service_id_2010', String(50)),
+
         useexisting = True
         )
         table_metadata.create_all()
@@ -933,6 +997,24 @@ class databaseObjects:
         Column('income_source_code_date_collected', DateTime(timezone=True)),
         Column('income_source_other', String(32)),
         Column('income_source_other_date_collected', DateTime(timezone=True)),
+
+        ## HUD 3.0
+        Column('income_and_source_id_id_id_num_2010', String(32)),
+        Column('income_and_source_id_id_id_str_2010', String(32)),
+        Column('income_and_source_id_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('income_and_source_id_id_delete_effective_2010', DateTime(timezone=True)),
+        Column('income_source_code_date_effective_2010', DateTime(timezone=True)),
+        Column('income_source_other_date_effective_2010', DateTime(timezone=True)),
+        Column('receiving_income_source_date_collected_2010', DateTime(timezone=True)),
+        Column('receiving_income_source_date_effective_2010', DateTime(timezone=True)),
+        Column('income_source_amount_date_effective_2010', DateTime(timezone=True)),
+        Column('income_and_source_id_id_delete_2010', Integer),
+        Column('income_source_code_data_collection_stage_2010', Integer),
+        Column('income_source_other_data_collection_stage_2010', Integer),
+        Column('receiving_income_source_2010', Integer),
+        Column('receiving_income_source_data_collection_stage_2010', Integer),
+        Column('income_source_amount_data_collection_stage_2010', Integer),
+
         useexisting = True)
         table_metadata.create_all()
         mapper(IncomeAndSources, income_and_sources_table)
@@ -1051,6 +1133,14 @@ class databaseObjects:
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
+        ## HUD 3.0
+        Column('release_of_information_id_data_collection_stage_2010', Integer),
+        Column('release_of_information_id_date_effective_2010', DateTime(timezone=True)),
+        Column('documentation_data_collection_stage_2010', Integer),
+        Column('documentation_date_effective_2010', DateTime(timezone=True)),
+        Column('release_granted_data_collection_stage_2010', Integer),
+        Column('release_granted_date_effective_2010', DateTime(timezone=True)),
+        
     useexisting = True)
 
         table_metadata.create_all()
@@ -1081,6 +1171,18 @@ class databaseObjects:
         Column('source_contact_phone_date_collected', DateTime(timezone=True)),
         Column('source_name', String(50)),
         Column('source_name_date_collected', DateTime(timezone=True)), 
+
+        ## HUD 3.0
+        Column('attr_version', String(50)),
+        Column('source_id_id_id_num_2010', String(50)),
+        Column('source_id_id_id_str_2010', String(50)),
+        Column('source_id_id_delete_2010', Integer),
+        Column('source_id_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('source_id_id_delete_effective_2010', DateTime(timezone=True)),
+        Column('software_vendor_2010', String(50)),
+        Column('software_version_2010', String(50)),
+        Column('source_contact_email_2010', String(50)),
+
         useexisting = True
         )
         table_metadata.create_all()

@@ -12,8 +12,6 @@ ALTER TABLE source ADD COLUMN software_version_2010 VARCHAR(32) DEFAULT NULL;
 ALTER TABLE source ADD COLUMN source_contact_email_2010 VARCHAR(32) DEFAULT NULL;
 
 --export
-ALTER TABLE export ADD COLUMN source_index_id_2010 int4 DEFAULT NULL;
-ALTER TABLE export ADD CONSTRAINT "source_index_id_fkey" FOREIGN KEY ("source_index_id_2010") REFERENCES "public"."source" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE export ADD COLUMN export_id_id_id_num_2010 VARCHAR(32) DEFAULT NULL;
 ALTER TABLE export ADD COLUMN export_id_id_id_str_2010 VARCHAR(32) DEFAULT NULL;
 ALTER TABLE export ADD COLUMN export_id_id_delete_2010 int2 DEFAULT NULL;

@@ -12,8 +12,6 @@ ALTER TABLE source DROP COLUMN software_version_2010;
 ALTER TABLE source DROP COLUMN source_contact_email_2010;
 
 --export
-ALTER TABLE export DROP COLUMN source_index_id_2010;
-ALTER TABLE export DROP CONSTRAINT "source_index_id_fkey";
 ALTER TABLE export DROP COLUMN export_id_id_id_num_2010;
 ALTER TABLE export DROP COLUMN export_id_id_id_str_2010;
 ALTER TABLE export DROP COLUMN export_id_id_delete_2010;

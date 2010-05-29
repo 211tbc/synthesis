@@ -1,0 +1,5 @@
+* db_person_historical_id
+hud_chronic_homeless
+hud_chronic_homeless_date_collected
+hud_chronic_homeless_date_effective
+hud_chronic_homeless_data_collection_stage

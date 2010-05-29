@@ -1,0 +1,20 @@
+* db_service_id
+* db_site_service_id
+attr_delete
+attr_delete_occurred_date
+attr_delete_effective
+hmis_participation_period_start_date
+hmis_participation_period_end_date
+inventory_id_id_num
+inventory_id_id_str
+bed_availability
+bed_type
+bed_individual_family_type
+chronic_homeless_bed
+domestic_violence_shelter_bed
+household_type
+hmis_participating_beds
+inventory_effective_period_start_date
+inventory_effective_period_end_date
+inventory_recorded_date
+unit_inventory

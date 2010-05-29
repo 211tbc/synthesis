@@ -1,0 +1,14 @@
+* db_child_enrollment_status_id
+barrier_id_id_num
+barrier_id_id_str
+barrier_id_delete
+barrier_id_delete_occurred_date
+barrier_id_delete_effective
+barried_code
+barried_code_date_collected
+barried_code_date_effective
+barried_code_data_collection_stage
+barrier_other
+barrier_other_date_collected
+barrier_other_date_effective
+barrier_other_data_collection_stage

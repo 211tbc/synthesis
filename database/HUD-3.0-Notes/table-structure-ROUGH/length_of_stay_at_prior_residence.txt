@@ -1,0 +1,5 @@
+* db_person_historical_id
+length_of_stay_at_prior_residence
+length_of_stay_at_prior_residence_date_collected
+length_of_stay_at_prior_residence_date_effective
+length_of_stay_at_prior_residence_data_collection_stage

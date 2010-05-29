@@ -1,0 +1,5 @@
+* db_person_historical_degree_id
+degree_code
+degree_date_collected
+degree_date_effective
+degree_data_collection_stage

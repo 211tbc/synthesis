@@ -1,0 +1,6 @@
+* db_person_historical
+non_cash_benefit_id_id_id_num
+non_cash_benefit_id_id_id_str
+non_cash_benefit_id_id_delete
+non_cash_benefit_id_id_delete_occurred_date
+non_cash_benefit_id_id_delete_effective

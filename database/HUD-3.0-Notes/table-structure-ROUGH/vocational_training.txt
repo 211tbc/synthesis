@@ -1,0 +1,5 @@
+* db_person_historical
+vocational_training
+vocational_training_date_collected
+vocational_training_date_effective
+vocational_training_data_collection_stage

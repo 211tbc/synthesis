@@ -1,0 +1,14 @@
+attr_version
+source_id_id_id_num
+source_id_id_id_str
+source_id_id_delete
+source_id_id_delete_occurred_date
+source_id_id_delete_effective
+software_vendor
+software_version
+source_contact_email
+#source_contact_extension
+#source_contact_first
+#source_contact_last
+#source_contact_phone
+#source_name

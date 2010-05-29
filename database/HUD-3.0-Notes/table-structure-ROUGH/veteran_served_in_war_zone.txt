@@ -1,0 +1,5 @@
+* db_person_historical
+served_in_war_zone
+served_in_war_zone_date_collected
+served_in_war_zone_date_effective
+served_in_war_zone_data_collection_stage

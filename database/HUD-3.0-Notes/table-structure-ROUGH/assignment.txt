@@ -1,0 +1,10 @@
+* db_site_service_hmis_asset_id
+assignment_id_id_num
+assignment_id_id_str
+assignment_id_delete
+assignment_id_delete_occurred_date
+assignment_id_delete_effective
+person_id_id_num
+person_id_id_str
+household_id_id_num
+household_id_id_str

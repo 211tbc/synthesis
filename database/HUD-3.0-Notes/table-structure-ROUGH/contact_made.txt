@@ -1,0 +1,10 @@
+* db_person_historical_id
+contact_id_id_num
+contact_id_id_str
+contact_id_delete
+contact_id_delete_occurred_date
+contact_id_delete_effective
+contact_date
+contact_date_data_collection_stage
+contact_location
+contact_location_data_collection_stage

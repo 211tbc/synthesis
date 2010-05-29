@@ -1,0 +1,5 @@
+* db_person_historical
+veteran_status
+veteran_status_date_collected
+veteran_status_date_effective
+veteran_status_data_collection_stage

@@ -1,0 +1,14 @@
+## use current table
+
+* db_person_id
+site_service_participation_id_id_num
+site_service_participation_id_id_str
+site_service_participation_id_delete
+site_service_participation_id_delete_occurred_date
+site_service_participation_id_delete_effective
+site_service_id
+household_id
+household_id_id_num
+household_id_id_str
+participation_dates_start_date
+participation_dates_end_date

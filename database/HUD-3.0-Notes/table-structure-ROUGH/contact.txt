@@ -1,0 +1,7 @@
+* db_agency_id
+* db_agency_resource_info_id
+* db_site_id
+* db_site_service_resource_info_id
+title
+name
+type

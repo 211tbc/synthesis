@@ -1,0 +1,5 @@
+* db_person_historical
+non_cash_benefits_last_30_days
+non_cash_benefits_last_30_days_date_collected
+non_cash_benefits_last_30_days_date_effective
+non_cash_benefits_last_30_days_data_collection_stage

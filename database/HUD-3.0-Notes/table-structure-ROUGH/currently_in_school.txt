@@ -1,0 +1,5 @@
+* db_person_historical
+currently_in_school
+currently_in_school_date_collected
+currently_in_school_date_effective
+currently_in_school_data_collection_stage

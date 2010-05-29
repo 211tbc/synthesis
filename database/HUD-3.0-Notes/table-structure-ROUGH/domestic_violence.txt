@@ -1,0 +1,9 @@
+* db_person_historical_id
+domestic_violence_survivor
+domestic_violence_survivor_date_collected
+domestic_violence_survivor_date_effective
+domestic_violence_survivor_data_collection_stage
+dvo_occurred
+dvo_occurred_date_collected
+dvo_occurred_date_effective
+dvo_occurred_data_collection_stage

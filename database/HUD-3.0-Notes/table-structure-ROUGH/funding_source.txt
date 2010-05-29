@@ -1,0 +1,12 @@
+* db_service_id
+* db_person_service_event_id
+* db_person_site_service_participation_service_event_id
+funding_source_id_id_num
+funding_source_id_id_str
+funding_source_id_delete
+funding_source_id_delete_occurred_date
+funding_source_id_delete_effective
+federal_cfda_number
+receives_mckinney_funding
+advance_or_arrears
+financial_assistance_amount

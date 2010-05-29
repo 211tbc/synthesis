@@ -1,0 +1,43 @@
+* db_export
+* db_agency_id
+* db_agency_location_id
+attr_delete
+attr_delete_occurred_date
+attr_effective
+key
+name
+site_description
+physical_address_pre_address_line
+physical_address_line_1
+physical_address_line_2
+physical_address_city
+physical_address_country
+physical_address_state
+physical_address_zip_code
+physical_address_country
+physical_address_reason_withheld
+physical_address_confidential
+physical_address_description
+mailing_address_pre_address_line
+mailing_address_line_1
+mailing_address_line_2
+mailing_address_city
+mailing_address_country
+mailing_address_state
+mailing_address_zip_code
+mailing_address_country
+mailing_address_reason_withheld
+mailing_address_confidential
+mailing_address_description
+no_physical_address_description
+no_physical_address_explanation
+disabilities_access
+physical_location_description
+bus_service_access
+public_access_to_transportation
+year_inc
+annual_budget_total
+legal_status
+exclude_from_website
+exclude_from_directory
+agency_key

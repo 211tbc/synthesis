@@ -4,6 +4,7 @@ implementation can be used.'''
 import fileUtils 
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
+from hmisxml30reader import HMISXML30Reader
 from jfcsxmlreader import JFCSXMLReader
 from parxmlreader import PARXMLReader
 from lxml import etree
@@ -174,9 +175,9 @@ class Selector:#IGNORE:R0903
         
         ## tests = [VendorXMLTest(), HUDHMIS28XMLTest(), JFCSXMLTest()]  ## JOE
         ## tests = [HUDHMIS28XMLTest(), JFCSXMLTest(), SVCPOINT20XMLTest(), PARXMLTest()] ## JOE
-        tests = [HUDHMIS28XMLTest(), JFCSXMLTest(), PARXMLTest()]
+        tests = [HUDHMIS28XMLTest(), HUDHMIS30XMLTest(), JFCSXMLTest(), PARXMLTest()]
         ## readers = [VendorXMLReader(instance_doc), HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]  ## JOE
-        readers = [HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc), PARXMLInputReader(instance_doc)]
+        readers = [HUDHMIS28XMLReader(instance_doc), HUDHMIS30XMLReader(instance_doc), JFCSXMLInputReader(instance_doc), PARXMLInputReader(instance_doc)]
         results = []
         #for item in tests:
         for item,read in map(None, tests, readers):
@@ -250,6 +251,51 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
             print 'XML Syntax Error.  There appears to be malformed XML.  '\
             , error
             raise 
+
+class HUDHMIS30XMLTest:
+    '''Load in the HUD HMIS Schema, version 3.0.'''
+    def __init__(self):
+        global name
+        name = 'HUDHMIS30XML'
+        print 'running the', name, 'test'
+        self.schema_filename = Selector.local_schema['hud_hmis_3_0_xml']
+    
+    def validate(self, instance_stream):
+        '''This specific data format's validation process.'''
+        schema = open(self.schema_filename,'r')
+        
+        schema_parsed = etree.parse(schema)
+        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        # make a copy of the stream, validate against the copy not the real stream
+        copy_instance_stream = copy.copy(instance_stream)
+
+        try:
+            instance_parsed = etree.parse(copy_instance_stream)
+            results = schema_parsed_xsd.validate(instance_parsed)
+            if results == True:
+                print 'The HMIS 3.0 XML successfully validated.'
+                FU.makeBlock('The HMIS 3.0 XML successfully validated.')
+                return results
+            if results == False:
+                print 'The xml did not successfully validate against \
+                HMIS 3.0 XML.'
+                try:
+                    detailed_results = schema_parsed_xsd.assertValid\
+                    (instance_parsed)
+                    print detailed_results
+                    return results
+                except etree.DocumentInvalid, error:
+                    print 'Document Invalid Exception.  Here is the detail:'
+                    print error
+                    return results
+            if results == None:
+                print "The validator erred and couldn't determine if the xml \
+                was either valid or invalid."
+                return results
+        except etree.XMLSyntaxError, error:
+            print 'XML Syntax Error.  There appears to be malformed XML.  '\
+            , error
+            raise
 
 class SVCPOINTXMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
@@ -478,6 +524,17 @@ class PARXMLTest:
 class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
     def __init__(self, instance_filename):
         self.reader = HMISXML28Reader(instance_filename)
+        
+    def shred(self):
+        tree = self.reader.read()
+        try:
+            self.reader.process_data(tree)
+        except:
+            raise
+
+class HUDHMIS30XMLReader(HMISXML30Reader):
+    def __init__(self, instance_filename):
+        self.reader = HMISXML30Reader(instance_filename)
         
     def shred(self):
         tree = self.reader.read()

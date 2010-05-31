@@ -1,4 +1,0 @@
-* db_agency_id
-* db_site_id
-address
-note

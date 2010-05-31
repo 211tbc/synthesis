@@ -1,2 +1,0 @@
-* db_site_id
-cross_street

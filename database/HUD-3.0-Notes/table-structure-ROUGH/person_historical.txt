@@ -1,8 +1,0 @@
-* db_person_id
-* db_person_historical_site_service_participation_id
-person_historical_id_id_num
-person_historical_id_id_str
-person_historical_id_delete
-person_historical_id_delete_occurred_date
-person_historical_id_delete_effective
-site_service_id

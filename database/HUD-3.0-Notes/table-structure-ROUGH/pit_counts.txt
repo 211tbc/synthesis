@@ -1,6 +1,0 @@
-* db_pit_count_set_id
-pit_count_value
-pit_count_effective_period_start_date
-pit_count_effective_period_end_date
-pit_count_recorded_date
-pit_household_type

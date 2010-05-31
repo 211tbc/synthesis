@@ -1,5 +1,0 @@
-* db_person_historical_id
-income_last_30_days
-income_last_30_days_date_collected
-income_last_30_days_date_effective
-income_last_30_days_data_collection_stage

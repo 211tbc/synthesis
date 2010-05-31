@@ -1,9 +1,0 @@
-* db_source_id
-export_id_id_id_num
-export_id_id_id_str
-export_id_id_delete
-export_id_id_delete_occurred_date
-export_id_id_delete_effective
-#export_date
-#export_period_start_date
-#export_period_end_date

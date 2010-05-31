@@ -1,2 +1,0 @@
-* db_site_service_id
-family_requirements

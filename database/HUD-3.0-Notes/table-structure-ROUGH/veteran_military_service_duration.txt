@@ -1,5 +1,0 @@
-* db_person_historical
-military_service_duration
-military_service_duration_date_collected
-military_service_duration_date_effective
-military_service_duration_data_collection_stage

@@ -1,8 +1,0 @@
-* db_site_service
-zipcode
-census_track
-city
-county
-state
-country
-description

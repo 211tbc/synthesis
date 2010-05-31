@@ -1,5 +1,0 @@
-* db_site_id
-description
-datum
-latitude
-longitude

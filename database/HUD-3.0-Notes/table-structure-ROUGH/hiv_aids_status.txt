@@ -1,9 +1,0 @@
-* db_person_historical_id
-has_hiv_aids
-has_hiv_aids_date_collected
-has_hiv_aids_date_effective
-has_hiv_aids_data_collection_stage
-receive_hiv_aids_services
-receive_hiv_aids_services_date_collected
-receive_hiv_aids_services_date_effective
-receive_hiv_aids_services_data_collection_stage

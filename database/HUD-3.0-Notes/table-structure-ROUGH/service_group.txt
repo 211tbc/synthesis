@@ -1,4 +1,0 @@
-* db_agency_id
-key
-name
-program_name

@@ -1,5 +1,0 @@
-* db_person_historical_id
-housing_status
-housing_status_date_collected
-housing_status_date_effective
-housing_status_data_collection_stage

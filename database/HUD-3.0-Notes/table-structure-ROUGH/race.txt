@@ -1,8 +1,0 @@
-# use current table
-
-* db_person_id
-race_unhashed
-race_unhashed_date_collected
-race_unhashed_date_effective
-race_unhashed_data_collection_stage
-race_hashed

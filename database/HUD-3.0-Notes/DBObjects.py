@@ -280,7 +280,6 @@ class databaseObjects:
         Column('service_event_provision_date_2010', DateTime(timezone=True)),
         Column('service_event_recorded_date_2010', DateTime(timezone=True)),
 
-
         useexisting = True)
         table_metadata.create_all()
     
@@ -1313,17 +1312,21 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
-        Column('region_id_id_num', String(50)),
-        Column('region_id_id_str', String(50)),
-        Column('site_service_id', String(50)),
-        Column('region_type', String(50)),
-        Column('region_type_date_collected', DateTime(timezone=True)),
-        Column('region_type_date_effective', DateTime(timezone=True)),
-        Column('region_type_data_collection_stage', Integer),
-        Column('region_description', String(50)),
-        Column('region_description_date_collected', DateTime(timezone=True)),
-        Column('region_description_date_effective', DateTime(timezone=True)),
-        Column('region_description_data_collection_stage', Integer),
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('airs_key', String(50)),
+        Column('airs_name', String(50)),
+        Column('agency_description', String(50)),
+        Column('irs_status', String(50)),
+        Column('source_of_funds', String(50)),
+        Column('record_owner', String(50)),
+        Column('fein', String(50)),
+        Column('year_inc', String(50)),
+        Column('annual_budget_total', String(50)),
+        Column('legal_status', String(50)),
+        Column('exclude_from_website', String(50)),
+        Column('exclude_from_directory', String(50)),        
         useexisting = True
         )
         table_metadata.create_all()

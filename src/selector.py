@@ -1,6 +1,7 @@
 '''Figures out what type of data format we are dealing with, using validation \
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
+import os
 import fileUtils 
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
@@ -104,18 +105,38 @@ class FileHandler:#IGNORE:R0903
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
     
+    def runWindows(self):
+        import os, time
+        BASE_PATH = os.getcwd()
+        path_to_watch = os.path.join(BASE_PATH, "InputFiles")
+        before = dict ([(f, None) for f in os.listdir (path_to_watch)])
+        try:
+            while 1:
+                time.sleep (10)
+                after = dict ([(f, None) for f in os.listdir (path_to_watch)])
+                added = [f for f in after if not f in before]
+                removed = [f for f in before if not f in after]
+                if added:
+                    print "Added: ", ", ".join (added)
+                    self.processExisting()
+                if removed:
+                    print "Removed: ", ", ".join (removed)
+                before = after
+        except KeyboardInterrupt:
+            return
+                
     def run(self): #IGNORE:R0201
         '''This is the main method controlling this entire program.'''
         #Start a monitoring thread.  It ends on its own.
         new_files = self.monitor()
         print 'monitoring..'
         print 'monitoring..2'
-        
+    
         #result = selector.validate(HUDHMIS28XMLTest(), new_file)
         for new_file in new_files:
             if settings.DEBUG:
                 print 'Processing: %s' % new_file
-            
+        
             self.processFiles(new_file)
             
     #ECJ 05042009 indented this block as it needs specific class attributes \n

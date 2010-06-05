@@ -58,16 +58,16 @@ try:
     while processFiles:
             
         try:
-        
-        # This will wait till files arrive, once processed, it will loop and start over (unless we get ctrl-C or break
-            RESULTS = FILEHANDLER.run()
+            if os.name == 'nt':
+                RESULTS = FILEHANDLER.runWindows()
+            else:
+                # This will wait till files arrive, once processed, it will loop and start over (unless we get ctrl-C or break
+                RESULTS = FILEHANDLER.run()
         except:
             excString = traceback.format_exc()
             print excString
             continue
         # logging?
-        
-        
 except KeyboardInterrupt:
 	print 'Stopping'
 

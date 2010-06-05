@@ -150,14 +150,15 @@ class FileInputWatcher:
         print 'Stopping the threaded notifier.'
         self.notifier.stop()
         return
-     
-class EventHandler(ProcessEvent): #IGNORE:W0232
-    '''Event handler processing create events passed in to the \
-    watch manager by the notifier.''' 
-    def __init__(self, queue):
-        self.queue = queue
+
+if os.name != 'nt':          
+    class EventHandler(ProcessEvent): #IGNORE:W0232
+        '''Event handler processing create events passed in to the \
+        watch manager by the notifier.''' 
+        def __init__(self, queue):
+            self.queue = queue
                 
-    def process_IN_CREATE(self, event):#IGNORE:C0103
-        '''What happens when a file is added'''
-        print "Create: %s" %  os.path.join(event.path, event.name)
-        self.queue.put(os.path.join(event.path, event.name))
+        def process_IN_CREATE(self, event):#IGNORE:C0103
+            '''What happens when a file is added'''
+            print "Create: %s" %  os.path.join(event.path, event.name)
+            self.queue.put(os.path.join(event.path, event.name))

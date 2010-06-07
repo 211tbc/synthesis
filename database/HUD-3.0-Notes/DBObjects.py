@@ -63,6 +63,8 @@ class databaseObjects:
     def createMappings(self):
         self.export_map()
         self.source_map()
+        self.person_map()        
+        self.service_2010_map()
         self.source_export_link_2010_map()
         self.region_2010_map()
         self.agency_2010_map()
@@ -70,7 +72,6 @@ class databaseObjects:
         self.service_group_2010_map()
         self.license_accreditation_2010_map()
         self.agency_service_2010_map()
-        self.service_2010_map()
         self.site_2010_map()
         self.url_2010_map()
         self.spatial_location_2010_map()
@@ -85,6 +86,7 @@ class databaseObjects:
         self.other_requirements_2010_map()
         self.languages_2010_map()
         self.time_open_2010_map()
+        self.time_open_days_2010_map()
         self.inventory_2010_map()
         self.income_requirements_2010_map()
         self.hmis_asset_2010_map()
@@ -94,7 +96,6 @@ class databaseObjects:
         self.documents_required_2010_map()
         self.aid_requirements_2010_map()
         self.age_requirements_2010_map()
-        self.person_map()
         self.site_service_participation_map()
         self.reasons_for_leaving_2010_map()
         self.application_process_2010_map()
@@ -118,7 +119,6 @@ class databaseObjects:
         self.physical_disability_2010_map()
         self.non_cash_benefits_2010_map()
         self.non_cash_benefits_last_30_days_2010_map()
-        self.non_cash_benefits_sub_2010_map()
         self.mental_health_problem_2010_map()
         self.length_of_stay_at_prior_residence_2010_map()
         self.income_total_monthly_2010_map()
@@ -1533,6 +1533,7 @@ class databaseObjects:
         Column('hmis_participation_period_end_date', DateTime(timezone=True)),
         Column('inventory_id_id_num', String(50)),
         Column('inventory_id_id_str', String(50)),
+        Column('bed_inventory', String(50)),
         Column('bed_availability', String(50)),
         Column('bed_type', String(50)),
         Column('bed_individual_family_type', String(50)),
@@ -1873,12 +1874,24 @@ class databaseObjects:
         Column('non_cash_benefit_id_id_delete', Integer),
         Column('non_cash_benefit_id_id_delete_occurred_date', DateTime(timezone=True)),
         Column('non_cash_benefit_id_id_delete_effective', DateTime(timezone=True)),
+        Column('non_cash_source_code', String(50)),
+        Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
+        Column('non_cash_source_code_date_effective', DateTime(timezone=True)),        
+        Column('non_cash_source_code_data_collection_stage', String(50)),
+        Column('non_cash_source_other', String(50)),
+        Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
+        Column('non_cash_source_other_date_effective', DateTime(timezone=True)),        
+        Column('non_cash_source_other_data_collection_stage', String(50)),
+        Column('receiving_non_cash_source', String(50)),
+        Column('receiving_non_cash_source_date_collected', DateTime(timezone=True)),
+        Column('receiving_non_cash_source_date_effective', DateTime(timezone=True)),        
+        Column('receiving_non_cash_source_data_collection_stage', String(50)),     
         useexisting = True
         )
         table_metadata.create_all()
         mapper(NonCashBenefits, non_cash_benefits_table)
         return
-
+        
     def agency_service_2010_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         agency_service_table = Table(
@@ -1924,32 +1937,6 @@ class databaseObjects:
         )
         table_metadata.create_all()
         mapper(AidRequirements, aid_requirements_table)
-        return
-
-    def non_cash_benefits_sub_2010_map(self):
-        table_metadata = MetaData(bind=self.pg_db, reflect=True)
-        non_cash_benefits_sub_table = Table(
-        'non_cash_benefits_sub_2010',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
-        Column('non_cash_benefits_index_id', Integer, ForeignKey(NonCashBenefits.c.id)), 
-        Column('non_cash_source_code', String(50)),
-        Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
-        Column('non_cash_source_code_date_effective', DateTime(timezone=True)),        
-        Column('non_cash_source_code_data_collection_stage', String(50)),
-        Column('non_cash_source_other', String(50)),
-        Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
-        Column('non_cash_source_other_date_effective', DateTime(timezone=True)),        
-        Column('non_cash_source_other_data_collection_stage', String(50)),
-        Column('receiving_non_cash_source', String(50)),
-        Column('receiving_non_cash_source_date_collected', DateTime(timezone=True)),
-        Column('receiving_non_cash_source_date_effective', DateTime(timezone=True)),        
-        Column('receiving_non_cash_source_data_collection_stage', String(50)),     
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(NonCashBenefitsSub, non_cash_benefits_sub_table)
         return
 
     def other_address_2010_map(self):
@@ -2658,14 +2645,27 @@ class databaseObjects:
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
         Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        Column('day_of_week', String(50)),
-        Column('from', String(50)),
-        Column('to', String(50)),
         Column('notes', String(50)),
         useexisting = True
         )
         table_metadata.create_all()
         mapper(TimeOpen, time_open_table)
+        return
+
+    def time_open_days_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        time_open_days_table = Table(
+        'time_open_days_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('time_open_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('day_of_week', String(50)),
+        Column('from', String(50)),
+        Column('to', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(TimeOpenDays, time_open_days_table)
         return
 
     def url_2010_map(self):
@@ -3100,9 +3100,6 @@ class NonCashBenefits(baseObject):
 class NonCashBenefitsLast30Days(baseObject):
     pass
 
-class NonCashBenefitsSub(baseObject):
-    pass
-
 class OtherNames(baseObject):
     pass
 
@@ -3203,6 +3200,9 @@ class Taxonomy(baseObject):
     pass
 
 class TimeOpen(baseObject):
+    pass
+
+class TimeOpenDays(baseObject):
     pass
 
 class Url(baseObject):

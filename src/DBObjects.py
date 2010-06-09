@@ -63,18 +63,83 @@ class databaseObjects:
     def createMappings(self):
         self.export_map()
         self.source_map()
+        self.person_map()        
+        self.service_2010_map()
         self.source_export_link_2010_map()
         self.region_2010_map()
         self.agency_2010_map()
         self.agency_child_2010_map()
-        self.service_2010_map()
+        self.service_group_2010_map()
+        self.license_accreditation_2010_map()
+        self.agency_service_2010_map()
         self.site_2010_map()
+        self.url_2010_map()
+        self.spatial_location_2010_map()
+        self.other_address_2010_map()
+        self.cross_street_2010_map()
+        self.aka_2010_map()
         self.site_service_2010_map()
-        self.person_map()
+        self.seasonal_2010_map()
+        self.residency_requirements_2010_map()
+        self.pit_count_set_2010_map()
+        self.pit_counts_2010_map()
+        self.other_requirements_2010_map()
+        self.languages_2010_map()
+        self.time_open_2010_map()
+        self.time_open_days_2010_map()
+        self.inventory_2010_map()
+        self.income_requirements_2010_map()
+        self.hmis_asset_2010_map()
+        self.assignment_2010_map()
+        self.assignment_period_2010_map()
+        self.geographic_area_served_2010_map()
+        self.documents_required_2010_map()
+        self.aid_requirements_2010_map()
+        self.age_requirements_2010_map()
         self.site_service_participation_map()
+        self.reasons_for_leaving_2010_map()
+        self.application_process_2010_map()
         self.need_map()
+        self.taxonomy_2010_map()
         self.service_event_map()
+        self.service_event_notes_2010_map()
+        self.family_requirements_2010_map()
         self.person_historical_map()
+        self.housing_status_2010_map()
+        self.veteran_military_branches_2010_map()
+        self.veteran_military_service_duration_2010_map()
+        self.veteran_served_in_war_zone_2010_map()
+        self.veteran_service_era_2010_map()
+        self.veteran_veteran_status_2010_map()
+        self.veteran_warzones_served_2010_map()
+        self.vocational_training_2010_map()
+        self.substance_abuse_problem_2010_map()
+        self.pregnancy_2010_map()
+        self.prior_residence_2010_map()
+        self.physical_disability_2010_map()
+        self.non_cash_benefits_2010_map()
+        self.non_cash_benefits_last_30_days_2010_map()
+        self.mental_health_problem_2010_map()
+        self.length_of_stay_at_prior_residence_2010_map()
+        self.income_total_monthly_2010_map()
+        self.hud_chronic_homeless_2010_map()
+        self.income_last_30_days_2010_map()
+        self.highest_school_level_2010_map()
+        self.hiv_aids_status_2010_map()
+        self.health_status_2010_map()
+        self.engaged_date_2010_map()
+        self.employment_2010_map()
+        self.domestic_violence_2010_map()
+        self.disabling_condition_2010_map()
+        self.developmental_disability_2010_map()
+        self.destinations_2010_map()
+        self.degree_2010_map()
+        self.degree_code_2010_map()      
+        self.currently_in_school_2010_map()
+        self.contact_made_2010_map()
+        self.child_enrollment_status_2010_map()
+        self.child_enrollment_status_barrier_2010_map()
+        self.chronic_health_condition_2010_map()
         self.release_of_information_map()
         self.income_and_sources_map()
         self.veteran_map()
@@ -86,9 +151,12 @@ class databaseObjects:
         self.races_map()
         self.household_map()
         self.member_map()       
-        self.funding_source_2010_map()       
-        self.inventory_2010_map()       
-                
+        self.funding_source_2010_map()
+        self.resource_info_2010_map()
+        self.contact_2010_map()
+        self.email_2010_map()
+        self.phone_2010_map()
+        
         # SBB20100303 Adding objects to deduplicate the DB Entries
         self.dedup_link_map()
         # SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
@@ -211,7 +279,6 @@ class databaseObjects:
         Column('service_event_id_delete_effective_2010', DateTime(timezone=True)),
         Column('service_event_provision_date_2010', DateTime(timezone=True)),
         Column('service_event_recorded_date_2010', DateTime(timezone=True)),
-
 
         useexisting = True)
         table_metadata.create_all()
@@ -443,15 +510,24 @@ class databaseObjects:
         Column('other_first_name_unhashed', String(50)),
         Column('other_first_name_hashed', String(32)),
         Column('other_first_name_date_collected', DateTime(timezone=True)),
+        Column('other_first_name_date_effective_2010', DateTime(timezone=True)),
+        Column('other_first_name_data_collection_stage_2010', Integer),
         Column('other_middle_name_unhashed', String(50)),
         Column('other_middle_name_hashed', String(32)),
         Column('other_middle_name_date_collected', DateTime(timezone=True)),
+        Column('other_middle_name_date_effective_2010', DateTime(timezone=True)),
+        Column('other_middle_name_data_collection_stage_2010', Integer),
         Column('other_last_name_unhashed', String(50)),
         Column('other_last_name_hashed', String(32)),
         Column('other_last_name_date_collected', DateTime(timezone=True)),
+        Column('other_last_name_date_effective_2010', DateTime(timezone=True)),
+        Column('other_last_name_data_collection_stage_2010', Integer),
         Column('other_suffix_unhashed', String(50)),
         Column('other_suffix_hashed', String(32)),
         Column('other_suffix_date_collected', DateTime(timezone=True)),
+        Column('other_suffix_date_effective_2010', DateTime(timezone=True)),
+        Column('other_suffix_data_collection_stage_2010', Integer),
+
         useexisting = True
         )
         table_metadata.create_all()
@@ -639,30 +715,44 @@ class databaseObjects:
         Column('address_period_end_date_date_collected',DateTime(timezone=True)),
         Column('pre_address_line', String(32)),
         Column('pre_address_line_date_collected',DateTime(timezone=True)),
+        Column('pre_address_line_date_effective_2010', DateTime(timezone=True)),
+        Column('pre_address_line_data_collection_stage_2010', Integer),
         Column('line1', String(32)),
         Column('line1_date_collected',DateTime(timezone=True)),
+        Column('line1_date_effective_2010', DateTime(timezone=True)),
+        Column('line1_data_collection_stage_2010', Integer),
         Column('line2', String(32)),
         Column('line2_date_collected',DateTime(timezone=True)),
+        Column('line2_date_effective_2010', DateTime(timezone=True)),
+        Column('line2_data_collection_stage_2010', Integer),
         Column('city', String(32)),
         Column('city_date_collected',DateTime(timezone=True)),
+        Column('city_date_effective_2010', DateTime(timezone=True)),
+        Column('city_data_collection_stage_2010', Integer),
         Column('county', String(32)),
         Column('county_date_collected',DateTime(timezone=True)),
+        Column('county_date_effective_2010', DateTime(timezone=True)),
+        Column('county_data_collection_stage_2010', Integer),
         Column('state', String(32)),
         Column('state_date_collected',DateTime(timezone=True)),
-        
-        #<xsd:element name="ZIPCode" type="hmis:zIPCode" minOccurs="0"/>
-        Column('zipcode', String(10)),          # 5+4+1 33626-1827
+        Column('state_date_effective_2010', DateTime(timezone=True)),
+        Column('state_data_collection_stage_2010', Integer),
+        Column('zipcode', String(10)),
         Column('zipcode_date_collected',DateTime(timezone=True)),
-        
+        Column('zipcode_date_effective_2010', DateTime(timezone=True)),
+        Column('zipcode_data_collection_stage_2010', Integer),
         Column('country', String(32)),
         Column('country_date_collected',DateTime(timezone=True)),
-        #*# dbCol: is_last_permanent_zip
+        Column('country_date_effective_2010', DateTime(timezone=True)),
+        Column('country_data_collection_stage_2010', Integer),
         Column('is_last_permanent_zip', Integer),
         Column('is_last_permanent_zip_date_collected', DateTime(timezone=True)),
-        
-        #*# dbCol: zip_quality_code
+        Column('is_last_permanent_zip_date_effective_2010', DateTime(timezone=True)),
+        Column('is_last_permanent_zip_data_collection_stage_2010', Integer),
         Column('zip_quality_code', Integer),
         Column('zip_quality_code_date_collected', DateTime(timezone=True)),
+        Column('zip_quality_code_date_effective_2010', DateTime(timezone=True)),
+        Column('zip_quality_code_data_collection_stage_2010', Integer),
         
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
@@ -732,7 +822,58 @@ class databaseObjects:
         Column('person_id_delete_2010', Integer),
         Column('person_id_delete_occurred_date_2010', DateTime(timezone=True)),
         Column('person_id_delete_effective_2010', DateTime(timezone=True)),
-        
+        Column('person_date_of_birth_hashed_delete_2010', Integer),
+        Column('person_date_of_birth_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_date_of_birth_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_date_of_birth_unhashed_delete_2010', Integer),
+        Column('person_date_of_birth_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_date_of_birth_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_ethnicity_hashed_delete_2010', Integer),
+        Column('person_ethnicity_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_ethnicity_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_ethnicity_unhashed_delete_2010', Integer),
+        Column('person_ethnicity_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_ethnicity_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_gender_hashed_delete_2010', Integer),
+        Column('person_gender_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_gender_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_gender_unhashed_delete_2010', Integer),
+        Column('person_gender_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_gender_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_first_name_hashed_delete_2010', Integer),
+        Column('person_legal_first_name_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_first_name_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_first_name_unhashed_delete_2010', Integer),
+        Column('person_legal_first_name_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_first_name_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_last_name_unhashed_delete_2010', Integer),
+        Column('person_legal_last_name_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_last_name_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_last_name_hashed_delete_2010', Integer),
+        Column('person_legal_last_name_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_last_name_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_middle_name_hashed_delete_2010', Integer),
+        Column('person_legal_middle_name_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_middle_name_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_middle_name_unhashed_delete_2010', Integer),
+        Column('person_legal_middle_name_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_middle_name_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_suffix_hashed_delete_2010', Integer),
+        Column('person_legal_suffix_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_suffix_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_legal_suffix_unhashed_delete_2010', Integer),
+        Column('person_legal_suffix_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_legal_suffix_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_hashed_delete_2010', Integer),
+        Column('person_social_security_number_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_unhashed_delete_2010', Integer),
+        Column('person_social_security_number_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_quality_code_delete_2010', Integer),
+        Column('person_social_security_number_quality_code_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_social_security_number_quality_code_delete_effective_2010', DateTime(timezone=True)),
+
         useexisting = True)
         table_metadata.create_all()
         
@@ -1245,17 +1386,21 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
-        Column('region_id_id_num', String(50)),
-        Column('region_id_id_str', String(50)),
-        Column('site_service_id', String(50)),
-        Column('region_type', String(50)),
-        Column('region_type_date_collected', DateTime(timezone=True)),
-        Column('region_type_date_effective', DateTime(timezone=True)),
-        Column('region_type_data_collection_stage', Integer),
-        Column('region_description', String(50)),
-        Column('region_description_date_collected', DateTime(timezone=True)),
-        Column('region_description_date_effective', DateTime(timezone=True)),
-        Column('region_description_data_collection_stage', Integer),
+        Column('attr_delete', Integer),
+        Column('attr_delete_occurred_date', DateTime(timezone=True)),
+        Column('attr_effective', DateTime(timezone=True)),
+        Column('airs_key', String(50)),
+        Column('airs_name', String(50)),
+        Column('agency_description', String(50)),
+        Column('irs_status', String(50)),
+        Column('source_of_funds', String(50)),
+        Column('record_owner', String(50)),
+        Column('fein', String(50)),
+        Column('year_inc', String(50)),
+        Column('annual_budget_total', String(50)),
+        Column('legal_status', String(50)),
+        Column('exclude_from_website', String(50)),
+        Column('exclude_from_directory', String(50)),        
         useexisting = True
         )
         table_metadata.create_all()
@@ -1423,6 +1568,29 @@ class databaseObjects:
         table_metadata.create_all()
         mapper(FundingSource, funding_source_2010_table)
         return
+
+    def resource_info_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        resource_info_2010_table = Table(
+        'resource_info_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('resource_specialist', String(50)),
+        Column('available_for_directory', String(50)),
+        Column('available_for_referral', String(50)),
+        Column('available_for_research', String(50)),
+        Column('date_added', DateTime(timezone=True)),
+        Column('date_last_verified', DateTime(timezone=True)),
+        Column('date_of_last_action', DateTime(timezone=True)),
+        Column('last_action_type', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ResourceInfo, resource_info_2010_table)
+        return
+
         
     def inventory_2010_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -1439,6 +1607,7 @@ class databaseObjects:
         Column('hmis_participation_period_end_date', DateTime(timezone=True)),
         Column('inventory_id_id_num', String(50)),
         Column('inventory_id_id_str', String(50)),
+        Column('bed_inventory', String(50)),
         Column('bed_availability', String(50)),
         Column('bed_type', String(50)),
         Column('bed_individual_family_type', String(50)),
@@ -1456,8 +1625,1374 @@ class databaseObjects:
         mapper(Inventory, inventory_2010_table)
         return
 
+    def age_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        age_requirements_table = Table(
+        'age_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('gender', String(50)),
+        Column('minimum_age', String(50)),
+        Column('maximum_age', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AgeRequirements, age_requirements_table)
+        return
+
+    def aid_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        aid_requirements_table = Table(
+        'aid_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('aid_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AidRequirements, aid_requirements_table)
+        return
+
+    def aka_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        aka_table = Table(
+        'aka_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('name', String(50)),
+        Column('confidential', String(50)),
+        Column('description', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Aka, aka_table)
+        return
+
+    def application_process_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        application_process_table = Table(
+        'application_process_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('step', String(50)),
+        Column('description', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ApplicationProcess, application_process_table)
+        return
+
+    def assignment_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        assignment_table = Table(
+        'assignment_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('hmis_asset_index_id', Integer, ForeignKey(HmisAsset.c.id)), 
+        Column('assignment_id_id_num', String(50)),
+        Column('assignment_id_id_str', String(50)),
+        Column('assignment_id_delete', Integer),
+        Column('assignment_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('assignment_id_delete_effective', DateTime(timezone=True)),
+        Column('person_id_id_num', String(50)),
+        Column('person_id_id_str', String(50)),
+        Column('household_id_id_num', String(50)),
+        Column('household_id_id_str', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Assignment, assignment_table)
+        return
+
+
+    def assignment_period_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        assignment_period_table = Table(
+        'assignment_period_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('assignment_index_id', Integer, ForeignKey(Assignment.c.id)), 
+        Column('assignment_period_start_date', DateTime(timezone=True)),
+        Column('assignment_period_end_date', DateTime(timezone=True)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AssignmentPeriod, assignment_period_table)
+        return
+
+    def child_enrollment_status_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        child_enrollment_status_table = Table(
+        'child_enrollment_status_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('child_enrollment_status_id_id_num', String(50)),
+        Column('child_enrollment_status_id_id_str', String(50)),
+        Column('child_enrollment_status_id_delete', Integer),
+        Column('child_enrollment_status_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('child_enrollment_status_id_delete_effective', DateTime(timezone=True)),
+        Column('child_currently_enrolled_in_school', String(50)),
+        Column('child_currently_enrolled_in_school_date_effective', DateTime(timezone=True)),
+        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=True)),        
+        Column('child_currently_enrolled_in_school_data_collection_stage', String(50)),
+        Column('child_school_name', String(50)),
+        Column('child_school_name_date_effective', DateTime(timezone=True)),
+        Column('child_school_name_date_collected', DateTime(timezone=True)),        
+        Column('child_school_name_data_collection_stage', String(50)),        
+        Column('child_mckinney_vento_liaison', String(50)),
+        Column('child_mckinney_vento_liaison_date_effective', DateTime(timezone=True)),
+        Column('child_mckinney_vento_liaison_date_collected', DateTime(timezone=True)),        
+        Column('child_mckinney_vento_liaison_data_collection_stage', String(50)),   
+        Column('child_school_type', String(50)),
+        Column('child_school_type_date_effective', DateTime(timezone=True)),
+        Column('child_school_type_date_collected', DateTime(timezone=True)),        
+        Column('child_school_type_data_collection_stage', String(50)),   
+        Column('child_school_last_enrolled_date', DateTime(timezone=True)),
+        Column('child_school_last_enrolled_date_date_collected', DateTime(timezone=True)),        
+        Column('child_school_last_enrolled_date_data_collection_stage', String(50)),           
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ChildEnrollmentStatus, child_enrollment_status_table)
+        return
+
+    def child_enrollment_status_barrier_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        child_enrollment_status_barrier_table = Table(
+        'child_enrollment_status_barrier_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('child_enrollment_status_index_id', Integer, ForeignKey(ChildEnrollmentStatus.c.id)), 
+        Column('barrier_id_id_num', String(50)),
+        Column('barrier_id_id_str', String(50)),
+        Column('barrier_id_delete', Integer),
+        Column('barrier_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('barrier_id_delete_effective', DateTime(timezone=True)),
+        Column('barried_code', String(50)),
+        Column('barried_code_date_collected', DateTime(timezone=True)),
+        Column('barried_code_date_effective', DateTime(timezone=True)),        
+        Column('barried_code_data_collection_stage', String(50)),
+        Column('barrier_other', String(50)),
+        Column('barrier_other_date_collected', DateTime(timezone=True)),
+        Column('barrier_other_date_effective', DateTime(timezone=True)),        
+        Column('barrier_other_data_collection_stage', String(50)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ChildEnrollmentStatusBarrier, child_enrollment_status_barrier_table)
+        return
+
+    def chronic_health_condition_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        chronic_health_condition_table = Table(
+        'chronic_health_condition_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_chronic_health_condition', String(50)),
+        Column('has_chronic_health_condition_date_collected', DateTime(timezone=True)),
+        Column('has_chronic_health_condition_date_effective', DateTime(timezone=True)),        
+        Column('has_chronic_health_condition_data_collection_stage', String(50)),
+        Column('receive_chronic_health_services', String(50)),
+        Column('receive_chronic_health_services_date_collected', DateTime(timezone=True)),
+        Column('receive_chronic_health_services_date_effective', DateTime(timezone=True)),        
+        Column('receive_chronic_health_services_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ChronicHealthCondition, chronic_health_condition_table)
+        return
+
+    def contact_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        contact_table = Table(
+        'contact_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('title', String(50)),
+        Column('name', String(50)),
+        Column('type', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Contact, contact_table)
+        return
+
+    def contact_made_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        contact_made_table = Table(
+        'contact_made_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('contact_id_id_num', String(50)),
+        Column('contact_id_id_str', String(50)),
+        Column('contact_id_delete', Integer),
+        Column('contact_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('contact_id_delete_effective', DateTime(timezone=True)),
+        Column('contact_date', DateTime(timezone=True)),
+        Column('contact_date_data_collection_stage', String(50)),
+        Column('contact_location', String(50)),
+        Column('contact_location_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ContactMade, contact_made_table)
+        return
+
+    def cross_street_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        cross_street_table = Table(
+        'cross_street_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('cross_street', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(CrossStreet, cross_street_table)
+        return
+
+    def currently_in_school_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        currently_in_school_table = Table(
+        'currently_in_school_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('currently_in_school', String(50)),
+        Column('currently_in_school_date_collected', DateTime(timezone=True)),
+        Column('currently_in_school_date_effective', DateTime(timezone=True)),        
+        Column('currently_in_school_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(CurrentlyInSchool, currently_in_school_table)
+        return
+
+    def license_accreditation_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        license_accreditation_table = Table(
+        'license_accreditation_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('license', String(50)),
+        Column('licensed_by', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(LicenseAccreditation, license_accreditation_table)
+        return
+
+    def mental_health_problem_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        mental_health_problem_table = Table(
+        'mental_health_problem_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_mental_health_problem', String(50)),
+        Column('has_mental_health_problem_date_collected', DateTime(timezone=True)),
+        Column('has_mental_health_problem_date_effective', DateTime(timezone=True)),        
+        Column('has_mental_health_problem_data_collection_stage', String(50)),
+        Column('mental_health_indefinite', String(50)),
+        Column('mental_health_indefinite_date_collected', DateTime(timezone=True)),
+        Column('mental_health_indefinite_date_effective', DateTime(timezone=True)),        
+        Column('mental_health_indefinite_data_collection_stage', String(50)),
+        Column('receive_mental_health_services', String(50)),
+        Column('receive_mental_health_services_date_collected', DateTime(timezone=True)),
+        Column('receive_mental_health_services_date_effective', DateTime(timezone=True)),        
+        Column('receive_mental_health_services_data_collection_stage', String(50)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(MentalHealthProblem, mental_health_problem_table)
+        return
+
+    def age_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        age_requirements_table = Table(
+        'age_requirements',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('gender', String(50)),
+        Column('minimum_age', String(50)),
+        Column('maximum_age', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AgeRequirements, age_requirements_table)
+        return
+
+    def non_cash_benefits_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        non_cash_benefits_table = Table(
+        'non_cash_benefits_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('non_cash_benefit_id_id_id_num', String(50)),
+        Column('non_cash_benefit_id_id_id_str', String(50)),
+        Column('non_cash_benefit_id_id_delete', Integer),
+        Column('non_cash_benefit_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('non_cash_benefit_id_id_delete_effective', DateTime(timezone=True)),
+        Column('non_cash_source_code', String(50)),
+        Column('non_cash_source_code_date_collected', DateTime(timezone=True)),
+        Column('non_cash_source_code_date_effective', DateTime(timezone=True)),        
+        Column('non_cash_source_code_data_collection_stage', String(50)),
+        Column('non_cash_source_other', String(50)),
+        Column('non_cash_source_other_date_collected', DateTime(timezone=True)),
+        Column('non_cash_source_other_date_effective', DateTime(timezone=True)),        
+        Column('non_cash_source_other_data_collection_stage', String(50)),
+        Column('receiving_non_cash_source', String(50)),
+        Column('receiving_non_cash_source_date_collected', DateTime(timezone=True)),
+        Column('receiving_non_cash_source_date_effective', DateTime(timezone=True)),        
+        Column('receiving_non_cash_source_data_collection_stage', String(50)),     
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(NonCashBenefits, non_cash_benefits_table)
+        return
         
-        
+    def agency_service_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        agency_service_table = Table(
+        'agency_service_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('key', String(50)),
+        Column('agency_key', String(50)),
+        Column('name', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AgencyService, agency_service_table)
+        return
+
+    def non_cash_benefits_last_30_days_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        non_cash_benefits_last_30_days_table = Table(
+        'non_cash_benefits_last_30_days_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('income_last_30_days', String(50)),
+        Column('income_last_30_days_date_collected', DateTime(timezone=True)),
+        Column('income_last_30_days_date_effective', DateTime(timezone=True)),        
+        Column('income_last_30_days_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(NonCashBenefitsLast30Days, non_cash_benefits_last_30_days_table)
+        return
+
+    def aid_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        aid_requirements_table = Table(
+        'aid_requirements',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('aid_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AidRequirements, aid_requirements_table)
+        return
+
+    def other_address_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        other_address_table = Table(
+        'other_address_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('pre_address_line', String(50)),
+        Column('line_1', String(50)),
+        Column('line_2', String(50)),
+        Column('city', String(50)),
+        Column('county', String(50)),
+        Column('state', String(50)),
+        Column('zip_code', String(50)),
+        Column('country', String(50)),
+        Column('reason_withheld', String(50)),
+        Column('confidential', String(50)),
+        Column('description', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(OtherAddress, other_address_table)
+        return
+
+    def other_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        other_requirements_table = Table(
+        'other_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('other_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(OtherRequirements, other_requirements_table)
+        return
+
+    def phone_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        phone_table = Table(
+        'phone_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('contact_index_id', Integer, ForeignKey(Contact.c.id)), 
+        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('phone_number', String(50)),
+        Column('reason_withheld', String(50)),
+        Column('extension', String(50)),
+        Column('description', String(50)),
+        Column('type', String(50)),
+        Column('function', String(50)),
+        Column('toll_free', String(50)),
+        Column('confidential', String(50)),
+        Column('person_phone_number', String(50)),
+        Column('person_phone_number_date_collected', DateTime(timezone=True)),
+        Column('person_phone_number_date_effective', DateTime(timezone=True)),        
+        Column('person_phone_number_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Phone, phone_table)
+        return
+
+    def physical_disability_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        physical_disability_table = Table(
+        'physical_disability_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_physical_disability', String(50)),
+        Column('has_physical_disability_date_collected', DateTime(timezone=True)),
+        Column('has_physical_disability_date_effective', DateTime(timezone=True)),        
+        Column('has_physical_disability_data_collection_stage', String(50)),
+        Column('receive_physical_disability_services', String(50)),
+        Column('receive_physical_disability_services_date_collected', DateTime(timezone=True)),
+        Column('receive_physical_disability_services_date_effective', DateTime(timezone=True)),        
+        Column('receive_physical_disability_services_data_collection_stage', String(50)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(PhysicalDisability, physical_disability_table)
+        return
+
+    def pit_count_set_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        pit_count_set_table = Table(
+        'pit_count_set_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('pit_count_set_id_id_num', String(50)),
+        Column('pit_count_set_id_id_str', String(50)),
+        Column('pit_count_set_id_delete', Integer),
+        Column('pit_count_set_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('pit_count_set_id_delete_effective', DateTime(timezone=True)),
+        Column('hud_waiver_received', String(50)),
+        Column('hud_waiver_date', DateTime(timezone=True)),
+        Column('hud_waiver_effective_period_start_date', DateTime(timezone=True)),
+        Column('hud_waiver_effective_period_end_date', DateTime(timezone=True)),
+        Column('last_pit_sheltered_count_date', DateTime(timezone=True)),
+        Column('last_pit_unsheltered_count_date', DateTime(timezone=True)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(PitCountSet, pit_count_set_table)
+        return
+
+    def pit_counts_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        pit_counts_table = Table(
+        'pit_counts_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('pit_count_set_index_id', Integer, ForeignKey(PitCountSet.c.id)), 
+        Column('pit_count_value', String(50)),
+        Column('pit_count_effective_period_start_date', DateTime(timezone=True)),
+        Column('pit_count_effective_period_end_date', DateTime(timezone=True)),
+        Column('pit_count_recorded_date', DateTime(timezone=True)),
+        Column('pit_count_household_type', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(PitCounts, pit_counts_table)
+        return
+
+    def pregnancy_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        pregnancy_table = Table(
+        'pregnancy_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('pregnancy_id_id_id_num', String(50)),
+        Column('pregnancy_id_id_id_str', String(50)),
+        Column('pregnancy_id_id_delete', Integer),
+        Column('pregnancy_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('pregnancy_id_id_delete_effective', DateTime(timezone=True)),
+        Column('pregnancy_status', String(50)),
+        Column('pregnancy_status_date_collected', DateTime(timezone=True)),
+        Column('pregnancy_status_date_effective', DateTime(timezone=True)),        
+        Column('pregnancy_status_data_collection_stage', String(50)),
+        Column('due_date', DateTime(timezone=True)),
+        Column('due_date_date_collected', DateTime(timezone=True)),        
+        Column('due_date_data_collection_stage', String(50)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Pregnancy, pregnancy_table)
+        return
+
+    def degree_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        degree_table = Table(
+        'degree_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('degree_id_id_num', String(50)),
+        Column('degree_id_id_str', String(50)),
+        Column('degree_id_delete', Integer),
+        Column('degree_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('degree_id_delete_effective', DateTime(timezone=True)),
+        Column('degree_other', String(50)),
+        Column('degree_other_date_collected', DateTime(timezone=True)),
+        Column('degree_other_date_effective', DateTime(timezone=True)),        
+        Column('degree_other_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Degree, degree_table)
+        return
+
+    def prior_residence_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        prior_residence_table = Table(
+        'prior_residence_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('prior_residence_id_id_id_num', String(50)),
+        Column('prior_residence_id_id_id_str', String(50)),
+        Column('prior_residence_id_id_delete', Integer),
+        Column('prior_residence_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('prior_residence_id_id_delete_effective', DateTime(timezone=True)),
+        Column('prior_residence_code', String(50)),
+        Column('prior_residence_code_date_collected', DateTime(timezone=True)),
+        Column('prior_residence_code_date_effective', DateTime(timezone=True)),        
+        Column('prior_residence_code_data_collection_stage', String(50)),
+        Column('prior_residence_other', String(50)),
+        Column('prior_residence_other_date_collected', DateTime(timezone=True)),
+        Column('prior_residence_other_date_effective', DateTime(timezone=True)),        
+        Column('prior_residence_other_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(PriorResidence, prior_residence_table)
+        return
+
+    def degree_code_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        degree_code_table = Table(
+        'degree_code_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('degree_index_id', Integer, ForeignKey(Degree.c.id)), 
+        Column('degree_code', String(50)),
+        Column('degree_date_collected', DateTime(timezone=True)),
+        Column('degree_date_effective', DateTime(timezone=True)),        
+        Column('degree_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(DegreeCode, degree_code_table)
+        return
+
+    def destinations_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        destinations_table = Table(
+        'destinations_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('destination_id_id_num', String(50)),
+        Column('destination_id_id_str', String(50)),
+        Column('destination_id_delete', Integer),
+        Column('destination_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('destination_id_delete_effective', DateTime(timezone=True)),
+        Column('destination_code', String(50)),
+        Column('destination_code_date_collected', DateTime(timezone=True)),
+        Column('destination_code_date_effective', DateTime(timezone=True)),        
+        Column('destination_code_data_collection_stage', String(50)),
+        Column('destination_other', String(50)),
+        Column('destination_other_date_collected', DateTime(timezone=True)),
+        Column('destination_other_date_effective', DateTime(timezone=True)),        
+        Column('destination_other_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Destinations, destinations_table)
+        return
+
+    def reasons_for_leaving_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        reasons_for_leaving_table = Table(
+        'reasons_for_leaving_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_participation_index_id', Integer, ForeignKey(SiteServiceParticipation.c.id)), 
+        Column('reason_for_leaving_id_id_num', String(50)),
+        Column('reason_for_leaving_id_id_str', String(50)),
+        Column('reason_for_leaving_id_delete', Integer),
+        Column('reason_for_leaving_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('reason_for_leaving_id_delete_effective', DateTime(timezone=True)),
+        Column('reason_for_leaving', String(50)),
+        Column('reason_for_leaving_date_collected', DateTime(timezone=True)),
+        Column('reason_for_leaving_date_effective', DateTime(timezone=True)),        
+        Column('reason_for_leaving_data_collection_stage', String(50)),
+        Column('reason_for_leaving_other', String(50)),
+        Column('reason_for_leaving_other_date_collected', DateTime(timezone=True)),
+        Column('reason_for_leaving_other_date_effective', DateTime(timezone=True)),        
+        Column('reason_for_leaving_other_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ReasonsForLeaving, reasons_for_leaving_table)
+        return
+
+    def developmental_disability_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        developmental_disability_table = Table(
+        'developmental_disability_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_developmental_disability', String(50)),
+        Column('has_developmental_disability_date_collected', DateTime(timezone=True)),
+        Column('has_developmental_disability_date_effective', DateTime(timezone=True)),        
+        Column('has_developmental_disability_data_collection_stage', String(50)),
+        Column('receive_developmental_disability', String(50)),
+        Column('receive_developmental_disability_date_collected', DateTime(timezone=True)),
+        Column('receive_developmental_disability_date_effective', DateTime(timezone=True)),        
+        Column('receive_developmental_disability_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(DevelopmentalDisability, developmental_disability_table)
+        return
+
+    def disabling_condition_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        disabling_condition_table = Table(
+        'disabling_condition_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('disabling_condition', String(50)),
+        Column('disabling_condition_date_collected', DateTime(timezone=True)),
+        Column('disabling_condition_date_effective', DateTime(timezone=True)),        
+        Column('disabling_condition_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(DisablingCondition, disabling_condition_table)
+        return
+
+    def documents_required_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        documents_required_table = Table(
+        'documents_required_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('documents_required', String(50)),
+        Column('description', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(DocumentsRequired, documents_required_table)
+        return
+
+    def residency_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        residency_requirements_table = Table(
+        'residency_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('residency_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ResidencyRequirements, residency_requirements_table)
+        return
+
+    def domestic_violence_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        domestic_violence_table = Table(
+        'domestic_violence_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('domestic_violence_survivor', String(50)),
+        Column('domestic_violence_survivor_date_collected', DateTime(timezone=True)),
+        Column('domestic_violence_survivor_date_effective', DateTime(timezone=True)),        
+        Column('domestic_violence_survivor_data_collection_stage', String(50)),
+        Column('dvo_occurred', String(50)),
+        Column('dvo_occurred_date_collected', DateTime(timezone=True)),
+        Column('dvo_occurred_date_effective', DateTime(timezone=True)),        
+        Column('dvo_occurred_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(DomesticViolence, domestic_violence_table)
+        return
+
+    def email_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        email_table = Table(
+        'email_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('contact_index_id', Integer, ForeignKey(Contact.c.id)), 
+        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('address', String(50)),
+        Column('note', String(50)),
+        Column('person_email', String(50)),
+        Column('person_email_date_collected', DateTime(timezone=True)),
+        Column('person_email_date_effective', DateTime(timezone=True)),        
+        Column('person_email_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Email, email_table)
+        return
+
+    def seasonal_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        seasonal_table = Table(
+        'seasonal_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('description', String(50)),
+        Column('start_date', DateTime(timezone=True)),
+        Column('end_date', DateTime(timezone=True)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Seasonal, seasonal_table)
+        return
+
+    def employment_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        employment_table = Table(
+        'employment_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('employment_id_id_id_num', String(50)),
+        Column('employment_id_id_id_str', String(50)),
+        Column('employment_id_id_delete', Integer),
+        Column('employment_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('employment_id_id_delete_effective', DateTime(timezone=True)),
+        Column('currently_employed', String(50)),
+        Column('currently_employed_date_collected', DateTime(timezone=True)),
+        Column('currently_employed_date_effective', DateTime(timezone=True)),        
+        Column('currently_employed_data_collection_stage', String(50)),
+        Column('hours_worked_last_week', String(50)),
+        Column('hours_worked_last_week_date_collected', DateTime(timezone=True)),
+        Column('hours_worked_last_week_date_effective', DateTime(timezone=True)),        
+        Column('hours_worked_last_week_data_collection_stage', String(50)),
+        Column('employment_tenure', String(50)),
+        Column('employment_tenure_date_collected', DateTime(timezone=True)),
+        Column('employment_tenure_date_effective', DateTime(timezone=True)),        
+        Column('employment_tenure_data_collection_stage', String(50)),
+        Column('looking_for_work', String(50)),
+        Column('looking_for_work_date_collected', DateTime(timezone=True)),
+        Column('looking_for_work_date_effective', DateTime(timezone=True)),        
+        Column('looking_for_work_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Employment, employment_table)
+        return
+
+    def engaged_date_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        engaged_date_table = Table(
+        'engaged_date_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('engaged_date', DateTime(timezone=True)),
+        Column('engaged_date_date_collected', DateTime(timezone=True)),        
+        Column('engaged_date_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(EngagedDate, engaged_date_table)
+        return
+
+    def service_event_notes_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        service_event_notes_table = Table(
+        'service_event_notes_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.c.id)), 
+        Column('note_id_id_num', String(50)),
+        Column('note_id_id_str', String(50)),
+        Column('note_delete', Integer),
+        Column('note_delete_occurred_date', DateTime(timezone=True)),
+        Column('note_delete_effective', DateTime(timezone=True)),
+        Column('note_text', String(50)),
+        Column('note_text_date_collected', DateTime(timezone=True)),
+        Column('note_text_date_effective', DateTime(timezone=True)),        
+        Column('note_text_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ServiceEventNotes, service_event_notes_table)
+        return
+
+    def family_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        family_requirements_table = Table(
+        'family_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('family_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(FamilyRequirements, family_requirements_table)
+        return
+
+    def service_group_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        service_group_table = Table(
+        'service_group_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('key', String(50)),
+        Column('name', String(50)),
+        Column('program_name', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(ServiceGroup, service_group_table)
+        return
+
+    def geographic_area_served_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        geographic_area_served_table = Table(
+        'geographic_area_served_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('zipcode', String(50)),
+        Column('census_track', String(50)),
+        Column('city', String(50)),
+        Column('county', String(50)),
+        Column('state', String(50)),
+        Column('country', String(50)),
+        Column('description', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(GeographicAreaServed, geographic_area_served_table)
+        return
+
+    def health_status_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        health_status_table = Table(
+        'health_status_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('health_status', String(50)),
+        Column('health_status_date_collected', DateTime(timezone=True)),
+        Column('health_status_date_effective', DateTime(timezone=True)),        
+        Column('health_status_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HealthStatus, health_status_table)
+        return
+
+    def highest_school_level_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        highest_school_level_table = Table(
+        'highest_school_level_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('highest_school_level', String(50)),
+        Column('highest_school_level_date_collected', DateTime(timezone=True)),
+        Column('highest_school_level_date_effective', DateTime(timezone=True)),        
+        Column('highest_school_level_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HighestSchoolLevel, highest_school_level_table)
+        return
+
+    def hiv_aids_status_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        hiv_aids_status_table = Table(
+        'hiv_aids_status_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_hiv_aids', String(50)),
+        Column('has_hiv_aids_date_collected', DateTime(timezone=True)),
+        Column('has_hiv_aids_date_effective', DateTime(timezone=True)),        
+        Column('has_hiv_aids_data_collection_stage', String(50)),
+        Column('receive_hiv_aids_services', String(50)),
+        Column('receive_hiv_aids_services_date_collected', DateTime(timezone=True)),
+        Column('receive_hiv_aids_services_date_effective', DateTime(timezone=True)),        
+        Column('receive_hiv_aids_services_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HivAidsStatus, hiv_aids_status_table)
+        return
+
+    def spatial_location_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        spatial_location_table = Table(
+        'spatial_location_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('description', String(50)),
+        Column('datum', String(50)),
+        Column('latitude', String(50)),
+        Column('longitude', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(SpatialLocation, spatial_location_table)
+        return
+
+    def hmis_asset_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        hmis_asset_table = Table(
+        'hmis_asset_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('asset_id_id_num', String(50)),
+        Column('asset_id_id_str', String(50)),
+        Column('asset_id_delete', Integer),
+        Column('asset_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('asset_id_delete_effective', DateTime(timezone=True)),
+        Column('asset_count', String(50)),
+        Column('asset_count_bed_availability', String(50)),
+        Column('asset_count_bed_type', String(50)),
+        Column('asset_count_bed_individual_family_type', String(50)),
+        Column('asset_count_chronic_homeless_bed', String(50)),
+        Column('asset_count_domestic_violence_shelter_bed', String(50)),
+        Column('asset_count_household_type', String(50)),
+        Column('asset_type', String(50)),
+        Column('asset_effective_period_start_date', DateTime(timezone=True)),
+        Column('asset_effective_period_end_date', DateTime(timezone=True)),
+        Column('asset_recorded_date', DateTime(timezone=True)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HmisAsset, hmis_asset_table)
+        return
+
+    def substance_abuse_problem_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        substance_abuse_problem_table = Table(
+        'substance_abuse_problem_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('has_substance_abuse_problem', String(50)),
+        Column('has_substance_abuse_problem_date_collected', DateTime(timezone=True)),
+        Column('has_substance_abuse_problem_date_effective', DateTime(timezone=True)),        
+        Column('has_substance_abuse_problem_data_collection_stage', String(50)),
+        Column('substance_abuse_indefinite', String(50)),
+        Column('substance_abuse_indefinite_date_collected', DateTime(timezone=True)),
+        Column('substance_abuse_indefinite_date_effective', DateTime(timezone=True)),        
+        Column('substance_abuse_indefinite_data_collection_stage', String(50)),
+        Column('receive_substance_abuse_services', String(50)),
+        Column('receive_substance_abuse_services_date_collected', DateTime(timezone=True)),
+        Column('receive_substance_abuse_services_date_effective', DateTime(timezone=True)),        
+        Column('receive_substance_abuse_services_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(SubstanceAbuseProblem, substance_abuse_problem_table)
+        return
+
+    def housing_status_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        housing_status_table = Table(
+        'housing_status_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('housing_status', String(50)),
+        Column('housing_status_date_collected', DateTime(timezone=True)),
+        Column('housing_status_date_effective', DateTime(timezone=True)),        
+        Column('housing_status_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HousingStatus, housing_status_table)
+        return
+
+    def taxonomy_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        taxonomy_table = Table(
+        'taxonomy_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('need_index_id', Integer, ForeignKey(Need.c.id)), 
+        Column('code', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Taxonomy, taxonomy_table)
+        return
+
+    def hud_chronic_homeless_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        hud_chronic_homeless_table = Table(
+        'hud_chronic_homeless_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('hud_chronic_homeless', String(50)),
+        Column('hud_chronic_homeless_date_collected', DateTime(timezone=True)),
+        Column('hud_chronic_homeless_date_effective', DateTime(timezone=True)),        
+        Column('hud_chronic_homeless_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(HudChronicHomeless, hud_chronic_homeless_table)
+        return
+
+    def time_open_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        time_open_table = Table(
+        'time_open_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('notes', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(TimeOpen, time_open_table)
+        return
+
+    def time_open_days_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        time_open_days_table = Table(
+        'time_open_days_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('time_open_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('day_of_week', String(50)),
+        Column('from', String(50)),
+        Column('to', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(TimeOpenDays, time_open_days_table)
+        return
+
+    def url_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        url_table = Table(
+        'url',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('address', String(50)),
+        Column('note', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Url, url_table)
+        return
+
+    def veteran_military_branches_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_military_branches_table = Table(
+        'veteran_military_branches_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('military_branch_id_id_id_num', String(50)),
+        Column('military_branch_id_id_id_str', String(50)),
+        Column('military_branch_id_id_delete', Integer),
+        Column('military_branch_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('military_branch_id_id_delete_effective', DateTime(timezone=True)),
+        Column('discharge_status', String(50)),
+        Column('discharge_status_date_collected', DateTime(timezone=True)),
+        Column('discharge_status_date_effective', DateTime(timezone=True)),        
+        Column('discharge_status_data_collection_stage', String(50)),
+        Column('discharge_status_other', String(50)),
+        Column('discharge_status_other_date_collected', DateTime(timezone=True)),
+        Column('discharge_status_other_date_effective', DateTime(timezone=True)),        
+        Column('discharge_status_other_data_collection_stage', String(50)),
+        Column('military_branch', String(50)),
+        Column('military_branch_date_collected', DateTime(timezone=True)),
+        Column('military_branch_date_effective', DateTime(timezone=True)),        
+        Column('military_branch_data_collection_stage', String(50)),
+        Column('military_branch_other', String(50)),
+        Column('military_branch_other_date_collected', DateTime(timezone=True)),
+        Column('military_branch_other_date_effective', DateTime(timezone=True)),        
+        Column('military_branch_other_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranMilitaryBranches, veteran_military_branches_table)
+        return
+
+
+    def income_last_30_days_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        income_last_30_days_table = Table(
+        'income_last_30_days_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('income_last_30_days', String(50)),
+        Column('income_last_30_days_date_collected', DateTime(timezone=True)),
+        Column('income_last_30_days_date_effective', DateTime(timezone=True)),        
+        Column('income_last_30_days_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(IncomeLast30Days, income_last_30_days_table)
+        return
+
+    def veteran_military_service_duration_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_military_service_duration_table = Table(
+        'veteran_military_service_duration_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('military_service_duration', String(50)),
+        Column('military_service_duration_date_collected', DateTime(timezone=True)),
+        Column('military_service_duration_date_effective', DateTime(timezone=True)),        
+        Column('military_service_duration_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranMilitaryServiceDuration, veteran_military_service_duration_table)
+        return
+
+    def income_requirements_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        income_requirements_table = Table(
+        'income_requirements_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('income_requirements', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(IncomeRequirements, income_requirements_table)
+        return
+
+    def veteran_served_in_war_zone_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_served_in_war_zone_table = Table(
+        'veteran_served_in_war_zone_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('served_in_war_zone', String(50)),
+        Column('served_in_war_zone_date_collected', DateTime(timezone=True)),
+        Column('served_in_war_zone_date_effective', DateTime(timezone=True)),        
+        Column('served_in_war_zone_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranServedInWarZone, veteran_served_in_war_zone_table)
+        return
+
+    def income_total_monthly_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        income_total_monthly_table = Table(
+        'income_total_monthly_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('income_total_monthly', String(50)),
+        Column('income_total_monthly_date_collected', DateTime(timezone=True)),
+        Column('income_total_monthly_date_effective', DateTime(timezone=True)),        
+        Column('income_total_monthly_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(IncomeTotalMonthly, income_total_monthly_table)
+        return
+
+    def veteran_service_era_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_service_era_table = Table(
+        'veteran_service_era_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('service_era', String(50)),
+        Column('service_era_date_collected', DateTime(timezone=True)),
+        Column('service_era_date_effective', DateTime(timezone=True)),        
+        Column('service_era_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranServiceEra, veteran_service_era_table)
+        return
+
+    def veteran_veteran_status_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_veteran_status_table = Table(
+        'veteran_veteran_status_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('veteran_status', String(50)),
+        Column('veteran_status_date_collected', DateTime(timezone=True)),
+        Column('veteran_status_date_effective', DateTime(timezone=True)),        
+        Column('veteran_status_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranVeteranStatus, veteran_veteran_status_table)
+        return
+
+    def languages_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        languages_table = Table(
+        'languages_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('name', String(50)),
+        Column('notes', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Languages, languages_table)
+        return
+
+    def veteran_warzones_served_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        veteran_warzones_served_table = Table(
+        'veteran_warzones_served_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('war_zone_id_id_id_num', String(50)),
+        Column('war_zone_id_id_id_str', String(50)),
+        Column('war_zone_id_id_delete', Integer),
+        Column('war_zone_id_id_delete_occurred_date', DateTime(timezone=True)),
+        Column('war_zone_id_id_delete_effective', DateTime(timezone=True)),
+        Column('months_in_war_zone', String(50)),
+        Column('months_in_war_zone_date_collected', DateTime(timezone=True)),
+        Column('months_in_war_zone_date_effective', DateTime(timezone=True)),        
+        Column('months_in_war_zone_data_collection_stage', String(50)),
+        Column('received_fire', String(50)),
+        Column('received_fire_date_collected', DateTime(timezone=True)),
+        Column('received_fire_date_effective', DateTime(timezone=True)),        
+        Column('received_fire_data_collection_stage', String(50)),
+        Column('war_zone', String(50)),
+        Column('war_zone_date_collected', DateTime(timezone=True)),
+        Column('war_zone_date_effective', DateTime(timezone=True)),        
+        Column('war_zone_data_collection_stage', String(50)),
+        Column('war_zone_other', String(50)),
+        Column('war_zone_other_date_collected', DateTime(timezone=True)),
+        Column('war_zone_other_date_effective', DateTime(timezone=True)),        
+        Column('war_zone_other_data_collection_stage', String(50)),                
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VeteranWarzonesServed, veteran_warzones_served_table)
+        return
+
+    def length_of_stay_at_prior_residence_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        length_of_stay_at_prior_residence_table = Table(
+        'length_of_stay_at_prior_residence_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('length_of_stay_at_prior_residence', String(50)),
+        Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=True)),
+        Column('length_of_stay_at_prior_residence_date_effective', DateTime(timezone=True)),        
+        Column('length_of_stay_at_prior_residence_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(LengthOfStayAtPriorResidence, length_of_stay_at_prior_residence_table)
+        return
+
+    def vocational_training_2010_map(self):    
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        vocational_training_table = Table(
+        'vocational_training_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('vocational_training', String(50)),
+        Column('vocational_training_date_collected', DateTime(timezone=True)),
+        Column('vocational_training_date_effective', DateTime(timezone=True)),        
+        Column('vocational_training_data_collection_stage', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(VocationalTraining, vocational_training_table)
+        return
+
 class baseObject(object):
     def __init__(self, field_dict):
         if settings.DEBUG:
@@ -1480,91 +3015,297 @@ class baseObject(object):
         else:
             return ''
 
-class SystemConfiguration(baseObject):
+class Agency(baseObject):
     pass
-        
-class Source(baseObject):
+
+class AgencyChild(baseObject):
+    pass
+
+class AgencyService(baseObject):
+    pass
+
+class AgeRequirements(baseObject):
+    pass
+
+class AidRequirements(baseObject):
+    pass
+
+class Aka(baseObject):
+    pass
+
+class ApplicationProcess(baseObject):
+    pass
+
+class AssignmentPeriod(baseObject):
+    pass
+
+class Assignment(baseObject):
+    pass
+
+class ChildEnrollmentStatus(baseObject):
+    pass
+
+class ChildEnrollmentStatusBarrier(baseObject):
+    pass
+
+class ChronicHealthCondition(baseObject):
+    pass
+
+class Contact(baseObject):
+    pass
+
+class ContactMade(baseObject):
+    pass
+
+class CrossStreet(baseObject):
+    pass
+
+class CurrentlyInSchool(baseObject):
+    pass
+
+class Degree(baseObject):
+    pass
+
+class DegreeCode(baseObject):
+    pass
+
+class Destinations(baseObject):
+    pass
+
+class DevelopmentalDisability(baseObject):
+    pass
+
+class DisablingCondition(baseObject):
+    pass
+
+class DocumentsRequired(baseObject):
+    pass
+
+class DomesticViolence(baseObject):
+    pass
+
+class DrugHistory(baseObject):
+    pass
+
+class Email(baseObject):
+    pass
+
+class EmergencyContact(baseObject):
+    pass
+
+class Employment(baseObject):
+    pass
+
+class EngagedDate(baseObject):
     pass
 
 class Export(baseObject):
     pass
-        
-class OtherNames(baseObject):
+
+class FamilyRequirements(baseObject):
     pass
 
-class Person(baseObject):
+class FundingSource(baseObject):
     pass
 
-class ServiceEvent(baseObject):
+class GeographicAreaServed(baseObject):
+    pass
+
+class HealthStatus(baseObject):
+    pass
+
+class HighestSchoolLevel(baseObject):
+    pass
+
+class HivAidsStatus(baseObject):
+    pass
+
+class HmisAsset(baseObject):
+    pass
+
+class Household(baseObject):
+    pass
+
+class HousingStatus(baseObject):
+    pass
+
+class HUDHomelessEpisodes(baseObject):
+    pass
+
+class HudChronicHomeless(baseObject):
+    pass
+
+class IncomeAndSources(baseObject):
+    pass
+
+class IncomeLast30Days(baseObject):
+    pass
+
+class IncomeRequirements(baseObject):
+    pass
+
+class IncomeTotalMonthly(baseObject):
+    pass
+
+class Inventory(baseObject):
+    pass
+
+class Languages(baseObject):
+    pass
+
+class LengthOfStayAtPriorResidence(baseObject):
+    pass
+
+class LicenseAccreditation(baseObject):
+    pass
+
+class Members(baseObject):
+    pass
+
+class MentalHealthProblem(baseObject):
     pass
 
 class Need(baseObject):
     pass
 
-class SiteServiceParticipation(baseObject):
+class NonCashBenefits(baseObject):
     pass
-                        
-class Veteran(baseObject):
-    pass    
 
-class DrugHistory(baseObject):
+class NonCashBenefitsLast30Days(baseObject):
     pass
-      
-class EmergencyContact(baseObject):
+
+class OtherNames(baseObject):
     pass
-                
-class HUDHomelessEpisodes(baseObject):
+
+class OtherAddress(baseObject):
     pass
-            
-class IncomeAndSources(baseObject):
+
+class OtherRequirements(baseObject):
     pass
-            
+
+class Person(baseObject):
+    pass
+
 class PersonAddress(baseObject):
     pass
-            
+
 class PersonHistorical(baseObject):
     pass
-   
+
+class Phone(baseObject):
+    pass
+
+class PhysicalDisability(baseObject):
+    pass
+
+class PitCounts(baseObject):
+    pass
+
+class PitCountSet(baseObject):
+    pass
+
+class Pregnancy(baseObject):
+    pass
+
+class PriorResidence(baseObject):
+    pass
+
 class Races(baseObject):
     pass
-            
+
+class ReasonsForLeaving(baseObject):
+    pass
+
+class Region(baseObject):
+    pass
+
 class ReleaseOfInformation(baseObject):
     pass
 
-class Household(baseObject):
+class ReleaseOfInfo(baseObject):
     pass
-            
-class Members(baseObject):
+
+class ResidencyRequirements(baseObject):
+    pass
+
+class ResourceInfo(baseObject):
+    pass
+
+class Seasonal(baseObject):
+    pass
+
+class Service(baseObject):
+    pass
+
+class ServiceEvent(baseObject):
+    pass
+
+class ServiceEventNotes(baseObject):
+    pass
+
+class ServiceGroup(baseObject):
+    pass
+
+class Site(baseObject):
+    pass
+
+class SiteService(baseObject):
+    pass
+
+class SiteServiceParticipation(baseObject):
+    pass
+
+class Source(baseObject):
     pass
 
 class SourceExportLink(baseObject):
     pass
-    
-class Region(baseObject):
+
+class SpatialLocation(baseObject):
     pass
-            
-class Agency(baseObject):
-    pass  
-              
-class AgencyChild(baseObject):
-    pass  
 
-class Service(baseObject):
-    pass 
+class SubstanceAbuseProblem(baseObject):
+    pass
 
-class Site(baseObject):
-    pass 
+class SystemConfiguration(baseObject):
+    pass
 
-class SiteService(baseObject):
-    pass 
-      
-class FundingSource(baseObject):
-    pass 
+class Taxonomy(baseObject):
+    pass
 
-class Inventory(baseObject):
-    pass 
-    
-        
+class TimeOpen(baseObject):
+    pass
+
+class TimeOpenDays(baseObject):
+    pass
+
+class Url(baseObject):
+    pass
+
+class Veteran(baseObject):
+    pass
+
+class VeteranMilitaryBranches(baseObject):
+    pass
+
+class VeteranMilitaryServiceDuration(baseObject):
+    pass
+
+class VeteranServedInWarZone(baseObject):
+    pass
+
+class VeteranServiceEra(baseObject):
+    pass
+
+class VeteranVeteranStatus(baseObject):
+    pass
+
+class VeteranWarzonesServed(baseObject):
+    pass
+
+class VocationalTraining(baseObject):    
+    pass
+  
 def main(argv=None):  
     if argv is None:
         argv = sys.argv

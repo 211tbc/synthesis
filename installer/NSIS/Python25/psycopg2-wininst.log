@@ -1,0 +1,58 @@
+*** Installation started 2010/05/10 01:53 ***
+Source: C:\Documents and Settings\Administrator\Desktop\packages-2.5\psycopg2-2.0.14.win32-py2.5-pg8.4.3-release.exe
+999 Root Key: HKEY_LOCAL_MACHINE
+020 Reg DB Key: [Software\Microsoft\Windows\CurrentVersion\Uninstall]psycopg2-py2.5
+040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\psycopg2-py2.5]DisplayName=Python 2.5 psycopg2-2.0.14
+040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\psycopg2-py2.5]UninstallString="C:\Synthesis\Python25\Removepsycopg2.exe" -u "C:\Synthesis\Python25\psycopg2-wininst.log"
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2-2.0.14-py2.5.egg-info
+100 Made Dir: C:\Synthesis\Python25\Lib\site-packages\psycopg2
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\_psycopg.pyd
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.pyo
+*** Installation started 2010/05/10 09:30 ***
+Source: C:\Documents and Settings\Administrator\Desktop\packages-2.5\psycopg2-2.0.14.win32-py2.5-pg8.4.3-release.exe
+999 Root Key: HKEY_LOCAL_MACHINE
+040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\psycopg2-py2.5]DisplayName=Python 2.5 psycopg2-2.0.14
+040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\psycopg2-py2.5]UninstallString="C:\Synthesis\Python25\Removepsycopg2.exe" -u "C:\Synthesis\Python25\psycopg2-wininst.log"
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2-2.0.14-py2.5.egg-info
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\_psycopg.pyd
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.py
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.pyc
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\__init__.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\tz.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\psycopg1.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\pool.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extras.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\extensions.pyo
+200 File Copy: C:\Synthesis\Python25\Lib\site-packages\psycopg2\errorcodes.pyo

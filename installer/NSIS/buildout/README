@@ -1,0 +1,14 @@
+Buildout (www.buildout.org)
+
+## Automated Setup ##
+
+Install wrappers:
+install-linux.sh
+install-windows.bat
+
+## Manual ##
+python bootstrap.py
+./bin/buildout
+
+## Whenever you change buildout.cfg ##
+./bin/buildout

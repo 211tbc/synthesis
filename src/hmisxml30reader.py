@@ -60,10 +60,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         source_list = root_element.xpath(xpSources, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if source_list is not None:
             for item in source_list:
-                print 'SOURCE'
                 self.parse_dict = {}
                 ''' Element paths '''
-                xpSourceVersion = '../@hmis:version'                
+                xpSourceVersion = '../../@hmis:version'                
                 xpSourceIDIDNum = 'hmis:SourceID/hmis:IDNum'
                 xpSourceIDIDStr = 'hmis:SourceID/hmis:IDStr'
                 xpSourceDelete = 'hmis:SourceID/@hmis:Delete'
@@ -79,12 +78,12 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 xpSourceName = 'hmis:SourceName'
 
                 ''' Map elements to database columns '''
-                #self.existence_test_and_add('attr_version', item.xpath(xpSourceVersion, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
-                #self.existence_test_and_add('source_id_id_id_num_2010', item.xpath(xpSourceIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                #self.existence_test_and_add('source_id_id_id_str_2010', item.xpath(xpSourceIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                #self.existence_test_and_add('source_id_id_delete_2010', item.xpath(xpSourceDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
-                #self.existence_test_and_add('source_id_id_delete_occurred_date_2010', item.xpath(xpSourceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
-                #self.existence_test_and_add('source_id_id_delete_effective_2010', item.xpath(xpSourceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('attr_version', item.xpath(xpSourceVersion, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('source_id_id_id_num_2010', item.xpath(xpSourceIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('source_id_id_id_str_2010', item.xpath(xpSourceIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('source_id_id_delete_2010', item.xpath(xpSourceDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('source_id_id_delete_occurred_date_2010', item.xpath(xpSourceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('source_id_id_delete_effective_2010', item.xpath(xpSourceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('software_vendor_2010', item.xpath(xpSourceSoftwareVendor, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('software_version_2010', item.xpath(xpSourceSoftwareVersion, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('source_contact_email_2010', item.xpath(xpSourceContactEmail, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -275,7 +274,6 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('attr_delete', item.xpath(xpAgencyDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpAgencyDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('attr_effective', item.xpath(xpAgencyDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
-
                 self.existence_test_and_add('airs_key', item.xpath(xpAirsKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('airs_name', item.xpath(xpAirsName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('agency_description', item.xpath(xpAgencyDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -294,9 +292,6 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.Agency)
-
-                #### check for child agency ? or just skip altogether ?
-                #self.record_agency_child_link()
     
                 ''' Parse sub-tables '''
                 self.parse_service_group(item)
@@ -396,76 +391,76 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('person_id_id_num_2010', item.xpath(xpPersonIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_id_id_str_2010', item.xpath(xpPersonIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_id_delete_occurred_date_2010', item.xpath(xpPersonDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_id_delete_effective_2010', item.xpath(xpPersonDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_id_delete_occurred_date_2010', item.xpath(xpPersonDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_id_delete_effective_2010', item.xpath(xpPersonDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_id_delete_2010', item.xpath(xpPersonDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_date_of_birth_hashed', item.xpath(xpPersonDateOfBirthHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_date_of_birth_hashed_delete_occurred_date_2010', item.xpath(xpPersonDateOfBirthHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_date_of_birth_hashed_delete_effective_2010', item.xpath(xpPersonDateOfBirthHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_date_of_birth_hashed_delete_occurred_date_2010', item.xpath(xpPersonDateOfBirthHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_date_of_birth_hashed_delete_effective_2010', item.xpath(xpPersonDateOfBirthHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_date_of_birth_hashed_delete_2010', item.xpath(xpPersonDateOfBirthHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_date_of_birth_unhashed', item.xpath(xpPersonDateOfBirthUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_date_of_birth_unhashed_delete_occurred_date_2010', item.xpath(xpPersonDateOfBirthUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_date_of_birth_unhashed_delete_effective_2010', item.xpath(xpPersonDateOfBirthUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_date_of_birth_unhashed_delete_occurred_date_2010', item.xpath(xpPersonDateOfBirthUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_date_of_birth_unhashed_delete_effective_2010', item.xpath(xpPersonDateOfBirthUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_date_of_birth_unhashed_delete_2010', item.xpath(xpPersonDateOfBirthUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_ethnicity_hashed', item.xpath(xpPersonEthnicityHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_ethnicity_hashed_delete_occurred_date_2010', item.xpath(xpPersonEthnicityHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_ethnicity_hashed_delete_effective_2010', item.xpath(xpPersonEthnicityHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_ethnicity_hashed_delete_occurred_date_2010', item.xpath(xpPersonEthnicityHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_ethnicity_hashed_delete_effective_2010', item.xpath(xpPersonEthnicityHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_ethnicity_hashed_delete_2010', item.xpath(xpPersonEthnicityHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_ethnicity_unhashed', item.xpath(xpPersonEthnicityUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_ethnicity_unhashed_delete_occurred_date_2010', item.xpath(xpPersonEthnicityUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_ethnicity_unhashed_delete_effective_2010', item.xpath(xpPersonEthnicityUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_ethnicity_unhashed_delete_occurred_date_2010', item.xpath(xpPersonEthnicityUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_ethnicity_unhashed_delete_effective_2010', item.xpath(xpPersonEthnicityUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_ethnicity_unhashed_delete_2010', item.xpath(xpPersonEthnicityUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_gender_hashed', item.xpath(xpPersonGenderHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_gender_hashed_delete_occurred_date_2010', item.xpath(xpPersonGenderHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_gender_hashed_delete_effective_2010', item.xpath(xpPersonGenderHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_gender_hashed_delete_occurred_date_2010', item.xpath(xpPersonGenderHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_gender_hashed_delete_effective_2010', item.xpath(xpPersonGenderHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_gender_hashed_delete_2010', item.xpath(xpPersonGenderHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_gender_unhashed', item.xpath(xpPersonGenderUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_gender_unhashed_delete_occurred_date_2010', item.xpath(xpPersonGenderUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_gender_unhashed_delete_effective_2010', item.xpath(xpPersonGenderUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_gender_unhashed_delete_occurred_date_2010', item.xpath(xpPersonGenderUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_gender_unhashed_delete_effective_2010', item.xpath(xpPersonGenderUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_gender_unhashed_delete_2010', item.xpath(xpPersonGenderUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_first_name_hashed', item.xpath(xpPersonLegalFirstNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_first_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalFirstNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_first_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalFirstNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_first_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalFirstNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_first_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalFirstNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_first_name_hashed_delete_2010', item.xpath(xpPersonLegalFirstNameHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_first_name_unhashed', item.xpath(xpPersonLegalFirstNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_first_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalFirstNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_first_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalFirstNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_first_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalFirstNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_first_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalFirstNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_first_name_unhashed_delete_2010', item.xpath(xpPersonLegalFirstNameUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_last_name_hashed', item.xpath(xpPersonLegalLastNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_last_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalLastNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_last_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalLastNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_last_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalLastNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_last_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalLastNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_last_name_unhashed_delete_2010', item.xpath(xpPersonLegalLastNameHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_last_name_unhashed', item.xpath(xpPersonLegalLastNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_last_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalLastNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_last_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalLastNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_last_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalLastNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_last_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalLastNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_last_name_hashed_delete_2010', item.xpath(xpPersonLegalLastNameUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_middle_name_hashed', item.xpath(xpPersonLegalMiddleNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_middle_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalMiddleNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_middle_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalMiddleNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_middle_name_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalMiddleNameHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_middle_name_hashed_delete_effective_2010', item.xpath(xpPersonLegalMiddleNameHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_middle_name_hashed_delete_2010', item.xpath(xpPersonLegalMiddleNameHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_middle_name_unhashed', item.xpath(xpPersonLegalMiddleNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_middle_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalMiddleNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_middle_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalMiddleNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_middle_name_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalMiddleNameUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_middle_name_unhashed_delete_effective_2010', item.xpath(xpPersonLegalMiddleNameUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_middle_name_unhashed_delete_2010', item.xpath(xpPersonLegalMiddleNameUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_suffix_hashed', item.xpath(xpPersonLegalSuffixHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_suffix_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalSuffixHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_suffix_hashed_delete_effective_2010', item.xpath(xpPersonLegalSuffixHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_suffix_hashed_delete_occurred_date_2010', item.xpath(xpPersonLegalSuffixHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_suffix_hashed_delete_effective_2010', item.xpath(xpPersonLegalSuffixHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_suffix_hashed_delete_2010', item.xpath(xpPersonLegalSuffixHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_legal_suffix_unhashed', item.xpath(xpPersonLegalSuffixUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_suffix_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalSuffixUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_legal_suffix_unhashed_delete_effective_2010', item.xpath(xpPersonLegalSuffixUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_legal_suffix_unhashed_delete_occurred_date_2010', item.xpath(xpPersonLegalSuffixUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_legal_suffix_unhashed_delete_effective_2010', item.xpath(xpPersonLegalSuffixUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_legal_suffix_unhashed_delete_2010', item.xpath(xpPersonLegalSuffixUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_social_security_number_hashed', item.xpath(xpPersonSocialSecurityNumberHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_hashed_delete_occurred_date_2010', item.xpath(xpPersonSocialSecurityNumberHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_hashed_delete_effective_2010', item.xpath(xpPersonSocialSecurityNumberHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_social_security_number_hashed_delete_occurred_date_2010', item.xpath(xpPersonSocialSecurityNumberHashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_social_security_number_hashed_delete_effective_2010', item.xpath(xpPersonSocialSecurityNumberHashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_social_security_number_hashed_delete_2010', item.xpath(xpPersonSocialSecurityNumberHashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_social_security_number_unhashed', item.xpath(xpPersonSocialSecurityNumberUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_unhashed_delete_occurred_date_2010', item.xpath(xpPersonSocialSecurityNumberUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_unhashed_delete_effective_2010', item.xpath(xpPersonSocialSecurityNumberUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_social_security_number_unhashed_delete_occurred_date_2010', item.xpath(xpPersonSocialSecurityNumberUnhashedDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_social_security_number_unhashed_delete_effective_2010', item.xpath(xpPersonSocialSecurityNumberUnhashedDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_social_security_number_unhashed_delete_2010', item.xpath(xpPersonSocialSecurityNumberUnhashedDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_social_sec_number_quality_code', item.xpath(xpPersonSocialSecNumberQualityCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_quality_code_delete_occurred_date_2010', item.xpath(xpPersonSocialSecNumberQualityCodeDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_social_security_number_quality_code_delete_effective_2010', item.xpath(xpPersonSocialSecNumberQualityCodeDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_social_security_number_quality_code_delete_occurred_date_2010', item.xpath(xpPersonSocialSecNumberQualityCodeDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_social_security_number_quality_code_delete_effective_2010', item.xpath(xpPersonSocialSecNumberQualityCodeDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_social_security_number_quality_code_delete_2010', item.xpath(xpPersonSocialSecNumberQualityCodeDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Foreign Keys '''
@@ -511,8 +506,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpServiceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('attr_effective', item.xpath(xpServiceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpServiceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('attr_effective', item.xpath(xpServiceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('attr_delete', item.xpath(xpServiceDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('airs_key', item.xpath(xpAirsKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('residential_tracking_method', item.xpath(xpAirsAgencyKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -590,8 +585,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpSiteDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('attr_effective', item.xpath(xpSiteDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpSiteDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('attr_effective', item.xpath(xpSiteDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('attr_delete', item.xpath(xpSiteDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('airs_key', item.xpath(xpKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('airs_name', item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -688,8 +683,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpSiteServiceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('attr_effective', item.xpath(xpSiteServiceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpSiteServiceDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('attr_effective', item.xpath(xpSiteServiceDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('attr_delete', item.xpath(xpSiteServiceDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('name', item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('key', item.xpath(xpKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -702,16 +697,16 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('service_id', item.xpath(xpServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('site_id', item.xpath(xpSiteID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('geographic_code', item.xpath(xpGeographicCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('geographic_code_date_collected', item.xpath(xpGeographicCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('geographic_code_date_effective', item.xpath(xpGeographicCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('geographic_code_data_collection_stage', item.xpath(xpGeographicCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('geographic_code_date_collected', item.xpath(xpGeographicCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('geographic_code_date_effective', item.xpath(xpGeographicCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('geographic_code_data_collection_stage', item.xpath(xpGeographicCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('housing_type', item.xpath(xpHousingType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_type_date_collected', item.xpath(xpHousingTypeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_type_date_effective', item.xpath(xpHousingTypeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_type_data_collection_stage', item.xpath(xpHousingTypeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('housing_type_date_collected', item.xpath(xpHousingTypeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('housing_type_date_effective', item.xpath(xpHousingTypeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('housing_type_data_collection_stage', item.xpath(xpHousingTypeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('principal', item.xpath(xpPrincipal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('site_service_effective_period_start_date', item.xpath(xpSiteServiceEffectivePeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('site_service_effective_period_end_date', item.xpath(xpSiteServiceEffectivePeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('site_service_effective_period_start_date', item.xpath(xpSiteServiceEffectivePeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
+                self.existence_test_and_add('site_service_effective_period_end_date', item.xpath(xpSiteServiceEffectivePeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
                 self.existence_test_and_add('site_service_recorded_date', item.xpath(xpSiteServiceRecordedDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('site_service_type', item.xpath(xpSiteServiceType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
@@ -1035,9 +1030,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('pit_count_set_id_id_num', item.xpath(xpPitCountSetIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('pit_count_set_id_id_str', item.xpath(xpPitCountSetIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pit_count_set_id_delete_occurred_date', item.xpath(xpPitCountSetIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pit_count_set_id_delete_effective', item.xpath(xpPitCountSetIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pit_count_set_id_delete', item.xpath(xpPitCountSetIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('pit_count_set_id_delete_occurred_date', item.xpath(xpPitCountSetIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pit_count_set_id_delete_effective', item.xpath(xpPitCountSetIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pit_count_set_id_delete', item.xpath(xpPitCountSetIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('hud_waiver_received', item.xpath(xpHUDWaiverReceived, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('hud_waiver_date', item.xpath(xpHUDWaiverDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('hud_waiver_effective_period_start_date', item.xpath(xpHUDWaiverEffectivePeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -1177,7 +1172,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('from', item.xpath(xpFrom, namespaces={'airs': self.airs_namespace}), 'text')
                 self.existence_test_and_add('to', item.xpath(xpTo, namespaces={'airs': self.airs_namespace}), 'text')
-                self.existence_test_and_add('day_of_week', day, 'text')
+                self.existence_test_and_add('day_of_week', day, 'no_handling')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('time_open_index_id', self.time_open_index_id, 'no_handling')
@@ -1214,8 +1209,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpInventoryDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('attr_effective', item.xpath(xpInventoryDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('attr_delete_occurred_date', item.xpath(xpInventoryDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('attr_effective', item.xpath(xpInventoryDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('attr_delete', item.xpath(xpInventoryDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('hmis_participation_period_start_date', item.xpath(xpHMISParticipationPeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('hmis_participation_period_end_date', item.xpath(xpHMISParticipationPeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -1295,9 +1290,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('asset_id_id_num', item.xpath(xpAssetIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('asset_id_id_str', item.xpath(xpAssetIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('asset_id_delete', item.xpath(xpAssetIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('asset_id_delete_occurred_date', item.xpath(xpAssetIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('asset_id_delete_effective', item.xpath(xpAssetIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('asset_id_delete', item.xpath(xpAssetIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('asset_id_delete_occurred_date', item.xpath(xpAssetIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('asset_id_delete_effective', item.xpath(xpAssetIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('asset_count', item.xpath(xpAssetCount, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('asset_count_bed_availability', item.xpath(xpAssetCountBedAvailability, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('asset_count_bed_type', item.xpath(xpAssetCountBedType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -1340,9 +1335,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('assignment_id_id_num', item.xpath(xpAssignmentIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('assignment_id_id_str', item.xpath(xpAssignmentIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('assignment_id_delete', item.xpath(xpAssignmentIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('assignment_id_delete_occurred_date', item.xpath(xpAssignmentIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('assignment_id_delete_effective', item.xpath(xpAssignmentIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('assignment_id_delete', item.xpath(xpAssignmentIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('assignment_id_delete_occurred_date', item.xpath(xpAssignmentIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('assignment_id_delete_effective', item.xpath(xpAssignmentIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('person_id_id_num', item.xpath(xpPersonIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_id_id_str', item.xpath(xpPersonIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('household_id_id_num', item.xpath(xpHouseholdIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -1507,14 +1502,14 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('site_service_participation_idid_num', item.xpath(    xpSiteServiceParticipationIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('site_service_participation_idid_str', item.xpath(xpSiteServiceParticipationIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('site_service_participation_id_delete_occurred_date_2010', item.xpath(xpSiteServiceParticipationIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('site_service_participation_id_delete_effective_2010', item.xpath(xpSiteServiceParticipationIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('site_service_participation_id_delete_2010', item.xpath(xpSiteServiceParticipationIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')           
+                self.existence_test_and_add('site_service_participation_id_delete_occurred_date_2010', item.xpath(xpSiteServiceParticipationIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('site_service_participation_id_delete_effective_2010', item.xpath(xpSiteServiceParticipationIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('site_service_participation_id_delete_2010', item.xpath(xpSiteServiceParticipationIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')           
                 self.existence_test_and_add('site_service_idid_num', item.xpath(xpSiteServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('household_idid_num', item.xpath(xpHouseholdIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('household_idid_str', item.xpath(xpHouseholdIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('participation_dates_start_date', item.xpath(xpStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('participation_dates_end_date', item.xpath(xpEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('participation_dates_start_date', item.xpath(xpStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
+                self.existence_test_and_add('participation_dates_end_date', item.xpath(xpEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
@@ -1553,17 +1548,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('reason_for_leaving_id_id_num', item.xpath(xpReasonsForLeavingIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('reason_for_leaving_id_id_str', item.xpath(xpReasonsForLeavingIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_id_delete', item.xpath(xpReasonsForLeavingIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_id_delete_occurred_date', item.xpath(xpReasonsForLeavingIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_id_delete_effective', item.xpath(xpReasonsForLeavingIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('reason_for_leaving_id_delete', item.xpath(xpReasonsForLeavingIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('reason_for_leaving_id_delete_occurred_date', item.xpath(xpReasonsForLeavingIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('reason_for_leaving_id_delete_effective', item.xpath(xpReasonsForLeavingIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
                 self.existence_test_and_add('reason_for_leaving', item.xpath(xpReasonsForLeaving, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_date_collected', item.xpath(xpReasonsForLeavingDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_date_effective', item.xpath(xpReasonsForLeavingDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_data_collection_stage', item.xpath(xpReasonsForLeavingDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('reason_for_leaving_date_collected', item.xpath(xpReasonsForLeavingDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('reason_for_leaving_date_effective', item.xpath(xpReasonsForLeavingDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('reason_for_leaving_data_collection_stage', item.xpath(xpReasonsForLeavingDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('reason_for_leaving_other', item.xpath(xpReasonsForLeavingOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_other_date_collected', item.xpath(xpReasonsForLeavingOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_other_date_effective', item.xpath(xpReasonsForLeavingOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('reason_for_leaving_other_data_collection_stage', item.xpath(xpReasonsForLeavingOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('reason_for_leaving_other_date_collected', item.xpath(xpReasonsForLeavingOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('reason_for_leaving_other_date_effective', item.xpath(xpReasonsForLeavingOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('reason_for_leaving_other_data_collection_stage', item.xpath(xpReasonsForLeavingOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
@@ -1620,13 +1615,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('need_idid_num', item.xpath(xpNeedIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('need_idid_str', item.xpath(xpNeedIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_id_delete_occurred_date_2010', item.xpath(xpNeedIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_id_delete_delete_effective_2010', item.xpath(xpNeedIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_id_delete_2010', item.xpath(xpNeedIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('need_id_delete_occurred_date_2010', item.xpath(xpNeedIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('need_id_delete_delete_effective_2010', item.xpath(xpNeedIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('need_id_delete_2010', item.xpath(xpNeedIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('site_service_idid_num', item.xpath(xpSiteServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_effective_period_start_date_2010', item.xpath(xpNeedEffectivePeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_effective_period_end_date_2010', item.xpath(xpNeedEffectivePeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('need_recorded_date_2010', item.xpath(xpNeedRecordedDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('need_effective_period_start_date_2010', item.xpath(xpNeedEffectivePeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
+                self.existence_test_and_add('need_effective_period_end_date_2010', item.xpath(xpNeedEffectivePeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
+                self.existence_test_and_add('need_recorded_date_2010', item.xpath(xpNeedRecordedDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
                 self.existence_test_and_add('need_status', item.xpath(xpNeedStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Foreign Keys '''
@@ -1700,9 +1695,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('service_event_idid_num', item.xpath(xpServiceEventIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('service_event_idid_str', item.xpath(xpServiceEventIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_event_id_delete_occurred_date_2010', item.xpath(xpServiceEventIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_event_id_delete_effective_2010', item.xpath(xpServiceEventIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_event_id_delete_2010', item.xpath(xpServiceEventIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')      
+                self.existence_test_and_add('service_event_id_delete_occurred_date_2010', item.xpath(xpServiceEventIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('service_event_id_delete_effective_2010', item.xpath(xpServiceEventIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('service_event_id_delete_2010', item.xpath(xpServiceEventIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')      
                 self.existence_test_and_add('site_service_id_2010', item.xpath(xpSiteServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('household_idid_num', item.xpath(xpHouseholdIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('household_idid_str', item.xpath(xpHouseholdIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -1756,13 +1751,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('note_id_id_num', item.xpath(xpNoteIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('note_id_id_str', item.xpath(xpNoteIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_delete_occurred_date', item.xpath(xpNoteIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_delete_effective', item.xpath(xpNoteIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_delete', item.xpath(xpNoteIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')          
+                self.existence_test_and_add('note_delete_occurred_date', item.xpath(xpNoteIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('note_delete_effective', item.xpath(xpNoteIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('note_delete', item.xpath(xpNoteIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')          
                 self.existence_test_and_add('note_text', item.xpath(xpNoteText, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_text_date_collected', item.xpath(xpNoteTextDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_text_date_effective', item.xpath(xpNoteTextDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('note_text_data_collection_stage', item.xpath(xpNoteTextDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('note_text_date_collected', item.xpath(xpNoteTextDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('note_text_date_effective', item.xpath(xpNoteTextDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('note_text_data_collection_stage', item.xpath(xpNoteTextDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('service_event_index_id', self.service_event_index_id, 'no_handling')
@@ -1869,9 +1864,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('housing_status', item.xpath(xpHousingStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_status_date_collected', item.xpath(xpHousingStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_status_date_effective', item.xpath(xpHousingStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('housing_status_data_collection_stage', item.xpath(xpHousingStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')      
+                self.existence_test_and_add('housing_status_date_collected', item.xpath(xpHousingStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('housing_status_date_effective', item.xpath(xpHousingStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('housing_status_data_collection_stage', item.xpath(xpHousingStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')      
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -1931,25 +1926,25 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('military_branch_id_id_id_num', item.xpath(xpMilitaryBranchIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('military_branch_id_id_id_str', item.xpath(xpMilitaryBranchIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_id_id_delete_occurred_date', item.xpath(xpMilitaryBranchIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_id_id_delete_effective', item.xpath(xpMilitaryBranchIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_id_id_delete', item.xpath(xpMilitaryBranchIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('military_branch_id_id_delete_occurred_date', item.xpath(xpMilitaryBranchIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_id_id_delete_effective', item.xpath(xpMilitaryBranchIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_id_id_delete', item.xpath(xpMilitaryBranchIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('discharge_status', item.xpath(xpDischargeStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_date_collected', item.xpath(xpDischargeStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_date_effective', item.xpath(xpDischargeStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_data_collection_stage', item.xpath(xpDischargeStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('discharge_status_date_collected', item.xpath(xpDischargeStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('discharge_status_date_effective', item.xpath(xpDischargeStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('discharge_status_data_collection_stage', item.xpath(xpDischargeStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('discharge_status_other', item.xpath(xpDischargeStatusOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_other_date_collected', item.xpath(xpDischargeStatusOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_other_date_effective', item.xpath(xpDischargeStatusOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('discharge_status_other_data_collection_stage', item.xpath(xpDischargeStatusOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('discharge_status_other_date_collected', item.xpath(xpDischargeStatusOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('discharge_status_other_date_effective', item.xpath(xpDischargeStatusOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('discharge_status_other_data_collection_stage', item.xpath(xpDischargeStatusOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('military_branch', item.xpath(xpMilitaryBranch, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_date_collected', item.xpath(xpMilitaryBranchDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_date_effective', item.xpath(xpMilitaryBranchDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_data_collection_stage', item.xpath(xpMilitaryBranchDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('military_branch_date_collected', item.xpath(xpMilitaryBranchDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_date_effective', item.xpath(xpMilitaryBranchDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_data_collection_stage', item.xpath(xpMilitaryBranchDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('military_branch_other', item.xpath(xpMilitaryBranchOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_other_date_collected', item.xpath(xpMilitaryBranchOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_other_date_effective', item.xpath(xpMilitaryBranchOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_branch_other_data_collection_stage', item.xpath(xpMilitaryBranchOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('military_branch_other_date_collected', item.xpath(xpMilitaryBranchOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_other_date_effective', item.xpath(xpMilitaryBranchOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_branch_other_data_collection_stage', item.xpath(xpMilitaryBranchOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -1974,9 +1969,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('military_service_duration', item.xpath(xpMilitaryServiceDuration, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_service_duration_date_collected', item.xpath(xpMilitaryServiceDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_service_duration_date_effective', item.xpath(xpMilitaryServiceDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('military_service_duration_data_collection_stage', item.xpath(xpMilitaryServiceDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('military_service_duration_date_collected', item.xpath(xpMilitaryServiceDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_service_duration_date_effective', item.xpath(xpMilitaryServiceDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('military_service_duration_data_collection_stage', item.xpath(xpMilitaryServiceDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2001,9 +1996,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('served_in_war_zone', item.xpath(xpVeteranServedInWarZone, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('served_in_war_zone_date_collected', item.xpath(xpVeteranServedInWarZoneDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('served_in_war_zone_date_effective', item.xpath(xpVeteranServedInWarZoneDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('served_in_war_zone_data_collection_stage', item.xpath(xpVeteranServedInWarZoneDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('served_in_war_zone_date_collected', item.xpath(xpVeteranServedInWarZoneDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('served_in_war_zone_date_effective', item.xpath(xpVeteranServedInWarZoneDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('served_in_war_zone_data_collection_stage', item.xpath(xpVeteranServedInWarZoneDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2028,9 +2023,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('service_era', item.xpath(xpServiceEra, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_era_date_collected', item.xpath(xpServiceEraDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_era_date_effective', item.xpath(xpServiceEraDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_era_data_collection_stage', item.xpath(xpServiceEraDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('service_era_date_collected', item.xpath(xpServiceEraDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('service_era_date_effective', item.xpath(xpServiceEraDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('service_era_data_collection_stage', item.xpath(xpServiceEraDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2055,9 +2050,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('veteran_status', item.xpath(xpVeteranStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('veteran_status_date_collected', item.xpath(xpVeteranStatusDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('veteran_status_date_effective', item.xpath(xpVeteranStatusDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('veteran_status_data_collection_stage', item.xpath(xpVeteranStatusDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('veteran_status_date_collected', item.xpath(xpVeteranStatusDurationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('veteran_status_date_effective', item.xpath(xpVeteranStatusDurationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('veteran_status_data_collection_stage', item.xpath(xpVeteranStatusDurationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2101,25 +2096,25 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('war_zone_id_id_id_num', item.xpath(xpWarZoneIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('war_zone_id_id_id_str', item.xpath(xpWarZoneIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_id_id_delete_occurred_date', item.xpath(xpWarZoneIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_id_id_delete_effective', item.xpath(xpWarZoneIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_id_id_delete', item.xpath(xpWarZoneIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('war_zone_id_id_delete_occurred_date', item.xpath(xpWarZoneIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_id_id_delete_effective', item.xpath(xpWarZoneIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_id_id_delete', item.xpath(xpWarZoneIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('months_in_war_zone', item.xpath(xpMonthsInWarZone, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('months_in_war_zone_date_collected', item.xpath(xpMonthsInWarZoneDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('months_in_war_zone_date_effective', item.xpath(xpMonthsInWarZoneDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('months_in_war_zone_data_collection_stage', item.xpath(xpMonthsInWarZoneDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('months_in_war_zone_date_collected', item.xpath(xpMonthsInWarZoneDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('months_in_war_zone_date_effective', item.xpath(xpMonthsInWarZoneDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('months_in_war_zone_data_collection_stage', item.xpath(xpMonthsInWarZoneDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('received_fire', item.xpath(xpReceivedFire, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('received_fire_date_collected', item.xpath(xpReceivedFireDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('received_fire_date_effective', item.xpath(xpReceivedFireDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('received_fire_data_collection_stage', item.xpath(xpReceivedFireDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('received_fire_date_collected', item.xpath(xpReceivedFireDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('received_fire_date_effective', item.xpath(xpReceivedFireDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('received_fire_data_collection_stage', item.xpath(xpReceivedFireDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('war_zone', item.xpath(xpWarZone, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_date_collected', item.xpath(xpWarZoneDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_date_effective', item.xpath(xpWarZoneDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_data_collection_stage', item.xpath(xpWarZoneDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('war_zone_date_collected', item.xpath(xpWarZoneDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_date_effective', item.xpath(xpWarZoneDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_data_collection_stage', item.xpath(xpWarZoneDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('war_zone_other', item.xpath(xpWarZoneOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_other_date_collected', item.xpath(xpWarZoneOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_other_date_effective', item.xpath(xpWarZoneOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('war_zone_other_data_collection_stage', item.xpath(xpWarZoneOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('war_zone_other_date_collected', item.xpath(xpWarZoneOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_other_date_effective', item.xpath(xpWarZoneOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('war_zone_other_data_collection_stage', item.xpath(xpWarZoneOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2144,9 +2139,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('vocational_training', item.xpath(xpVocationalTraining, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('vocational_training_date_collected', item.xpath(xpVocationalTrainingDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('vocational_training_date_effective', item.xpath(xpVocationalTrainingDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('vocational_training_data_collection_stage', item.xpath(xpVocationalTrainingDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('vocational_training_date_collected', item.xpath(xpVocationalTrainingDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('vocational_training_date_effective', item.xpath(xpVocationalTrainingDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('vocational_training_data_collection_stage', item.xpath(xpVocationalTrainingDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2180,17 +2175,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_substance_abuse_problem', item.xpath(xpHasSubstanceAbuseProblem, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_substance_abuse_problem_date_collected', item.xpath(xpHasSubstanceAbuseProblemDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_substance_abuse_problem_date_effective', item.xpath(xpHasSubstanceAbuseProblemDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_substance_abuse_problem_data_collection_stage', item.xpath(xpHasSubstanceAbuseProblemDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_substance_abuse_problem_date_collected', item.xpath(xpHasSubstanceAbuseProblemDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_substance_abuse_problem_date_effective', item.xpath(xpHasSubstanceAbuseProblemDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_substance_abuse_problem_data_collection_stage', item.xpath(xpHasSubstanceAbuseProblemDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('substance_abuse_indefinite', item.xpath(xpSubstanceAbuseIndefinite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('substance_abuse_indefinite_date_collected', item.xpath(xpSubstanceAbuseIndefiniteDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('substance_abuse_indefinite_date_effective', item.xpath(xpSubstanceAbuseIndefiniteDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('substance_abuse_indefinite_data_collection_stage', item.xpath(xpSubstanceAbuseIndefiniteDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('substance_abuse_indefinite_date_collected', item.xpath(xpSubstanceAbuseIndefiniteDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('substance_abuse_indefinite_date_effective', item.xpath(xpSubstanceAbuseIndefiniteDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('substance_abuse_indefinite_data_collection_stage', item.xpath(xpSubstanceAbuseIndefiniteDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_substance_abuse_services', item.xpath(xpReceiveSubstanceAbuseServices, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_substance_abuse_services_date_collected', item.xpath(xpReceiveSubstanceAbuseServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_substance_abuse_services_date_effective', item.xpath(xpReceiveSubstanceAbuseServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_substance_abuse_services_data_collection_stage', item.xpath(xpReceiveSubstanceAbuseServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_substance_abuse_services_date_collected', item.xpath(xpReceiveSubstanceAbuseServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_substance_abuse_services_date_effective', item.xpath(xpReceiveSubstanceAbuseServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_substance_abuse_services_data_collection_stage', item.xpath(xpReceiveSubstanceAbuseServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2226,16 +2221,16 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('pregnancy_id_id_id_num', item.xpath(xpPregnancyIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('pregnancy_id_id_id_str', item.xpath(xpPregnancyIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_id_id_delete_occurred_date', item.xpath(xpPregnancyIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_id_id_delete_effective', item.xpath(xpPregnancyIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_id_id_delete', item.xpath(xpPregnancyIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('pregnancy_id_id_delete_occurred_date', item.xpath(xpPregnancyIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pregnancy_id_id_delete_effective', item.xpath(xpPregnancyIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pregnancy_id_id_delete', item.xpath(xpPregnancyIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('pregnancy_status', item.xpath(xpPregnancyStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_status_date_collected', item.xpath(xpPregnancyStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_status_date_effective', item.xpath(xpPregnancyStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pregnancy_status_data_collection_stage', item.xpath(xpPregnancyStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('due_date', item.xpath(xpDueDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('due_date_date_collected', item.xpath(xpDueDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('due_date_data_collection_stage', item.xpath(xpDueDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('pregnancy_status_date_collected', item.xpath(xpPregnancyStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pregnancy_status_date_effective', item.xpath(xpPregnancyStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pregnancy_status_data_collection_stage', item.xpath(xpPregnancyStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('due_date', item.xpath(xpDueDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'date')
+                self.existence_test_and_add('due_date_date_collected', item.xpath(xpDueDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('due_date_data_collection_stage', item.xpath(xpDueDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2271,17 +2266,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('prior_residence_id_id_id_num', item.xpath(xpPriorResidenceIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('prior_residence_id_id_id_str', item.xpath(xpPriorResidenceIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_id_id_delete_occurred_date', item.xpath(xpPriorResidenceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_id_id_delete_effective', item.xpath(xpPriorResidenceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_id_id_delete', item.xpath(xpPriorResidenceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('prior_residence_id_id_delete_occurred_date', item.xpath(xpPriorResidenceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_id_id_delete_effective', item.xpath(xpPriorResidenceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_id_id_delete', item.xpath(xpPriorResidenceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('prior_residence_code', item.xpath(xpPriorResidenceCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_code_date_collected', item.xpath(xpPriorResidenceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_code_date_effective', item.xpath(xpPriorResidenceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_code_data_collection_stage', item.xpath(xpPriorResidenceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('prior_residence_code_date_collected', item.xpath(xpPriorResidenceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_code_date_effective', item.xpath(xpPriorResidenceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_code_data_collection_stage', item.xpath(xpPriorResidenceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('prior_residence_other', item.xpath(xpPriorResidenceOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_other_date_collected', item.xpath(xpPriorResidenceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_other_date_effective', item.xpath(xpPriorResidenceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('prior_residence_other_data_collection_stage', item.xpath(xpPriorResidenceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('prior_residence_other_date_collected', item.xpath(xpPriorResidenceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_other_date_effective', item.xpath(xpPriorResidenceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('prior_residence_other_data_collection_stage', item.xpath(xpPriorResidenceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2311,13 +2306,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_physical_disability', item.xpath(xpHasPhysicalDisability, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_physical_disability_date_collected', item.xpath(xpHasPhysicalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_physical_disability_date_effective', item.xpath(xpHasPhysicalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_physical_disability_data_collection_stage', item.xpath(xpHasPhysicalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_physical_disability_date_collected', item.xpath(xpHasPhysicalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_physical_disability_date_effective', item.xpath(xpHasPhysicalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_physical_disability_data_collection_stage', item.xpath(xpHasPhysicalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_physical_disability_services', item.xpath(xpReceivePhysicalDisabilityServices, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_physical_disability_services_date_collected', item.xpath(xpReceivePhysicalDisabilityServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_physical_disability_services_date_effective', item.xpath(xpReceivePhysicalDisabilityServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_physical_disability_services_data_collection_stage', item.xpath(xpReceivePhysicalDisabilityServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_physical_disability_services_date_collected', item.xpath(xpReceivePhysicalDisabilityServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_physical_disability_services_date_effective', item.xpath(xpReceivePhysicalDisabilityServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_physical_disability_services_data_collection_stage', item.xpath(xpReceivePhysicalDisabilityServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2357,21 +2352,21 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('non_cash_benefit_id_id_id_num', item.xpath(xpNonCashBenefitIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('non_cash_benefit_id_id_id_str', item.xpath(xpNonCashBenefitIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_benefit_id_id_delete_occurred_date', item.xpath(xpNonCashBenefitIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_benefit_id_id_delete_effective', item.xpath(xpNonCashBenefitIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_benefit_id_id_delete', item.xpath(xpNonCashBenefitIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('non_cash_benefit_id_id_delete_occurred_date', item.xpath(xpNonCashBenefitIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_benefit_id_id_delete_effective', item.xpath(xpNonCashBenefitIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_benefit_id_id_delete', item.xpath(xpNonCashBenefitIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('non_cash_source_code', item.xpath(xpNonCashSourceCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_code_date_collected', item.xpath(xpNonCashSourceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_code_date_effective', item.xpath(xpNonCashSourceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_code_data_collection_stage', item.xpath(xpNonCashSourceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('non_cash_source_code_date_collected', item.xpath(xpNonCashSourceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_source_code_date_effective', item.xpath(xpNonCashSourceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_source_code_data_collection_stage', item.xpath(xpNonCashSourceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('non_cash_source_other', item.xpath(xpNonCashSourceOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_other_date_collected', item.xpath(xpNonCashSourceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_other_date_effective', item.xpath(xpNonCashSourceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('non_cash_source_other_data_collection_stage', item.xpath(xpNonCashSourceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('non_cash_source_other_date_collected', item.xpath(xpNonCashSourceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_source_other_date_effective', item.xpath(xpNonCashSourceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('non_cash_source_other_data_collection_stage', item.xpath(xpNonCashSourceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receiving_non_cash_source', item.xpath(xpReceivingNonCashSource, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_non_cash_source_date_collected', item.xpath(xpReceivingNonCashSourceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_non_cash_source_date_effective', item.xpath(xpReceivingNonCashSourceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_non_cash_source_data_collection_stage', item.xpath(xpReceivingNonCashSourceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receiving_non_cash_source_date_collected', item.xpath(xpReceivingNonCashSourceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receiving_non_cash_source_date_effective', item.xpath(xpReceivingNonCashSourceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receiving_non_cash_source_data_collection_stage', item.xpath(xpReceivingNonCashSourceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2395,9 +2390,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('income_last_30_days', item.xpath(xpNonCashBenefitsLast30Days, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_date_collected', item.xpath(xpNonCashBenefitsLast30DaysDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_date_effective', item.xpath(xpNonCashBenefitsLast30DaysDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_data_collection_stage', item.xpath(xpNonCashBenefitsLast30DaysDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_last_30_days_date_collected', item.xpath(xpNonCashBenefitsLast30DaysDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_last_30_days_date_effective', item.xpath(xpNonCashBenefitsLast30DaysDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_last_30_days_data_collection_stage', item.xpath(xpNonCashBenefitsLast30DaysDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2431,17 +2426,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_mental_health_problem', item.xpath(xpHasMentalHealthProblem, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_mental_health_problem_date_collected', item.xpath(xpHasMentalHealthProblemDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_mental_health_problem_date_effective', item.xpath(xpHasMentalHealthProblemDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_mental_health_problem_data_collection_stage', item.xpath(xpHasMentalHealthProblemDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_mental_health_problem_date_collected', item.xpath(xpHasMentalHealthProblemDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_mental_health_problem_date_effective', item.xpath(xpHasMentalHealthProblemDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_mental_health_problem_data_collection_stage', item.xpath(xpHasMentalHealthProblemDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('mental_health_indefinite', item.xpath(xpMentalHealthIndefinite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('mental_health_indefinite_date_collected', item.xpath(xpMentalHealthIndefiniteDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('mental_health_indefinite_date_effective', item.xpath(xpMentalHealthIndefiniteDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('mental_health_indefinite_data_collection_stage', item.xpath(xpMentalHealthIndefiniteDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mental_health_indefinite_date_collected', item.xpath(xpMentalHealthIndefiniteDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('mental_health_indefinite_date_effective', item.xpath(xpMentalHealthIndefiniteDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('mental_health_indefinite_data_collection_stage', item.xpath(xpMentalHealthIndefiniteDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_mental_health_services', item.xpath(xpReceiveMentalHealthServices, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_mental_health_services_date_collected', item.xpath(xpReceiveMentalHealthServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_mental_health_services_date_effective', item.xpath(xpReceiveMentalHealthServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_mental_health_services_data_collection_stage', item.xpath(xpReceiveMentalHealthServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_mental_health_services_date_collected', item.xpath(xpReceiveMentalHealthServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_mental_health_services_date_effective', item.xpath(xpReceiveMentalHealthServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_mental_health_services_data_collection_stage', item.xpath(xpReceiveMentalHealthServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2466,9 +2461,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('length_of_stay_at_prior_residence', item.xpath(xpLengthOfStaAtPriorResidence, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('length_of_stay_at_prior_residence_date_collected', item.xpath(xpLengthOfStaAtPriorResidenceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('length_of_stay_at_prior_residence_date_effective', item.xpath(xpLengthOfStaAtPriorResidenceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('length_of_stay_at_prior_residence_data_collection_stage', item.xpath(xpLengthOfStaAtPriorResidenceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('length_of_stay_at_prior_residence_date_collected', item.xpath(xpLengthOfStaAtPriorResidenceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('length_of_stay_at_prior_residence_date_effective', item.xpath(xpLengthOfStaAtPriorResidenceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('length_of_stay_at_prior_residence_data_collection_stage', item.xpath(xpLengthOfStaAtPriorResidenceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2493,9 +2488,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('income_total_monthly', item.xpath(xpIncomeTotalMonthly, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_total_monthly_date_collected', item.xpath(xpIncomeTotalMonthlyDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_total_monthly_date_effective', item.xpath(xpIncomeTotalMonthlyDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_total_monthly_data_collection_stage', item.xpath(xpIncomeTotalMonthlyDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_total_monthly_date_collected', item.xpath(xpIncomeTotalMonthlyDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_total_monthly_date_effective', item.xpath(xpIncomeTotalMonthlyDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_total_monthly_data_collection_stage', item.xpath(xpIncomeTotalMonthlyDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2520,9 +2515,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('hud_chronic_homeless', item.xpath(xpHUDChronicHomeless, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hud_chronic_homeless_date_collected', item.xpath(xpHUDChronicHomelessDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hud_chronic_homeless_date_effective', item.xpath(xpHUDChronicHomelessDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hud_chronic_homeless_data_collection_stage', item.xpath(xpHUDChronicHomelessDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('hud_chronic_homeless_date_collected', item.xpath(xpHUDChronicHomelessDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('hud_chronic_homeless_date_effective', item.xpath(xpHUDChronicHomelessDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('hud_chronic_homeless_data_collection_stage', item.xpath(xpHUDChronicHomelessDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2547,9 +2542,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('income_last_30_days', item.xpath(xpIncomeLast30Days, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_date_collected', item.xpath(xpIncomeLast30DaysDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_date_effective', item.xpath(xpIncomeLast30DaysDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_last_30_days_data_collection_stage', item.xpath(xpIncomeLast30DaysDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_last_30_days_date_collected', item.xpath(xpIncomeLast30DaysDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_last_30_days_date_effective', item.xpath(xpIncomeLast30DaysDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_last_30_days_data_collection_stage', item.xpath(xpIncomeLast30DaysDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2574,9 +2569,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('highest_school_level', item.xpath(xpHighestSchoolLevel, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('highest_school_level_date_collected', item.xpath(xpHighestSchoolLevelDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('highest_school_level_date_effective', item.xpath(xpHighestSchoolLevelDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('highest_school_level_data_collection_stage', item.xpath(xpHighestSchoolLevelDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('highest_school_level_date_collected', item.xpath(xpHighestSchoolLevelDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('highest_school_level_date_effective', item.xpath(xpHighestSchoolLevelDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('highest_school_level_data_collection_stage', item.xpath(xpHighestSchoolLevelDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2606,13 +2601,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_hiv_aids', item.xpath(xpHasHIVAIDS, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_hiv_aids_date_collected', item.xpath(xpHasHIVAIDSDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_hiv_aids_date_effective', item.xpath(xpHasHIVAIDSDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_hiv_aids_data_collection_stage', item.xpath(xpHasHIVAIDSDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_hiv_aids_date_collected', item.xpath(xpHasHIVAIDSDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_hiv_aids_date_effective', item.xpath(xpHasHIVAIDSDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_hiv_aids_data_collection_stage', item.xpath(xpHasHIVAIDSDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_hiv_aids_services', item.xpath(xpReceiveHIVAIDSServices, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_hiv_aids_services_date_collected', item.xpath(xpReceiveHIVAIDSServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_hiv_aids_services_date_effective', item.xpath(xpReceiveHIVAIDSServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_hiv_aids_services_data_collection_stage', item.xpath(xpReceiveHIVAIDSServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_hiv_aids_services_date_collected', item.xpath(xpReceiveHIVAIDSServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_hiv_aids_services_date_effective', item.xpath(xpReceiveHIVAIDSServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_hiv_aids_services_data_collection_stage', item.xpath(xpReceiveHIVAIDSServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2637,9 +2632,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('health_status', item.xpath(xpHealthStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('health_status_date_collected', item.xpath(xpHealthStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('health_status_date_effective', item.xpath(xpHealthStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('health_status_data_collection_stage', item.xpath(xpHealthStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')   
+                self.existence_test_and_add('health_status_date_collected', item.xpath(xpHealthStatusDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('health_status_date_effective', item.xpath(xpHealthStatusDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('health_status_data_collection_stage', item.xpath(xpHealthStatusDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')   
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2664,8 +2659,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('engaged_date', item.xpath(xpEngagedDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('engaged_date_date_collected', item.xpath(xpEngagedDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('engaged_date_data_collection_stage', item.xpath(xpEngagedDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('engaged_date_date_collected', item.xpath(xpEngagedDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('engaged_date_data_collection_stage', item.xpath(xpEngagedDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2709,25 +2704,25 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('employment_id_id_id_num', item.xpath(xpEmploymentIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('employment_id_id_id_str', item.xpath(xpEmploymentIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_id_id_delete_occurred_date', item.xpath(xpEmploymentIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_id_id_delete_effective', item.xpath(xpEmploymentIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_id_id_delete', item.xpath(xpEmploymentIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('employment_id_id_delete_occurred_date', item.xpath(xpEmploymentIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('employment_id_id_delete_effective', item.xpath(xpEmploymentIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('employment_id_id_delete', item.xpath(xpEmploymentIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('currently_employed', item.xpath(xpCurrentlyEmployed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_employed_date_collected', item.xpath(xpCurrentlyEmployedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_employed_date_effective', item.xpath(xpCurrentlyEmployedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_employed_data_collection_stage', item.xpath(xpCurrentlyEmployedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('currently_employed_date_collected', item.xpath(xpCurrentlyEmployedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('currently_employed_date_effective', item.xpath(xpCurrentlyEmployedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('currently_employed_data_collection_stage', item.xpath(xpCurrentlyEmployedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('hours_worked_last_week', item.xpath(xpHoursWorkedLastWeek, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hours_worked_last_week_date_collected', item.xpath(xpHoursWorkedLastWeekDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hours_worked_last_week_date_effective', item.xpath(xpHoursWorkedLastWeekDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('hours_worked_last_week_data_collection_stage', item.xpath(xpHoursWorkedLastWeekDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('hours_worked_last_week_date_collected', item.xpath(xpHoursWorkedLastWeekDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('hours_worked_last_week_date_effective', item.xpath(xpHoursWorkedLastWeekDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('hours_worked_last_week_data_collection_stage', item.xpath(xpHoursWorkedLastWeekDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('employment_tenure', item.xpath(xpEmploymentTenure, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_tenure_date_collected', item.xpath(xpEmploymentTenureDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_tenure_date_effective', item.xpath(xpEmploymentTenureDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('employment_tenure_data_collection_stage', item.xpath(xpEmploymentTenureDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('employment_tenure_date_collected', item.xpath(xpEmploymentTenureDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('employment_tenure_date_effective', item.xpath(xpEmploymentTenureDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('employment_tenure_data_collection_stage', item.xpath(xpEmploymentTenureDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('looking_for_work', item.xpath(xpLookingForWork, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('looking_for_work_date_collected', item.xpath(xpLookingForWorkDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('looking_for_work_date_effective', item.xpath(xpLookingForWorkDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('looking_for_work_data_collection_stage', item.xpath(xpLookingForWorkDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('looking_for_work_date_collected', item.xpath(xpLookingForWorkDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('looking_for_work_date_effective', item.xpath(xpLookingForWorkDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('looking_for_work_data_collection_stage', item.xpath(xpLookingForWorkDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2757,13 +2752,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('domestic_violence_survivor', item.xpath(xpDomesticViolenceSurvivor, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('domestic_violence_survivor_date_collected', item.xpath(xpDomesticViolenceSurvivorDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('domestic_violence_survivor_date_effective', item.xpath(xpDomesticViolenceSurvivorDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('domestic_violence_survivor_data_collection_stage', item.xpath(xpDomesticViolenceSurvivorDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('domestic_violence_survivor_date_collected', item.xpath(xpDomesticViolenceSurvivorDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('domestic_violence_survivor_date_effective', item.xpath(xpDomesticViolenceSurvivorDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('domestic_violence_survivor_data_collection_stage', item.xpath(xpDomesticViolenceSurvivorDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('dvo_occurred', item.xpath(xpDVOccurred, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('dvo_occurred_date_collected', item.xpath(xpDVOccurredDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('dvo_occurred_date_effective', item.xpath(xpDVOccurredDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('dvo_occurred_data_collection_stage', item.xpath(xpDVOccurredDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')     
+                self.existence_test_and_add('dvo_occurred_date_collected', item.xpath(xpDVOccurredDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('dvo_occurred_date_effective', item.xpath(xpDVOccurredDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('dvo_occurred_data_collection_stage', item.xpath(xpDVOccurredDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')     
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2788,9 +2783,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('disabling_condition', item.xpath(xpDisablingCondition, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('disabling_condition_date_collected', item.xpath(xpDisablingConditionDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('disabling_condition_date_effective', item.xpath(xpDisablingConditionDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('disabling_condition_data_collection_stage', item.xpath(xpDisablingConditionDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('disabling_condition_date_collected', item.xpath(xpDisablingConditionDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('disabling_condition_date_effective', item.xpath(xpDisablingConditionDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('disabling_condition_data_collection_stage', item.xpath(xpDisablingConditionDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2820,13 +2815,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_developmental_disability', item.xpath(xpHasDevelopmentalDisability, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_developmental_disability_date_collected', item.xpath(xpHasDevelopmentalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_developmental_disability_date_effective', item.xpath(xpHasDevelopmentalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_developmental_disability_data_collection_stage', item.xpath(xpHasDevelopmentalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_developmental_disability_date_collected', item.xpath(xpHasDevelopmentalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_developmental_disability_date_effective', item.xpath(xpHasDevelopmentalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_developmental_disability_data_collection_stage', item.xpath(xpHasDevelopmentalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_developmental_disability', item.xpath(xpReceiveDevelopmentalDisability, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_developmental_disability_date_collected', item.xpath(xpReceiveDevelopmentalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_developmental_disability_date_effective', item.xpath(xpReceiveDevelopmentalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_developmental_disability_data_collection_stage', item.xpath(xpReceiveDevelopmentalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_developmental_disability_date_collected', item.xpath(xpReceiveDevelopmentalDisabilityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_developmental_disability_date_effective', item.xpath(xpReceiveDevelopmentalDisabilityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_developmental_disability_data_collection_stage', item.xpath(xpReceiveDevelopmentalDisabilityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2862,17 +2857,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('destination_id_id_num', item.xpath(xpDestinationIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('destination_id_id_str', item.xpath(xpDestinationIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_id_delete_occurred_date', item.xpath(xpDestinationIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_id_delete_effective', item.xpath(xpDestinationIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_id_delete', item.xpath(xpDestinationIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('destination_id_delete_occurred_date', item.xpath(xpDestinationIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_id_delete_effective', item.xpath(xpDestinationIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_id_delete', item.xpath(xpDestinationIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('destination_code', item.xpath(xpDestinationCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_code_date_collected', item.xpath(xpDestinationCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_code_date_effective', item.xpath(xpDestinationCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_code_data_collection_stage', item.xpath(xpDestinationCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('destination_code_date_collected', item.xpath(xpDestinationCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_code_date_effective', item.xpath(xpDestinationCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_code_data_collection_stage', item.xpath(xpDestinationCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('destination_other', item.xpath(xpDestinationOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_other_date_collected', item.xpath(xpDestinationOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_other_date_effective', item.xpath(xpDestinationOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('destination_other_data_collection_stage', item.xpath(xpDestinationOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('destination_other_date_collected', item.xpath(xpDestinationOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_other_date_effective', item.xpath(xpDestinationOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('destination_other_data_collection_stage', item.xpath(xpDestinationOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2904,13 +2899,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('degree_id_id_num', item.xpath(xpDegreeIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('degree_id_id_str', item.xpath(xpDegreeIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_id_delete_occurred_date', item.xpath(xpDegreeIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_id_delete_effective', item.xpath(xpDegreeIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_id_delete', item.xpath(xpDegreeIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('degree_id_delete_occurred_date', item.xpath(xpDegreeIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_id_delete_effective', item.xpath(xpDegreeIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_id_delete', item.xpath(xpDegreeIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('degree_other', item.xpath(xpDegreeOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_other_date_collected', item.xpath(xpDegreeOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_other_date_effective', item.xpath(xpDegreeOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_other_data_collection_stage', item.xpath(xpDegreeOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('degree_other_date_collected', item.xpath(xpDegreeOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_other_date_effective', item.xpath(xpDegreeOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_other_data_collection_stage', item.xpath(xpDegreeOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2935,9 +2930,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('degree_code', item.xpath(xpDegreeCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_date_collected', item.xpath(xpDegreeCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_date_effective', item.xpath(xpDegreeCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('degree_data_collection_stage', item.xpath(xpDegreeCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('degree_date_collected', item.xpath(xpDegreeCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_date_effective', item.xpath(xpDegreeCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('degree_data_collection_stage', item.xpath(xpDegreeCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('degree_index_id', self.degree_index_id, 'no_handling')
@@ -2962,9 +2957,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('currently_in_school', item.xpath(xpCurrentlyInSchool, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_in_school_date_collected', item.xpath(xpCurrentlyInSchoolDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_in_school_date_effective', item.xpath(xpCurrentlyInSchoolDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('currently_in_school_data_collection_stage', item.xpath(xpCurrentlyInSchoolDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('currently_in_school_date_collected', item.xpath(xpCurrentlyInSchoolDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('currently_in_school_date_effective', item.xpath(xpCurrentlyInSchoolDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('currently_in_school_data_collection_stage', item.xpath(xpCurrentlyInSchoolDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -2996,13 +2991,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('contact_id_id_num', item.xpath(xpContactIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('contact_id_id_str', item.xpath(xpContactIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('contact_id_delete_occurred_date', item.xpath(xpContactIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('contact_id_delete_effective', item.xpath(xpContactIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('contact_id_delete', item.xpath(xpContactIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('contact_id_delete_occurred_date', item.xpath(xpContactIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('contact_id_delete_effective', item.xpath(xpContactIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('contact_id_delete', item.xpath(xpContactIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('contact_date', item.xpath(xpContactDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('contact_date_data_collection_stage', item.xpath(xpContactDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('contact_date_data_collection_stage', item.xpath(xpContactDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('contact_location', item.xpath(xpContactLocation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('contact_location_data_collection_stage', item.xpath(xpContactLocationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('contact_location_data_collection_stage', item.xpath(xpContactLocationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -3050,28 +3045,28 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('child_enrollment_status_id_id_num', item.xpath(xpChildEnrollmentStatusIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('child_enrollment_status_id_id_str', item.xpath(xpChildEnrollmentStatusIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_enrollment_status_id_delete_occurred_date', item.xpath(xpChildEnrollmentStatusIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_enrollment_status_id_delete_effective', item.xpath(xpChildEnrollmentStatusIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_enrollment_status_id_delete', item.xpath(xpChildEnrollmentStatusIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_enrollment_status_id_delete_occurred_date', item.xpath(xpChildEnrollmentStatusIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_enrollment_status_id_delete_effective', item.xpath(xpChildEnrollmentStatusIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_enrollment_status_id_delete', item.xpath(xpChildEnrollmentStatusIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('child_currently_enrolled_in_school', item.xpath(xpChildCurrentlyEnrolledInSchool, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_currently_enrolled_in_school_date_collected', item.xpath(xpChildCurrentlyEnrolledInSchoolDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_currently_enrolled_in_school_date_effective', item.xpath(xpChildCurrentlyEnrolledInSchoolDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_currently_enrolled_in_school_data_collection_stage', item.xpath(xpChildCurrentlyEnrolledInSchoolDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_currently_enrolled_in_school_date_collected', item.xpath(xpChildCurrentlyEnrolledInSchoolDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_currently_enrolled_in_school_date_effective', item.xpath(xpChildCurrentlyEnrolledInSchoolDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_currently_enrolled_in_school_data_collection_stage', item.xpath(xpChildCurrentlyEnrolledInSchoolDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('child_school_name', item.xpath(xpChildSchoolName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_name_date_collected', item.xpath(xpChildSchoolNameDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_name_date_effective', item.xpath(xpChildSchoolNameDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_name_data_collection_stage', item.xpath(xpChildSchoolNameDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_school_name_date_collected', item.xpath(xpChildSchoolNameDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_school_name_date_effective', item.xpath(xpChildSchoolNameDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_school_name_data_collection_stage', item.xpath(xpChildSchoolNameDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('child_mckinney_vento_liaison', item.xpath(xpChildMcKinneyVentoLiaison, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_mckinney_vento_liaison_date_collected', item.xpath(xpChildMcKinneyVentoLiaisonDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_mckinney_vento_liaison_date_effective', item.xpath(xpChildMcKinneyVentoLiaisonDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_mckinney_vento_liaison_data_collection_stage', item.xpath(xpChildMcKinneyVentoLiaisonDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_mckinney_vento_liaison_date_collected', item.xpath(xpChildMcKinneyVentoLiaisonDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_mckinney_vento_liaison_date_effective', item.xpath(xpChildMcKinneyVentoLiaisonDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_mckinney_vento_liaison_data_collection_stage', item.xpath(xpChildMcKinneyVentoLiaisonDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('child_school_type', item.xpath(xpChildSchoolType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_type_date_collected', item.xpath(xpChildSchoolTypeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_type_date_effective', item.xpath(xpChildSchoolTypeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_type_data_collection_stage', item.xpath(xpChildSchoolTypeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_school_type_date_collected', item.xpath(xpChildSchoolTypeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_school_type_date_effective', item.xpath(xpChildSchoolTypeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_school_type_data_collection_stage', item.xpath(xpChildSchoolTypeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('child_school_last_enrolled_date', item.xpath(xpChildSchoolLastEnrolledDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_last_enrolled_date_date_collected', item.xpath(xpChildSchoolLastEnrolledDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('child_school_last_enrolled_date_data_collection_stage', item.xpath(xpChildSchoolLastEnrolledDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('child_school_last_enrolled_date_date_collected', item.xpath(xpChildSchoolLastEnrolledDateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('child_school_last_enrolled_date_data_collection_stage', item.xpath(xpChildSchoolLastEnrolledDateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -3107,17 +3102,17 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('barrier_id_id_num', item.xpath(xpBarrierIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('barrier_id_id_str', item.xpath(xpBarrierIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_id_delete_occurred_date', item.xpath(xpBarrierIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_id_delete_effective', item.xpath(xpBarrierIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_id_delete', item.xpath(xpBarrierIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('barrier_id_delete_occurred_date', item.xpath(xpBarrierIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barrier_id_delete_effective', item.xpath(xpBarrierIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barrier_id_delete', item.xpath(xpBarrierIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('barried_code', item.xpath(xpBarrierCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barried_code_date_collected', item.xpath(xpBarrierCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barried_code_date_effective', item.xpath(xpBarrierCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barried_code_data_collection_stage', item.xpath(xpBarrierCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('barried_code_date_collected', item.xpath(xpBarrierCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barried_code_date_effective', item.xpath(xpBarrierCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barried_code_data_collection_stage', item.xpath(xpBarrierCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('barrier_other', item.xpath(xpBarrierOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_other_date_collected', item.xpath(xpBarrierOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_other_date_effective', item.xpath(xpBarrierOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('barrier_other_data_collection_stage', item.xpath(xpBarrierOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('barrier_other_date_collected', item.xpath(xpBarrierOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barrier_other_date_effective', item.xpath(xpBarrierOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('barrier_other_data_collection_stage', item.xpath(xpBarrierOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('child_enrollment_status_index_id', self.child_enrollment_status_index_id, 'no_handling')
@@ -3147,13 +3142,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('has_chronic_health_condition', item.xpath(xpHasChronicHealthCondition, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_chronic_health_condition_date_collected', item.xpath(xpHasChronicHealthConditionDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_chronic_health_condition_date_effective', item.xpath(xpHasChronicHealthConditionDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('has_chronic_health_condition_data_collection_stage', item.xpath(xpHasChronicHealthConditionDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('has_chronic_health_condition_date_collected', item.xpath(xpHasChronicHealthConditionDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_chronic_health_condition_date_effective', item.xpath(xpHasChronicHealthConditionDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('has_chronic_health_condition_data_collection_stage', item.xpath(xpHasChronicHealthConditionDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receive_chronic_health_services', item.xpath(xpReceiveChronicHealthServices, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_chronic_health_services_date_collected', item.xpath(xpReceiveChronicHealthServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_chronic_health_services_date_effective', item.xpath(xpReceiveChronicHealthServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receive_chronic_health_services_data_collection_stage', item.xpath(xpReceiveChronicHealthServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receive_chronic_health_services_date_collected', item.xpath(xpReceiveChronicHealthServicesDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_chronic_health_services_date_effective', item.xpath(xpReceiveChronicHealthServicesDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receive_chronic_health_services_data_collection_stage', item.xpath(xpReceiveChronicHealthServicesDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -3192,20 +3187,20 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('release_of_information_idid_num', item.xpath(xpReleaseOfInformationIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('release_of_information_idid_str', item.xpath(xpReleaseOfInformationIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_of_information_idid_str_date_collected', item.xpath(xpReleaseOfInformationIDDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_of_information_id_date_effective_2010', item.xpath(xpReleaseOfInformationIDDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_of_information_id_data_collection_stage_2010', item.xpath(xpReleaseOfInformationIDDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('release_of_information_idid_str_date_collected', item.xpath(xpReleaseOfInformationIDDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('release_of_information_id_date_effective_2010', item.xpath(xpReleaseOfInformationIDDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('release_of_information_id_data_collection_stage_2010', item.xpath(xpReleaseOfInformationIDDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('site_service_idid_str', item.xpath(xpSiteServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('documentation', item.xpath(xpDocumentation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('documentation_date_collected', item.xpath(xpDocumentationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('documentation_date_effective_2010', item.xpath(xpDocumentationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('documentation_data_collection_stage_2010', item.xpath(xpDocumentationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('documentation_date_collected', item.xpath(xpDocumentationDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('documentation_date_effective_2010', item.xpath(xpDocumentationDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('documentation_data_collection_stage_2010', item.xpath(xpDocumentationDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('start_date', item.xpath(xpStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('end_date', item.xpath(xpEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('release_granted', item.xpath(xpReleaseGranted, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_granted_date_collected', item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_granted_date_effective_2010', item.xpath(xpReleaseGrantedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('release_granted_data_collection_stage_2010', item.xpath(xpReleaseGrantedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('release_granted_date_collected', item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('release_granted_date_effective_2010', item.xpath(xpReleaseGrantedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('release_granted_data_collection_stage_2010', item.xpath(xpReleaseGrantedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
@@ -3249,25 +3244,25 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('income_and_source_id_id_id_num_2010', item.xpath(xpIncomeAndSourceIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('income_and_source_id_id_id_str_2010', item.xpath(xpIncomeAndSourceIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_and_source_id_id_delete_occurred_date_2010', item.xpath(xpIncomeAndSourceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_and_source_id_id_delete_effective_2010', item.xpath(xpIncomeAndSourceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_and_source_id_id_delete_2010', item.xpath(xpIncomeAndSourceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_and_source_id_id_delete_occurred_date_2010', item.xpath(xpIncomeAndSourceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_and_source_id_id_delete_effective_2010', item.xpath(xpIncomeAndSourceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_and_source_id_id_delete_2010', item.xpath(xpIncomeAndSourceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('income_source_code', item.xpath(xpIncomeSourceCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_code_date_collected', item.xpath(xpIncomeSourceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_code_date_effective_2010', item.xpath(xpIncomeSourceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_code_data_collection_stage_2010', item.xpath(xpIncomeSourceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_source_code_date_collected', item.xpath(xpIncomeSourceCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_code_date_effective_2010', item.xpath(xpIncomeSourceCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_code_data_collection_stage_2010', item.xpath(xpIncomeSourceCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('income_source_other', item.xpath(xpIncomeSourceOther, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_other_date_collected', item.xpath(xpIncomeSourceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_other_date_effective_2010', item.xpath(xpIncomeSourceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_other_data_collection_stage_2010', item.xpath(xpIncomeSourceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_source_other_date_collected', item.xpath(xpIncomeSourceOtherDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_other_date_effective_2010', item.xpath(xpIncomeSourceOtherDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_other_data_collection_stage_2010', item.xpath(xpIncomeSourceOtherDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('receiving_income_source_2010', item.xpath(xpReceivingIncomingSource, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_income_source_date_collected_2010', item.xpath(xpReceivingIncomingSourceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_income_source_date_effective_2010', item.xpath(xpReceivingIncomingSourceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('receiving_income_source_data_collection_stage_2010', item.xpath(xpReceivingIncomingSourceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('receiving_income_source_date_collected_2010', item.xpath(xpReceivingIncomingSourceDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receiving_income_source_date_effective_2010', item.xpath(xpReceivingIncomingSourceDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('receiving_income_source_data_collection_stage_2010', item.xpath(xpReceivingIncomingSourceDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('income_source_amount_2010', item.xpath(xpIncomeSourceAmount, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_amount_date_collected_2010', item.xpath(xpIncomeSourceAmountDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_amount_date_effective_2010', item.xpath(xpIncomeSourceAmountDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('income_source_amount_data_collection_stage_2010', item.xpath(xpIncomeSourceAmountDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('income_source_amount_date_collected_2010', item.xpath(xpIncomeSourceAmountDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_amount_date_effective_2010', item.xpath(xpIncomeSourceAmountDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('income_source_amount_data_collection_stage_2010', item.xpath(xpIncomeSourceAmountDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -3297,7 +3292,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HudHomelessEpisodes)
+                self.shred(self.parse_dict, DBObjects.HUDHomelessEpisodes)
     
                 ''' Parse sub-tables '''
                             
@@ -3359,45 +3354,45 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('address_period_start_date', item.xpath(xpAddressPeriodStartDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('address_period_end_date', item.xpath(xpAddressPeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('pre_address_line', item.xpath(xpPreAddressLine, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pre_address_line_date_collected', item.xpath(xpPreAddressLineDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pre_address_line_date_effective_2010', item.xpath(xpPreAddressLineDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('pre_address_line', item.xpath(xpPreAddressLineDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('pre_address_line_date_collected', item.xpath(xpPreAddressLineDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pre_address_line_date_effective_2010', item.xpath(xpPreAddressLineDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('pre_address_line', item.xpath(xpPreAddressLineDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('line1', item.xpath(xpLine1, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line1_date_collected', item.xpath(xpLine1DateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line1_date_effective_2010', item.xpath(xpLine1DateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line1_data_collection_stage_2010', item.xpath(xpLine1DataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('line1_date_collected', item.xpath(xpLine1DateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('line1_date_effective_2010', item.xpath(xpLine1DateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('line1_data_collection_stage_2010', item.xpath(xpLine1DataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('line2', item.xpath(xpLine2, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line2_date_collected', item.xpath(xpLine2DateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line2_date_effective_2010', item.xpath(xpLine2DateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('line2_data_collection_stage_2010', item.xpath(xpLine2DataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('line2_date_collected', item.xpath(xpLine2DateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('line2_date_effective_2010', item.xpath(xpLine2DateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('line2_data_collection_stage_2010', item.xpath(xpLine2DataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('city', item.xpath(xpCity, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('city_date_collected', item.xpath(xpCityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('city_date_effective_2010', item.xpath(xpCityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('city_data_collection_stage_2010', item.xpath(xpCityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('city_date_collected', item.xpath(xpCityDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('city_date_effective_2010', item.xpath(xpCityDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('city_data_collection_stage_2010', item.xpath(xpCityDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('county', item.xpath(xpCounty, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('county_date_collected', item.xpath(xpCountyDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('county_date_effective_2010', item.xpath(xpCountyDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('county_data_collection_stage_2010', item.xpath(xpCountyDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('county_date_collected', item.xpath(xpCountyDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('county_date_effective_2010', item.xpath(xpCountyDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('county_data_collection_stage_2010', item.xpath(xpCountyDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('state', item.xpath(xpState, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('state_date_collected', item.xpath(xpStateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('state_date_effective_2010', item.xpath(xpStateDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('state_data_collection_stage_2010', item.xpath(xpStateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('state_date_collected', item.xpath(xpStateDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('state_date_effective_2010', item.xpath(xpStateDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('state_data_collection_stage_2010', item.xpath(xpStateDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('zipcode', item.xpath(xpZIPCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zipcode_date_collected', item.xpath(xpZIPCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zipcod_date_effective_2010e', item.xpath(xpZIPCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zipcode_data_collection_stage_2010', item.xpath(xpZIPCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('zipcode_date_collected', item.xpath(xpZIPCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('zipcod_date_effective_2010e', item.xpath(xpZIPCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('zipcode_data_collection_stage_2010', item.xpath(xpZIPCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('country', item.xpath(xpCountry, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('country_date_collected', item.xpath(xpCountryDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('country_date_effective_2010', item.xpath(xpCountryDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('country_data_collection_stage_2010', item.xpath(xpCountryDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('country_date_collected', item.xpath(xpCountryDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('country_date_effective_2010', item.xpath(xpCountryDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('country_data_collection_stage_2010', item.xpath(xpCountryDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('is_last_permanent_zip', item.xpath(xpIsLastPermanentZip, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('is_last_permanent_zip_date_collected', item.xpath(xpIsLastPermanentZIPDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('is_last_permanent_zip_date_effective_2010', item.xpath(xpIsLastPermanentZIPDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('is_last_permanent_zip_data_collection_stage_2010', item.xpath(xpIsLastPermanentZIPDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('is_last_permanent_zip_date_collected', item.xpath(xpIsLastPermanentZIPDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('is_last_permanent_zip_date_effective_2010', item.xpath(xpIsLastPermanentZIPDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('is_last_permanent_zip_data_collection_stage_2010', item.xpath(xpIsLastPermanentZIPDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('zip_quality_code', item.xpath(xpZipQualityCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zip_quality_code_date_collected', item.xpath(xpZIPQualityCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zip_quality_code_date_effective_2010', item.xpath(xpZIPQualityCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('zip_quality_code_data_collection_stage_2010', item.xpath(xpZIPQualityCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('zip_quality_code_date_collected', item.xpath(xpZIPQualityCodeDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('zip_quality_code_date_effective_2010', item.xpath(xpZIPQualityCodeDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('zip_quality_code_data_collection_stage_2010', item.xpath(xpZIPQualityCodeDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
@@ -3451,24 +3446,24 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('other_first_name_unhashed', item.xpath(xpOtherFirstNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('other_first_name_hashed', item.xpath(xpOtherFirstNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_first_name_date_collected', item.xpath(xpOtherFirstNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_first_name_date_effective_2010', item.xpath(xpOtherFirstNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_first_name_data_collection_stage_2010', item.xpath(xpOtherFirstNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('other_first_name_date_collected', item.xpath(xpOtherFirstNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_first_name_date_effective_2010', item.xpath(xpOtherFirstNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_first_name_data_collection_stage_2010', item.xpath(xpOtherFirstNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('other_last_name_unhashed', item.xpath(xpOtherLastNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('other_last_name_hashed', item.xpath(xpOtherLastNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_last_name_date_collected', item.xpath(xpOtherLastNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_last_name_date_effective_2010', item.xpath(xpOtherLastNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_last_name_data_collection_stage_2010', item.xpath(xpOtherLastNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('other_last_name_date_collected', item.xpath(xpOtherLastNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_last_name_date_effective_2010', item.xpath(xpOtherLastNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_last_name_data_collection_stage_2010', item.xpath(xpOtherLastNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('other_middle_name_unhashed', item.xpath(xpOtherMiddleNameUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('other_middle_name_hashed', item.xpath(xpOtherMiddleNameHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_middle_name_date_collected', item.xpath(xpOtherMiddleNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_middle_name_date_effective_2010', item.xpath(xpOtherMiddleNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_middle_name_data_collection_stage_2010', item.xpath(xpOtherMiddleNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('other_middle_name_date_collected', item.xpath(xpOtherMiddleNameHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_middle_name_date_effective_2010', item.xpath(xpOtherMiddleNameHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_middle_name_data_collection_stage_2010', item.xpath(xpOtherMiddleNameHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('other_suffix_unhashed', item.xpath(xpOtherSuffixUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('other_suffix_hashed', item.xpath(xpOtherSuffixHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_suffix_date_collected', item.xpath(xpOtherSuffixHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_suffix_date_effective_2010', item.xpath(xpOtherSuffixHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('other_suffix_data_collection_stage_2010', item.xpath(xpOtherSuffixHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('other_suffix_date_collected', item.xpath(xpOtherSuffixHashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_suffix_date_effective_2010', item.xpath(xpOtherSuffixHashedDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('other_suffix_data_collection_stage_2010', item.xpath(xpOtherSuffixHashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
@@ -3486,15 +3481,15 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpRaceUnhashedDataCollectionStage = 'hmis:Unhashed/@hmis:dataCollectionStage'
         xpRaceHashed = 'hmis:Hashed'
 
-        itemElements = element.xpath(parse_races, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
+        itemElements = element.xpath(xpRaces, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:
             for item in itemElements:
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('race_unhashed', item.xpath(xpRaceUnhashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('race_date_collected', item.xpath(xpRaceUnhashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('race_data_collection_stage_2010', item.xpath(xpRaceUnhashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('race_date_collected', item.xpath(xpRaceUnhashedDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('race_data_collection_stage_2010', item.xpath(xpRaceUnhashedDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('race_hashed', item.xpath(xpRaceHashed, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Foreign Keys '''
@@ -3526,9 +3521,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('funding_source_id_id_num', item.xpath(xpFundingSourceIDIDNum, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('funding_source_id_id_str', item.xpath(xpFundingSourceIDIDStr, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('funding_source_id_delete_occurred_date', item.xpath(xpFundingSourceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('funding_source_id_delete_effective', item.xpath(xpFundingSourceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('funding_source_id_delete', item.xpath(xpFundingSourceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('funding_source_id_delete_occurred_date', item.xpath(xpFundingSourceIDDeleteOccurredDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('funding_source_id_delete_effective', item.xpath(xpFundingSourceIDDeleteEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('funding_source_id_delete', item.xpath(xpFundingSourceIDDelete, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('federal_cfda_number', item.xpath(xpFederalCFDA, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('receives_mckinney_funding', item.xpath(xpReceivesMcKinneyFunding, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('advance_or_arrears', item.xpath(xpAdvanceOrArrears, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -3638,9 +3633,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('address', item.xpath(xpAddress, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('note', item.xpath(xpNote, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('person_email', item.xpath(xpPersonEmail, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_email_date_collected', item.xpath(xpPersonEmailDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_email_date_effective', item.xpath(xpPersonEmailDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('person_email_data_collection_stage', item.xpath(xpPersonEmailDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('person_email_date_collected', item.xpath(xpPersonEmailDateCollected, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_email_date_effective', item.xpath(xpPersonEmailDateEffective, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_date')
+                self.existence_test_and_add('person_email_data_collection_stage', item.xpath(xpPersonEmailDataCollectionStage, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
@@ -3823,19 +3818,24 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         ''' Checks that the query actually has a result and adds to dictionary '''
         if handling == 'no_handling':
                 self.persist(db_column, query_string = query_string)
+                #print query_string
                 return True
         elif len(query_string) is not 0 or None:
             if handling == 'attribute_text':
-                self.persist(db_column, query_string[0])
+                self.persist(db_column, query_string = str(query_string[0]))
+                #print query_string
                 return True
             if handling == 'text':
                 self.persist(db_column, query_string = query_string[0].text)
+                #print query_string
                 return True
             elif handling == 'attribute_date':
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string[0]))
+                #print query_string
                 return True
             elif handling == 'element_date':
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string[0].text))
+                #print query_string
                 return True
             else:
                 print "Need to specify the handling"

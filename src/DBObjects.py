@@ -187,14 +187,16 @@ class databaseObjects:
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         dedup_link_table = Table(
         'dedup_link', 
-        table_metadata, 
-        Column('source_rec_id', String(50), primary_key=True),
-        Column('destination_rec_id', String(50)), 
+        table_metadata,
+        #Column('id', Integer, primary_key=True),
+        Column('source_rec_id', Integer, ForeignKey(Person.c.id), primary_key=True),
+	Column('destination_rec_id', Integer, ForeignKey(Person.c.id), primary_key=True),
         Column('weight_factor', Integer),
         useexisting = True
         )
         table_metadata.create_all()
-        #mapper(dedup_link, export_table, properties={'children': [relation(Person), relation(Database)]})
+        mapper(DeduplicationLink, dedup_link_table, properties={'fk_source_person': relation(Person, primaryjoin=Person.c.id==dedup_link_table.c.source_rec_id),
+                                                                'fk_dest_person': relation(Person, primaryjoin=Person.c.id==dedup_link_table.c.destination_rec_id)})
         #mapper(Export, export_table, properties={'children': relation(Person), 'children': relation(Database)})
         return
     
@@ -3227,6 +3229,13 @@ class ReleaseOfInfo(baseObject):
     pass
 
 class ResidencyRequirements(baseObject):
+    pass
+
+# SBB20100524 Adding object to manage dedup linking.
+class DeduplicationLink(baseObject):
+    pass
+
+class SourceExportLink(baseObject):
     pass
 
 class ResourceInfo(baseObject):

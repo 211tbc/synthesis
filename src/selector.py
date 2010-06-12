@@ -2,7 +2,8 @@
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 import os
-import fileUtils 
+import fileUtils
+import sys
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
 from hmisxml30reader import HMISXML30Reader
@@ -20,6 +21,21 @@ from clsSecurity import clsSecurity
 import copy
 from StringIO import StringIO
 
+class serviceController:
+	def __init__(self):
+		import socket
+		port = 8081
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		s.bind(("", port))
+		print "waiting on port", port
+		while 1:
+			# receiving data
+			data, addr = s.recvfrom(1024)
+			print "Recieved: ", data, "from:", addr
+			if data == 'synthesis:stop':
+				print "stopping hard"
+				sys.exit(0)
+
 class FileHandler:#IGNORE:R0903
     '''Sets up the watch on the directory, and handles the file once one comes \
     in'''
@@ -33,6 +49,9 @@ class FileHandler:#IGNORE:R0903
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
         self.crypto = clsSecurity()
+	
+	# SBB20100612 adding listener for data comm (win32 shutdown from GUI)
+	sc = serviceController()
 
     def setProcessingOptions(self, docName):
         ''' ProcessingOptions is a dictionary on a perfile/sender basis.

@@ -8,7 +8,9 @@ class SynthesisController(wx.App):
         self.m_frame = MainFrame(None)
         self.m_frame.Show()
         self.SetTopWindow(self.m_frame)
+        
         return True
 
 app = SynthesisController(0)
+#app.m_frame.run()
 app.MainLoop()

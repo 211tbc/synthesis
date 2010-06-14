@@ -3,6 +3,9 @@
 import wx
 import SynthesisController
 from conf import settings
+from clsSocketComm import serviceController
+import os
+import subprocess
 
 # Implementing MainFrameBase
 class MainFrame( SynthesisController.MyFrame4 ):
@@ -13,17 +16,24 @@ class MainFrame( SynthesisController.MyFrame4 ):
 			self.m_listboxDirectories.Append(unicode(dirs))
 		
 		#self.m_textProcessingFolder.SetValue(unicodeString)
-	
+		
+		self.sc = serviceController(False)
+		# get the status
+		self.getStatus()
+		
+
 	
 	def m_btnStartClick( self, event ):
 		#self.m_btPython.Enable(True)
 		#self.m_textProcessingFolder.AppendText("scott")
 		# issue stop command against synthesis
 		#self.m_staticTextStatus.SetLabel("Synthesis is Stopping")
-		self.m_statusBar.SetStatusText("Synthesis is Stopping", 0)
+		self.m_statusBar.SetStatusText("Starting Synthesis...Please wait.", 0)
 		
 		# issue stop command
-		self.stopService()
+		self.startService()
+		
+		self.getStatus()
 	
 	def m_btnStopClick( self, event ):
 		#self.m_btPython.Enable(True)
@@ -55,6 +65,18 @@ class MainFrame( SynthesisController.MyFrame4 ):
 	
 	#def m_mniAboutClick( self, event ):
 	#	wx.MessageBox("oneminutepython template. ","oneminutepython")
+	
+	def getStatus(self):
+		synStatus = self.sc.getStatus("synthesis:status")
+		self.m_statusBar.SetStatusText(synStatus, 0)		
+	
+	def startService(self):
+		#os.system("python selector.py")
+		#subprocess.Popen()
+		print "Starting selector.py in %s...." % os.getcwd()
+		pid = subprocess.Popen("python" +  " selector.py", shell=True, cwd=os.getcwd())
+		#subprocess.call("python", "selector.py")
+		self.getStatus()
 	
 	def stopService(self):
 		import socket

@@ -20,21 +20,9 @@ import traceback
 from clsSecurity import clsSecurity
 import copy
 from StringIO import StringIO
+from clsSocketComm import serviceController
 
-class serviceController:
-	def __init__(self):
-		import socket
-		port = 8081
-		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		s.bind(("", port))
-		print "waiting on port", port
-		while 1:
-			# receiving data
-			data, addr = s.recvfrom(1024)
-			print "Recieved: ", data, "from:", addr
-			if data == 'synthesis:stop':
-				print "stopping hard"
-				sys.exit(0)
+
 
 class FileHandler:#IGNORE:R0903
     '''Sets up the watch on the directory, and handles the file once one comes \
@@ -51,7 +39,8 @@ class FileHandler:#IGNORE:R0903
         self.crypto = clsSecurity()
 	
 	# SBB20100612 adding listener for data comm (win32 shutdown from GUI)
-	sc = serviceController()
+	sc = serviceController(True)					# True is Server
+	sc.listen()
 
     def setProcessingOptions(self, docName):
         ''' ProcessingOptions is a dictionary on a perfile/sender basis.

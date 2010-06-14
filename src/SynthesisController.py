@@ -68,6 +68,7 @@ class MyFrame4 ( wx.Frame ):
 		
 		# Connect Events
 		self.m_btnStop.Bind( wx.EVT_BUTTON, self.m_btnStopClick )
+		self.m_btnStart.Bind( wx.EVT_BUTTON, self.m_btnStartClick )
 	
 	def __del__( self ):
 		pass
@@ -75,6 +76,9 @@ class MyFrame4 ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_btnStopClick( self, event ):
+		event.Skip()
+	
+	def m_btnStartClick( self, event ):
 		event.Skip()
 	
 

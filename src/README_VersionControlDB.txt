@@ -15,12 +15,3 @@ migrate version_control postgres://(your username):(your pass)@localhost:5432/co
 
 # which creates a table in the database called
 migrate_version
-
-
-
-Scott Benninghoff
-OpenMercury LLC
-http://www.openmercury.com
-scott.benninghoff@openmercury.com
-813-343-0180 office
-813-919-9125 mobile

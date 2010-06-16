@@ -1,0 +1,87 @@
+* Handling of date logic hasn't been code yet pending direction as to how it should work.
+
+* Table data is mostly exported as-is. Any require pick-value translation is TBD.
+
+* A review of nulls vs. nullable columns needs to be done.
+
+* A review/determination of ID seq/num/str columns needs to be done.
+
+* There are a couple/few columns with name typos that will need to be updated:
+    barrier_code.barried_code
+    domestic_violence_2010.dvo_*
+    others? 
+
+* Still need to determine how to handle Reported and/or outgoing-export vs incoming-export.
+
+* For the multi-row subtable to single-field CSV mappings, no attempt was made to determine
+  /which/ row's value to use. The first row (first 2 for races) was always naively chosen. 
+
+* Each output has fields whose source columns have to be determined:
+ 
+    - Export
+        ExportHashing -- Unable to determine appropriate source column
+        Delta or Refresh -- Unable to determine appropriate source column
+    
+    - AgencyProgram exportIndex
+        DateCreated -- Date handling logic TBD
+        DateUpdated -- Date handling logic TBD
+    
+    - SiteInformation site OrganizationID
+        DateUpdated -- Date handling logic TBD
+    
+    - Regions siteService OrganizationID
+        DateUpdated -- Date handling logic TBD
+    
+    - BedInventory siteService OrganizationID
+        AssetListId -- Unable to determine appropriate source column
+        AssetListName -- Unable to determine appropriate source column
+        DateUpdated -- Date handling logic TBD
+    
+    - Client exportId
+        OrganizationID -- Unable to determine how to link in Agency/Service/Site path
+        DateOfBirthQualityCode -- Unable to determine appropriate source column
+        DateAdded -- Date handling logic TBD
+        DateUpdated -- Date handling logic TBD
+        UpdateOrDelete -- Unable to determine appropriate source column
+        IdentityVerification -- Unable to determine appropriate source column
+        ReleaseOfInformation -- Subtable exists, but not sure how to translate 
+    
+    - ClientHistorical sspIndex personId
+        OrganizationID -- Unable to determine how to link in Agency/Service/Site path
+        ProgramID -- Unable to determine how to link in Agency/Service/Site path
+        SiteID -- Unable to determine how to link in Agency/Service/Site path
+        AssessmentDate -- Unable to determine appropriate source column
+        DateUpdated -- Date handling logic TBD
+    
+    - Participation personIndex personId
+        OrganizationID -- Unable to determine how to link in Agency/Service/Site path
+        ProgramID -- Unable to determine how to link in Agency/Service/Site path
+        SiteID -- Unable to determine how to link in Agency/Service/Site path
+        DateUpdated -- Date handling logic TBD
+        HousingStatusAtEntry -- Unable to determine appropriate source column 
+        HousingStatusAtExit -- Unable to determine appropriate source column
+        HouseholdIdentificationNumer -- Overlooked in first beta
+        RelationshipToHeadOfHousehold -- Pverlooked in first beta
+    
+    - IncomeBenefits phIndex personId
+        OrganizationID -- Unable to determine how to link in Agency/Service/Site path
+        ProgramID -- Unable to determine how to link in Agency/Service/Site path
+        SiteID -- Unable to determine how to link in Agency/Service/Site path
+        AssessmentDate -- Unable to determine appropriate source column
+        DateUpdated -- Date handling logic TBD
+    
+    - ServiceEvent personIndex personId
+        OrganizationID -- Unable to determine how to link in Agency/Service/Site path
+        ProgramID -- Unable to determine how to link in Agency/Service/Site path
+        SiteID -- Unable to determine how to link in Agency/Service/Site path
+        ServiceCode -- Unable to determine appropriate source column
+        FundingCategory -- Unable to determine appropriate source column
+        IsRecurring -- Unable to determine appropriate source column
+        Period/Interval -- Unable to determine appropriate source column
+        ContactTime -- Unable to determine appropriate source column
+        ContactSite -- Unable to determine appropriate source column
+        ClientEngaged -- Unable to determine appropriate source column
+        AssetListID -- Unable to determine appropriate source column
+        AssetID -- Unable to determine appropriate source column
+        DomainIDCode -- Unable to determine appropriate source column
+        DateUpdated -- Date handling logic TBD

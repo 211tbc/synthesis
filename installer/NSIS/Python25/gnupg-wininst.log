@@ -1,9 +1,0 @@
-*** Installation started 2010/05/10 10:44 ***
-Source: C:\Documents and Settings\Administrator\Desktop\gnupg-0.2.1.win32.exe
-999 Root Key: HKEY_LOCAL_MACHINE
-020 Reg DB Key: [Software\Microsoft\Windows\CurrentVersion\Uninstall]gnupg-py2.5
-040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\gnupg-py2.5]DisplayName=Python 2.5 gnupg-0.2.1
-040 Reg DB Value: [Software\Microsoft\Windows\CurrentVersion\Uninstall\gnupg-py2.5]UninstallString="C:\Synthesis\Python25\Removegnupg.exe" -u "C:\Synthesis\Python25\gnupg-wininst.log"
-200 File Copy: C:\Synthesis\Python25\Lib\site-packages\gnupg.py
-200 File Copy: C:\Synthesis\Python25\Lib\site-packages\gnupg.pyc
-200 File Copy: C:\Synthesis\Python25\Lib\site-packages\gnupg.pyo

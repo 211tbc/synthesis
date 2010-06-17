@@ -43,11 +43,15 @@ class MyFrame4 ( wx.Frame ):
 		gSizer2 = wx.GridSizer( 2, 2, 0, 0 )
 		
 		self.m_btnStop = wx.Button( self, wx.ID_ANY, u"S&top", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_btnStop.SetToolTipString( u"Use this to Stop Processing Files" )
+		
 		gSizer2.Add( self.m_btnStop, 0, wx.ALIGN_BOTTOM|wx.ALIGN_RIGHT|wx.ALL, 5 )
 		
 		gSizer21 = wx.GridSizer( 2, 2, 0, 0 )
 		
 		self.m_btnStart = wx.Button( self, wx.ID_ANY, u"&Start", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_btnStart.SetToolTipString( u"Use this to Start Synthesis File Processor" )
+		
 		gSizer21.Add( self.m_btnStart, 0, wx.ALIGN_BOTTOM|wx.ALIGN_RIGHT|wx.ALL, 5 )
 		
 		gSizer2.Add( gSizer21, 1, wx.EXPAND, 5 )
@@ -68,6 +72,7 @@ class MyFrame4 ( wx.Frame ):
 		
 		# Connect Events
 		self.m_btnStop.Bind( wx.EVT_BUTTON, self.m_btnStopClick )
+		self.m_btnStop.Bind( wx.EVT_ENTER_WINDOW, self.m_btnStopMouseOver )
 		self.m_btnStart.Bind( wx.EVT_BUTTON, self.m_btnStartClick )
 	
 	def __del__( self ):
@@ -76,6 +81,9 @@ class MyFrame4 ( wx.Frame ):
 	
 	# Virtual event handlers, overide them in your derived class
 	def m_btnStopClick( self, event ):
+		event.Skip()
+	
+	def m_btnStopMouseOver( self, event ):
 		event.Skip()
 	
 	def m_btnStartClick( self, event ):

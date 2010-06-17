@@ -34,6 +34,10 @@ class MainFrame( SynthesisController.MyFrame4 ):
 		self.startService()
 		
 		self.getStatus()
+		
+	#def m_btnStopMouseOver(self, event):
+	#	tip = self.m_btnStop.ToolTip.GetTip()
+	#	print tip
 	
 	def m_btnStopClick( self, event ):
 		#self.m_btPython.Enable(True)

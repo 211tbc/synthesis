@@ -32,7 +32,7 @@ class MyFrame4 ( wx.Frame ):
 		self.m_listboxDirectories = wx.ListBox( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, m_listboxDirectoriesChoices, 0 )
 		sbSizer5.Add( self.m_listboxDirectories, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.m_staticText37 = wx.StaticText( self, wx.ID_ANY, u"When your done converting, press the \"Stop\" button below.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText37 = wx.StaticText( self, wx.ID_ANY, u"When you're done converting, press the \"Stop\" button below.", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText37.Wrap( -1 )
 		sbSizer5.Add( self.m_staticText37, 0, wx.ALL, 5 )
 		

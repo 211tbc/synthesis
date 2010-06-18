@@ -270,8 +270,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             print "\n* barrier = ", barrier
             
         try:
-            #TBD: Column barried_code should be barrier_code:
-            barrierCd = barrier.barried_code
+            barrierCd = barrier.barrier_code
              
         except:
             barrierCd = None
@@ -449,9 +448,9 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 raise
 
 
-    def getPersonHistoricalData(self, sspIndex, personId):
+    def getPersonHistoricalData(self, personIndex, personId):
         historicals = self.session.query(DBObjects.PersonHistorical)\
-            .filter(DBObjects.PersonHistorical.site_service_index_id == sspIndex)
+            .filter(DBObjects.PersonHistorical.person_index_id == personIndex)
 
         if not historicals.count():
             print "Warning: no data in person_historical table for person %s." \
@@ -908,8 +907,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             self.createServiceEventRecs(personIndex, personId)
      
 
-    def createClientHistoricalRecs(self, sspIndex, personId):
-         for historical in self.getPersonHistoricalData(sspIndex, personId):
+    def createClientHistoricalRecs(self, personIndex, personId):
+         for historical in self.getPersonHistoricalData(personIndex, personId):
             try:
                 # Get the fields in site_service_participation table:
                 phIndex = historical.id
@@ -941,7 +940,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                     "substance_abuse_indefinite", "receive_substance_abuse_services")
                 violence,violenceOccured = self.getHistoryRelatedColumnData(phIndex,
                     "DomesticViolence", 
-                    "domestic_violence_survivor", "dvo_occurred")
+                    "domestic_violence_survivor", "dv_occurred")
                 employed, hoursLastWk, tenure, looking \
                     = self.getHistoryRelatedColumnData(phIndex, "Employment",
                     "currently_employed", "hours_worked_last_week",

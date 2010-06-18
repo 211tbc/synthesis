@@ -5,9 +5,11 @@ meta = MetaData(migrate_engine)
 
 system_configuration_odbid_table = Table(
         'sender_system_configuration', 
-        meta, 
-        Column('vendor_name', String(50), primary_key=True),
-	Column('processing_mode', String(4)),					# TEST or PROD 
+        meta,
+        Column('id', Integer, primary_key=True),
+        Column('vendor_name', String(50)),
+	Column('processing_mode', String(4)),					# TEST or PROD
+        Column('source_id', String(50)),                                        # Sending Organization ID (must be defined before we receive data from them)
         Column('odbid', Integer),
         Column('providerid', Integer),
         Column('userid', Integer),
@@ -22,3 +24,4 @@ def upgrade():
 def downgrade():
     # Operations to reverse the above upgrade go here.
     system_configuration_odbid_table.drop()
+

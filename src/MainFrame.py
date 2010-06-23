@@ -6,6 +6,7 @@ from conf import settings
 from clsSocketComm import serviceController
 import os
 import subprocess
+from time import sleep
 
 # Implementing MainFrameBase
 class MainFrame( SynthesisController.MyFrame4 ):
@@ -32,6 +33,8 @@ class MainFrame( SynthesisController.MyFrame4 ):
 		
 		# issue stop command
 		self.startService()
+		# sleep the app before polling for status
+		sleep(5)
 		
 		self.getStatus()
 		

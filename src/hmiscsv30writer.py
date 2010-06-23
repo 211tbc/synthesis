@@ -213,7 +213,37 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
         print "all closed."
 
 
-    def extractDate(self, tsStr):
+    def outputStr(self, maxlen, str):
+        try:
+            truncStr = str[0:maxlen]
+           
+        except:
+            truncStr = None
+            
+        return truncStr
+
+
+    def outputInt(self, val):
+        try:
+            num = int(val)
+           
+        except:
+            num = None
+
+        return num
+
+
+    def outputMoney(self, val):
+        try:
+            num = round(val, 2)
+           
+        except:
+            num = None
+
+        return num
+
+
+    def outputDate(self, tsStr):
         try:
             dateStr = tsStr.strftime("%m/%d/%Y")
            
@@ -222,6 +252,24 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
         return dateStr
                   
+
+    def outputTime(self, tsStr):
+        try:
+            timeStr = tsStr.strftime("%H:%M:%S")
+           
+        except:
+            timeStr = None
+
+        return timeStr
+
+    
+    def chooseId(self, val1, val2):
+        if val1 == None:
+            return val2
+        else:
+            return val1
+
+    
     ##########################################
     # Database Column-level Access Functions #
     ##########################################
@@ -276,6 +324,28 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             barrierCd = None
 
         return barrierCd
+
+
+    def getRelationshipToHeadData(self, hhId):
+        members = self.session.query(DBObjects.Household, DBObjects.Members)\
+            .filter(and_(or_(DBObjects.Household.household_id_num == hhId,
+                             DBObjects.Household.household_id_str == hhId),
+                         DBObjects.Household.id == DBObjects.Members.household_index_id))\
+            .first()
+
+        if not members:
+            return None
+        
+        if self.debug:
+            print "\n* members = ", members
+            
+        try:
+            rel = members.relationship_to_head_of_household
+             
+        except:
+            rel = None
+
+        return rel
 
 
     def getPriorZipCodeData(self, phIndex):
@@ -365,6 +435,23 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
         return (primaryRace, secondaryRace)
 
 
+    def getReleaseGrantedData(self, personIndex):
+        roi = self.session.query(DBObjects.ReleaseOfInformation)\
+                  .filter(DBObjects.ReleaseOfInformation.person_index_id == personIndex)\
+                  .first()
+
+        if not roi:
+            return None
+            
+        try:
+            releaseGranted = roi.release_granted
+
+        except:
+            releaseGranted = None
+
+        return releaseGranted
+
+    
     def getReceivesMcKinneyFundingData(self, serviceIndex):
         funding = self.session.query(DBObjects.FundingSource)\
             .filter(DBObjects.FundingSource.service_index_id == serviceIndex).first()
@@ -739,33 +826,40 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
         
         for ias in self.getIncomeAndSourcesData(phIndex):            
             # Return (IncomeBenefitType, SourceCode, SourceOther, MonthlyAmount):
-            yield (IB_TYPE_INCOME, ias.income_source_code, 
-                   ias.income_source_other, ias.amount)
+            yield (IB_TYPE_INCOME, ias.income_source_code, ias.income_source_other, 
+                   ias.amount, ias.income_source_code_date_collected)
             
         for ncb in self.getNonCashBenefitsData(phIndex):        
             # Return (non_cashBenefitType, SourceCode, SourceOther, MonthlyAmount):
-            yield (IB_TYPE_NON_CASH, ncb.non_cash_source_code, 
-                   ncb.non_cash_source_other, None)
+            yield (IB_TYPE_NON_CASH, ncb.non_cash_source_code, ncb.non_cash_source_other, 
+                   None, ncb.non_cash_source_code_date_collected)
 
 
     ################################
     # CSV Record Creator Functions #
     ################################
 
-    def createServiceEventRecs(self, personIndex, personId):
-         for serviceEvent in self.getServiceEventData(personIndex, personId):
+    def createServiceEventRecs(self, personIndex, personId, phIndex):
+         for se in self.getServiceEventData(personIndex, personId):
             try:
                 # Get the fields in service_event table:
-                seIndex = serviceEvent.site_service_index_id
-                seType = serviceEvent.type_of_service
-                seStartDt = self.extractDate(serviceEvent.service_period_start_date) 
-                seEndDt  = self.extractDate(serviceEvent.service_period_end_date)
-                serviceAirsCd = serviceEvent.service_airs_code
-                isReferral = serviceEvent.is_referral
-                quantFreq = serviceEvent.quantity_of_service
+                seIndex = se.site_service_index_id
+                seType = se.type_of_service
+                seStartDt = se.service_period_start_date
+                seEndDt  = se.service_period_end_date
+                serviceCd = se.hmis_service_event_code_type_of_service_2010
+                serviceAirsCd = se.service_airs_code
+                isReferral = se.is_referral
+                quantFreq = se.quantity_of_service
+                fundCat = se.hprp_financial_assistance_service_event_code_2010
 
                 (faAmt, grantId, advArrears) = self.getFundingSourceData(seIndex)
 
+                clientEngaged = (self.getHistoryRelatedColumnData(phIndex, 
+                                     "EngagedDate", "id") != None)  
+                (contTime, contSite) = self.getHistoryRelatedColumnData(phIndex,
+                                           "ContactMade", "contact_date", "contact_site")
+                
             except:
                 print "Unable to interpret data from service_event table!"
                 raise
@@ -774,26 +868,45 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             orgId = None
             programId = None
             siteId = None
-            serviceCd = None
-            fundcat = None
+
             isRecurring = None
             periodInt = None
-            contTime = None
-            contSite = None
-            clientEngaged = None
             assetListId = None
             assetId = None
             domainIdCd = None
-            dateUpdated = self.extractDate(None)
+            dateUpdated = None
 
             # Build data row list:
             dataRow = \
             [
-                personId, orgId, programId, siteId, seType, seStartDt, seEndDt, 
-                serviceCd, serviceAirsCd, isReferral, quantFreq, faAmt, fundcat, 
-                grantId, isRecurring, periodInt, advArrears, contTime, contSite,
-                clientEngaged, assetListId, assetId, domainIdCd, dateUpdated,   
-                self.exportId
+                self.outputStr(32, personId),
+                self.outputInt(orgId),
+                self.outputInt(programId),
+                self.outputInt(siteId),
+                self.outputStr(1, seType),
+                self.outputDate(seStartDt),
+                self.outputDate(seEndDt),
+                
+                self.outputStr(2, serviceCd),
+                self.outputStr(15, serviceAirsCd),
+                self.outputStr(1, isReferral),
+                self.outputInt(quantFreq),
+                self.outputMoney(faAmt),
+                self.outputStr(2, fundCat),
+                
+                self.outputStr(10, grantId),
+                self.outputStr(1, isRecurring),
+                self.outputStr(1, periodInt),
+                self.outputStr(1, advArrears),
+                self.outputTime(contTime),
+                self.outputStr(1, contSite),
+                self.outputStr(1, clientEngaged),
+                self.outputStr(10, assetListId),
+                self.outputStr(10, assetId),
+                self.outputInt(domainIdCd),
+                self.outputDate(dateUpdated),
+                  
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -807,23 +920,33 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def createIncomeBenefitsRecs(self, phIndex, personId):
-        for (ibType, srcCode, srcOther, monthlyAmt)\
+        for (ibType, srcCode, srcOther, monthlyAmt, sourceDate)\
             in self.getIncomeAndNonCashBenefitsData(phIndex):
+
+            assessDate = sourceDate            
             
             # TBD: Other fields to implement:
             orgId = None
             programId = None
-            siteId = None
-            
-            assessDate = self.extractDate(None)
-            dateUpdated = self.extractDate(None)
+            siteId = None                        
+            dateUpdated = None
             
             # Build data row list:
             dataRow = \
             [
-                personId, orgId, programId, siteId, assessDate, dateUpdated, 
-                ibType, monthlyAmt, srcCode, srcOther, monthlyAmt, 
-                self.exportId
+                self.outputStr(32, personId),
+                self.outputInt(orgId),
+                self.outputInt(programId),
+                self.outputInt(siteId),
+                self.outputDate(assessDate),
+                self.outputDate(dateUpdated),
+                
+                self.outputStr(1, ibType),
+                self.outputStr(2, srcCode),
+                self.outputInt(srcOther),
+                self.outputMoney(monthlyAmt),
+                
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -847,8 +970,10 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             try:
                 # Get the fields in site_service_participation table:
                 sspIndex = participation.id
-                entryDate = self.extractDate(participation.participation_dates_start_date)
-                exitDate = self.extractDate(participation.participation_dates_end_date)
+                entryDate = participation.participation_dates_start_date
+                exitDate = participation.participation_dates_end_date
+                hhId = self.chooseId(participation.household_idid_num,
+                                     participation.household_idid_str)
 
                 # Get fields related to site_service_participation table:
                 phIndex = self.getPersonHistoricalIndexData(sspIndex)
@@ -867,9 +992,14 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                     "Destinations", "destination_code")
                 chronicHomeless = self.getHistoryRelatedColumnData(phIndex,
                     "HudChronicHomeless", "hud_chronic_homeless")
+                housingEntry = self.getHistoryRelatedColumnData(phIndex,
+                    "HousingStatus", "housing_status")
+                housingExit = self.getHistoryRelatedColumnData(phIndex,
+                    "HousingStatus", "housing_status")
 
-                # Get fields from subtables non-simply related to person_historical table:                
-                zipCode, zipQual = self.getPriorZipCodeData(phIndex) 
+                # Get fields from subtables not simply related to person_historical table:                
+                zipCode, zipQual = self.getPriorZipCodeData(phIndex)
+                relationship = self.getRelationshipToHeadData(hhId)
 
             except:
                 print "Unable to interpret data from site_service_participation table!"
@@ -880,19 +1010,32 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             programId = None
             siteId = None
             
-            dateUpdated = self.extractDate(None)
-            housingEntry = None
-            housingExit = None
-            householdId = None
-            relationshipToHead = None
+            dateUpdated = None
 
             # Build data row list:
             dataRow = \
             [
-                personId, orgId, programId, siteId, entryDate, exitDate,
-                dateUpdated, vetStatus, disCond, priorRes, lengthPriorStay, zipCode, 
-                zipQual, housingEntry, housingExit, householdId, dest, reasonForLeaving, 
-                relationshipToHead, chronicHomeless, self.exportId
+                self.outputStr(32, personId),
+                self.outputInt(orgId),
+                self.outputInt(programId),
+                self.outputInt(siteId),
+                self.outputDate(entryDate),
+                self.outputDate(exitDate),
+                self.outputDate(dateUpdated),
+                self.outputStr(1, vetStatus),
+                self.outputStr(1, disCond),
+                self.outputStr(2, priorRes),
+                self.outputStr(1, lengthPriorStay),
+                self.outputStr(5, zipCode),
+                self.outputStr(1, zipQual),
+                self.outputStr(1, housingEntry),
+                self.outputStr(1, housingExit),
+                self.outputStr(20, hhId),
+                self.outputStr(2, dest),
+                self.outputStr(2, reasonForLeaving),                
+                self.outputStr(1, relationship),
+                self.outputStr(1, chronicHomeless),
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -904,7 +1047,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                       % HmisCsv30Writer.files["participation"]
                 raise
 
-            self.createServiceEventRecs(personIndex, personId)
+            self.createServiceEventRecs(personIndex, personId, phIndex)
      
 
     def createClientHistoricalRecs(self, personIndex, personId):
@@ -951,22 +1094,24 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                     "VocationalTraining", "vocational_training")
                 highestSchool = self.getHistoryRelatedColumnData(phIndex,
                     "HighestSchoolLevel", "highest_school_level")
-                degree = self.getHistoryRelatedColumnData(phIndex,
-                    "Degree", "degree_id_id_num")
+                (degreeNum, degreeStr) = self.getHistoryRelatedColumnData(phIndex,
+                    "Degree", "degree_id_id_num", "degree_id_id_str")
+                degree = self.chooseId(degreeNum, degreeStr)
                 healthStatus = self.getHistoryRelatedColumnData(phIndex,
                     "HealthStatus", "health_status")            
                 pregnant, dueDate = self.getHistoryRelatedColumnData(phIndex,
                     "Pregnancy", "pregnancy_status", "due_date")
-                dueDate = self.extractDate(dueDate)                
+                dueDate = dueDate                
                 serviceEra = self.getHistoryRelatedColumnData(phIndex,
                     "VeteranServiceEra", "service_era")
                 serviceDur = self.getHistoryRelatedColumnData(phIndex,
                     "VeteranMilitaryServiceDuration", "military_service_duration")
                 servedInWz  = self.getHistoryRelatedColumnData(phIndex, 
                     "VeteranServedInWarZone", "served_in_war_zone")
-                warZone, wzMonths, wzFire = self.getHistoryRelatedColumnData(phIndex, 
+                wzNum, wzStr, wzMonths, wzFire = self.getHistoryRelatedColumnData(phIndex, 
                     "VeteranWarzonesServed", "war_zone_id_id_id_num", 
-                    "months_in_war_zone", "received_fire")
+                    "war_zone_id_id_id_str", "months_in_war_zone", "received_fire")
+                warZone = wzNum
                 branch, discharge = self.getHistoryRelatedColumnData(phIndex,
                     "VeteranMilitaryBranches", "military_branch", "discharge_status")
                 cesIndex, childInSchool, school, mvLiason, schoolType, lastSchoolDt \
@@ -988,20 +1133,62 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             siteId = None
             
             assessDate = None
-            dateUpdated = self.extractDate(None)
+            dateUpdated = None
             
             # Build data row list:
             dataRow = \
             [
-                personId, orgId, programId, siteId, assessDate, dateUpdated,
-                monthlyIncome, income30, noncash30, physDis, recvPhysDis,
-                devDis, recvDevDis, chronicCond, recvChronic, hivAids, recvHivAids, 
-                mental, mentalIndef, recvMental, substance, substanceIndef, 
-                recvSubstance, violence, violenceOccured, employed, hoursLastWk, 
-                tenure, looking, inSchool, vocational, highestSchool, degree, 
-                healthStatus, pregnant, dueDate, serviceEra, serviceDur, servedInWz, 
-                warZone, wzMonths, wzFire, branch, discharge, childInSchool, school, 
-                mvLiason, schoolType, lastSchoolDt, schoolBarrier, self.exportId
+                self.outputStr(32, personId), 
+                self.outputInt(orgId), 
+                self.outputInt(programId), 
+                self.outputInt(siteId), 
+                self.outputDate(assessDate), 
+                self.outputDate(dateUpdated), 
+                self.outputMoney(monthlyIncome), 
+                self.outputStr(2, income30), 
+                self.outputStr(2, noncash30), 
+                self.outputStr(1, physDis), 
+                self.outputStr(1, recvPhysDis), 
+                self.outputStr(1, devDis), 
+                self.outputStr(1, recvDevDis), 
+                self.outputStr(1, chronicCond), 
+                self.outputStr(1, recvChronic), 
+                self.outputStr(1, hivAids), 
+                self.outputStr(1, recvHivAids),                 
+                self.outputStr(1, mental), 
+                self.outputStr(1, mentalIndef), 
+                self.outputStr(1, recvMental), 
+                self.outputStr(1, substance), 
+                self.outputStr(1, substanceIndef), 
+                self.outputStr(1, recvSubstance), 
+                self.outputStr(1, violence), 
+                self.outputStr(1, violenceOccured), 
+                self.outputStr(1, employed), 
+                self.outputInt(hoursLastWk),                 
+                self.outputStr(1, tenure), 
+                self.outputStr(1, looking), 
+                self.outputStr(1, inSchool), 
+                self.outputStr(1, vocational), 
+                self.outputStr(1, highestSchool), 
+                self.outputStr(1, degree),                 
+                self.outputStr(1, healthStatus), 
+                self.outputStr(1, pregnant), 
+                self.outputDate(dueDate), 
+                self.outputStr(1, serviceEra), 
+                self.outputInt(serviceDur), 
+                self.outputStr(1, servedInWz),                 
+                self.outputStr(1, warZone), 
+                self.outputInt(wzMonths), 
+                self.outputStr(1, wzFire), 
+                self.outputStr(1, branch), 
+                self.outputStr(1, discharge), 
+                self.outputStr(1, childInSchool), 
+                self.outputStr(100, school),                 
+                self.outputStr(1, mvLiason), 
+                self.outputStr(1, schoolType), 
+                self.outputDate(lastSchoolDt), 
+                self.outputInt(schoolBarrier), 
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -1023,16 +1210,20 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 personIndex = person.id
 
                 # Get the fields in person table:
-                personId = person.person_id_unhashed
+                personId = self.chooseId(person.person_id_id_num_2010, 
+                                         person.person_id_id_str_2010)
+                personId = self.chooseId(personId, person.person_id_hashed)
+                
                 firstName = person.person_legal_first_name_unhashed
                 middleName = person.person_legal_middle_name_unhashed
                 lastName = person.person_legal_last_name_unhashed
                 nameSuffix = person.person_legal_suffix_unhashed
                 ssn = person.person_social_security_number_unhashed
                 ssnQual = person.person_social_sec_number_quality_code
-                dob = self.extractDate(person.person_date_of_birth_unhashed)
+                dob = person.person_date_of_birth_unhashed
                 ethnicity = person.person_ethnicity_unhashed
                 gender = person.person_gender_unhashed
+                releaseOfInfo = self.getReleaseGrantedData(personIndex)
 
             except:
                 print "Unable to interpret data from person table!"
@@ -1043,19 +1234,34 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # TBD: Other fields to implement:
             orgId = None
             dobQual = None
-            dateAdded = self.extractDate(None)
-            dateUpdated = self.extractDate(None)
+            dateAdded = None
+            dateUpdated = None
             updateOrDelete = None
             idVerification = None
-            releaseOfInfo = None
 
             # Build data row list:
             dataRow = \
             [
-                orgId, personId, firstName, middleName, lastName, nameSuffix,
-                ssn, ssnQual, dob, dobQual, primaryRace, secondaryRace, ethnicity,
-                gender, dateAdded, dateUpdated, updateOrDelete, idVerification,
-                releaseOfInfo, exportId
+                self.outputInt(orgId),
+                self.outputStr(32, personId),
+                self.outputStr(30, firstName),
+                self.outputStr(30, middleName),
+                self.outputStr(30, lastName),
+                self.outputStr(30, nameSuffix),
+                self.outputStr(11, ssn),
+                self.outputStr(1, ssnQual),
+                self.outputDate(dob),
+                self.outputStr(1, dobQual),
+                self.outputStr(1, primaryRace),
+                self.outputStr(1, secondaryRace),
+                self.outputStr(1, ethnicity),
+                self.outputStr(1, gender),
+                self.outputDate(dateAdded),
+                self.outputDate(dateUpdated),
+                self.outputStr(1, updateOrDelete),
+                self.outputStr(1, idVerification),
+                self.outputStr(1, releaseOfInfo),
+                self.outputStr(32, exportId)
             ]
 
             try:
@@ -1080,22 +1286,22 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 siteId = siteService.site_id
                 
                 # Get the fields in inventory table:
+                assetListId = inventory.inventory_id_id_num
+                assetListName = inventory.inventory_id_id_str
                 householdType = inventory.household_type
                 bedType = inventory.bed_type
                 bedAvail = inventory.bed_availability
                 bedInv = inventory.bed_inventory
                 chInv = inventory.chronic_homeless_bed
                 unitInv = inventory.unit_inventory
-                invStart = self.extractDate(inventory.inventory_effective_period_start_date)
-                invEnd = self.extractDate(inventory.inventory_effective_period_end_date)
+                invStart = inventory.inventory_effective_period_start_date
+                invEnd = inventory.inventory_effective_period_end_date
                 hmisPartBeds = inventory.hmis_participating_beds
-                hmisStart = self.extractDate(inventory.hmis_participation_period_start_date)
-                hmisEnd = self.extractDate(inventory.hmis_participation_period_end_date)
+                hmisStart = inventory.hmis_participation_period_start_date
+                hmisEnd = inventory.hmis_participation_period_end_date
 
                 # TBD: Other fields to implement:
-                assetListId = None
-                assetListName = None
-                dateUpdated = self.extractDate(None)
+                dateUpdated = None
                 
             except:
                 print "Unable to interpret data from inventory tables!"
@@ -1104,9 +1310,24 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # Build data row list:
             dataRow = \
             [
-                orgId, programId, siteId, assetListId, assetListName, 
-                householdType, bedType, bedAvail, bedInv, chInv, unitInv, invStart, 
-                invEnd, hmisPartBeds, hmisStart, hmisEnd, dateUpdated, self.exportId
+                self.outputInt(orgId),
+                self.outputInt(programId),
+                self.outputInt(siteId),
+                self.outputStr(10, assetListId),
+                self.outputStr(30, assetListName),                
+                self.outputStr(1, householdType),
+                self.outputStr(1, bedType),
+                self.outputStr(1, bedAvail),
+                self.outputInt(bedInv),
+                self.outputInt(chInv),
+                self.outputInt(unitInv),
+                self.outputDate(invStart),                
+                self.outputDate(invEnd),
+                self.outputInt(hmisPartBeds),
+                self.outputDate(hmisStart),
+                self.outputDate(hmisEnd),
+                self.outputDate(dateUpdated),
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -1134,7 +1355,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 descript = region.region_description
                 
                 # TBD: Other fields to implement:
-                dateUpdated = self.extractDate(None)
+                dateUpdated = None
 
             except:
                 print "Unable to interpret data from region tables!"
@@ -1143,8 +1364,13 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # Build data row list:
             dataRow = \
             [
-                orgId, siteId, regionId, regionType, 
-                descript, dateUpdated, self.exportId
+                self.outputInt(orgId),
+                self.outputInt(siteId),
+                self.outputStr(2, regionId),
+                self.outputStr(8, regionType),                
+                self.outputStr(30, descript),
+                self.outputDate(dateUpdated),
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -1174,7 +1400,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 housingType = siteService.housing_type 
                 
                 # TBD: Other fields to implement:
-                dateUpdated = self.extractDate(None)
+                dateUpdated = None
 
             except:
                 print "Unable to interpret data from site, site_service tables!"
@@ -1183,8 +1409,17 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # Build data row list:
             dataRow = \
             [
-                orgId, siteId, address, city, state, zipCode, 
-                geoCode, siteServiceType, housingType, dateUpdated, self.exportId
+                self.outputInt(orgId),
+                self.outputInt(siteId),
+                self.outputStr(30, address),
+                self.outputStr(30, city),
+                self.outputStr(2, state),
+                self.outputStr(5, zipCode),
+                self.outputInt(geoCode),
+                self.outputStr(1, siteServiceType),
+                self.outputStr(1, housingType),
+                self.outputDate(dateUpdated),
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -1224,14 +1459,14 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 granteeIdentifier = service.grantee_identifier
 
                 # Get the fields in site table:
-                siteID = site.airs_key
+                siteId = site.airs_key
 
                 # Get the fields in related funding_source table:
                 receivesMcKFunding = self.getReceivesMcKinneyFundingData(serviceIndex)
 
                 # TBD: Other fields to implement:
-                dateCreated = self.extractDate(None)
-                dateUpdated = self.extractDate(None)
+                dateCreated = None
+                dateUpdated = None
 
             except:
                 print "Unable to interpret data from agency, service, and/or site tables!"
@@ -1240,10 +1475,21 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # Build data row list:
             dataRow = \
             [
-                orgId, orgName, programId, programName, directServiceCode,
-                siteID, programTypeCode, targetPopulationA, targetPopulationB,
-                trackingMethod, granteeIdentifier, receivesMcKFunding, dateCreated,
-                dateUpdated, self.exportId
+                self.outputInt(orgId),
+                self.outputStr(30, orgName),
+                self.outputInt(programId),
+                self.outputStr(30, programName),
+                self.outputStr(1, directServiceCode),
+                self.outputInt(siteId),
+                self.outputStr(1, programTypeCode),
+                self.outputStr(1, targetPopulationA),
+                self.outputStr(2, targetPopulationB),
+                self.outputStr(2, trackingMethod),
+                self.outputStr(10, granteeIdentifier),
+                self.outputStr(1, receivesMcKFunding),
+                self.outputDate(dateCreated),
+                self.outputDate(dateUpdated),
+                self.outputStr(32, self.exportId)
             ]
 
             try:
@@ -1267,9 +1513,9 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
                 exportIndex = export.export_id
                 
                 self.exportId = export.export_id
-                expDate = self.extractDate(export.export_date)
-                perStart = self.extractDate(export.export_period_start_date)
-                perEnd = self.extractDate(export.export_period_end_date)
+                expDate = export.export_date
+                perStart = export.export_period_start_date
+                perEnd = export.export_period_end_date
 
                 # TBD: These moved to source for 3.0:
                 #swVendor = export.export_software_vendor
@@ -1306,20 +1552,31 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             # Build data row list:
             dataRow = \
             [
-                 self.exportId, sourceId, sourceName, contactFirst, contactLast,
-                 contactPhone, contactExt, contactEmail, expDate, perStart, perEnd,
-                 self.exportHashing, swVendor, swVersion,
-                 HmisCsv30Writer.files["agency"],
-                 HmisCsv30Writer.files["inventory"],
-                 HmisCsv30Writer.files["client"],
-                 HmisCsv30Writer.files["historical"],
-                 HmisCsv30Writer.files["incBens"],
-                 # Outcome_measures file was removed from 3.0:
-                 None,
-                 HmisCsv30Writer.files["regions"],
-                 HmisCsv30Writer.files["participation"],
-                 HmisCsv30Writer.files["serviceEvent"],
-                 HmisCsv30Writer.files["siteInfo"], deltaRefresh
+                self.outputStr(32, self.exportId),
+                self.outputStr(32, sourceId),
+                self.outputStr(50, sourceName),
+                self.outputStr(50, contactFirst),
+                self.outputStr(50, contactLast),
+                self.outputStr(30, contactPhone),
+                self.outputStr(10, contactExt),
+                self.outputStr(50, contactEmail),
+                self.outputDate(expDate),
+                self.outputDate(perStart),
+                self.outputDate(perEnd),
+                self.outputStr(1, self.exportHashing),
+                self.outputStr(50, swVendor),
+                self.outputStr(50, swVersion),                
+                self.outputStr(50, HmisCsv30Writer.files["agency"]),
+                self.outputStr(50, HmisCsv30Writer.files["inventory"]),
+                self.outputStr(50, HmisCsv30Writer.files["client"]),
+                self.outputStr(50, HmisCsv30Writer.files["historical"]),
+                self.outputStr(50, HmisCsv30Writer.files["incBens"]),                
+                None, # Outcome_measures file was removed from 3.0
+                self.outputStr(50, HmisCsv30Writer.files["regions"]),
+                self.outputStr(50, HmisCsv30Writer.files["participation"]),
+                self.outputStr(50, HmisCsv30Writer.files["serviceEvent"]),
+                self.outputStr(50, HmisCsv30Writer.files["siteInfo"]), 
+                self.outputStr(1, deltaRefresh)
             ]
 
             try:

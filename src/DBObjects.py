@@ -63,6 +63,7 @@ class databaseObjects:
         
     def createMappings(self):
         self.export_map()
+        self.report_map()
         self.source_map()
         self.person_map()        
         self.service_2010_map()
@@ -501,6 +502,42 @@ class databaseObjects:
             ,'fk_export_to_database': relation(Source, backref='fk_database_to_export')
             })
         return
+
+    def report_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
+        report_table = Table(
+        'report', 
+        report_metadata, 
+        Column('report_id', String(50), primary_key=True, unique=True), 
+        Column('report_id_date_collected', DateTime(timezone=True)),
+        Column('report_date', DateTime(timezone=True)),
+        Column('report_date_date_collected', DateTime(timezone=True)),
+        Column('report_period_start_date', DateTime(timezone=True)),
+        Column('report_period_start_date_date_collected', DateTime(timezone=True)),
+        Column('report_period_end_date', DateTime(timezone=True)),
+        Column('report_period_end_date_date_collected', DateTime(timezone=True)),
+        Column('report_software_vendor', String(50)),
+        Column('report_software_vendor_date_collected', DateTime(timezone=True)),
+        Column('report_software_version', String(10)),
+        Column('report_software_version_date_collected', DateTime(timezone=True)),
+
+        ## HUD 3.0
+        Column('report_id_id_id_num_2010', String(50)),
+        Column('report_id_id_id_str_2010', String(50)),
+        Column('report_id_id_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('report_id_id_delete_effective_2010', DateTime(timezone=True)),        
+        Column('report_id_id_delete_2010', String(32)),        
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(Report, report_table, properties={
+            'fk_report_to_person': relation(Person, backref='fk_person_to_report')
+            ,'fk_report_to_household': relation(Household, backref='fk_household_to_report')
+            ,'fk_report_to_database': relation(Source, backref='fk_database_to_report')
+            })
+        return
+
     
     def other_names_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
@@ -780,7 +817,8 @@ class databaseObjects:
         #How do we handle dups?  We don't.  It's a log of what was submitted.
         #So remove primary key, as that will bar dups.
         Column('id', Integer, primary_key=True),
-        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('report_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('person_id_hashed', String(32)),
         Column('person_id_unhashed', String(50)),
         Column('person_id_date_collected', DateTime(timezone=True)),
@@ -1208,7 +1246,8 @@ class databaseObjects:
         
         Column('id', Integer, primary_key=True),
         
-        Column('export_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_id', String(50), ForeignKey(Report.c.report_id)),
 
     # dbCol: household_idid_num
             Column('household_id_num', String(32)),
@@ -1305,7 +1344,8 @@ class databaseObjects:
         'source', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
-        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('source_id', String(50)), 
         Column('source_id_date_collected', DateTime(timezone=True)),
         Column('source_email', String(255)),
@@ -1351,7 +1391,8 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('source_index_id', Integer, ForeignKey(Source.c.id)),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         useexisting = True
         )
         table_metadata.create_all()
@@ -1364,7 +1405,8 @@ class databaseObjects:
         'region_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('region_id_id_num', String(50)),
         Column('region_id_id_str', String(32)),
         Column('site_service_id', String(50)),
@@ -1388,7 +1430,8 @@ class databaseObjects:
         'agency_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
         Column('attr_effective', DateTime(timezone=True)),
@@ -1416,7 +1459,8 @@ class databaseObjects:
         'agency_child_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
         useexisting = True
         )
@@ -1430,7 +1474,8 @@ class databaseObjects:
         'service_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
         Column('attr_effective', DateTime(timezone=True)),
@@ -1460,7 +1505,8 @@ class databaseObjects:
         'site_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         #Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)), 
         Column('attr_delete', String(32)),
@@ -1515,7 +1561,8 @@ class databaseObjects:
         'site_service_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
@@ -3103,6 +3150,9 @@ class EngagedDate(baseObject):
     pass
 
 class Export(baseObject):
+    pass
+
+class Report(baseObject):
     pass
 
 class FamilyRequirements(baseObject):

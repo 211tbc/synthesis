@@ -13,15 +13,17 @@ Installing distribute...........................................................
 
 -Activate your new virtualenv:
 user@host:~/workspace/synthesis$ source ~/workspace/synthesis/sandbox/bin/activate
+
+(sandbox)user@host:~/workspace/synthesis$ cd ./sandbox
 (sandbox)user@host:~/workspace/synthesis/sandbox$
 
 -Get the code:
-(sandbox)user@host:~/workspace/synthesis/sandbox$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/code
+(sandbox)user@host:~/workspace/synthesis/sandbox$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis ./code
 
 -Prep the environment for buildout:
 -Copy the 'src' directory in trunk to the 'installer/buildout/src' directory, and rename to 'synthesis'.  So this will look like: '/installer/buildout/src/synthesis/'
 
-(sandbox)eric@ericasus:~/workspace/synthesis/sandbox/$ cd ../code
+(sandbox)eric@ericasus:~/workspace/synthesis/sandbox/$ cd ./code
 (sandbox)user@host:~/workspace/synthesis/sandbox/code$ cp -a ./src ./installer/buildout/src/
 (sandbox)user@host:~/workspace/synthesis/sandbox/code$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
 
@@ -38,9 +40,11 @@ interpreter = ${buildout:directory}/bin/buildout
 
 
 -Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
-
+(sandbox)user@host:~/workspace/synthesis/sandbox/code$ cd installer
 (sandbox)user@host:~/workspace/synthesis/sandbox/code/installer$ chmod a+x install-linux.sh
 (sandbox)user@host:~/workspace/synthesis/sandbox/code/installer$ sudo ./install-linux.sh -f ~/workspace/synthesis/sandbox/code -d ignore -s debian
+
+Run the source copied over to: ./installer/buildout/src/synthesis
 
 -When you're done developing in the sandbox, turn off the virtualenv:
 (sandbox)user@host:~/workspace/synthesis$ deactivate

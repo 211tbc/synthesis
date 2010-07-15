@@ -1,0 +1,48 @@
+*How to install an ubuntu/debian linux dev environment of Synthesis*
+
+-To have a self-contained sandbox which doesn't interfere with your linux distribution, install virtualenv:
+
+apt-get install python-virtualenv
+
+-Now make a sandbox with python-virtualenv:
+
+user@host:~/workspace/synthesis$ mkdir sandbox
+user@host:~/workspace/synthesis$ virtualenv --no-site-packages --clear sandbox
+New python executable in sandbox/bin/python
+Installing distribute..................................................................................................................................................................................done.
+
+-Activate your new virtualenv:
+user@host:~/workspace/synthesis$ source ~/workspace/synthesis/sandbox/bin/activate
+(sandbox)user@host:~/workspace/synthesis/sandbox$
+
+-Get the code:
+(sandbox)user@host:~/workspace/synthesis/sandbox$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/./code
+
+-Prep the environment for buildout:
+-Copy the 'src' directory in trunk to the 'installer/buildout/src' directory, and rename to 'synthesis'.  So this will look like: '/installer/buildout/src/synthesis/'
+
+(sandbox)eric@ericasus:~/workspace/synthesis/sandbox/$ cd ../code
+(sandbox)user@host:~/workspace/synthesis/sandbox/code$ cp -a ./src ./installer/buildout/src/
+(sandbox)user@host:~/workspace/synthesis/sandbox/code$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
+
+-Copy the 'conf' directory in trunk to the 'installer/buildout/src/synthesis/conf' directory.  This will look like: '/installer/buildout/src/synthesis/conf/'
+(sandbox)user@host:~/workspace/synthesis/sandbox/code$ cp -a ./conf ./installer/buildout/src/synthesis/
+
+-Tweak the conf file to match your email server, address, etc.
+
+-Now there is one fix needed:
+In ./installer/buildout/buildout.cfg, in the [python] section, change 
+interpreter = ${buildout:directory}/bin/
+to:
+interpreter = ${buildout:directory}/bin/buildout
+
+
+-Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
+
+(sandbox)user@host:~/workspace/synthesis/sandbox/code/installer$ chmod a+x install-linux.sh
+(sandbox)user@host:~/workspace/synthesis/sandbox/code/installer$ sudo ./install-linux.sh -f ~/workspace/synthesis/sandbox/dev_environment -d ignore -s debian
+
+-When you're done developing in the sandbox, turn off the virtualenv:
+(sandbox)user@host:~/workspace/synthesis$ deactivate
+
+

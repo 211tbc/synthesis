@@ -28,7 +28,7 @@ user@host:~/workspace/synthesis/installer$ ./install-linux.sh -f ~/workspace/syn
 -Now let's run the source
 -First, let's take a look at the 'python' file which was generated during Buildout:
 
-user@host:~/synthesis/installer/build# ls
+user@host:~/workspace/synthesis/installer/build# ls
 borg.py			fileinput_unit_test_file_exists.py  logs			 security_unit_test.py
 borg.pyc		fileinput_unit_test_no_file.py	    MainProcessor.py		 selector.py
 build.sh		fileinputwatcher.py		    manage-joe.py		 selector.pyc

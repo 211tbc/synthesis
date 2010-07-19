@@ -1246,7 +1246,7 @@ class databaseObjects:
         
         Column('id', Integer, primary_key=True),
         
-        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_id', String(50), ForeignKey(Report.c.report_id)),
 
     # dbCol: household_idid_num

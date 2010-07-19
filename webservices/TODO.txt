@@ -1,7 +1,0 @@
-TODO: Finish building ORM objects
-TODO: try to comment some more stuff
-TODO: Once objects are done, add to XML builders
-TODO: Teach XML builders to ignore null object properties
-TODO: A ton of Enumerations for datatypes from XML
-TODO: design and implement web services API (REST and/or SOAP)
-TODO: unit tests .... everyone does unit tests, right?

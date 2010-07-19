@@ -1,32 +1,73 @@
 *How to install an ubuntu/debian linux dev environment of Synthesis*
 
 -Get the code:
-user@host:~/workspace/synthesis/sandbox$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis ./code
+user@host:~/workspace$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis
 
 -Prep the environment for buildout:
--Copy the 'src' directory in trunk to the 'installer/buildout/src' directory, and rename to 'synthesis'.  So this will look like: '/installer/buildout/src/synthesis/'
+-Copy the 'src' directory in trunk to the 'installer/buildout/src' directory, and rename to 'synthesis'.  So this will look like: './installer/buildout/src/synthesis/'
 
-eric@ericasus:~/workspace/synthesis/$ cd ./code
-user@host:~/workspace/synthesis/code$ cp -a ./src ./installer/buildout/src/
-user@host:~/workspace/synthesis/code$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
+user@host:~/workspace$ cd synthesis 
+user@host:~/workspace/synthesis$ cp -a ./src ./installer/buildout/src/
+user@host:~/workspace/synthesis$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
 
 -Copy the 'conf' directory in trunk to the 'installer/buildout/src/synthesis/conf' directory.  This will look like: '/installer/buildout/src/synthesis/conf/'
-user@host:~/workspace/synthesis/code$ cp -a ./conf ./installer/buildout/src/synthesis/
+user@host:~/workspace/synthesis$ cp -a ./conf ./installer/buildout/src/synthesis/
 
 -Tweak the conf file to match your email server, address, etc.
 
--Now there is one fix needed:
-In ./installer/buildout/buildout.cfg, in the [python] section, change 
-interpreter = ${buildout:directory}/bin/
-to:
-interpreter = ${buildout:directory}/bin/buildout
-
-
 -Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
-user@host:~/workspace/synthesis/code$ cd installer
-user@host:~/workspace/synthesis/code/installer$ chmod a+x install-linux.sh
-user@host:~/workspace/synthesis/code/installer$ sudo ./install-linux.sh -f ~/workspace/synthesis/build -d ignore -s debian
+user@host:~/workspace/synthesis$ cd ./installer
+user@host:~/workspace/synthesis/installer$ chmod a+x install-linux.sh
+user@host:~/workspace/synthesis/installer$ sudo ./install-linux.sh -f ~/workspace/synthesis/installer/build -d ignore -s debian
 
-Run the source copied over to: ./installer/buildout/src/synthesis
+-Now let's run the source
+-First, let's take a look at the 'python' file which was generated during Buildout:
+
+user@host:~/synthesis/installer/build# ls
+borg.py			fileinput_unit_test_file_exists.py  logs			 security_unit_test.py
+borg.pyc		fileinput_unit_test_no_file.py	    MainProcessor.py		 selector.py
+build.sh		fileinputwatcher.py		    manage-joe.py		 selector.pyc
+clsExceptions.py	fileinputwatcher.pyc		    manage.py			 selector_unit_test.py
+clsExceptions.pyc	fileRouter.py			    MANIFEST.in			 setup.py
+clsLogger.py		fileRouter.pyc			    nodebuilder.py		 smtpLibrary.py
+clsLogger.pyc		fileUtils.py			    outputConfiguration.py	 smtpLibrary.pyc
+clsPostProcessing.py	fileUtils.pyc			    parxmlreader.py		 svcpointxml20writer.py
+clsSecurity.py		hmiscsv27writer.py		    parxmlreader.pyc		 testCase_settings.py
+clsSecurity.pyc		hmisxml28reader.py		    postgresutils.py		 testCase_settings.pyc
+conf			hmisxml28reader.pyc		    postgresutils.pyc		 translation.xml
+data			hmisxml28writer.py		    python			 translation.xsd
+DBObjects.py		__init__.py			    queryObject.py		 translator.py
+DBObjects.pyc		iniUtils.py			    reader.py			 validate_unit_test.py
+DBObjects_unit_test.py	interpretPicklist.py		    reader.pyc			 vendorxmlxxwriter.py
+emailProcessor.py		jfcsxmlreader.py		    README_setup-dev-env.txt	 writer.py
+emailProcessor.pyc	jfcsxmlreader.pyc		    README.txt			 XMLUtilities.py
+errcatalog		logging.ini			    README_VersionControlDB.txt  xsd
 
 
+** example of launching the 'MainProcessor.py' script:
+
+user@host:~/workspace/synthesis/build# ./python MainProcessor.py 
+fileUtilities initialized...
+fileUtilities initialized...
+fileUtilities initialized...
+fileUtilities initialized...
+The Python Win32 extensions for NT (service, event logging) appear not to be available.
+FileInputWatcher Initialized
+fileUtilities initialized...
+Class created: clsSecurity
+Getting Files
+Done Grabbing Files
+Getting Files
+Done Grabbing Files
+Getting Files
+Done Grabbing Files
+Monitoring Directories: ['/tmp/InputFiles/1', '/tmp/InputFiles/2', '/tmp/InputFiles/3']
+Watching started at Fri Jul 16 16:24:36 2010
+Watching POSIX OS
+pyinotify running in compatbility mode
+Starting the threaded notifier on  ['/tmp/InputFiles/1', '/tmp/InputFiles/2', '/tmp/InputFiles/3']
+Finished...
+waiting..
+waiting 2
+
+-So that's it!  Synthesis is running.

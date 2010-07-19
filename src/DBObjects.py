@@ -1344,7 +1344,7 @@ class databaseObjects:
         'source', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
-        Column('export_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('source_id', String(50)), 
         Column('source_id_date_collected', DateTime(timezone=True)),
@@ -1391,7 +1391,7 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('source_index_id', Integer, ForeignKey(Source.c.id)),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         useexisting = True
         )
@@ -1405,7 +1405,7 @@ class databaseObjects:
         'region_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('region_id_id_num', String(50)),
         Column('region_id_id_str', String(32)),
@@ -1430,7 +1430,7 @@ class databaseObjects:
         'agency_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
@@ -1459,7 +1459,7 @@ class databaseObjects:
         'agency_child_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
         useexisting = True
@@ -1474,7 +1474,7 @@ class databaseObjects:
         'service_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
@@ -1505,7 +1505,7 @@ class databaseObjects:
         'site_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         #Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)), 
@@ -1561,7 +1561,7 @@ class databaseObjects:
         'site_service_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)), 
+        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         Column('attr_delete', String(32)),

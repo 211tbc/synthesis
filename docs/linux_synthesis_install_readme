@@ -7,18 +7,23 @@ user@host:~/workspace$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/sy
 -Copy the 'src' directory in trunk to the 'installer/buildout/src' directory, and rename to 'synthesis'.  So this will look like: './installer/buildout/src/synthesis/'
 
 user@host:~/workspace$ cd synthesis 
-user@host:~/workspace/synthesis$ cp -a ./src ./installer/buildout/src/
+user@host:~/workspace/synthesis$ cp -a ./src ./installer/buildout/src/src
 user@host:~/workspace/synthesis$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
 
 -Copy the 'conf' directory in trunk to the 'installer/buildout/src/synthesis/conf' directory.  This will look like: '/installer/buildout/src/synthesis/conf/'
-user@host:~/workspace/synthesis$ cp -a ./conf ./installer/buildout/src/synthesis/
+user@host:~/workspace/synthesis$ cp -a ./conf ./installer/buildout/src/synthesis/conf
 
 -Tweak the conf file to match your email server, address, etc.
+
+-Copy the 'errcatalog' directory in trunk to the 'installer/buildout/src/synthesis/errcatalog' directory.  This will look like: '/installer/buildout/src/synthesis/errcatalog/'
+user@host:~/workspace/synthesis$ cp -a ./errcatalog ./installer/buildout/src/synthesis/errcatalog
 
 -Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
 user@host:~/workspace/synthesis$ cd ./installer
 user@host:~/workspace/synthesis/installer$ chmod a+x install-linux.sh
-user@host:~/workspace/synthesis/installer$ sudo ./install-linux.sh -f ~/workspace/synthesis/installer/build -d ignore -s debian
+user@host:~/workspace/synthesis/installer$ ./install-linux.sh -f ~/workspace/synthesis/installer/build -d ignore -s debian
+
+*Note: you may have to run the above command as sudo if you are installing the postgres database package (i.e., using the '-d os' option)
 
 -Now let's run the source
 -First, let's take a look at the 'python' file which was generated during Buildout:

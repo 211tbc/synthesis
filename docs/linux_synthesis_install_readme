@@ -1,4 +1,19 @@
 *How to install an ubuntu/debian linux dev environment of Synthesis*
+*tested on Ubuntu 10.04 Desktop, 64 bit edition
+
+Ubuntu Package Dependencies (if install-linux.sh script mentioned below is run as 'sudo', these will get installed on line 87 of script):
+gcc
+make
+python (2.6.4ubuntu1)
+python-dev
+python-setuptools
+zlib1g-dev
+libreadline5
+libreadline-dev
+readline-common
+ledit
+libpq-dev
+
 
 -Get the code:
 user@host:~/workspace$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis

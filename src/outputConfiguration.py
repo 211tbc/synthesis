@@ -20,28 +20,28 @@ Configuration = \
         },
     '1234':
         {
-            'vendor': 'Orlando Shelter Society',
+            'vendor': 'Some Vendor Name',
             'outputFormat': 'svcpoint',
-            'destinationURL': 'scott@benninghoff.us',
+            'destinationURL': 'someone@somewhere.net',
             'transportConfiguration': 'email'
         },
     '5678':
         {
-            'vendor': 'Pinellas',
+            'vendor': 'Some Vendor Name2',
             'outputFormat': 'svcpoint',
-            'destinationURL': 'crusty.penguix.net',
+            'destinationURL': 'subdomain.domain.net',
             'transportConfiguration': 'sftp',
-            'username': 'scottben',
-            'password': 'nx9353#'
+            'username': 'someuser',
+            'password': 'somepassword'
         },
     '91011':
         {
-            'vendor': 'Cleveland Housing Authority',
+            'vendor': 'Some Vendor Name3',
             'outputFormat': 'svcpoint',
             'destinationURL': '192.168.0.208',
             'transportConfiguration': 'sftp',
-            'username': 'scottben',
-            'password': 'nx9353#'
+            'username': 'someuser2',
+            'password': 'somepassword2'
         }
 }
 

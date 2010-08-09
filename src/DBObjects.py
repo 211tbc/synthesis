@@ -508,7 +508,7 @@ class databaseObjects:
         #table_metadata = MetaData(bind=self.sqlite_db, reflect=True)
         report_table = Table(
         'report', 
-        report_metadata, 
+        table_metadata, 
         Column('report_id', String(50), primary_key=True, unique=True), 
         Column('report_id_date_collected', DateTime(timezone=True)),
         Column('report_date', DateTime(timezone=True)),
@@ -845,9 +845,9 @@ class databaseObjects:
         Column('person_legal_suffix_date_collected', DateTime(timezone=True)),
         #OtherNames is in its own table as there can be multiple OtherNames
         #Race is in its own table as there can be multiple races
-        Column('person_social_security_number_hashed', String(32)),
-        Column('person_social_security_number_unhashed', String(9)),
-        Column('person_social_security_number_date_collected', DateTime(timezone=True)),
+        Column('person_SSN_hashed', String(32)),
+        Column('person_SSN_unhashed', String(9)),
+        Column('person_SSN_date_collected', DateTime(timezone=True)),
         Column('person_social_sec_number_quality_code', String(2)),
         Column('person_social_sec_number_quality_code_date_collected', DateTime(timezone=True)),
         #PersonHistorical has its own table
@@ -905,15 +905,15 @@ class databaseObjects:
         Column('person_legal_suffix_unhashed_delete_2010', String(32)),
         Column('person_legal_suffix_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
         Column('person_legal_suffix_unhashed_delete_effective_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_hashed_delete_2010', String(32)),
-        Column('person_social_security_number_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_hashed_delete_effective_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_unhashed_delete_2010', String(32)),
-        Column('person_social_security_number_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_unhashed_delete_effective_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_quality_code_delete_2010', String(32)),
-        Column('person_social_security_number_quality_code_delete_occurred_date_2010', DateTime(timezone=True)),
-        Column('person_social_security_number_quality_code_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_SSN_hashed_delete_2010', String(32)),
+        Column('person_SSN_hashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_SSN_hashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_SSN_unhashed_delete_2010', String(32)),
+        Column('person_SSN_unhashed_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_SSN_unhashed_delete_effective_2010', DateTime(timezone=True)),
+        Column('person_SSN_quality_code_delete_2010', String(32)),
+        Column('person_SSN_quality_code_delete_occurred_date_2010', DateTime(timezone=True)),
+        Column('person_SSN_quality_code_delete_effective_2010', DateTime(timezone=True)),
 
         useexisting = True)
         table_metadata.create_all()

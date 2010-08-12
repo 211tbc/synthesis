@@ -8,17 +8,17 @@ Here is sample of the fields that need to be defined for each particular transpo
 Email:
 
     'outputFormat': 'svcpoint',
-    'destinationURL': 'scott@benninghoff.us',
+    'destinationURL': 'user@somehost.com',
     'transportConfiguration': 'email'
 
 SFTP:
 
     'outputFormat': 'svcpoint',
-    'destinationURL': 'crusty.penguix.net',
+    'destinationURL': 'subdomain.domain.suffix',
     'transportConfiguration': 'sftp',
-    'username': 'scottben',
-    'password': 'nx9353#',
-    'outputpath': 'xmlpath',
+    'username': 'someuser',
+    'password': 'somepassword',
+    'outputpath': 'outputted/xml/path',
     'owner': '',
     'chmod': '',
     'group': ''
@@ -51,7 +51,7 @@ Configuration = \
     '1234':
         {
             'outputFormat': 'svcpoint',
-            'destinationURL': 'scott@benninghoff.us',
+            'destinationURL': 'user@host.com',
             'transportConfiguration': 'email'
         },
     '5678':
@@ -59,8 +59,8 @@ Configuration = \
             'outputFormat': 'svcpoint',
             'destinationURL': '192.168.0.208',
             'transportConfiguration': 'sftp',
-            'username': 'scottben',
-            'password': 'nx9353',
+            'username': 'someuser',
+            'password': 'somepassword',
             'outputpath': 'xmlFiles',
             'owner': '',
             'chmod': '',
@@ -69,7 +69,7 @@ Configuration = \
     '3':
         {
             'outputFormat': 'svcpoint',
-            'destinationURL': 'baisix.servicept.com',
+            'destinationURL': 'subdomain.domain.suffix',
             'transportConfiguration': 'vpnftp',
             'username': '',
             'password': '',

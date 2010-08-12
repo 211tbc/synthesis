@@ -28,7 +28,7 @@ PASSPHRASE = ''
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
 INPUTFILES_PATH = [
-            "/home/path/goes/here"
+            "~/workspace/synthesis/installer/build/InputFiles"
             ,"/usr/inputfiles"
             ,"/dir/encryptedpath/here"
             ]
@@ -80,25 +80,25 @@ SMTPSENDERPWD = 'mysecret'
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = \
 	{
-	"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles":
+	"~/workspace/synthesis/installer/build/InputFiles":
 		{
-        'VENDOR_NAME': 'Bowman HEART',
-		'SMTPTOADDRESS': ['scott.benninghoff@openmercury.com',],
+        'VENDOR_NAME': 'SomeVendor',
+		'SMTPTOADDRESS': ['username@host.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
 		'USES_ENCRYPTION':False
 		}
-	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles2":
+	,"~/workspace/synthesis/installer/build/InputFiles2":
 		{
-        'VENDOR_NAME': 'Bowman HEART',
+        'VENDOR_NAME': 'SomeVendor2',
 		'SMTPTOADDRESS': ['admin@superhost.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
 		'USES_ENCRYPTION':True
 		}
-	,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/InputFiles3":
+	,"~/workspace/synthesis/installer/build/InputFiles3":
 		{
 		'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['sammy.davis@jr.com',],
@@ -108,19 +108,19 @@ SMTPRECIPIENTS = \
 		'USES_ENCRYPTION':False
 		}
 # output processing
-    ,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/src/OutputFiles":
+    ,"~/workspace/synthesis/installer/build/OutputFiles":
 		{
 		'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['scott@benninghoff.us',],
+        'SMTPTOADDRESS': ['user@host.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
 		'USES_ENCRYPTION':False
 		}
-    ,"/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/OutputFiles":
+    ,"~/workspace/synthesis/installer/build/OutputFiles2":
 		{
 		'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['scott@benninghoff.us',],
+        'SMTPTOADDRESS': ['admin@somehost.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',

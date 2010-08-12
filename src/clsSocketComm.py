@@ -64,7 +64,7 @@ class serviceController:
 		while 1:
 			# receiving data
 			data, addr = self.s.recvfrom(1024)
-			print "Recieved: ", data, "from:", addr
+			print "Received: ", data, "from:", addr
 			
 			if data == 'synthesis:status':
 				self.send("synthesis:running")	

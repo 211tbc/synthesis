@@ -8,6 +8,14 @@ dropdb synthesis
 
 createdb synthesis
 
+-Edit ~/workspace/synthesis/installer/build/conf/settings.py .  Specifically, set:
+
+DB_DATABASE = "synthesis"
+DB_USER = "your_username_here"
+DB_PASSWD = "whatever_you_set_your_username's_postgres_password"
+
+INPUTFILES_PATH="~/workspace/synthesis/installer/build/InputFiles"
+
 cd ~/workspace/synthesis/installer/build 
 
 ./python selector.py 

@@ -176,22 +176,20 @@ class FileHandler:#IGNORE:R0903
         #return result
         return files
         
-class Selector:#IGNORE:R0903
+class Selector:
     '''Figures out which data format is being received.'''
-    #local_schema = {'hud_hmis_2_8_xml':'/home/eric/Alexandria_Consulting/Suncoast/JFCS/src/hmisparse/schema/HUD_HMIS_2_8.xsd'} #IGNORE:C0301
-    local_schema = settings.SCHEMA_DOCS
-    
-    global FU
-    FU = fileUtils.fileUtilities()
     
     def __init__(self):
-        #need to put this attribute in the .ini file
         
-        pass
+        local_schema = settings.SCHEMA_DOCS
+        if settings.DEBUG:
+            for item in local_schema:
+                print 'found schema: ' + local_schema[item]
+        
+        global FU
+        FU = fileUtils.fileUtilities()
 
-    # SBB20090917 modified to take a stream instead of a file
-    #def validate(self, instance_doc, shred=True): #IGNORE:R0201
-    def validate(self, instance_doc, shred=True): #IGNORE:R0201
+    def validate(self, instance_doc, shred=True): 
         '''Validates against the various available schema and csv records.\
         If not specified in the configs, it keeps trying each available \
         test to find the first which successfully validates.  You just \
@@ -202,10 +200,7 @@ class Selector:#IGNORE:R0903
         #if had a config specified
         FILEHANDLER = FileHandler()
         
-        ## tests = [VendorXMLTest(), HUDHMIS28XMLTest(), JFCSXMLTest()]  ## JOE
-        ## tests = [HUDHMIS28XMLTest(), JFCSXMLTest(), SVCPOINT20XMLTest(), PARXMLTest()] ## JOE
         tests = [HUDHMIS28XMLTest(), HUDHMIS30XMLTest(), JFCSXMLTest(), PARXMLTest()]
-        ## readers = [VendorXMLReader(instance_doc), HUDHMIS28XMLReader(instance_doc), JFCSXMLInputReader(instance_doc)]  ## JOE
         readers = [HUDHMIS28XMLReader(instance_doc), HUDHMIS30XMLReader(instance_doc), JFCSXMLInputReader(instance_doc), PARXMLInputReader(instance_doc)]
         results = []
         #for item in tests:
@@ -234,7 +229,7 @@ class VendorXMLTest:#IGNORE:R0903
         print '...but intended to validate', instance_filename
         return False
     
-class HUDHMIS28XMLTest:#IGNORE:R0903
+class HUDHMIS28XMLTest:
     '''Load in the HUD HMIS Schema, version 2.8.'''
     def __init__(self):
         global name
@@ -371,7 +366,7 @@ class SVCPOINTXMLTest:
             raise 
 
     
-class JFCSXMLTest:#IGNORE:R0903,W0232
+class JFCSXMLTest:
     ''' Tests for JFCS data 
         * There are 2 possible data source types ('service' or 'client')
         Steps: (will stop and return True on first success)
@@ -550,7 +545,7 @@ class PARXMLTest:
             , error
             raise 
     
-class HUDHMIS28XMLReader(HMISXML28Reader):#IGNORE:R0903
+class HUDHMIS28XMLReader(HMISXML28Reader):
     def __init__(self, instance_filename):
         self.reader = HMISXML28Reader(instance_filename)
         
@@ -572,7 +567,7 @@ class HUDHMIS30XMLReader(HMISXML30Reader):
         except:
             raise
 
-class JFCSXMLInputReader(JFCSXMLReader):#IGNORE:R0903
+class JFCSXMLInputReader(JFCSXMLReader):
     def __init__(self, instance_filename):
         self.reader = JFCSXMLReader(instance_filename)
         
@@ -594,7 +589,7 @@ class PARXMLInputReader(PARXMLReader):
         except:
             raise
     
-class VendorXMLReader():#IGNORE:R0903
+class VendorXMLReader():
     def __init__(self, instance_doc):
         pass
 

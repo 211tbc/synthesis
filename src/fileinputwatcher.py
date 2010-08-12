@@ -49,7 +49,7 @@ class FileInputWatcher:
         print 'FileInputWatcher Initialized'
         # SBB20090903 Adding debugging capability, not processing multiple file drops into multiple directories.
         if debug:
-            print '****************************************Debugging Monitoring..'
+            print '*************Debugging Monitoring On*************'
         self.debug = debug
         
         self.queue = queue

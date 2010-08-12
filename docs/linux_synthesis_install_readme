@@ -33,6 +33,7 @@ user@host:~/workspace/synthesis/installer$ chmod a+x install-linux.sh
 user@host:~/workspace/synthesis/installer$ ./install-linux.sh -f ~/workspace/synthesis/installer/build -d ignore -s debian
 
 *Note: you may have to run the above command as sudo if you are installing the postgres database package (i.e., using the '-d os' option)
+* if you use the -d ignore option, you'll need to set up the database manually.  Create a database named 'synthesis' accessible to your user by following the "Alternative Server Setup Instructions" at  https://help.ubuntu.com/community/PostgreSQL
 
 -Now let's run the source
 -First, let's take a look at the 'python' file which was generated during Buildout:

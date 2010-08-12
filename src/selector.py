@@ -607,5 +607,9 @@ if __name__ == '__main__':
         UTILS.blank_database()
      
     
+    if settings.DEBUG:
+        print "Now initializing FileHandler"
     FILEHANDLER = FileHandler()
+    if settings.DEBUG:
+        print "Now running FileHandler.run()"
     RESULTS = FILEHANDLER.run()

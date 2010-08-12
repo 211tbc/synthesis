@@ -35,7 +35,8 @@ class fileUtilities:
         
     def __init__(self, debug=False, debugMessages=None):
         print "fileUtilities initialized..."
-        self.failedDictAdd = {'daily census':0, 'intakes':0, 'outcomes':0}
+        #ECJ 08122010 The following line is deprecated (from an old project and this is not longer a valid CSV input format)
+        #self.failedDictAdd = {'daily census':0, 'intakes':0, 'outcomes':0}
         self.debug = debug
         
     def sleep(self, sleepTime):
@@ -292,17 +293,18 @@ class fileUtilities:
         # this is a single operation to sort a list of dictionaries
         return sorted(incomingList, key=itemgetter(colToSort))
 
-if __name__ == "__main__":
-    vld = fileUtilities()
-    files = vld.grabFiles('/home/scottben/Documents/Projects/OpenMercuryLLC/Ohio/*.csv')
-    
-    if debug == True:
-        debugMessages.log("Valid Files are: ", files)
-    
-    for file in files:
-        recs = vld.suckFile(file)
-        # split the records into the components
-        for rec in recs:
-            #print rec
-            parts = vld.parseRecord(rec)
-            print parts
+#ECJ 08/12/2010 This usage is deprecated (old input format)
+#if __name__ == "__main__":
+#    vld = fileUtilities()
+#    files = vld.grabFiles('/OldProject/*.csv')
+#    
+#    if debug == True:
+#        debugMessages.log("Valid Files are: ", files)
+#    
+#    for file in files:
+#        recs = vld.suckFile(file)
+#        # split the records into the components
+#        for rec in recs:
+#            #print rec
+#            parts = vld.parseRecord(rec)
+#            print parts

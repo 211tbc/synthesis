@@ -40,7 +40,7 @@ class FileHandler:#IGNORE:R0903
         Dictionary contains settings like does the sender use encryption etc.
         self.ProcessingOptions = 
             {
-                'SMTPTOADDRESS': ['joe@t3ch.com,],
+                'SMTPTOADDRESS': ['someone@domain.com,],
                 'SMTPTOADDRESSCC': [],
                 'SMTPTOADDRESSBCC': [],
                 'FINGERPRINT':'',
@@ -341,7 +341,7 @@ class SVCPOINTXMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
     def __init__(self):
         global name
-        self.name = 'SVCPOINT_%s_XML' % settings.SERVICEPOINT_VERSION
+        self.name = 'SVCPOINT_%s_XML' % settings.SVCPT_VERSION
         print 'running the', self.name, 'test'
         self.schema_filename = Selector.local_schema['svcpoint_2_0_xml']
     

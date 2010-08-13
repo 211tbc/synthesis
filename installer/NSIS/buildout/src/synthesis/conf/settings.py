@@ -65,7 +65,7 @@ DEBUG_DB = False                                # Debug the DB layer of the appl
 # email configuration
 SMTPSERVER = '10.37.129.4'
 SMTPPORT = 25
-SMTPSENDER = 'joe@t3ch.com'
+SMTPSENDER = 'someone@domain.com'
 SMTPSENDERPWD = ''
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files

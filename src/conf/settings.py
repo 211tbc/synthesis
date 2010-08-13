@@ -5,17 +5,17 @@ import os
 # current Min Python version is 2.4
 MINPYVERSION = '2.4'
 
-MODE = 'PROD'                               # This is the switch that runs the program in Test Mode.
+MODE = 'TEST'                               # This is the switch that runs the program in 'TEST' or 'PROD' Mode. 
 
 # DB settings:
-DB_DATABASE = ""
+DB_DATABASE = "synthesis"
 DB_USER = ""
-DB_PASSWD = ""
+DB_PASSWD = "password"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
-# Which service Point version is this site using?  This version number pulls the xsd schema in and configures the plug in as well.
-SERVICEPOINT_VERSION = '406'                    # this is 4.06
+# Which SvcPt version is this site using, if any?  This version number pulls the xsd schema in and configures the plug in as well.
+SVCPT_VERSION = '406'                    # this is 4.06
 
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
 BASE_PATH = os.getcwd()
@@ -57,15 +57,15 @@ PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'),
                'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'),
-               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SERVICEPOINT_VERSION, 'sp.xsd'),    # Service Point current version (output)
+               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output)
                'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'sp.xsd'),
                'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'sp.xsd'),
                'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'sp.xsd')
                }
 
-DEBUG = False									# Debug the application layer
-DEBUG_ALCHEMY = False							# Debug the ORM Layer
-DEBUG_DB = False								# Debug the DB layer of the application
+DEBUG = True									# Debug the application layer
+DEBUG_ALCHEMY = True							# Debug the ORM Layer
+DEBUG_DB = True								# Debug the DB layer of the application
 
 # This mechanism provides an override to the settings above.  create a file called local_settings.py and simply
 # override the values like BASE_PATH='/home/mypath'.  Then import like this: from conf import settings

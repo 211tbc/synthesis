@@ -56,7 +56,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
     
-    servicepoint_version = '4.06'
+    svcpt_version = '4.06'
     
     def __init__(self, poutDirectory, processingOptions, debug=False, debugMessages=None):
 	#print "%s Class Initialized" % self.__name__
@@ -401,7 +401,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    last_name = ET.SubElement(client, "last_name")
 	    last_name.text = recordset.person_legal_last_name_unhashed
 	
-	#we don't have the following elements for daily_census only clients, but ServicePoint requires them:
+	#we don't have the following elements for daily_census only clients, but SvcPt requires them:
 	# I simulated this w/my datasets.  Column names are as in the program
 	if recordset.person_legal_middle_name_unhashed <> "" and recordset.person_legal_middle_name_unhashed <> None:
 	    mi_initial = ET.SubElement(client, "mi_initial")
@@ -428,7 +428,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	last_name = ET.SubElement(client, "last_name")
 	last_name.text = recordset['Last Name']
 	
-	#we don't have the following elements for daily_census only clients, but ServicePoint requires them:
+	#we don't have the following elements for daily_census only clients, but SvcPt requires them:
 	# I simulated this w/my datasets.  Column names are as in the program
 	if recordset['MI'] <> "":
 	    mi_initial = ET.SubElement(client, "mi_initial")

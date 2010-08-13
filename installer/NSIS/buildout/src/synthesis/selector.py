@@ -37,7 +37,7 @@ class FileHandler:#IGNORE:R0903
         Dictionary contains settings like does the sender use encryption etc.
         self.ProcessingOptions = 
             {
-                'SMTPTOADDRESS': ['joe@t3ch.com,],
+                'SMTPTOADDRESS': ['someone@domain.com,],
                 'SMTPTOADDRESSCC': [],
                 'SMTPTOADDRESSBCC': [],
                 'FINGERPRINT':'',

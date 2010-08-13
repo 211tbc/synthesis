@@ -6,7 +6,7 @@ import DBObjects
 
 #from svcpointxml20writer import SVCPOINTXML20Writer
 # pick the plug-in to import
-import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SERVICEPOINT_VERSION
+import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SVCPT_VERSION
 exec import_string
 
 from hmisxml28writer import HMISXML28Writer

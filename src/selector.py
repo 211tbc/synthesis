@@ -1,6 +1,7 @@
 '''Figures out what type of data format we are dealing with, using validation \
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
+
 import os
 import fileUtils
 import sys
@@ -184,7 +185,7 @@ class Selector:
         local_schema = settings.SCHEMA_DOCS
         if settings.DEBUG:
             for item in local_schema:
-                print 'found schema: ' + local_schema[item]
+                print 'schema to be loaded: ' + local_schema[item]
         
         global FU
         FU = fileUtils.fileUtilities()
@@ -608,7 +609,7 @@ if __name__ == '__main__':
      
     
     if settings.DEBUG:
-        print "Now initializing FileHandler"
+        print "Now instantiating FileHandler"
     FILEHANDLER = FileHandler()
     if settings.DEBUG:
         print "Now running FileHandler.run()"

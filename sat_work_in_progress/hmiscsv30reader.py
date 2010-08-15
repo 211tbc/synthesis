@@ -23,8 +23,8 @@ class HmisCsv30Reader(DBObjects.databaseObjects):
     hmis_namespace = None 
     airs_namespace = None
     nsmap = None
-    global FU
-    FU = fileUtilities(settings.DEBUG, None)
+    global FILEUTIL
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, dir_name):
         pass

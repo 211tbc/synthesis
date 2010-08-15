@@ -26,8 +26,8 @@ class FileHandler:#IGNORE:R0903
         dir_to_watch = settings.INPUTFILES_PATH #IGNORE:C0301
         self.queue = Queue.Queue(0)
         self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue, settings.DEBUG)
-        global FU
-        FU = fileUtils.fileUtilities()
+        global FILEUTIL
+        FILEUTIL = fileUtils.fileUtilities()
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
         self.crypto = clsSecurity()
@@ -99,7 +99,7 @@ class FileHandler:#IGNORE:R0903
         listOfFiles = list()
         # Loop over list of file locations [list]
         for folder in settings.INPUTFILES_PATH:
-            listOfFiles.extend(FU.grabFiles(path.join(folder,'*.xml')))
+            listOfFiles.extend(FILEUTIL.grabFiles(path.join(folder,'*.xml')))
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
     
@@ -151,8 +151,8 @@ class Selector:#IGNORE:R0903
     #local_schema = {'hud_hmis_2_8_xml':'/home/eric/Alexandria_Consulting/Suncoast/JFCS/src/hmisparse/schema/HUD_HMIS_2_8.xsd'} #IGNORE:C0301
     local_schema = settings.SCHEMA_DOCS
     
-    global FU
-    FU = fileUtils.fileUtilities()
+    global FILEUTIL
+    FILEUTIL = fileUtils.fileUtilities()
     
     def __init__(self):
         #need to put this attribute in the .ini file
@@ -228,7 +228,7 @@ class HUDHMIS28XMLTest:#IGNORE:R0903
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
                 #print 'The HMIS 2.8 XML successfully validated.'
-                FU.makeBlock('The HMIS 2.8 XML successfully validated.')
+                FILEUTIL.makeBlock('The HMIS 2.8 XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \
@@ -273,7 +273,7 @@ class SVCPOINT20XMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
                 #print 'The HMIS 2.8 XML successfully validated.'
-                FU.makeBlock('The %s successfully validated.' % self.name)
+                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -323,25 +323,25 @@ class JFCSXMLTest:#IGNORE:R0903,W0232
         
         results = self.schemaTest(copy_instance_stream, self.service_schema_filename)
         if results == True:
-            FU.makeBlock('JFCS service XML data found.  Determined by service schema.')
+            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service schema.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
         if results == True:
-            FU.makeBlock('JFCS client XML data found.  Determined by client schema.')
+            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client schema.')
             JFCSXMLInputReader.data_type = 'client'
             return results
 
         results = self.elementTest(copy_instance_stream, self.service_elements)
         if results == True:
-            FU.makeBlock('JFCS service XML data found.  Determined by service elements.')
+            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service elements.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.elementTest(copy_instance_stream, self.client_elements)
         if results == True:
-            FU.makeBlock('JFCS client XML data found.  Determined by client elements.')
+            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client elements.')
             JFCSXMLInputReader.data_type = 'client'
             return results  
         
@@ -452,7 +452,7 @@ class PARXMLTest:
                 
                 #return False ## return invalid, use this to only test validation of string lengths and exit                        
                 
-                FU.makeBlock('The Operation PAR XML successfully validated.')
+                FILEUTIL.makeBlock('The Operation PAR XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \

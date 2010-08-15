@@ -18,13 +18,13 @@ processFiles = 1
 
 # Display banner if in TEST Mode
 if settings.MODE == 'TEST':
-    FU = fileUtilities(settings.DEBUG, None)
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
     warningTxt = 'CAUTION: TEST MODE - This wipes DB Clean'
-    FU.makeBlock(warningTxt)
+    FILEUTIL.makeBlock(warningTxt)
     warningTxt = 'CTRL-C or CTRL-Break to Stop - (waiting 30 seconds to startup)'
-    FU.makeBlock(warningTxt)
+    FILEUTIL.makeBlock(warningTxt)
     # sleep for 10 seconds
-    FU.sleep(10)
+    FILEUTIL.sleep(10)
         
 # test if we are in debug and TEST Mode.  If so we clear out the DB every processing run, PROD mode need should never do this.
 if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Test mode
@@ -50,19 +50,13 @@ debugMessages = clsLogger(iniFile, level)
 if settings.DEBUG:
     debugMessages.log("Logging System Online", 0)
 
-# first try to process existing files, then start the loop for ongoing processing            
-FILEHANDLER = FileHandler()
-FILEHANDLER.processExisting()
-
 try:
+    if settings.DEBUG:
+        print "Now instantiating FileHandler"
+    
     while processFiles:
-            
         try:
-            if os.name == 'nt':
-                RESULTS = FILEHANDLER.runWindows()
-            else:
-                # This will wait till files arrive, once processed, it will loop and start over (unless we get ctrl-C or break
-                RESULTS = FILEHANDLER.run()
+            FILEHANDLER = FileHandler()
         except:
             excString = traceback.format_exc()
             print excString

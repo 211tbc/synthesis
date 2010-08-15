@@ -25,8 +25,8 @@ class HMISXML28Reader(DBObjects.databaseObjects):
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
-    global FU
-    FU = fileUtilities(settings.DEBUG, None)
+    global FILEUTIL
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, xml_file):
         
@@ -87,7 +87,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         try:
             self.parse_export(root_element)
         except IntegrityError:
-            FU.makeBlock("CAUGHT INTEGRITY ERROR")
+            FILEUTIL.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
             raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         

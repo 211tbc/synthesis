@@ -1339,7 +1339,7 @@
                 <hmis:IncomeAndSources>
                     <hmis:Amount hmis:dateCollected="2009-11-21T22:34:45" hmis:dateEffective="2010-01-16T22:34:45" hmis:dataCollectionStage="1">-1082531292.146</hmis:Amount>
                     <hmis:IncomeSourceCode hmis:dateCollected="2011-06-18T22:34:45" hmis:dateEffective="2011-01-24T22:34:45" hmis:dataCollectionStage="3">7</hmis:IncomeSourceCode>
-                    <hmis:IncomeSourceOther hmis:dateCollected="2009-11-19T22:34:45" hmis:dateEffective="2010-04-06T22:34:45" hmis:dataCollectionStage="3">deZGX.VsuMbFUMmWahI-KqHI8bmo05</hmis:IncomeSourceOther>
+                    <hmis:IncomeSourceOther hmis:dateCollected="2009-11-19T22:34:45" hmis:dateEffective="2010-04-06T22:34:45" hmis:dataCollectionStage="3">deZGX.VsuMbFILEUTILMmWahI-KqHI8bmo05</hmis:IncomeSourceOther>
                 </hmis:IncomeAndSources>
                 <hmis:IncomeAndSources>
                     <hmis:Amount hmis:dateCollected="2009-12-01T22:34:45" hmis:dateEffective="2011-05-06T22:34:45" hmis:dataCollectionStage="3">676559282.74</hmis:Amount>
@@ -1401,7 +1401,7 @@
                 <hmis:ReasonForLeavingOther hmis:dateCollected="2011-07-09T22:34:45" hmis:dateEffective="2010-10-02T22:34:45" hmis:dataCollectionStage="2">Yl-an6IVBb.x2zGszqqBF-Lv</hmis:ReasonForLeavingOther>
                 <hmis:SchoolLastEnrolledDate>
                 </hmis:SchoolLastEnrolledDate>
-                <hmis:SchoolName hmis:dateCollected="2010-07-11T22:34:45" hmis:dateEffective="2011-04-08T22:34:45" hmis:dataCollectionStage="2">XFUhv1yvdOc</hmis:SchoolName>
+                <hmis:SchoolName hmis:dateCollected="2010-07-11T22:34:45" hmis:dateEffective="2011-04-08T22:34:45" hmis:dataCollectionStage="2">XFILEUTILhv1yvdOc</hmis:SchoolName>
                 <hmis:SchoolType hmis:dateCollected="2010-08-26T22:34:45" hmis:dateEffective="2010-08-11T22:34:45" hmis:dataCollectionStage="2">1</hmis:SchoolType>
                 <hmis:SubsidyOther hmis:dateCollected="2011-04-29T22:34:45" hmis:dateEffective="2010-07-25T22:34:45" hmis:dataCollectionStage="2">Cn79iE18-ZQ-dI_QXtNkgiuo6sLQ</hmis:SubsidyOther>
                 <hmis:SubsidyType hmis:dateCollected="2010-01-18T22:34:45" hmis:dateEffective="2010-09-10T22:34:45" hmis:dataCollectionStage="4">8</hmis:SubsidyType>
@@ -1536,7 +1536,7 @@
                 <hmis:IncomeAndSources>
                     <hmis:Amount hmis:dateCollected="2010-08-08T22:34:45" hmis:dateEffective="2011-04-06T22:34:45" hmis:dataCollectionStage="3">-1398406072.388</hmis:Amount>
                     <hmis:IncomeSourceCode hmis:dateCollected="2011-03-18T22:34:45" hmis:dateEffective="2011-09-16T22:34:45" hmis:dataCollectionStage="1">1</hmis:IncomeSourceCode>
-                    <hmis:IncomeSourceOther hmis:dateCollected="2011-03-03T22:34:45" hmis:dateEffective="2011-08-12T22:34:45" hmis:dataCollectionStage="2">b.b1DtUo77PhehvDU7ZeAiWEIFUQI3rvTEbsN6sA9H.y_4</hmis:IncomeSourceOther>
+                    <hmis:IncomeSourceOther hmis:dateCollected="2011-03-03T22:34:45" hmis:dateEffective="2011-08-12T22:34:45" hmis:dataCollectionStage="2">b.b1DtUo77PhehvDU7ZeAiWEIFILEUTILQI3rvTEbsN6sA9H.y_4</hmis:IncomeSourceOther>
                 </hmis:IncomeAndSources>
                 <hmis:LengthOfStayAtPriorResidence hmis:dateCollected="2011-06-28T22:34:45" hmis:dateEffective="2009-11-25T22:34:45" hmis:dataCollectionStage="3">3</hmis:LengthOfStayAtPriorResidence>
                 <hmis:LookingForWork hmis:dateCollected="2010-10-22T22:34:45" hmis:dateEffective="2010-09-30T22:34:45" hmis:dataCollectionStage="2">1</hmis:LookingForWork>
@@ -2753,7 +2753,7 @@
                             <hmis:AddressPeriod>
                             </hmis:AddressPeriod>
                             <hmis:Line1 hmis:dateCollected="2010-06-09T22:34:45" hmis:dateEffective="2010-09-07T22:34:45" hmis:dataCollectionStage="1">I.6XPdK5nn4p</hmis:Line1>
-                            <hmis:City hmis:dateCollected="2010-05-04T22:34:45" hmis:dateEffective="2010-05-19T22:34:45" hmis:dataCollectionStage="2">AscaMVmONSgDEXw-LFmFUX2</hmis:City>
+                            <hmis:City hmis:dateCollected="2010-05-04T22:34:45" hmis:dateEffective="2010-05-19T22:34:45" hmis:dataCollectionStage="2">AscaMVmONSgDEXw-LFmFILEUTILX2</hmis:City>
                             <hmis:State hmis:dateCollected="2011-07-20T22:34:45" hmis:dateEffective="2011-04-20T22:34:45" hmis:dataCollectionStage="1">aGZS5Ph.wEPU604K7.tmPBkTuk</hmis:State>
                         </ext:EmergencyContactAddress>
                         <ext:EmergencyContactRelationToClient hmis:dateCollected="2010-03-24T22:34:45" hmis:dateEffective="2009-11-08T22:34:45" hmis:dataCollectionStage="2">other non-family</ext:EmergencyContactRelationToClient>
@@ -4751,7 +4751,7 @@
                 <hmis:MentalHealthProblem hmis:dateCollected="2011-01-24T22:34:45" hmis:dateEffective="2010-07-15T22:34:45" hmis:dataCollectionStage="2">1</hmis:MentalHealthProblem>
                 <hmis:NonCashSourceCode hmis:dateCollected="2011-07-02T22:34:45" hmis:dateEffective="2011-09-07T22:34:45" hmis:dataCollectionStage="2">11</hmis:NonCashSourceCode>
                 <hmis:NonCashSourceCode hmis:dateCollected="2010-07-16T22:34:45" hmis:dateEffective="2009-11-11T22:34:45" hmis:dataCollectionStage="4">2</hmis:NonCashSourceCode>
-                <hmis:NonCashSourceOther hmis:dateCollected="2011-04-08T22:34:45" hmis:dateEffective="2009-10-17T22:34:45" hmis:dataCollectionStage="4">lgbNcFUt</hmis:NonCashSourceOther>
+                <hmis:NonCashSourceOther hmis:dateCollected="2011-04-08T22:34:45" hmis:dateEffective="2009-10-17T22:34:45" hmis:dataCollectionStage="4">lgbNcFILEUTILt</hmis:NonCashSourceOther>
                 <hmis:PersonAddress hmis:dateCollected="2011-08-31T22:34:45" hmis:dateEffective="2009-10-25T22:34:45" hmis:dataCollectionStage="1">
                         <hmis:AddressPeriod>
                         </hmis:AddressPeriod>

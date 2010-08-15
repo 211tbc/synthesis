@@ -26,8 +26,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
 
     ''' Instantiate FileUtilities '''
-    global FU
-    FU = fileUtilities(settings.DEBUG, None)
+    global FILEUTIL
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, xml_file):
         ''' Put XML file into local object '''

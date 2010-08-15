@@ -4,10 +4,10 @@ from conf import settings
 
 class router:
     def __init__(self):
-        self.FU = fileUtilities(settings.DEBUG)
+        self.FILEUTIL = fileUtilities(settings.DEBUG)
     
     def moveFile(self, sourceFile, destinationLocation):
-        self.FU.moveFile(sourceFile, destinationLocation)
+        self.FILEUTIL.moveFile(sourceFile, destinationLocation)
     
     def moveUsed(self, fileName):
         self.moveFile(fileName, settings.USEDFILES)

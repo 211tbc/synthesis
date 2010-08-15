@@ -25,26 +25,34 @@ from clsSocketComm import serviceController
 
 
 
-class FileHandler:#IGNORE:R0903
-    '''Sets up the watch on the directory, and handles the file once one comes \
-    in'''
+class FileHandler:
+    '''Sets up the watch on the directory, and handles the file once one comes in'''
+    
     def __init__(self):
         #change this so that it gets the watch_dir from the .ini file
-        dir_to_watch = settings.INPUTFILES_PATH #IGNORE:C0301
+        dir_to_watch = settings.INPUTFILES_PATH 
         self.queue = Queue.Queue(0)
         self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue, settings.DEBUG)
-        global FU
-        FU = fileUtils.fileUtilities()
+        global FILEUTIL
+        FILEUTIL = fileUtils.fileUtilities()
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
         self.crypto = clsSecurity()
-	
-	# SBB20100612 adding listener for data comm (win32 shutdown from GUI)
-	sc = serviceController(True)					# True is Server
-	sc.listen()
+	   
+        if settings.GUI:
+               #ECJ 20100815 todo: make it so this also works for UNIX, not just win32
+    	       # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
+    	       sc = serviceController(True)					# True is Server
+    	       sc.listen()
+        #If GUI to control the app being used, just use the old run code with pyinotify or windows listener
+        #ECJ 20100815 Make sure windows listener is working without the GUI
+        else:
+            if settings.DEBUG:
+                print "Now running FileHandler.non_gui_run()"
+            RESULTS = FILEHANDLER.non_gui_run()
 
     def setProcessingOptions(self, docName):
-        ''' ProcessingOptions is a dictionary on a perfile/sender basis.
+        ''' ProcessingOptions is a dictionary on a per file/sender basis.
         Dictionary contains settings like does the sender use encryption etc.
         self.ProcessingOptions = 
             {
@@ -110,11 +118,26 @@ class FileHandler:#IGNORE:R0903
         listOfFiles = list()
         # Loop over list of file locations [list]
         for folder in settings.INPUTFILES_PATH:
-            listOfFiles.extend(FU.grabFiles(path.join(folder,'*.xml')))
+            listOfFiles.extend(FILEUTIL.grabFiles(path.join(folder,'*.xml')))
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
     
-    def runWindows(self):
+    def nonGUIPOSIXRun(self):
+        #First, see if there are any existing files and process them
+        self.processExisting()
+        
+        # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
+        new_files = self.monitor() 
+        print 'monitoring..'
+        print 'monitoring..2'
+    
+        for new_file in new_files:
+            if settings.DEBUG:
+                print 'Processing: %s' % new_file
+        
+            self.processFiles(new_file)
+    
+    def nonGuiWindowsRun(self):
         import os, time
         BASE_PATH = os.getcwd()
         path_to_watch = os.path.join(BASE_PATH, "InputFiles")
@@ -134,22 +157,18 @@ class FileHandler:#IGNORE:R0903
         except KeyboardInterrupt:
             return
                 
-    def run(self): #IGNORE:R0201
-        '''This is the main method controlling this entire program.'''
-        #Start a monitoring thread.  It ends on its own.
-        new_files = self.monitor()
-        print 'monitoring..'
-        print 'monitoring..2'
-    
-        #result = selector.validate(HUDHMIS28XMLTest(), new_file)
-        for new_file in new_files:
-            if settings.DEBUG:
-                print 'Processing: %s' % new_file
+    def nonGuiRun(self): 
+        '''looks for and handles files, if there is no gui controlling the daemon, as specified by boolean in setting.py.'''
         
-            self.processFiles(new_file)
-            
-    #ECJ 05042009 indented this block as it needs specific class attributes \n
-    #to work        
+        #Figure out if we are running POSIX or UNIX non-gui
+        if os.name == 'nt':
+            if settings.DEBUG:
+                print "Now running FileHandler.nonGuiWindowsRun"
+            RESULTS = self.runNonGuiWindows()
+        else:
+            if settings.DEBUG:
+                print "Now running FileHandler nonGuiPOSIXRun"
+                    
     def monitor(self):
         'function to start and stop the monitor' 
         self.file_input_watcher.monitor()
@@ -180,15 +199,15 @@ class FileHandler:#IGNORE:R0903
 class Selector:
     '''Figures out which data format is being received.'''
     
+    global FILEUTIL
+    FILEUTIL = fileUtils.fileUtilities()
+    
     def __init__(self):
         
         local_schema = settings.SCHEMA_DOCS
         if settings.DEBUG:
             for item in local_schema:
                 print 'schema to be loaded: ' + local_schema[item]
-        
-        global FU
-        FU = fileUtils.fileUtilities()
 
     def validate(self, instance_doc, shred=True): 
         '''Validates against the various available schema and csv records.\
@@ -218,7 +237,7 @@ class Selector:
         #results
         return results
 
-class VendorXMLTest:#IGNORE:R0903
+class VendorXMLTest:
     '''Stub for any specific vendor's non-standardized XML format.'''
     def __init__(self):
         self.name = 'Vendor XML'
@@ -254,7 +273,7 @@ class HUDHMIS28XMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
                 #print 'The HMIS 2.8 XML successfully validated.'
-                FU.makeBlock('The HMIS 2.8 XML successfully validated.')
+                FILEUTIL.makeBlock('The HMIS 2.8 XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \
@@ -299,7 +318,7 @@ class HUDHMIS30XMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
                 print 'The HMIS 3.0 XML successfully validated.'
-                FU.makeBlock('The HMIS 3.0 XML successfully validated.')
+                FILEUTIL.makeBlock('The HMIS 3.0 XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \
@@ -344,7 +363,7 @@ class SVCPOINTXMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
                 #print 'The HMIS 2.8 XML successfully validated.'
-                FU.makeBlock('The %s successfully validated.' % self.name)
+                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -394,25 +413,25 @@ class JFCSXMLTest:
         
         results = self.schemaTest(copy_instance_stream, self.service_schema_filename)
         if results == True:
-            FU.makeBlock('JFCS service XML data found.  Determined by service schema.')
+            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service schema.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
         if results == True:
-            FU.makeBlock('JFCS client XML data found.  Determined by client schema.')
+            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client schema.')
             JFCSXMLInputReader.data_type = 'client'
             return results
 
         results = self.elementTest(copy_instance_stream, self.service_elements)
         if results == True:
-            FU.makeBlock('JFCS service XML data found.  Determined by service elements.')
+            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service elements.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.elementTest(copy_instance_stream, self.client_elements)
         if results == True:
-            FU.makeBlock('JFCS client XML data found.  Determined by client elements.')
+            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client elements.')
             JFCSXMLInputReader.data_type = 'client'
             return results  
         
@@ -523,7 +542,7 @@ class PARXMLTest:
                 
                 #return False ## return invalid, use this to only test validation of string lengths and exit                        
                 
-                FU.makeBlock('The Operation PAR XML successfully validated.')
+                FILEUTIL.makeBlock('The Operation PAR XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \
@@ -611,6 +630,4 @@ if __name__ == '__main__':
     if settings.DEBUG:
         print "Now instantiating FileHandler"
     FILEHANDLER = FileHandler()
-    if settings.DEBUG:
-        print "Now running FileHandler.run()"
-    RESULTS = FILEHANDLER.run()
+    

@@ -7,6 +7,10 @@ MINPYVERSION = '2.4'
 
 MODE = 'TEST'                               # This is the switch that runs the program in 'TEST' or 'PROD' Mode. 
 
+#The GUI setting determines in Filehandler() will use a GUI controller to start and stop the service.  
+#In practical terms, this is determined by whether Windows is running or Unix, since the GUI was built for Windows 
+#However, the gui is cross-platform, so the GUI setting should be actually independent of the platform
+GUI = 'False'   
 # DB settings:
 DB_DATABASE = "synthesis"
 DB_USER = ""

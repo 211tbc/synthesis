@@ -58,7 +58,7 @@ class NodeBuilder(DBObjects.databaseObjects):
         
         # setup the postprocessing module    
         self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.configID)
-        self.FU = fileUtils.fileUtilities()
+        self.FILEUTIL = fileUtils.fileUtilities()
         
     def run(self):
         '''This is the main method controlling this entire program.'''
@@ -71,7 +71,7 @@ class NodeBuilder(DBObjects.databaseObjects):
             #result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
         if self.writer.write():
-            filesToTransfer = self.FU.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
+            filesToTransfer = self.FILEUTIL.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
             
             # create a list of valid files to upload
             validFiles = []

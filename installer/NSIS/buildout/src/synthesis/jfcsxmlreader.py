@@ -24,8 +24,8 @@ class JFCSXMLReader(DBObjects.databaseObjects):
     
     implements (Reader)
     
-    global FU
-    FU = fileUtilities(settings.DEBUG, None)
+    global FILEUTIL
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
     
     def __init__(self, xml_file):
         self.xml_file = xml_file

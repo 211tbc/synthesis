@@ -75,8 +75,8 @@ class PARXMLReader(DBObjects.databaseObjects):
     ext_namespace = "http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : ext_namespace}
     
-    global FU
-    FU = fileUtilities(settings.DEBUG, None)
+    global FILEUTIL
+    FILEUTIL = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, xml_file):
         
@@ -137,7 +137,7 @@ class PARXMLReader(DBObjects.databaseObjects):
         try:
             self.parse_export(root_element)
         except IntegrityError:
-            FU.makeBlock("CAUGHT INTEGRITY ERROR")
+            FILEUTIL.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
             raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         

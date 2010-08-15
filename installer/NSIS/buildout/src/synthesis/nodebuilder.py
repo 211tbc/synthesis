@@ -41,7 +41,7 @@ class NodeBuilder(DBObjects.databaseObjects):
         
         # setup the postprocessing module    
         self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.configID)
-        self.FU = fileUtils.fileUtilities()
+        self.FILEUTIL = fileUtils.fileUtilities()
         
     def run(self):
         '''This is the main method controlling this entire program.'''
@@ -57,7 +57,7 @@ class NodeBuilder(DBObjects.databaseObjects):
             if self.validator.validate(xmlDoc):
                 print 'oK'        
         
-        filesToTransfer = self.FU.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
+        filesToTransfer = self.FILEUTIL.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
         
         # how to transport the files
         if self.transport == 'sftp':

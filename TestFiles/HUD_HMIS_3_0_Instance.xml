@@ -874,7 +874,7 @@
                     </hmis:HouseholdID>
                     <hmis:Need>
                         <hmis:NeedID hmis:delete="1" hmis:deleteOccurredDate="2010-03-14T18:51:58" hmis:deleteEffective="2010-10-29T18:51:58">
-                                <hmis:IDStr>TAZ1XrnxcdB4q6LcFU0fS1Pv</hmis:IDStr>
+                                <hmis:IDStr>TAZ1XrnxcdB4q6LcFILEUTIL0fS1Pv</hmis:IDStr>
                         </hmis:NeedID>
                         <hmis:SiteServiceID>1790962493</hmis:SiteServiceID>
 
@@ -915,7 +915,7 @@
 
                 </hmis:SiteServiceParticipation>
                 <hmis:SocialSecurityNumber>
-                        <hmis:Hashed hmis:dateCollected="2011-09-15T18:51:58" hmis:dateEffective="2010-07-31T18:51:58" hmis:dataCollectionStage="4">H39p3D7axyFUjKOM_C</hmis:Hashed>
+                        <hmis:Hashed hmis:dateCollected="2011-09-15T18:51:58" hmis:dateEffective="2010-07-31T18:51:58" hmis:dataCollectionStage="4">H39p3D7axyFILEUTILjKOM_C</hmis:Hashed>
                     <hmis:SocialSecNumberQualityCode hmis:dateCollected="2011-04-29T18:51:58" hmis:dateEffective="2010-05-06T18:51:58" hmis:dataCollectionStage="3">2</hmis:SocialSecNumberQualityCode>
                 </hmis:SocialSecurityNumber>
             </hmis:Person>

@@ -32,14 +32,15 @@ class FileHandler:
         #change this so that it gets the watch_dir from the .ini file
         dir_to_watch = settings.INPUTFILES_PATH 
         self.queue = Queue.Queue(0)
-        self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue, settings.DEBUG)
-        global FILEUTIL
-        FILEUTIL = fileUtils.fileUtilities()
+        self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue)
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
-        self.crypto = clsSecurity()
+        #ECJ20100815 Commented out for now until debugged 
+        #self.crypto = clsSecurity()
 	   
         if settings.GUI:
+               if settings.DEBUG:
+                   print "Now running the GUI serviceController code"
                #ECJ 20100815 todo: make it so this also works for UNIX, not just win32
     	       # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
     	       sc = serviceController(True)					# True is Server
@@ -48,8 +49,8 @@ class FileHandler:
         #ECJ 20100815 Make sure windows listener is working without the GUI
         else:
             if settings.DEBUG:
-                print "Now running FileHandler.non_gui_run()"
-            RESULTS = FILEHANDLER.non_gui_run()
+                print "Now running FileHandler.nonGUIRun()"
+            self.nonGUIRun()
 
     def setProcessingOptions(self, docName):
         ''' ProcessingOptions is a dictionary on a per file/sender basis.
@@ -64,6 +65,8 @@ class FileHandler:
             }
         '''
         folderName = path.split(docName)[0]
+        if settings.DEBUG:
+            print "folder name to email is", folderName
         try:
             self.ProcessingOptions = settings.SMTPRECIPIENTS[folderName]
         except:
@@ -76,20 +79,28 @@ class FileHandler:
         
         # test if the sender encrypts data, if so, decrypt, if not, just process
         
-        print "crypto",self.ProcessingOptions['USES_ENCRYPTION']
+        print "The settings indicate that, for this folder, encryption is:",self.ProcessingOptions['USES_ENCRYPTION']
         
         if self.ProcessingOptions['USES_ENCRYPTION']:
             # decrypt the file
             fileStream = self.crypto.decryptFile2Stream(new_file)
             print "stream",fileStream
         else:
+            if settings.DEBUG:
+                print "No encryption, so just opening the file", new_file
             # just open the file
             fileStream = open(new_file,'r')
             # Work around bug? file object is not same as CstringIO object in that you can't copy a fileStream to another one, CStringIO you can.  So we conver this to a CStringIO object and we can make true copies.
             fileStream = StringIO(fileStream.read())
+            if settings.DEBUG:
+                print "successfully read in file", new_file
             
         try:
+            if settings.DEBUG:
+                print "attempting validation of", new_file
             if self.selector.validate(fileStream):
+                if settings.DEBUG:
+                    print "validation successful for", new_file, "!"
                 self.email.notifyValidationSuccess()
                 self.router.moveUsed(new_file)
                 return True
@@ -124,6 +135,8 @@ class FileHandler:
     
     def nonGUIPOSIXRun(self):
         #First, see if there are any existing files and process them
+        if settings.DEBUG:
+            print "First, looking for preexisting files in input location."
         self.processExisting()
         
         # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
@@ -137,7 +150,7 @@ class FileHandler:
         
             self.processFiles(new_file)
     
-    def nonGuiWindowsRun(self):
+    def nonGUIWindowsRun(self):
         import os, time
         BASE_PATH = os.getcwd()
         path_to_watch = os.path.join(BASE_PATH, "InputFiles")
@@ -157,17 +170,18 @@ class FileHandler:
         except KeyboardInterrupt:
             return
                 
-    def nonGuiRun(self): 
-        '''looks for and handles files, if there is no gui controlling the daemon, as specified by boolean in setting.py.'''
+    def nonGUIRun(self): 
+        '''looks for and handles files, if there is no gui controlling the daemon, as specified by the GUI option in settings.py.'''
         
         #Figure out if we are running POSIX or UNIX non-gui
         if os.name == 'nt':
             if settings.DEBUG:
-                print "Now running FileHandler.nonGuiWindowsRun"
-            RESULTS = self.runNonGuiWindows()
+                print "We have a Windows system, as determined by nonGUIRun.  So handing off to nonGUIWindowsRun()"
+            self.nonGUIWindowsRun()
         else:
             if settings.DEBUG:
-                print "Now running FileHandler nonGuiPOSIXRun"
+                print "We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()"
+            self.nonGUIPOSIXRun()   
                     
     def monitor(self):
         'function to start and stop the monitor' 
@@ -204,10 +218,10 @@ class Selector:
     
     def __init__(self):
         
-        local_schema = settings.SCHEMA_DOCS
         if settings.DEBUG:
-            for item in local_schema:
-                print 'schema to be loaded: ' + local_schema[item]
+            print "selector instantiated and figuring out what schema are available"
+            for item in settings.SCHEMA_DOCS:
+                print 'schema to potentially load: ' + settings.SCHEMA_DOCS[item]
 
     def validate(self, instance_doc, shred=True): 
         '''Validates against the various available schema and csv records.\
@@ -218,7 +232,9 @@ class Selector:
         #config_available = 'false'
         #output the results (which schema it did or did not validate against
         #if had a config specified
-        FILEHANDLER = FileHandler()
+        
+        #ECJ20100816 commented this out, since we already have FileHandler instantiated
+        #FILEHANDLER = FileHandler()
         
         tests = [HUDHMIS28XMLTest(), HUDHMIS30XMLTest(), JFCSXMLTest(), PARXMLTest()]
         readers = [HUDHMIS28XMLReader(instance_doc), HUDHMIS30XMLReader(instance_doc), JFCSXMLInputReader(instance_doc), PARXMLInputReader(instance_doc)]
@@ -255,7 +271,7 @@ class HUDHMIS28XMLTest:
         global name
         name = 'HUDHMIS28XML'
         print 'running the', name, 'test'
-        self.schema_filename = Selector.local_schema['hud_hmis_2_8_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_2_8_xml']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -302,7 +318,7 @@ class HUDHMIS30XMLTest:
         global name
         name = 'HUDHMIS30XML'
         print 'running the', name, 'test'
-        self.schema_filename = Selector.local_schema['hud_hmis_3_0_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_3_0_xml']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -347,7 +363,7 @@ class SVCPOINTXMLTest:
         global name
         self.name = 'SVCPOINT_%s_XML' % settings.SVCPT_VERSION
         print 'running the', self.name, 'test'
-        self.schema_filename = Selector.local_schema['svcpoint_2_0_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['svcpoint_2_0_xml']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -401,8 +417,8 @@ class JFCSXMLTest:
         print 'running the', self.name, 'test'
         
         ''' Define schemas and elements for testing '''
-        self.service_schema_filename = Selector.local_schema['jfcs_service_xml']
-        self.client_schema_filename = Selector.local_schema['jfcs_client_xml']
+        self.service_schema_filename = settings.SCHEMA_DOCS['jfcs_service_xml']
+        self.client_schema_filename = settings.SCHEMA_DOCS['jfcs_client_xml']
         self.service_elements = ['c4clientid','qprogram','serv_code','trdate','end_date','cunits']
         self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno','c4last_s01']
         
@@ -467,7 +483,7 @@ class PARXMLTest:
         global name
         name = 'PARXML'
         print 'running the', name, 'test'
-        self.schema_filename = Selector.local_schema['operation_par_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['operation_par_xml']
 
     '''Find elements with or without specific xsd type'''
     def find_elements_by_type(self, schema_doc, type_content):
@@ -514,7 +530,7 @@ class PARXMLTest:
                 '''
                 
                 '''import original HUD HMIS 2.8 xsd that Operation PARS extended'''
-                schema_hudhmis_filename = Selector.local_schema['hud_hmis_2_8_xml']
+                schema_hudhmis_filename = settings.SCHEMA_DOCS['hud_hmis_2_8_xml']
                 schema_hudhmis_raw = open(schema_hudhmis_filename,'r')
                 schema_hudhmis_parsed = etree.parse(schema_hudhmis_raw)
                 
@@ -618,16 +634,3 @@ class VendorXMLReader():
         print '\nThe', self.name, 'test not implemented.'
         print '...but intended to shred the XML Document: %s' % instance_filename
         return False
-    
-if __name__ == '__main__':
-        
-    if settings.DEBUG and settings.MODE == 'TEST':                              # Only reset the DB in Test mode
-        import postgresutils
-        UTILS = postgresutils.Utils()
-        UTILS.blank_database()
-     
-    
-    if settings.DEBUG:
-        print "Now instantiating FileHandler"
-    FILEHANDLER = FileHandler()
-    

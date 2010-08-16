@@ -28,13 +28,18 @@ make a non-polling notification.
 
 import os, time, exceptions
 from time import sleep
+from conf import settings
 
 # determine what environment we are running under, win32 or POSIX
 if os.name == 'nt':
+    if settings.DEBUG:
+        print "fileinputwatcher.py determined we are running windows nt"
     import win32file
     import win32event
     import win32con
 else:
+    if settings.DEBUG:
+        print "fileinputwatcher.py determined we are running POSIX"
     # POSIX
     try:
         import pyinotify
@@ -45,24 +50,27 @@ else:
 class FileInputWatcher:
     '''controlling class for file monitoring'''
 
-    def __init__(self, dir_to_watch, queue, debug=False): 
+    def __init__(self, dir_to_watch, queue): 
         print 'FileInputWatcher Initialized'
         # SBB20090903 Adding debugging capability, not processing multiple file drops into multiple directories.
-        if debug:
-            print '*************Debugging Monitoring On*************'
-        self.debug = debug
+        if settings.DEBUG:
+            print '*************Debugging On*************'
         
         self.queue = queue
         self.dir_to_watch = dir_to_watch    
-        if os.name == 'nt':   
+        if os.name == 'nt':
+            if settings.DEBUG:
+                print "FileInputWatcher.__init__ saying we are running nt"   
             self.osiswin32 = True
         else:
             self.osiswin32 = False
+            if settings.DEBUG:
+                print "FileInputWatcher.__init__ saying we are not running nt"   
         # make a notifier (nothing)
         self.notifier = None
                 
     def monitor(self):
-        '''The command to start monitoring a directory or set of them.'''
+        '''The command to start monitoring a directory or set of them.  os independent, but only posix uses it.'''
         print 'Monitoring Directories: %s' % self.dir_to_watch
         print "Watching started at %s" % (time.asctime())
         if self.osiswin32:
@@ -73,7 +81,7 @@ class FileInputWatcher:
             self.watch_posix_start()
             
     def stop_monitoring(self):  
-        'os independent method to stop monitoring, but only posix uses it.'
+        '''os independent method to stop monitoring, but only posix uses it.'''
         #self.watch_posix_stop()
         # SBB20090917 Instead of stopping, pause while stuff is being processed, with notifier stopped, any files received are not tracked or processed
         #sleep(5)
@@ -126,7 +134,7 @@ class FileInputWatcher:
         if self.notifier == None:
             try:
                 pyinotify.compatibility_mode()
-                print 'pyinotify running in compatbility mode'
+                print 'pyinotify running in compatibility mode'
             except:
                 print 'pyinotify running in standard mode'
             try:
@@ -138,7 +146,7 @@ class FileInputWatcher:
         
             self.notifier = ThreadedNotifier(watch_manager, EventHandler(self.queue))#IGNORE:W0201
             # SBB20090903 Turn on verbose mode
-            self.notifier.VERBOSE = self.debug
+            self.notifier.VERBOSE = settings.DEBUG
             
             watch_manager.add_watch(self.dir_to_watch, mask)
             print 'Starting the threaded notifier on ', self.dir_to_watch

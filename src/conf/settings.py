@@ -10,7 +10,7 @@ MODE = 'TEST'                               # This is the switch that runs the p
 #The GUI setting determines in Filehandler() will use a GUI controller to start and stop the service.  
 #In practical terms, this is determined by whether Windows is running or Unix, since the GUI was built for Windows 
 #However, the gui is cross-platform, so the GUI setting should be actually independent of the platform
-GUI = 'False'   
+GUI = False  
 # DB settings:
 DB_DATABASE = "synthesis"
 DB_USER = ""
@@ -32,9 +32,8 @@ PASSPHRASE = ''
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
 INPUTFILES_PATH = [
-            "~/workspace/synthesis/installer/build/InputFiles"
-            ,"/usr/inputfiles"
-            ,"/dir/encryptedpath/here"
+            "/home/put_your_username_here/workspace/synthesis/installer/build/InputFiles"
+            ,
             ]
 
 # subfolder 
@@ -61,7 +60,7 @@ PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'),
                'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'),
-               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SERVICEPOINT_VERSION, 'sp.xsd'),    # Service Point current version (output)
+               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output)
                'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'),
                'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
                'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd')
@@ -82,12 +81,11 @@ SMTPSENDER = 'me@localhost'
 SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
-SMTPRECIPIENTS = \
-	{
-	"~/workspace/synthesis/installer/build/InputFiles":
+SMTPRECIPIENTS =	{
+     "/home/put_your_username_here/workspace/synthesis/installer/build/InputFiles":
 		{
         'VENDOR_NAME': 'SomeVendor',
-		'SMTPTOADDRESS': ['username@host.com',],
+		'SMTPTOADDRESS': ['someone@somedomain.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',

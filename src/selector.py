@@ -186,8 +186,7 @@ class FileHandler:
     def monitor(self):
         'function to start and stop the monitor' 
         self.file_input_watcher.monitor()
-        print 'waiting..'
-        print 'waiting 2'
+        print 'waiting...'
         
         #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
         files = list()

@@ -68,7 +68,7 @@ DEBUG_DB = True                                # Debug the DB layer of the appli
 # email configuration
 SMTPSERVER = 'localhost'
 SMTPPORT = 25
-SMTPSENDER = 'scottt@localhost'
+SMTPSENDER = 'usert@localhost'
 SMTPSENDERPWD = ''
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
@@ -76,7 +76,7 @@ SMTPRECIPIENTS = \
     {
         os.path.join(BASE_PATH, "InputFiles/1"):
         {
-        'SMTPTOADDRESS': ['scottt@localhost',],
+        'SMTPTOADDRESS': ['usert@localhost',],
         'SMTPTOADDRESSCC': [],
         'SMTPTOADDRESSBCC': [],
         'FINGERPRINT':'',
@@ -85,7 +85,7 @@ SMTPRECIPIENTS = \
         
         os.path.join(BASE_PATH, "InputFiles/2"):
         {
-        'SMTPTOADDRESS': ['scottt@localhost',],
+        'SMTPTOADDRESS': ['usert@localhost',],
         'SMTPTOADDRESSCC': [],
         'SMTPTOADDRESSBCC': [],
         'FINGERPRINT':'',
@@ -94,7 +94,7 @@ SMTPRECIPIENTS = \
         
         os.path.join(BASE_PATH, "InputFiles/3"):
         {
-        'SMTPTOADDRESS': ['scottt@localhost',],
+        'SMTPTOADDRESS': ['usert@localhost',],
         'SMTPTOADDRESSCC': [],
         'SMTPTOADDRESSBCC': [],
         'FINGERPRINT':'',

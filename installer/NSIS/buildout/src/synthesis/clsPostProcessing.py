@@ -85,7 +85,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         self.ssh.set_missing_host_key_policy(
             paramiko.AutoAddPolicy())
         
-        #ssh.connect('192.168.0.208', username='scottben', password='nx9353')
+        #ssh.connect('192.168.0.208', username='user', password='password')
         # establish an SSH connection to the host
         try:
             self.ssh.connect(self.outputConfig['destinationURL'],

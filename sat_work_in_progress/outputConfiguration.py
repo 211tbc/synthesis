@@ -8,15 +8,15 @@ Here is sample of the fields that need to be defined for each particular transpo
 Email:
 
     'outputFormat': 'svcpoint',
-    'destinationURL': 'scottt@localhost',
+    'destinationURL': 'usert@localhost',
     'transportConfiguration': 'email'
 
 SFTP:
 
     'outputFormat': 'svcpoint',
-    'destinationURL': 'scottt@localhost',
+    'destinationURL': 'usert@localhost',
     'transportConfiguration': 'sftp',
-    'username': 'scottt',
+    'username': 'usert',
     'password': 'xxxxxx',
     'outputpath': 'xmlpath',
     'owner': '',
@@ -35,13 +35,13 @@ Configuration = \
     '1234':
         {
             'outputFormat': 'svcpoint',
-            'destinationURL': 'scottt@localhost',
+            'destinationURL': 'usert@localhost',
             'transportConfiguration': 'email'
         },
     '1313':
         {
             'outputFormat': 'hmiscsv',
-            'destinationURL': 'scottt@localhost',
+            'destinationURL': 'usert@localhost',
             'transportConfiguration': 'email'
         },
     '5678':
@@ -49,7 +49,7 @@ Configuration = \
             'outputFormat': 'svcpoint',
             'destinationURL': 'localhost',
             'transportConfiguration': 'sftp',
-            'username': 'scottt',
+            'username': 'usert',
             'password': 'xxxxxx',
             'outputpath': 'xmlFiles',
             'owner': '',
@@ -59,9 +59,9 @@ Configuration = \
     '9101112':
         {
             'outputFormat': 'svcpoint',
-            'destinationURL': 'scottt@localhost',
+            'destinationURL': 'usert@localhost',
             'transportConfiguration': 'vpnftp',
-            'username': 'scottt',
+            'username': 'usert',
             'password': 'xxxxxx',
             'outputpath': 'xmlFiles',
             'owner': '',

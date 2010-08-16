@@ -8,7 +8,7 @@ Configuration = \
         {
             'vendor': 'Orlando Shelter Society',
             'outputFormat': 'svcpoint',
-            'destinationURL': 'scott@benninghoff.us',
+            'destinationURL': 'user@domain.us',
             'transportConfiguration': 'email'
         },
     '5678':
@@ -17,8 +17,8 @@ Configuration = \
             'outputFormat': 'svcpoint',
             'destinationURL': 'crusty.penguix.net',
             'transportConfiguration': 'sftp',
-            'username': 'scottben',
-            'password': 'nx9353#'
+            'username': 'user',
+            'password': 'password#'
         },
     '91011':
         {
@@ -26,8 +26,8 @@ Configuration = \
             'outputFormat': 'svcpoint',
             'destinationURL': '192.168.0.208',
             'transportConfiguration': 'sftp',
-            'username': 'scottben',
-            'password': 'nx9353#'
+            'username': 'user',
+            'password': 'password#'
         }
 }
 

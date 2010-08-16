@@ -73,7 +73,7 @@ if __name__ == '__main__':
     
     
     msgBody = "Test Msg"
-    filesToTransfer = ['/home/scottben/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/OutputFiles/page.xml']
+    filesToTransfer = ['/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/OutputFiles/page.xml']
     email = XMLProcessorNotifier("", filesToTransfer, True)
     email.sendDocumentAttachment('Your report results', msgBody, filesToTransfer)
     

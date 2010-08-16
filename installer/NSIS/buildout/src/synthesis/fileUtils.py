@@ -285,7 +285,7 @@ class fileUtilities:
 
 if __name__ == "__main__":
     vld = fileUtilities()
-    files = vld.grabFiles('/home/scottben/Documents/Projects/OpenMercuryLLC/Ohio/*.csv')
+    files = vld.grabFiles('/home/user/Documents/Projects/companyLLC/Ohio/*.csv')
     
     if debug == True:
         debugMessages.log("Valid Files are: ", files)

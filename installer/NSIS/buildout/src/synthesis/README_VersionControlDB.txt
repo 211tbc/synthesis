@@ -18,9 +18,9 @@ migrate_version
 
 
 
-Scott Benninghoff
-OpenMercury LLC
-http://www.openmercury.com
-scott.benninghoff@openmercury.com
+user domain
+company LLC
+http://www.company.com
+user@company.com
 813-343-0180 office
 813-919-9125 mobile

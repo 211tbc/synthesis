@@ -7,10 +7,10 @@ mv Synthesis_Repository/ Synthesis_Repository_orig/
 migrate create Synthesis_Repository "Synthesis Project"
 
 # push the version control system into the DB
-python Synthesis_Repository/manage.py version_control postgres://scottben:nx9353@localhost/synthesis
+python Synthesis_Repository/manage.py version_control postgres://user:password@localhost/synthesis
 
 # This is for Crusty
-#python Synthesis_Repository/manage.py version_control postgres://scottben:openM3rc@localhost/synthesis
+#python Synthesis_Repository/manage.py version_control postgres://user:openM3rc@localhost/synthesis
 
 # remove the new Repo Directory
 rm -rf Synthesis_Repository/

@@ -60,15 +60,15 @@ if __name__ == "__main__":
     myLog = clsLogger(iniFile, level)
     
     #myLog._setConfig(level)
-    myLog.log("Scott's Log Message", 0)
-    myLog.log("Scott's Log Message", 1)
-    myLog.log("Scott's Log Message", 2)
-    myLog.log("Scott's Log Message", 3)
-    myLog.log("Scott's Log Message", 4)
+    myLog.log("user's Log Message", 0)
+    myLog.log("user's Log Message", 1)
+    myLog.log("user's Log Message", 2)
+    myLog.log("user's Log Message", 3)
+    myLog.log("user's Log Message", 4)
     myLog.logger.critical("Test Debug")
     
     myLog2 = clsLogger()
-    myLog2.log("Scott's Log2 Message", 4)
+    myLog2.log("user's Log2 Message", 4)
     # Shutdown the logger
     myLog.__quit__()
         

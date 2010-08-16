@@ -10,7 +10,7 @@ __all__ = [
 'fileinput_unit_test_no_file',
 'fileinputwatcher',
 'fileRouter',
-'fileUtils',
+'fileutils',
 'hmiscsv27writer',
 'hmisxml28reader',
 'hmisxml30reader',

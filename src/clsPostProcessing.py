@@ -24,7 +24,7 @@ from clsLogger import clsLogger
 # THE SOFTWARE.
 # 
 
-import fileUtils
+import fileutils
 import os
 import ftplib
 from clsExceptions import FTPUploadFailureError, VPNFailure
@@ -47,7 +47,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         self.debugMessages = clsLogger(iniFile)
 
         #self.processor = processor
-        self.processor = fileUtils.fileUtilities()
+        self.processor = fileutils.FileUtilities()
         
         # pull the vendor output parameters (this is a Dictionary)
         self.outputConfig = outputConfiguration.Configuration[vendorID]
@@ -161,8 +161,8 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         return rc
         
     def ftp(self, pFiles):
-        #processor = fileUtils.fileUtilities(debug=debug, debugMessages=debugMessages)
-        #processor = fileUtils.fileUtilities()
+        #processor = fileutils.FileUtilities(debug=debug, debugMessages=debugMessages)
+        #processor = fileutils.FileUtilities()
         outputDir = self.settings['filelocations.outputlocation']
         
         # login to FTP
@@ -269,7 +269,7 @@ class clsPostProcessing(FTPUploadFailureError, VPNFailure):
         return rc
     
 if __name__ == '__main__':
-    processor = fileUtils.fileUtilities()
+    processor = fileutils.FileUtilities()
     #cp = clsIniUtils.clsConfigParser('fileConverter.ini')
     #pd = cp.getConfig()
     pprocess = clsPostProcessing('5678')

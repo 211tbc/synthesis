@@ -8,7 +8,7 @@ import sys
 from conf import settings
 import clsLogger
 
-from fileUtils import fileUtilities
+from fileutils import FileUtilities
 
 class databaseObjects:
 
@@ -46,7 +46,7 @@ class databaseObjects:
             
         except sqlalchemyexceptions.OperationalError:
             msg = "Database [%s] does not exist." % settings.DB_DATABASE
-            FILEUTIL = fileUtilities(settings.DEBUG, None)
+            FILEUTIL = FileUtilities()
             FILEUTIL.makeBlock(msg)
             rc = raw_input('Would you like to create the database now? (y/N/C)')
             if rc == 'y':

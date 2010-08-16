@@ -62,7 +62,7 @@ import dateutil.parser
 from conf import settings
 import clsExceptions
 import DBObjects
-from fileUtils import fileUtilities
+from fileutils import FileUtilities
 from errcatalog import catalog
 
 class PARXMLReader(DBObjects.databaseObjects):
@@ -76,7 +76,7 @@ class PARXMLReader(DBObjects.databaseObjects):
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : ext_namespace}
     
     global FILEUTIL
-    FILEUTIL = fileUtilities(settings.DEBUG, None)
+    FILEUTIL = FileUtilities()
 
     def __init__(self, xml_file):
         

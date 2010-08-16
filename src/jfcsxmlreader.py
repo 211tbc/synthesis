@@ -9,7 +9,7 @@ from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 import clsExceptions
 import DBObjects
-from fileUtils import fileUtilities
+from fileutils import FileUtilities
 from errcatalog import catalog
 
 class JFCSXMLReader(DBObjects.databaseObjects):
@@ -25,7 +25,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
     implements (Reader)
     
     global FILEUTIL
-    FILEUTIL = fileUtilities(settings.DEBUG, None)
+    FILEUTIL = FileUtilities()
     
     def __init__(self, xml_file):
         self.xml_file = xml_file

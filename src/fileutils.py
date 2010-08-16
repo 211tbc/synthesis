@@ -36,7 +36,7 @@ class FileUtilities:
         
     def __init__(self, debugMessages=None):
         if settings.DEBUG:
-            print 'fileUtilities() instantiated'
+            print 'FileUtilities() instantiated'
         
     def sleep(self, sleepTime):
         print 'Sleeping for %s' % sleepTime

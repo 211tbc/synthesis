@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from fileUtils import fileUtilities
+from fileutils import FileUtilities
 from conf import settings
 
 class router:
     def __init__(self):
-        self.FILEUTIL = fileUtilities(settings.DEBUG)
+        self.FILEUTIL = FileUtilities(settings.DEBUG)
     
     def moveFile(self, sourceFile, destinationLocation):
         self.FILEUTIL.moveFile(sourceFile, destinationLocation)

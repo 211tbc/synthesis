@@ -214,7 +214,7 @@ class Selector:
     '''Figures out which data format is being received.'''
     
     global FILEUTIL
-    FILEUTIL = fileUtils.fileUtilities()
+    FILEUTIL = fileutils.FileUtilities()
     
     def __init__(self):
         

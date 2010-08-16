@@ -13,7 +13,7 @@ import dateutil.parser
 from conf import settings
 import clsExceptions
 import DBObjects
-from fileUtils import fileUtilities
+from fileutils import FileUtilities
 from errcatalog import catalog
 
 class HMISXML30Reader(DBObjects.databaseObjects):
@@ -27,7 +27,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
 
     ''' Instantiate FileUtilities '''
     global FILEUTIL
-    FILEUTIL = fileUtilities(settings.DEBUG, None)
+    FILEUTIL = FileUtilities()
 
     def __init__(self, xml_file):
         ''' Put XML file into local object '''

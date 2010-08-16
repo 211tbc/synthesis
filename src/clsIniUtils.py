@@ -25,7 +25,7 @@ import ConfigParser
 import string
 import sys
 import os
-import fileUtils
+import fileutils
 from clsExceptions import fileNotFoundError
 
 class clsConfigParser(fileNotFoundError):
@@ -100,7 +100,7 @@ class clsConfigParser(fileNotFoundError):
 
         self.config = self.LoadConfig(file, config)
         if pBackupFile == True:
-            self.fu = fileUtils.fileUtilities()
+            self.fu = fileutils.FileUtilities()
     
     def checkExists(self, file):
         if os.path.isfile(file):

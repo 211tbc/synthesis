@@ -1,32 +1,20 @@
 Instructions for importing HUD HMIS XML 3.0 test data in the system:
 
 -First, follow the instructions at: http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/linux_synthesis_install_readme  .  
--Make sure you pull a recent copy of the source (8-9-2010: This is because we've had to modify person tables to shrink some column names.)
+-Make sure you pull a recent copy of the source (we changed a lot of things on 8/16/2010)
 -Run the linux commands from a console (this presumes you have PostgreSQL database installed and running):
-
-dropdb synthesis
-
-createdb synthesis
-
--Edit ~/workspace/synthesis/installer/build/conf/settings.py .  Specifically, set:
-
-DB_DATABASE = "synthesis"
-DB_USER = "your_username_here"
-DB_PASSWD = "whatever_you_set_your_username's_postgres_password"
-
-INPUTFILES_PATH="~/workspace/synthesis/installer/build/InputFiles"
-
-cd ~/workspace/synthesis/installer/build 
-
-./python selector.py 
 
 -In another console, or in a file manager, copy your input file to the InputFiles subdirectory.  Program should pick up the file and process it. 
 
 cp ~/workspace/synthesis/TestFiles/HUD_HMIS_3_0_Instance.xml ~/workspace/synthesis/installer/build/InputFiles/
 
+Check the tables in your synthesis database:
+
 psql synthesis
 
 -Then, inside the psql console that opens up:
+
+/dt
 
 select * from export; 
 

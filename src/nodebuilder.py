@@ -19,7 +19,7 @@ import sys
 from queryObject import queryObject
 from conf import outputConfiguration
 import clsPostProcessing
-import fileUtils
+import fileutils
 from emailProcessor import XMLProcessorNotifier
 from datetime import datetime
 import iniUtils
@@ -58,7 +58,7 @@ class NodeBuilder(DBObjects.databaseObjects):
         
         # setup the postprocessing module    
         self.pprocess = clsPostProcessing.clsPostProcessing(queryOptions.configID)
-        self.FILEUTIL = fileUtils.fileUtilities()
+        self.FILEUTIL = fileutils.FileUtilities()
         
     def run(self):
         '''This is the main method controlling this entire program.'''

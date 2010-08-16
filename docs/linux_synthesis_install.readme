@@ -1,4 +1,4 @@
-*How to install an ubuntu/debian linux dev environment of Synthesis*
+-How to install an ubuntu/debian linux dev environment of Synthesis
 *tested on Ubuntu 10.04 Desktop, 64 bit edition
 
 Ubuntu Package Dependencies (if install-linux.sh script mentioned below is run as 'sudo', these will get installed on line 87 of script):
@@ -25,18 +25,24 @@ user@host:~/workspace$ cd synthesis
 user@host:~/workspace/synthesis$ cp -a ./src ./installer/buildout/src/src
 user@host:~/workspace/synthesis$ mv ./installer/buildout/src/src ./installer/buildout/src/synthesis
 
--Tweak the conf file to match your email server, address, etc.
 
--Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
+Create a postgres database named 'synthesis' accessible to your user by following the "Alternative Server Setup Instructions" at  https://help.ubuntu.com/community/PostgreSQL , then that username and password has to be placed in conf/settings.py as mentioned below.
+
+-Tweak the conf/settings.py file to match your email server (SMTPSERVER), your email eddress (SMTPSENDER), email password (SMTPSENDERPWD), the SMTPRECIPIENTS section, input file location user name (INPUTFILES_PATH= ["/home/put_your_username/...), postgres database user (DB_USER), postgres database user password (DB_PASSWD), etc.
+(example using vim editor)
+user@host:~/workspace/synthesis$ vim ./installer/buildout/src/synthesis/conf/settings.py
+
+-Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database (which you set uo above) or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
+
 user@host:~/workspace/synthesis$ cd ./installer
 user@host:~/workspace/synthesis/installer$ chmod a+x install-linux.sh
 user@host:~/workspace/synthesis/installer$ ./install-linux.sh -f ~/workspace/synthesis/installer/build -d ignore -s debian
 
 *Note: you may have to run the above command as sudo if you are installing the postgres database package (i.e., using the '-d os' option)
-* if you use the -d ignore option, you'll need to set up the database manually.  Create a database named 'synthesis' accessible to your user by following the "Alternative Server Setup Instructions" at  https://help.ubuntu.com/community/PostgreSQL
+* if you use the -d ignore option, you'll need to set up the database manually.  Create a database named 'synthesis' accessible to your user by following the "Alternative Server Setup Instructions" at  https://help.ubuntu.com/community/PostgreSQL , then that username and password has to be placed in conf/settings.py as mentioned above.
 
 -Now let's run the source
--First, let's take a look at the 'python' file which was generated during Buildout:
+-First, verify you now have the 'python' file which was generated during Buildout:
 
 user@host:~/workspace/synthesis/installer/build# ls
 borg.py			fileinput_unit_test_file_exists.py  logs			 security_unit_test.py
@@ -59,30 +65,77 @@ emailProcessor.pyc	jfcsxmlreader.pyc		    README.txt			 XMLUtilities.py
 errcatalog		logging.ini			    README_VersionControlDB.txt  xsd
 
 
-** example of launching the 'MainProcessor.py' script:
+-example of launching the 'MainProcessor.py' script:
+user@host:~/workspace/synthesis/installer$ cd ~/workspace/synthesis/installer/build
+user@host:~/workspace/synthesis/installer/build$ ./python MainProcessor.py 
 
-user@host:~/workspace/synthesis/installer/build# ./python MainProcessor.py 
-fileUtilities initialized...
-fileUtilities initialized...
-fileUtilities initialized...
-fileUtilities initialized...
+fileinputwatcher.py determined we are running POSIX
+/home/user/workspace/synthesis/installer/buildout/eggs/SQLAlchemy-0.4.7p1-py2.6.egg/sqlalchemy/util.py:7: DeprecationWarning: the sets module is deprecated
+  import inspect, itertools, new, operator, sets, sys, warnings, weakref
+FileUtilities() instantiated
+FileUtilities() instantiated
+FileUtilities() instantiated
+FileUtilities() instantiated
+FileUtilities() instantiated
+MainProcessor instantiating FileUtilities
+FileUtilities() instantiated
+********************************************
+* CAUTION: TEST MODE - This wipes DB Clean *
+********************************************
+************************************************************************************************************
+* CTRL-C or CTRL-Break to Stop - (waiting before startup, in case you don't want to wipe your existing db) *
+************************************************************************************************************
+Sleeping for 10
+entered the module
+entered the function
+2010-08-16 12:10:44,826 INFO sqlalchemy.engine.base.Engine.0x..50 select current_schema()
+2010-08-16 12:10:44,827 INFO sqlalchemy.engine.base.Engine.0x..50 [None]
+2010-08-16 12:10:44,828 INFO sqlalchemy.engine.base.Engine.0x..50 
+        SELECT relname
+        FROM pg_class c
+        WHERE relkind = 'r'
+          AND 'public' = (select nspname from pg_namespace n where n.oid = c.relnamespace)
+        
+2010-08-16 12:10:44,829 INFO sqlalchemy.engine.base.Engine.0x..50 {}
+all tables dropped
+Logs Dir exists:
+Logging with INIFile: logging.ini
 The Python Win32 extensions for NT (service, event logging) appear not to be available.
+Now instantiating FileHandler
 FileInputWatcher Initialized
-fileUtilities initialized...
-Class created: clsSecurity
+*************Debugging On*************
+FileInputWatcher.__init__ saying we are not running nt
+selector instantiated and figuring out what schema are available
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/HUD_HMIS_3_0.xsd
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/versions/406/sp.xsd
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/JFCS_CLIENT.xsd
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/JFCS_SERVICE.xsd
+schema to potentially load: /home/user/workspace/synthesis/installer/build/xsd/HUD_HMIS_2_8.xsd
+Now running FileHandler.nonGUIRun()
+We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()
+First, looking for preexisting files in input location.
 Getting Files
 Done Grabbing Files
-Getting Files
-Done Grabbing Files
-Getting Files
-Done Grabbing Files
-Monitoring Directories: ['/tmp/InputFiles/1', '/tmp/InputFiles/2', '/tmp/InputFiles/3']
-Watching started at Fri Jul 16 16:24:36 2010
+Monitoring Directories: ['/home/user/workspace/synthesis/installer/build/InputFiles']
+Watching started at Mon Aug 16 12:10:44 2010
 Watching POSIX OS
-pyinotify running in compatbility mode
-Starting the threaded notifier on  ['/tmp/InputFiles/1', '/tmp/InputFiles/2', '/tmp/InputFiles/3']
+pyinotify running in compatibility mode
+Starting the threaded notifier on  ['/home/user/workspace/synthesis/installer/build/InputFiles']
 Finished...
 waiting..
 waiting 2
 
+
+
+-Now drop a test file from ~/workspace/synthesis/TestFiles into /home/user/workspace/synthesis/installer/build/InputFiles
+
+user@host: cp ~/workspace/synthesis/TestFiles/HUD_HMIS_3_0_Instance.xml /home/user/workspace/synthesis/installer/build/InputFiles
+
+-Then you'll see: 
+
+Create: /home/eric/workspace/synthesis/installer/build/InputFiles/HUD_HMIS_3_0_Instance.xml
+found file: /home/eric/workspace/synthesis/installer/build/InputFiles/HUD_HMIS_3_0_Instance.xml
+...
+-it runs for a while, while it determines what format the files are, and shred them.
 -So that's it!  Synthesis is running.

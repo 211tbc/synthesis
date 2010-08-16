@@ -3,7 +3,7 @@ or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 
 import os
-import fileUtils
+import fileutils
 import sys
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader

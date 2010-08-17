@@ -1408,7 +1408,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	    #newDate = self.getDateTimeObj(inputDate).isoformat()
 	    newDate = self.getDateTimeObj(inputDate).strftime(self.isIsoTimeFormat)
 	    if self.debug == True:
-		self.debugMessages.log("FILEUTILNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
+		self.debugMessages.log("FUNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
 	    return newDate
 	    
     def fixDateNoTime(self, inputDate):
@@ -1423,7 +1423,7 @@ class SVCPOINTXML20Writer(DBObjects.databaseObjects):
 	else:
 	    newDate = self.getDateTimeObj(inputDate).date()
 	    if self.debug == True:
-		self.debugMessages.log("FILEUTILNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
+		self.debugMessages.log("FUNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
 	    return newDate
     
     def dateStringToDateObject(self, dateString):#Takes MM/DD/YYYY and turns into a standard dateTime object

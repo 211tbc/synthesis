@@ -28,9 +28,10 @@ user@host:~/workspace/synthesis$ mv ./installer/buildout/src/src ./installer/bui
 
 Create a postgres database named 'synthesis' accessible to your user by following the "Alternative Server Setup Instructions" at  https://help.ubuntu.com/community/PostgreSQL , then that username and password has to be placed in conf/settings.py as mentioned below.
 
--Tweak the conf/settings.py file to match your email server (SMTPSERVER), your email eddress (SMTPSENDER), email password (SMTPSENDERPWD), the SMTPRECIPIENTS section, input file location user name (INPUTFILES_PATH= ["/home/put_your_username/...), postgres database user (DB_USER), postgres database user password (DB_PASSWD), etc.
+-Important: tweak the conf/settings.py file to match your email server (SMTPSERVER), your email eddress (SMTPSENDER), email password (SMTPSENDERPWD), the SMTPRECIPIENTS section, input file location user name (INPUTFILES_PATH= ["/home/put_your_username/...), postgres database user (DB_USER), postgres database user password (DB_PASSWD), etc.
 (example using vim editor)
 user@host:~/workspace/synthesis$ vim ./installer/buildout/src/synthesis/conf/settings.py
+-It should be okay if you leave the smtp server settings unchanged as it will handle/ignore smtp errors, but the input file path,  SMTPRECIPIENTS user name replacement, and the database settings are critical and the lack of correct settings here will cause traceback errors.
 
 -Then try running the './installer/install-linux.sh' script, I'd personally use the 'ignore' option for database type and use your own database (which you set uo above) or 2nd choice would be the 'os' option which will do a yum/apt and attempt to install a postgres server.
 

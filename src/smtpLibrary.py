@@ -106,7 +106,14 @@ class smtpInterface:
         
     def sendMessage(self):
         print "ServerAddress: %s" % self.settings.SMTPSERVER
-        server = smtplib.SMTP(self.settings.SMTPSERVER)
+        try:
+            server = smtplib.SMTP(self.settings.SMTPSERVER)
+        except smtplib.socket.error:
+            print "exception: socket error can't connect to smtp server"
+            return
+        else:
+            print "no exception: can't connect to smtp server"
+            return
         if self.settings.SMTPSENDERPWD != '':
             try:
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)

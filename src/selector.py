@@ -141,8 +141,7 @@ class FileHandler:
         
         # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
         new_files = self.monitor() 
-        print 'monitoring..'
-        print 'monitoring..2'
+        print 'monitoring...'
     
         for new_file in new_files:
             if settings.DEBUG:

@@ -42,32 +42,57 @@ class XMLProcessorNotifier(smtpInterface):
             
             print 'file: %s' % file
             self.mailSystem.setAttachmentText(attachment)
-        self.sendMessage()
+        try:
+            self.sendMessage()
+        except Exception as detail:
+            if settings.DEBUG:
+                print "problem sending notification", detail
+            return
         
     def notifyValidationFailure(self, failureMsgs=''):
         self.mailSystem.setMessageSubject('XMLDocument FAILED Validation')
-        self.mailSystem.setMessage('This email is a notification that we recieved XML document: %s.  \r\n' \
-                                   'This Document FAILED to Validate proprerly.\r\n ' \
+        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  \r\n' \
+                                   'This Document FAILED to Validate properly.\r\n ' \
                                    'Error is: %s' % (self.docName, failureMsgs))
-        self.sendMessage()
+        try:
+            self.sendMessage()
+        except Exception as detail:
+            if settings.DEBUG:
+                print "problem sending notification", detail
+            return
         
     def notifyDuplicateDocumentError(self, failureMsgs=''):
         self.mailSystem.setMessageSubject('XMLDocument Process Import FAILED')
-        self.mailSystem.setMessage('This email is a notification that we recieved XML document: %s.  \r\n' \
+        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  \r\n' \
                                    'This Document FAILED to import because it would create duplicate records in the database.\r\n ' \
                                    'Error is: %s' % (self.docName, failureMsgs))
-        self.sendMessage()
+        try:
+            self.sendMessage()
+        except Exception as detail:
+            if settings.DEBUG:
+                print "problem sending notification", detail
+            return
+        
     
     def notifyValidationSuccess(self):
         self.mailSystem.setMessageSubject('Success: XMLDocument PASSED Validation')
-        self.mailSystem.setMessage('This email is a notification that we recieved XML document: %s.  This Document PASSED Validation proprerly.' % self.docName)
-        self.sendMessage()
+        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation proprerly.' % self.docName)
+        try:
+            self.sendMessage()
+        except Exception as detail:
+            if settings.DEBUG:
+                print "problem sending notification", detail
+            return
     
     def sendMessage(self):
         #self.mailSystem.formatMessage()
         #mailSystem.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailProcessor.py'))
-        self.mailSystem.sendMessage()
-
+        try:
+            self.mailSystem.sendMessage()
+        except Exception as detail:
+            if settings.DEBUG:
+                print "problem sending notification through mail system", detail
+            return
 
 if __name__ == '__main__':
     

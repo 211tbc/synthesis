@@ -29,6 +29,7 @@ import copy
 import shutil
 import csv
 from time import sleep
+import datetime
 from conf import settings
 
 class FileUtilities:
@@ -241,12 +242,26 @@ class FileUtilities:
         return validFiles
     
     def moveFile(self, source, destDir):
-        # SBB20090831 Test if the destination exists, if not make it.  Ecapsulated w/ Try
+        # SBB20090831 Test if the destination exists, if not make it.  Encapsulated w/ Try
         try:
             if not os.path.exists(destDir):
                 os.mkdir(destDir)
                 
             shutil.move(source, destDir)        
+        except shutil.Error as detail:
+            print detail
+            if settings.DEBUG:
+                print "renaming to incremented filename"
+                print "current name is ", source
+            if os.path.isfile(source):
+                fileprefix = os.path.splitext(source)[0]
+                filesuffix = os.path.splitext(source)[1]
+                fileprefix = fileprefix + str(datetime.datetime.now())
+                new_name = fileprefix + filesuffix
+            if settings.DEBUG:
+                print "changed name is", new_name
+            os.rename(source, new_name)
+            shutil.move(new_name, destDir) 
         except:
             raise
         

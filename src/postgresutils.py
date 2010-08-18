@@ -19,19 +19,30 @@ class Employee(object):
 class Utils:    
     '''Contains some utility methods for a Postgres database'''
     def __init__(self):
-        self.metadata = MetaData()
-        self.synthesis_engine = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
-        self.synthesis_metadata = MetaData(self.synthesis_engine)
-        Session = sessionmaker(bind=self.synthesis_engine, autoflush=True, transactional=True)
+        self.table_metadata = MetaData()
+        self.employee_table = Table(
+        'employee', 
+        self.table_metadata, 
+        Column('id', Integer, primary_key=True),
+        Column('name', String(40)),
+        Column('fullname', String(100)),
+        Column('password', String(15))
+        )
+        mapper(Employee, self.employee_table)
+        print 'entered the module'
+        #self.pg_db = create_engine('postgres://eric:f4rk1r@localhost:5432/coastaldb')
+        self.pg_db = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
+        
+        self.db_metadata = MetaData(self.pg_db)
+        Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
         self.session = Session()
-        if settings.DEBUG:
-            print "postgresutils.Utils inititalized"
 
     def blank_table(self):
-        #self.metadata.drop(bind=self.synthesis_engine)
-        self.employee_table.drop(bind=self.synthesis_engine)
+        print 'entered the function'
+        #self.metadata.drop(bind=self.pg_db)
+        self.employee_table.drop(bind=self.pg_db)
         self.session.commit()
-        print 'cleared the employee_table table'
+        print 'cleared the database'
         
     def create_database(self, databaseName):
         
@@ -47,39 +58,32 @@ class Utils:
             
         else:
             raise dbCreateError()
-            
-    def create_database():
-        '''creates a new, empty database.'''
-        metadata = MetaData()
-        metadata.create_all(bind=synthesis_engine)
+        
+
+    
+#def create_database():
+#    '''creates a new, empty database.'''
+#    metadata = MetaData()
+#    metadata.create_all(bind=pg_db)
 
     def create_test_table(self): 
-        self.employee_table = Table(
-        'employee', 
-        self.metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('name', String(40)),
-        Column('fullname', String(100)),
-        Column('password', String(15))
-        )
-        mapper(Employee, self.employee_table)
-        self.metadata.create_all(bind=self.synthesis_engine)
+        print 'entered the function'
+        self.table_metadata.create_all(bind=self.pg_db)
         self.session.commit()
         print 'created the employee table'
 
     def blank_database(self):
-        self.synthesis_metadata.reflect()
-        #for table in reversed(self.synthesis_metadata.sorted_tables):
-        for table in self.synthesis_metadata.table_iterator(reverse=True, tables=None):
-            print table, "found"
-            table.drop(checkfirst=True)
-            #self.synthesis_engine.execute(table.delete())
-            print "dropped", table
+        print 'entered the function'
+        self.session
+        
+        self.db_metadata.reflect()
+        self.db_metadata.drop_all()
+        self.db_metadata.create_all(bind=self.pg_db)
+        self.session.commit()
         print 'all tables dropped'
         
 if __name__ == '__main__':
-    utils = Utils()
-    print "uncomment the things you want to run, or else nothing will happen"
-    #utils.create_test_table()
-    #utils.blank_table()
-    #utils.blank_database()
+    UTILS = Utils()
+    UTILS.create_test_table()
+    UTILS.blank_table()
+    UTILS.blank_database()

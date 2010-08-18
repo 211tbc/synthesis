@@ -26,7 +26,7 @@ class MainFrame( SynthesisController.MyFrame4 ):
 	
 	def m_btnStartClick( self, event ):
 		#self.m_btPython.Enable(True)
-		#self.m_textProcessingFolder.AppendText("user")
+		#self.m_textProcessingFolder.AppendText("scott")
 		# issue stop command against synthesis
 		#self.m_staticTextStatus.SetLabel("Synthesis is Stopping")
 		self.m_statusBar.SetStatusText("Starting Synthesis...Please wait.", 0)
@@ -44,7 +44,7 @@ class MainFrame( SynthesisController.MyFrame4 ):
 	
 	def m_btnStopClick( self, event ):
 		#self.m_btPython.Enable(True)
-		#self.m_textProcessingFolder.AppendText("user")
+		#self.m_textProcessingFolder.AppendText("scott")
 		# issue stop command against synthesis
 		#self.m_staticTextStatus.SetLabel("Synthesis is Stopping")
 		self.m_statusBar.SetStatusText("Synthesis is Stopping", 0)

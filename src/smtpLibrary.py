@@ -20,6 +20,7 @@ def main():
     smtp.formatMessage()
     smtp.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailProcessor.py'))
     try:
+        print "trying to send message"
         smtp.sendMessage()
     except:
         print 'send failed'
@@ -105,15 +106,19 @@ class smtpInterface:
         
     def sendMessage(self):
         print "ServerAddress: %s" % self.settings.SMTPSERVER
-        server = smtplib.SMTP(self.settings.SMTPSERVER)
+        try:
+            server = smtplib.SMTP(self.settings.SMTPSERVER)
+        except smtplib.socket.error:
+            print "exception: socket error can't connect to smtp server"
+            return
+        else:
+            print "no exception: can't connect to smtp server"
+            return
         if self.settings.SMTPSENDERPWD != '':
             try:
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
             except smtplib.SMTPRecipientsRefused:
                 self.log.logger.exception('smtplib.SMTPRecipientsRefused')
-<<<<<<< .mine
-                raise
-=======
                 if settings.DEBUG:
                     print "SMTPRecipientsRefused"
                 return
@@ -126,7 +131,6 @@ class smtpInterface:
                 if settings.DEBUG:
                     print "some other type of smtp exception"
                 return
->>>>>>> .r685
         server.set_debuglevel(0)
         self.formatMessage()
         server.sendmail(self.fromaddr, self.toaddrs, self.msg.as_string())

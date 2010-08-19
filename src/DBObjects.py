@@ -1375,11 +1375,7 @@ class databaseObjects:
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(Source, self.source_table,
-            properties={
-            'fk_source_to_export': relation(Export, backref='fk_export_to_source'),
-            }
-            )
+        mapper(Source, self.source_table)
 #        assign_mapper(Database, database_table, properties=dict(
 #designs=relation(Design, private=True, backref="type")
 #))
@@ -3417,9 +3413,9 @@ def main(argv=None):
     for person in mappedObjects.queryDB(Person).filter(Person.person_legal_first_name_unhashed=='George'):
         print person.person_legal_first_name_unhashed
         person.reported = True
-        person.person_legal_first_name_unhashed = "Scott"
+        person.person_legal_first_name_unhashed = "user"
         mappedObjects.session().commit()
-        print 'Person: George Washington (SCOTT)'
+        print 'Person: George Washington (user)'
         print '-----------------------------------'
         print person
         #print person.person_historical

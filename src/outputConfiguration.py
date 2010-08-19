@@ -7,7 +7,7 @@ Configuration = \
     '8888':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'hmiscsv',
+            'outputFormat': 'svcpoint',
             'destinationURL': 'localhost',
             'transportConfiguration': ''
         },
@@ -42,12 +42,6 @@ Configuration = \
             'transportConfiguration': 'sftp',
             'username': 'someuser2',
             'password': 'somepassword2'
-        },
-    '1313':
-        {
-            'outputFormat': 'hmiscsv',
-            'destinationURL': 'scottben@localhost',
-            'transportConfiguration': 'email'
-        },
+        }
 }
 

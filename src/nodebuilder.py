@@ -6,26 +6,11 @@ import DBObjects
 
 #from svcpointxml20writer import SVCPOINTXML20Writer
 # pick the plug-in to import
-<<<<<<< .mine
-# Dynamic Import (see conf/setttings.py)
-import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SERVICEPOINT_VERSION
-=======
 import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SVCPT_VERSION
->>>>>>> .r676
 exec import_string
 
-from hmiscsv30writer import HmisCsv30Writer
-
-# SBB20100810 make the HMISXMLWriter configuration driven
-#from hmisxml28writer import HMISXML28Writer
-# SBB20100809 HMISCSVWriter
-
-# Dynamic Import (see conf/setttings.py)
-import_string = "from hmisxml_%s_writer import HMISXMLWriter" % settings.HMISXML_VERSION
-exec import_string
-
+from hmisxml28writer import HMISXML28Writer
 from vendorxmlxxwriter import VendorXMLXXWriter
-
 # for validation
 from selector import HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SVCPOINTXMLTest
 from errcatalog import catalog
@@ -57,12 +42,8 @@ class NodeBuilder(DBObjects.databaseObjects):
             self.writer = SVCPOINTXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
             self.validator = SVCPOINTXMLTest()               
         elif generateOutputformat == 'hmisxml':
-            self.writer = HmisXmlWriter(settings.OUTPUTFILES_PATH, queryOptions)                   
-            self.validator = HUDHMIS28XMLTest()
-        # SBB20100809 Adding HMISCSV output plugin
-        elif generateOutputformat == 'hmiscsv':
-            self.writer = HmisCsv30Writer(settings.OUTPUTFILES_PATH, queryOptions, debug=True)                   
-            self.validator = HmisCsv30Test() 
+            self.writer = HmisXmlWriter()                   
+            self.validator = HUDHMIS28XMLTest()              
         elif generateOutputformat == 'jfcsxml':
             self.writer = JFCSXMLWriter()                   
             self.validator = JFCSXMLTest()                 
@@ -161,15 +142,6 @@ class SvcPointXMLwriter(SVCPOINTXMLWriter):
     def write(self):
         self.xML.processXML()
         self.xML.writeOutXML()
-        
-# SBB20100809 Adding HMISCSV writer options        
-class HmisCsvWriter(HmisCsv30Writer):
-    
-    def __init__(self):
-        self.csv = HmisCsv30Writer((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
-
-    def write(self):
-        pass        
     
 class HmisXmlWriter(HMISXML28Writer):
     

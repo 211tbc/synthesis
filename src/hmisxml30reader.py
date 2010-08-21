@@ -16,7 +16,9 @@ import DBObjects
 from fileutils import FileUtilities
 from errcatalog import catalog
 
-class HMISXML30Reader(DBObjects.databaseObjects):
+#SBB08212010 checked in by ECJ on behalf of SBB
+#class HMISXML30Reader(DBObjects.databaseObjects):
+class HMISXMLReader(DBObjects.databaseObjects): 
     ''' Implements reader interface '''
     implements (Reader) 
 

@@ -1375,7 +1375,13 @@ class databaseObjects:
         useexisting = True
         )
         table_metadata.create_all()
-        mapper(Source, self.source_table)
+        #SBB20100821 checked in by ECJ on behalf of SBB (intended by rev. 686) 
+        mapper(Source, self.source_table, 
+               properties={ 
+                           'fk_source_to_export': relation(Export, backref='fk_export_to_source'), 
+                           } 
+                           )
+        
 #        assign_mapper(Database, database_table, properties=dict(
 #designs=relation(Design, private=True, backref="type")
 #))

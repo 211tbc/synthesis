@@ -7,7 +7,7 @@ Configuration = \
     '8888':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'svcpoint',
+            'outputFormat': 'hmiscsv',
             'destinationURL': 'localhost',
             'transportConfiguration': ''
         },
@@ -42,6 +42,13 @@ Configuration = \
             'transportConfiguration': 'sftp',
             'username': 'someuser2',
             'password': 'somepassword2'
-        }
+        }, 
+     #SBB08212010 checked in by ECJ on behalf of SBB
+     '1313': 
+        { 
+             'outputFormat': 'hmiscsv', 
+             'destinationURL': 'user@localhost', 
+             'transportConfiguration': 'email' 
+        },
 }
 

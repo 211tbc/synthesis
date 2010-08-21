@@ -21,6 +21,9 @@ DB_HOST = "localhost"
 # Which SvcPt version is this site using, if any?  This version number pulls the xsd schema in and configures the plug in as well.
 SVCPT_VERSION = '406'                    # this is 4.06
 
+#SBB20100821 checked in by ECJ on behalf of SBB (intended by rev. 686)  - Adding versioning to HMISXML 
+HMISXML_VERSION = '30'
+
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
 BASE_PATH = os.getcwd()
 #BASE_PATH = ""
@@ -58,13 +61,23 @@ if not os.path.exists(LOGS):
 
 PROCESSED_PATH = ""
 
-SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'),
-               'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'),
-               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output)
-               'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'),
-               'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
-               'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd')
-               }
+#SBB08212010 checked in by ECJ on behalf of SBB, with slight modification to JFCS and PAR schema names
+SCHEMA_DOCS = {#'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'), 
+                            #'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'), 
+                            'hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'HMISXML', HMISXML_VERSION, 'HUD_HMIS.xsd'), 
+                            'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'SVCPOINT', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
+                            'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'), 
+                            'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'), 
+                            'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd') 
+#======= 
+#SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'), 
+#               'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'), 
+#               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
+#               'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'), 
+#               'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'), 
+#               'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd') 
+#
+                            }
 
 DEBUG = True									# Debug the application layer
 DEBUG_ALCHEMY = True							# Debug the ORM Layer

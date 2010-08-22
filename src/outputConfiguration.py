@@ -1,3 +1,4 @@
+'''see ./docs/output_configurations.readme for information on setting these configurations'''
 #!/usr/bin/env python
 
 # Adding a vendor.  Simply append a record by following the format below.

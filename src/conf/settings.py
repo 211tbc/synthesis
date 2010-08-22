@@ -65,7 +65,7 @@ PROCESSED_PATH = ""
 SCHEMA_DOCS = {#'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'), 
                             #'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'), 
                             'hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'HMISXML', HMISXML_VERSION, 'HUD_HMIS.xsd'), 
-                            'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'SVCPOINT', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
+                            'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'SVCPT', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
                             'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'), 
                             'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'), 
                             'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd') 

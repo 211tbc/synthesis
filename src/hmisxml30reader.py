@@ -18,7 +18,7 @@ from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
 #class HMISXML30Reader(DBObjects.databaseObjects):
-class HMISXMLReader(DBObjects.databaseObjects): 
+class HMISXML30Reader(DBObjects.databaseObjects): 
     ''' Implements reader interface '''
     implements (Reader) 
 

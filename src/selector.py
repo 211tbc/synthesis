@@ -269,7 +269,7 @@ class HUDHMIS28XMLTest:
         global name
         name = 'HUDHMIS28XML'
         print 'running the', name, 'test'
-        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_2_8_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -316,7 +316,7 @@ class HUDHMIS30XMLTest:
         global name
         name = 'HUDHMIS30XML'
         print 'running the', name, 'test'
-        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_3_0_xml']
+        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''

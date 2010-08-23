@@ -494,13 +494,20 @@ class databaseObjects:
         Column('export_id_id_delete_2010', String(32)),        
         useexisting = True
         )
+        
         table_metadata.create_all()
         #mapper(Export, export_table, properties={'children': [relation(Person), relation(Database)]})
-        mapper(Export, export_table, properties={
+        themap=mapper(Export, export_table, properties={
             'fk_export_to_person': relation(Person, backref='fk_person_to_export')
             ,'fk_export_to_household': relation(Household, backref='fk_household_to_export')
             ,'fk_export_to_database': relation(Source, backref='fk_database_to_export')
             })
+        #for debugging if the wrong sqlalchemy version is being used (>0.4.7)
+        #if settings.DEBUG:
+            #import pdb; pdb.set_trace()
+            #print 'Export.c is', Export.c
+            #import sqlalchemy
+            #print 'sqlalchemy version is ', sqlalchemy.__version__, 'maybe it should be 0.4.7 and your os environment is contributing a higher version'
         return
 
     def report_map(self):

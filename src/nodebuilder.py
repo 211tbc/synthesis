@@ -18,7 +18,7 @@ from hmiscsv30writer import HmisCsv30Writer
 # SBB20100809 HMISCSVWriter 
      
 # Dynamic Import (see conf/setttings.py) 
-import_string = "from hmisxml_%s_writer import HMISXMLWriter" % settings.HMISXML_VERSION 
+import_string = "from hmisxml%swriter import HMISXMLWriter" % settings.HMISXML_VERSION 
 exec import_string
      
 from vendorxmlxxwriter import VendorXMLXXWriter
@@ -169,7 +169,8 @@ class HmisCsvWriter(HmisCsv30Writer):
      def write(self): 
          pass         
 
-class HmisXmlWriter(HMISXML28Writer):
+#class HmisXmlWriter(HMISXML28Writer):
+class HmisXmlWriter(HMISXMLWriter):
     
     def __init__(self):
         self.xML = SVCPOINTXML20Writer((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))

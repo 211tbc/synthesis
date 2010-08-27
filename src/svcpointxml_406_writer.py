@@ -250,6 +250,25 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 		# SBB20100311 These need to be at Document Level not client level
 		#entry_exits = self.createEntryExits(client)
 		
+		# SBB20100826 Putting Needs back to Client level
+	    for EE in self.site_service_part:
+		#self.createEntryExit(entry_exits, EE)
+		
+		needData = None
+		if not EE == None:
+		    Needs = EE.fk_participation_to_need
+	    
+		    # Needs (only create this if we have a 'Need')
+		    if not Needs == None:
+			for needData in Needs:
+			    
+			    # Reporting Update
+			    self.updateReported(needData)
+			    
+			    needs = self.createNeeds(client) 
+			    need = self.createNeed(needs, needData)
+			    self.customizeNeed(need, needData)
+		
 	#    entry_exits = self.createEntryExits(self.root_element)
 	#    
 	#    for EE in self.site_service_part:
@@ -311,41 +330,41 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 		
 	# Now process the needs
 	# Query Mechanism
-	if self.options.reported == True:
-	    #Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
-	    Needs = self.session.query(DBObjects.Need).filter(DBObjects.Need.reported == True)
-	elif self.options.unreported == True:
-	    #Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
-	    Needs = self.session.query(DBObjects.Need).filter(or_(DBObjects.Need.reported == False, DBObjects.Need.reported == None))
-	elif self.options.reported == None:
-	    #Persons = self.session.query(DBObjects.Person)
-	    Needs = self.session.query(DBObjects.Need)
-	else:
-	    pass
-	
-	# setup the date filter also
-	Needs  = Needs.filter(between(DBObjects.Need.need_idid_num_date_collected, self.options.startDate, self.options.endDate))
-	
-	# SBB20100316 Need new Grouping Element to stick all the needs
-	
-	if not Needs == None:
-	    grouped_needs = self.createGroupedNeeds(self.root_element)
-	    #Needs = EE.fk_participation_to_need
-    
-	    # Needs (only create this if we have a 'Need')
-	    for self.need in Needs:
-		
-		#grouped_needs = ET.SubElement(client, "grouped_needs")
-		# SBB20100520 Pull the reference to site service participation
-		siteServicePart = self.need.fk_need_to_participation
-		self.person_need = siteServicePart.fk_participation_to_person
-		
-		# Reporting Update
-		self.updateReported(self.need)
-		
-		#needs = self.createNeeds(grouped_needs) 
-		need = self.createNeed(grouped_needs)
-		self.customizeNeed(need, self.need)
+	#if self.options.reported == True:
+	#    #Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
+	#    Needs = self.session.query(DBObjects.Need).filter(DBObjects.Need.reported == True)
+	#elif self.options.unreported == True:
+	#    #Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
+	#    Needs = self.session.query(DBObjects.Need).filter(or_(DBObjects.Need.reported == False, DBObjects.Need.reported == None))
+	#elif self.options.reported == None:
+	#    #Persons = self.session.query(DBObjects.Person)
+	#    Needs = self.session.query(DBObjects.Need)
+	#else:
+	#    pass
+	#
+	## setup the date filter also
+	#Needs  = Needs.filter(between(DBObjects.Need.need_idid_num_date_collected, self.options.startDate, self.options.endDate))
+	#
+	## SBB20100316 Need new Grouping Element to stick all the needs
+	#
+	#if not Needs == None:
+	#    grouped_needs = self.createGroupedNeeds(self.root_element)
+	#    #Needs = EE.fk_participation_to_need
+	#   
+	#    # Needs (only create this if we have a 'Need')
+	#    for self.need in Needs:
+	#	
+	#	#grouped_needs = ET.SubElement(client, "grouped_needs")
+	#	# SBB20100520 Pull the reference to site service participation
+	#	siteServicePart = self.need.fk_need_to_participation
+	#	self.person_need = siteServicePart.fk_participation_to_person
+	#	
+	#	# Reporting Update
+	#	self.updateReported(self.need)
+	#	
+	#	#needs = self.createNeeds(grouped_needs) 
+	#	need = self.createNeed(grouped_needs)
+	#	self.customizeNeed(need, self.need)
 		    
 	# HouseHolds
 	# first get the export object then get it's related objects
@@ -601,15 +620,15 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 	
 	return needs
     
-    def createNeed(self, needs):
+    def createNeed(self, needs, needData):
 	keyval = 'need'
 	sysID = self.xmlU.generateSysID(keyval)
 	
 	#append the need start date to the client's need_id so the need system_ids are unique for each need
 	#since we don't store needs in the database
-	date_for_need_id = self.need.need_idid_num
+	date_for_need_id = needData.need_idid_num
 	#We should have the shelter switch to a 4 digit year, then change the %y to %Y
-	date_object_format = self.fixDate(self.need.need_idid_num_date_collected)
+	date_object_format = self.fixDate(needData.need_idid_num_date_collected)
 	sysID = sysID + str(date_object_format)
 	recID = self.xmlU.generateRecID(keyval)
 	# fixme (need odbid) / is this OK as fixed value or needs to be calculated.
@@ -666,14 +685,15 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 	subelement = ET.SubElement(need, "need_notes")
 	# SBB20100520 Modifying this to link the need back to the client.
 	#subelement = ET.SubElement(need, "need_clients")
-	need_clients = ET.SubElement(need, "need_clients")
-	self.customizeNeedClients(need_clients)
+	#need_clients = ET.SubElement(need, "need_clients")
+	#self.customizeNeedClients(need_clients)
 	
 	subelement = ET.SubElement(need, "services")
 	
     def customizeNeedClients(self, need_clients):
 	need_client = ET.SubElement(need_clients, "need_client")
-	need_client.attrib["system_id"] = self.person_need.id
+	# SBB20100720 This needs to be a string, not an integer. Converting and formatting the string.
+	need_client.attrib["system_id"] = '%s' % self.person_need.person_id_unhashed
 	#need_client.text = self.person_need.id
 	
     def createServices(self, need):

@@ -51,6 +51,7 @@ class queryObject:
         if self.options.configID == None or self.options.startDate == None or self.options.endDate == None:
             parser.print_help()
             self.options = None
+            return
             #raise 'error'
             
         # convert the date strings to date values

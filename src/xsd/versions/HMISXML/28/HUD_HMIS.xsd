@@ -7,7 +7,7 @@
 	xmlns:airs="http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"	
 	elementFormDefault="qualified"
 	attributeFormDefault="qualified">
-	<xsd:import namespace="http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd" schemaLocation="http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"/>
+	<xsd:import namespace="http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd" schemaLocation="AIRS_3_0_draft5_mod.xsd"/>
 	
 	<!-- HUD HMIS data integration specifications V2.8  -->
 	

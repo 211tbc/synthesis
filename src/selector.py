@@ -45,7 +45,7 @@ class FileHandler:
     	       # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
     	       sc = serviceController(True)					# True is Server
     	       sc.listen()
-        #If GUI to control the app being used, just use the old run code with pyinotify or windows listener
+        #If GUI to control the app being used, just run code with pyinotify or windows listener
         #ECJ 20100815 Make sure windows listener is working without the GUI
         else:
             if settings.DEBUG:
@@ -72,54 +72,62 @@ class FileHandler:
         except:
             raise
         
-    def processFiles(self, new_file):
-        self.setProcessingOptions(new_file)
-        self.email = XMLProcessorNotifier(new_file)
+    def processFiles(self, new_file_loc):
+        self.setProcessingOptions(new_file_loc)
+        self.email = XMLProcessorNotifier(new_file_loc)
         self.router = router()
-        
+        global valid 
+        valid = False
         # test if the sender encrypts data, if so, decrypt, if not, just process
         
         print "The settings indicate that, for this folder, encryption is:",self.ProcessingOptions['USES_ENCRYPTION']
         
         if self.ProcessingOptions['USES_ENCRYPTION']:
             # decrypt the file
-            fileStream = self.crypto.decryptFile2Stream(new_file)
+            fileStream = self.crypto.decryptFile2Stream(new_file_loc)
             print "stream",fileStream
         else:
             if settings.DEBUG:
-                print "No encryption, so just opening the file", new_file
-            # just open the file
-            fileStream = open(new_file,'r')
-            # Work around bug? file object is not same as CstringIO object in that you can't copy a fileStream to another one, CStringIO you can.  So we conver this to a CStringIO object and we can make true copies.
-            fileStream = StringIO(fileStream.read())
-            if settings.DEBUG:
-                print "successfully read in file", new_file
+                print "No encryption, so just opening the file", new_file_loc
+            # Work around bug? file object is not same as CstringIO object in that you can't copy a fileStream to another one, CStringIO you can.  So we convert this to a CStringIO object and we can make true copies.
+            #fileStream = StringIO(fileStream.read())
             
-        try:
-            if settings.DEBUG:
-                print "attempting validation of", new_file
-            if self.selector.validate(fileStream):
+        if settings.DEBUG:
+            print "attempting validation tests on", new_file_loc
+        results = self.selector.validate(new_file_loc)
+        for item in results:
+            if item == True:
                 if settings.DEBUG:
-                    print "validation successful for", new_file, "!"
-                self.email.notifyValidationSuccess()
-                self.router.moveUsed(new_file)
+                    print "We did have at least one successful validation"
+                    valid = True
+                    self.email.notifyValidationSuccess()
+                if settings.DEBUG:
+                    print "moving to Used", 
+                self.router.moveUsed(new_file_loc)
+                break
                 return True
-            else:
-                self.email.notifyValidationFailure()
-                self.router.moveFailed(new_file)
-                return False
-        except etree.XMLSyntaxError, error:
-            self.email.notifyValidationFailure(error)
-            self.router.moveFailed(new_file)
             
-        except DuplicateXMLDocumentError, inst:
-            print type(inst)     # the exception instance
-            print inst.args      # arguments stored in .args
-            print inst           # __str__ allows args to printed directly
-
-            self.email.notifyDuplicateDocumentError(inst.message)
-            self.router.moveFailed(new_file)
+        if valid == False:
+            if settings.DEBUG:
+                print "We did not have any successful validations"
+            self.email.notifyValidationFailure()
+            if settings.DEBUG:
+                print "moving to Failed"
+            self.router.moveFailed(new_file_loc)
             return False
+            
+#        except etree.XMLSyntaxError, error:
+#            self.email.notifyValidationFailure(error)
+#            self.router.moveFailed(new_file_loc)
+#            
+#        except DuplicateXMLDocumentError, inst:
+#            print type(inst)     # the exception instance
+#            print inst.args      # arguments stored in .args
+#            print inst           # __str__ allows args to printed directly
+#
+#            self.email.notifyDuplicateDocumentError(inst.message)
+#            self.router.moveFailed(new_file_loc)
+#            return False
         
     def processExisting(self):
         ''' this function churns through the input path(s) and processes files that are already there.
@@ -130,6 +138,8 @@ class FileHandler:
         # Loop over list of file locations [list]
         for folder in settings.INPUTFILES_PATH:
             listOfFiles.extend(FILEUTIL.grabFiles(path.join(folder,'*.xml')))
+            if settings.DEBUG:
+                    print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
     
@@ -210,7 +220,6 @@ class FileHandler:
         
 class Selector:
     '''Figures out which data format is being received.'''
-    
     global FILEUTIL
     FILEUTIL = fileutils.FileUtilities()
     
@@ -221,34 +230,41 @@ class Selector:
             for item in settings.SCHEMA_DOCS:
                 print 'schema to potentially load: ' + settings.SCHEMA_DOCS[item]
 
-    def validate(self, instance_doc, shred=True): 
+    def validate(self, instance_file_loc, shred=True): 
         '''Validates against the various available schema and csv records.\
         If not specified in the configs, it keeps trying each available \
         test to find the first which successfully validates.  You just \
         pass it a test, and the xml instance data.'''
-        #check if config specifies which schema should be used for this install
-        #config_available = 'false'
-        #output the results (which schema it did or did not validate against
-        #if had a config specified
         
-        #ECJ20100816 commented this out, since we already have FileHandler instantiated
-        #FILEHANDLER = FileHandler()
-        
-        tests = [HUDHMIS28XMLTest(), HUDHMIS30XMLTest(), JFCSXMLTest(), PARXMLTest()]
-        readers = [HUDHMIS28XMLReader(instance_doc), HUDHMIS30XMLReader(instance_doc), JFCSXMLInputReader(instance_doc), PARXMLInputReader(instance_doc)]
+        #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
+        #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
+        tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
+        #tests = [HUDHMIS30XMLTest]
+        #tests = [HUDHMIS28XMLTest]
+        if settings.DEBUG:
+            print "tests are", tests
+        #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
+        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLReader,HUDHMIS28XMLTest:HUDHMIS28XMLReader}
+        if settings.DEBUG:
+            print "readers are", readers
         results = []
-        #for item in tests:
-        for item,read in map(None, tests, readers):
-            result = item.validate(instance_doc)
-            # if results is True, we can process against this reader.
-            if result and shred:
-                read.shred()
-                
-            results.append(result) 
-            print item, result
-        print results
-        #print 'This is the result before it goes back to the test_unit:', \
-        #results
+
+        for test in tests:
+            test_instance = test()
+            result = test_instance.validate(instance_file_loc)
+            results.append(result)
+            if settings.DEBUG:
+                print "validation return results are", results
+            if result:
+                if settings.DEBUG:
+                    print "shredding..."
+                if shred:
+                    if settings.DEBUG:
+                        print "readers[test] is: ", readers[test]
+                    
+                    readers[test](test_instance).shred()
+                break 
+        
         return results
 
 class VendorXMLTest:
@@ -269,46 +285,59 @@ class HUDHMIS28XMLTest:
         global name
         name = 'HUDHMIS28XML'
         print 'running the', name, 'test'
-        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml']
+        self.schema_file_location = settings.SCHEMA_DOCS['hud_hmis_xml_2_8']
     
-    def validate(self, instance_stream):
+    def validate(self, xml_instance_file):
         '''This specific data format's validation process.'''
-        schema = open(self.schema_filename,'r')
-        
-        schema_parsed = etree.parse(schema)
-        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
-        # make a copy of the stream, validate against the copy not the real stream
-        copy_instance_stream = copy.copy(instance_stream)
-        
-        
-        
         try:
-            instance_parsed = etree.parse(copy_instance_stream)
-            results = schema_parsed_xsd.validate(instance_parsed)
-            if results == True:
-                #print 'The HMIS 2.8 XML successfully validated.'
-                FILEUTIL.makeBlock('The HMIS 2.8 XML successfully validated.')
-                return results
-            if results == False:
-                print 'The xml did not successfully validate against \
-                HMIS 2.8 XML.'
-                try:
-                    detailed_results = schema_parsed_xsd.assertValid\
-                    (instance_parsed)
-                    print detailed_results
-                    return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
-                    return results
-            if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
-                return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
-            raise 
+            schemafileobject = open(self.schema_file_location,'r')
+            if settings.DEBUG:
+                print "opened:", self.schema_file_location  
+                print "schemafileobject is:", schemafileobject      
+        
+        
+            etreeschemaobject = etree.parse(schemafileobject)
+            if settings.DEBUG:
+                print "etreeschemaobject is:", etreeschemaobject
+            xmlschema = etree.XMLSchema(etreeschemaobject)
+            if settings.DEBUG:
+                print "xmlschema is:", xmlschema
+            # make a copy of the doc, validate against the copy not the real doc
+            copy_xml_instance_file_loc = "copy_xml_28_instance_file"
+            FILEUTIL.copyFile(xml_instance_file, copy_xml_instance_file_loc)
+            if settings.DEBUG:   
+                print "copy of instance file is", copy_xml_instance_file_loc
+    
+            try:
+                print "This is what instance doc is being validated:", copy_xml_instance_file_loc
+                etreeinstanceobject = etree.parse(copy_xml_instance_file_loc)
+                if settings.DEBUG:
+                    print "validating against", self.schema_file_location
+                result = xmlschema.validate(etreeinstanceobject)
+                if result == True:
+                    FILEUTIL.makeBlock('The HMIS 2.8 XML successfully validated.')
+                    return result
+                if result == False:
+                    FILEUTIL.makeBlock('The HMIS 2.8 XML did not successfully validate against the HMIS 2.8 XML Schema.')
+                    try:
+                        detailed_results = xmlschema.assertValid(etreeinstanceobject)
+                        print detailed_results
+                    except etree.DocumentInvalid, error:
+                        print 'HMIS XML 2.8 Document Invalid Exception.  Here is the detail:'
+                        print error
+                    return result
+                if result == None:
+                    print "The validator erred and couldn't determine if the xml was either valid or invalid."
+                    return result
+            
+            except etree.XMLSyntaxError, error:
+                print 'XML Syntax Error.  There appears to be malformed XML.  ', error 
+            schemafileobject.close()
+            
+            if settings.DEBUG:
+                    print "closing HMIS XML 3.0 schema", schemafileobject
+        except:
+            raise
 
 class HUDHMIS30XMLTest:
     '''Load in the HUD HMIS Schema, version 3.0.'''
@@ -316,44 +345,61 @@ class HUDHMIS30XMLTest:
         global name
         name = 'HUDHMIS30XML'
         print 'running the', name, 'test'
-        self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml']
+        self.schema_file_location = settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
     
-    def validate(self, instance_stream):
+    def validate(self, xml_instance_file):
         '''This specific data format's validation process.'''
-        schema = open(self.schema_filename,'r')
-        
-        schema_parsed = etree.parse(schema)
-        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
-        # make a copy of the stream, validate against the copy not the real stream
-        copy_instance_stream = copy.copy(instance_stream)
-
+      
         try:
-            instance_parsed = etree.parse(copy_instance_stream)
-            results = schema_parsed_xsd.validate(instance_parsed)
-            if results == True:
-                print 'The HMIS 3.0 XML successfully validated.'
-                FILEUTIL.makeBlock('The HMIS 3.0 XML successfully validated.')
-                return results
-            if results == False:
-                print 'The xml did not successfully validate against \
-                HMIS 3.0 XML.'
-                try:
-                    detailed_results = schema_parsed_xsd.assertValid\
-                    (instance_parsed)
-                    print detailed_results
-                    return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
-                    return results
-            if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
-                return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
+            schemafileobject = open(self.schema_file_location,'r')
+            if settings.DEBUG:
+                print "opened:", self.schema_file_location  
+                print "schemafileobject is:", schemafileobject      
+        
+        
+            etreeschemaobject = etree.parse(schemafileobject)
+            if settings.DEBUG:
+                print "etreeschemaobject is:", etreeschemaobject
+            xmlschema = etree.XMLSchema(etreeschemaobject)
+            if settings.DEBUG:
+                print "xmlschema is:", xmlschema
+                
+            # make a copy of the doc, validate against the copy not the real doc
+            copy_xml_instance_file_loc = "copy_xml_30_instance_file"
+            FILEUTIL.copyFile(xml_instance_file, copy_xml_instance_file_loc)
+            if settings.DEBUG:   
+                print "copy of instance file is", copy_xml_instance_file_loc
+    
+            try:
+                print "This is what instance doc is being validated:", copy_xml_instance_file_loc
+                etreeinstanceobject = etree.parse(copy_xml_instance_file_loc)
+                if settings.DEBUG:
+                    print "validating against", self.schema_file_location
+                result = xmlschema.validate(etreeinstanceobject)
+                if result == True:
+                    FILEUTIL.makeBlock('The HMIS 3.0 XML successfully validated.')
+                    return result
+                if result == False:
+                    FILEUTIL.makeBlock('The HMIS 3.0 XML did not successfully validate against the HMIS 3.0 XML Schema.')
+                    try:
+                        detailed_results = xmlschema.assertValid(etreeinstanceobject)
+                        print detailed_results
+                    except etree.DocumentInvalid, error:
+                        print 'HMIS XML 3.0 Document Invalid Exception.  Here is the detail:'
+                        print error
+                    return result
+                if result == None:
+                    print "The validator erred and couldn't determine if the xml was either valid or invalid."
+                    return result
+            
+            except etree.XMLSyntaxError, error:
+                print 'XML Syntax Error.  There appears to be malformed XML.  ', error 
+            schemafileobject.close()
+            if settings.DEBUG:
+                    print "closing HMIS XML 3.0 schema", schemafileobject
+        except:
             raise
+        
 
 class SVCPOINTXMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
@@ -376,7 +422,6 @@ class SVCPOINTXMLTest:
             instance_parsed = etree.parse(instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
-                #print 'The HMIS 2.8 XML successfully validated.'
                 FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
@@ -624,7 +669,7 @@ class PARXMLInputReader(PARXMLReader):
             raise
     
 class VendorXMLReader():
-    def __init__(self, instance_doc):
+    def __init__(self, xml_instance_file):
         pass
 
     def shred(self):

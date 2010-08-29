@@ -8,8 +8,6 @@ import os
 import sys
 from clsLogger import clsLogger
 
-if settings.DEBUG:
-    print "MainProcessor instantiating FileUtilities"
 fileutilities = FileUtilities()
 
 # run forever

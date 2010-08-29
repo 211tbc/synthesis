@@ -13,17 +13,13 @@ MODE = 'TEST'                               # This is the switch that runs the p
 GUI = False  
 # DB settings:
 DB_DATABASE = "synthesis"
-DB_USER = ""
+DB_USER = "user_name_here"
 DB_PASSWD = "password"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
 # Which SvcPt version is this site using, if any?  This version number pulls the xsd schema in and configures the plug in as well.
 SVCPT_VERSION = '406'                    # this is 4.06
-
-#SBB20100821 checked in by ECJ on behalf of SBB (intended by rev. 686)  - Adding versioning to HMISXML 
-HMISXML_VERSION = '30'
-
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
 BASE_PATH = os.getcwd()
 #BASE_PATH = ""
@@ -35,7 +31,7 @@ PASSPHRASE = ''
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
 INPUTFILES_PATH = [
-            "/home/put_your_username_here/workspace/synthesis/installer/build/InputFiles"
+            "/home/user_name_here/workspace/synthesis/installer/build/InputFiles"
             ,
             ]
 
@@ -47,13 +43,13 @@ OUTPUTFILES_PATH = os.path.join(BASE_PATH, "OutputFiles")
 if not os.path.exists(OUTPUTFILES_PATH):
     os.mkdir(OUTPUTFILES_PATH)
     
-USEDFILES = os.path.join(BASE_PATH, "Used")
-if not os.path.exists(USEDFILES):
-    os.mkdir(USEDFILES)
+USEDFILES_PATH = os.path.join(BASE_PATH, "UsedFiles")
+if not os.path.exists(USEDFILES_PATH):
+    os.mkdir(USEDFILES_PATH)
     
-FAILEDFILES = os.path.join(BASE_PATH, "Failed")
-if not os.path.exists(FAILEDFILES ):
-    os.mkdir(FAILEDFILES )
+FAILEDFILES_PATH = os.path.join(BASE_PATH, "FailedFiles")
+if not os.path.exists(FAILEDFILES_PATH):
+    os.mkdir(FAILEDFILES_PATH)
     
 LOGS = os.path.join(BASE_PATH, "logs")
 if not os.path.exists(LOGS):
@@ -61,27 +57,19 @@ if not os.path.exists(LOGS):
 
 PROCESSED_PATH = ""
 
-#SBB08212010 checked in by ECJ on behalf of SBB, with slight modification to JFCS and PAR schema names
-SCHEMA_DOCS = {#'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'), 
-                            #'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'), 
-                            'hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'HMISXML', HMISXML_VERSION, 'HUD_HMIS.xsd'), 
-                            'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', 'SVCPT', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
-                            'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'), 
-                            'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'), 
-                            'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd') 
-#======= 
-#SCHEMA_DOCS = {'hud_hmis_2_8_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_2_8.xsd'), 
-#               'hud_hmis_3_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'HUD_HMIS_3_0.xsd'), 
-#               'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output) 
-#               'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'), 
-#               'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'), 
-#               'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd') 
-#
-                            }
+#ECJ20100829 using the HMISXML_version setting is deprecated, because selector.py now can tell between 2.8 and 3.0 through validation tests.  ServicePoint XML should work the same in the future
+SCHEMA_DOCS = {
+'hud_hmis_xml_2_8':os.path.join(BASE_PATH, XSD_PATH, 'versions','HMISXML','28','HUD_HMIS.xsd'),               
+'hud_hmis_xml_3_0':os.path.join(BASE_PATH, XSD_PATH, 'versions','HMISXML','30','HUD_HMIS.xsd'),
+'svcpoint_2_0_xml':os.path.join(BASE_PATH, XSD_PATH, 'versions','SVCPT', SVCPT_VERSION, 'sp.xsd'),    # Service Point current version (output)
+'jfcs_service_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE.xsd'),
+'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
+'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd')
+               }
 
 DEBUG = True									# Debug the application layer
-DEBUG_ALCHEMY = True							# Debug the ORM Layer
-DEBUG_DB = True								# Debug the DB layer of the application
+DEBUG_ALCHEMY = False							# Debug the ORM Layer
+DEBUG_DB = False								# Debug the DB layer of the applicHMIation
 
 # This mechanism provides an override to the settings above.  create a file called local_settings.py and simply
 # override the values like BASE_PATH='/home/mypath'.  Then import like this: from conf import settings
@@ -95,7 +83,7 @@ SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS =	{
-     "/home/put_your_username_here/workspace/synthesis/installer/build/InputFiles":
+     "/home/user_name_here/workspace/synthesis/installer/build/InputFiles":
 		{
         'VENDOR_NAME': 'SomeVendor',
 		'SMTPTOADDRESS': ['someone@somedomain.com',],

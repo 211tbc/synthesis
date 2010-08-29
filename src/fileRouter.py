@@ -10,8 +10,8 @@ class router:
         self.FILEUTIL.moveFile(sourceFile, destinationLocation)
     
     def moveUsed(self, fileName):
-        self.moveFile(fileName, settings.USEDFILES)
+        self.moveFile(fileName, settings.USEDFILES_PATH)
 
     def moveFailed(self, fileName):
-        self.moveFile(fileName, settings.FAILEDFILES)
+        self.moveFile(fileName, settings.FAILEDFILES_PATH)
 

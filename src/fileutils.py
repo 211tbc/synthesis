@@ -1,5 +1,4 @@
-#import sys
-import os
+
 # The MIT License
 # 
 # Copyright (c) 2007 Suncoast Partnership 
@@ -22,7 +21,8 @@ import os
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 # 
-
+#import sys
+import os
 import glob
 import string
 import copy
@@ -36,8 +36,9 @@ class FileUtilities:
     
         
     def __init__(self, debugMessages=None):
-        if settings.DEBUG:
-            print 'FileUtilities() instantiated'
+        pass
+#        if settings.DEBUG:
+#            print 'FileUtilities() instantiated'
         
     def sleep(self, sleepTime):
         print 'Sleeping for %s' % sleepTime
@@ -254,14 +255,42 @@ class FileUtilities:
                 print "renaming to incremented filename"
                 print "current name is ", source
             if os.path.isfile(source):
+                (old_filepath, old_filename) = os.path.split(source)
                 fileprefix = os.path.splitext(source)[0]
                 filesuffix = os.path.splitext(source)[1]
                 fileprefix = fileprefix + str(datetime.datetime.now())
-                new_name = fileprefix + filesuffix
-            if settings.DEBUG:
-                print "changed name is", new_name
-            os.rename(source, new_name)
-            shutil.move(new_name, destDir) 
+                stamped_pathname = fileprefix + filesuffix
+                (old_filepath, new_filename) = os.path.split(stamped_pathname)
+                new_filepath = destDir + "/" + new_filename
+                if settings.DEBUG:
+                    print "changed name/dest is ", new_filepath
+                #ECJ20100829 rename the file over in cwd, because I don't want to renamed file to trigger an inotify event for monitor() before it's moved to an unlistened dir
+                #ECJ20100829: need to make these "/" symbols Windows compatible.  This will probably only work with UNIX
+                temp_filepath = settings.BASE_PATH + "/"+ old_filename
+                try:
+                    os.remove(temp_filepath)
+                except OSError:
+                    pass
+                shutil.move(source, settings.BASE_PATH)
+                
+#                if settings.DEBUG:
+#                    print "temp_filepath is: ", temp_filepath
+#                    print "new_filename is: ", new_filename
+                try:
+                    shutil.move(temp_filepath, new_filename)
+                except:
+                    raise
+                new_temp_filepath = settings.BASE_PATH + "/" + new_filename
+#                if settings.DEBUG:
+#                    print "new temp filepath should be: ", new_temp_filepath
+#                    if os.path.isfile(new_temp_filepath):
+#                        print "and it is"
+#                    else:
+#                        print "but it isn't"
+                shutil.move(new_temp_filepath, destDir)
+#                if settings.DEBUG:
+#                    print "Moved to ", destDir, "/", new_filename
+            
         except:
             raise
         

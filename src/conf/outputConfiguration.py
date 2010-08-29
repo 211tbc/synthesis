@@ -1,43 +1,14 @@
+'''see ./docs/output_configurations.readme for information on setting these configurations'''
 #!/usr/bin/env python
 
 # Adding a vendor.  Simply append a record by following the format below.
-
-'''
-Here is sample of the fields that need to be defined for each particular transport method
-
-Email:
-
-    'outputFormat': 'svcpoint',
-    'destinationURL': 'user@somehost.com',
-    'transportConfiguration': 'email'
-
-SFTP:
-
-    'outputFormat': 'svcpoint',
-    'destinationURL': 'subdomain.domain.suffix',
-    'transportConfiguration': 'sftp',
-    'username': 'someuser',
-    'password': 'somepassword',
-    'outputpath': 'outputted/xml/path',
-    'owner': '',
-    'chmod': '',
-    'group': ''
-
-VPNFTP
-
-
-VPNCP
-
-
-    
-'''
 
 Configuration = \
 {
     '8888':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'svcpoint',
+            'outputFormat': 'hmiscsv',
             'destinationURL': 'localhost',
             'transportConfiguration': ''
         },
@@ -50,34 +21,35 @@ Configuration = \
         },
     '1234':
         {
+            'vendor': 'Some Vendor Name',
             'outputFormat': 'svcpoint',
-            'destinationURL': 'user@host.com',
+            'destinationURL': 'someone@somewhere.net',
             'transportConfiguration': 'email'
         },
     '5678':
         {
+            'vendor': 'Some Vendor Name2',
+            'outputFormat': 'svcpoint',
+            'destinationURL': 'subdomain.domain.net',
+            'transportConfiguration': 'sftp',
+            'username': 'someuser',
+            'password': 'somepassword'
+        },
+    '91011':
+        {
+            'vendor': 'Some Vendor Name3',
             'outputFormat': 'svcpoint',
             'destinationURL': '192.168.0.208',
             'transportConfiguration': 'sftp',
-            'username': 'someuser',
-            'password': 'somepassword',
-            'outputpath': 'xmlFiles',
-            'owner': '',
-            'chmod': '',
-            'group': ''
+            'username': 'someuser2',
+            'password': 'somepassword2'
+        }, 
+     #SBB08212010 checked in by ECJ on behalf of SBB
+     '1313': 
+        { 
+             'outputFormat': 'hmiscsv', 
+             'destinationURL': 'user@localhost', 
+             'transportConfiguration': 'email' 
         },
-    '3':
-        {
-            'outputFormat': 'svcpoint',
-            'destinationURL': 'subdomain.domain.suffix',
-            'transportConfiguration': 'vpnftp',
-            'username': '',
-            'password': '',
-            'outputpath': 'xmlFiles',
-            'owner': '',
-            'chmod': '',
-            'group': ''
-        }
-
 }
 

@@ -44,9 +44,9 @@ class XMLProcessorNotifier(smtpInterface):
             self.mailSystem.setAttachmentText(attachment)
         try:
             self.sendMessage()
-        except Exception as detail:
+        except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail
+                print "problem sending notification", detail.value
             return
         
     def notifyValidationFailure(self, failureMsgs=''):
@@ -56,9 +56,9 @@ class XMLProcessorNotifier(smtpInterface):
                                    'Error is: %s' % (self.docName, failureMsgs))
         try:
             self.sendMessage()
-        except Exception as detail:
+        except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail
+                print "problem sending notification", detail.value
             return
         
     def notifyDuplicateDocumentError(self, failureMsgs=''):
@@ -68,9 +68,9 @@ class XMLProcessorNotifier(smtpInterface):
                                    'Error is: %s' % (self.docName, failureMsgs))
         try:
             self.sendMessage()
-        except Exception as detail:
+        except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail
+                print "problem sending notification", detail.value
             return
         
     
@@ -79,9 +79,9 @@ class XMLProcessorNotifier(smtpInterface):
         self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation proprerly.' % self.docName)
         try:
             self.sendMessage()
-        except Exception as detail:
+        except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail
+                print "problem sending notification", detail.value
             return
     
     def sendMessage(self):
@@ -89,9 +89,9 @@ class XMLProcessorNotifier(smtpInterface):
         #mailSystem.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailProcessor.py'))
         try:
             self.mailSystem.sendMessage()
-        except Exception as detail:
+        except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification through mail system", detail
+                print "problem sending notification through mail system", detail.value
             return
 
 if __name__ == '__main__':

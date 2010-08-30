@@ -122,10 +122,10 @@ class smtpInterface:
                 if settings.DEBUG:
                     print "SMTPRecipientsRefused"
                 return
-            except smtplib.SMTPException as detail:
+            except smtplib.SMTPException, detail:
                 self.log.logger.exception('smtplib.SMTPException')
                 if settings.DEBUG:
-                    print detail
+                    print detail.value
                 return
             else:
                 if settings.DEBUG:

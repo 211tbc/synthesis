@@ -262,7 +262,7 @@ class Selector:
                     if settings.DEBUG:
                         print "readers[test] is: ", readers[test]
                     
-                    readers[test](test_instance).shred()
+                    readers[test](instance_file_loc).shred()
                 break 
         
         return results

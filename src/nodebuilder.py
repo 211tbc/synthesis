@@ -4,23 +4,23 @@ from conf import settings
 import clsExceptions 
 import DBObjects
 
-#from svcpointxml20writer import SVCPOINTXML20Writer
-# pick the plug-in to import
-import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SVCPT_VERSION
-exec import_string
+##from svcpointxml20writer import SVCPOINTXML20Writer
+## pick the plug-in to import
+#import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SVCPT_VERSION
+#exec import_string
 
 #SBB08212010 checked in by ECJ on behalf of SBB
 #from hmisxml28writer import HMISXML28Writer
-from hmiscsv30writer import HmisCsv30Writer 
+#from hmiscsv30writer import HmisCsv30Writer 
   
 # SBB20100810 make the HMISXMLWriter configuration driven 
  #from hmisxml28writer import HMISXML28Writer 
 # SBB20100809 HMISCSVWriter 
      
-# Dynamic Import (see conf/setttings.py) 
-import_string = "from hmisxml%swriter import HMISXMLWriter" % settings.HMISXML_VERSION 
-exec import_string
-     
+## Dynamic Import (see conf/setttings.py) 
+#import_string = "from hmisxml%swriter import HMISXMLWriter" % settings.HMISXML_VERSION 
+#exec import_string
+  
 from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
@@ -51,14 +51,23 @@ class NodeBuilder(DBObjects.databaseObjects):
         self.queryOptions = queryOptions
         
         if generateOutputformat == 'svcpoint':
+            #from svcpointxml20writer import SVCPOINTXML20Writer
+            # pick the plug-in to import
+            import_string = "from svcpointxml_%s_writer import SVCPOINTXMLWriter" % settings.SVCPT_VERSION
+            exec import_string
+            
             self.writer = SVCPOINTXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
             self.validator = SVCPOINTXMLTest()               
         elif generateOutputformat == 'hmisxml':
+            # Dynamic Import (see conf/setttings.py) 
+            import_string = "from hmisxml%swriter import HMISXMLWriter" % settings.HMISXML_VERSION 
+            exec import_string
             #SBB08212010 checked in by ECJ on behalf of SBB
             self.writer = HmisXmlWriter(settings.OUTPUTFILES_PATH, queryOptions)                    
             self.validator = HUDHMIS28XMLTest() 
             # SBB20100809 Adding HMISCSV output plugin 
-        elif generateOutputformat == 'hmiscsv': 
+        elif generateOutputformat == 'hmiscsv':
+            from hmiscsv30writer import HmisCsv30Writer 
             self.writer = HmisCsv30Writer(settings.OUTPUTFILES_PATH, queryOptions, debug=True)                    
             self.validator = HmisCsv30Test()           
         elif generateOutputformat == 'jfcsxml':

@@ -527,7 +527,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 
 	# SBB20070920 Fix SSN's to make sure that they have the right format
 	# SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
-	fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed)
+	fixedSSN = self.fixSSN(recordset.person_SSN_unhashed)
 	#ECJ20071111 Omit SSN if it's blank			
 	if fixedSSN <> "" and fixedSSN <> None:	
 	    soc_sec_no = ET.SubElement(client, "soc_sec_no")

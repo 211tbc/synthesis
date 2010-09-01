@@ -10,8 +10,6 @@ from clsLogger import clsLogger
 
 fileutilities = FileUtilities()
 
-# run forever
-processFiles = 1
 
 ###################################################################################
 # Looping construct
@@ -25,7 +23,7 @@ if settings.MODE == 'TEST':
     warningTxt = "CTRL-C or CTRL-Break to Stop - (waiting before startup, in case you don't want to wipe your existing db)"
     fileutilities.makeBlock(warningTxt)
     # sleep for 10 seconds
-    fileutilities.sleep(10)
+    fileutilities.sleep(1)
         
 # test if we are in debug and TEST Mode.  If so we clear out the DB every processing run, PROD mode need should never do this.
 if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Test mode
@@ -54,17 +52,12 @@ if settings.DEBUG:
 try:
     if settings.DEBUG:
         print "Now instantiating FileHandler"
-        FileHandler() 
-#    while processFiles:
-#        try:
-#            pass
-#        except:
-#            excString = traceback.format_exc()
-#            print excString
-#            continue
-        # logging?
-except KeyboardInterrupt:
-	print 'Stopping'
+    filehandler = FileHandler() 
+    print "calling sys.exit"
+    sys.exit
 
-# need to shutdown the logging system prior to program termination.  This is to flush buffers, send messages etc.	
-debugMessages.__quit__()
+except KeyboardInterrupt:
+    print 'Stopping: KeyboardInterrupt at MainProcessor.py'
+    # need to shutdown the logging system prior to program termination.  This is to flush buffers, send messages etc.	
+    debugMessages.__quit__()
+    sys.exit()

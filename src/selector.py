@@ -1,10 +1,11 @@
-'''Figures out what type of data format we are dealing with, using validation \
+'''Figures out what type of data format we are dealing with, using validation \                                                                                                                             
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 
 import os
 import fileutils
 import sys
+import time
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
 from hmisxml30reader import HMISXML30Reader
@@ -22,9 +23,7 @@ from clsSecurity import clsSecurity
 import copy
 from StringIO import StringIO
 from clsSocketComm import serviceController
-
-
-
+           
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
     
@@ -51,6 +50,9 @@ class FileHandler:
             if settings.DEBUG:
                 print "Now running FileHandler.nonGUIRun()"
             self.nonGUIRun()
+            print "returned to FileHandler.__init__ from nonGUIRun"
+            print "calling sys.exit"
+            sys.exit()
 
     def setProcessingOptions(self, docName):
         ''' ProcessingOptions is a dictionary on a per file/sender basis.
@@ -94,18 +96,22 @@ class FileHandler:
             
         if settings.DEBUG:
             print "attempting validation tests on", new_file_loc
-        results = self.selector.validate(new_file_loc)
-        for item in results:
-            if item == True:
-                if settings.DEBUG:
-                    print "We did have at least one successful validation"
+            print "os.path.isfile(new_file_loc) is ", os.path.isfile(new_file_loc)
+        if os.path.isfile(new_file_loc):
+            results = self.selector.validate(new_file_loc)
+            for item in results:
+                if item == True:
                     valid = True
-                    self.email.notifyValidationSuccess()
-                if settings.DEBUG:
-                    print "moving to Used", 
-                self.router.moveUsed(new_file_loc)
-                break
-                return True
+                    try:
+                        self.email.notifyValidationSuccess()
+                    except exception:
+                        print exception
+                        pass
+                    if settings.DEBUG:
+                        print "moving to Used", 
+                    self.router.moveUsed(new_file_loc)
+    #                break
+                    return True
             
         if valid == False:
             if settings.DEBUG:
@@ -113,7 +119,11 @@ class FileHandler:
             self.email.notifyValidationFailure()
             if settings.DEBUG:
                 print "moving to Failed"
-            self.router.moveFailed(new_file_loc)
+            if os.path.isfile(new_file_loc):
+                self.router.moveFailed(new_file_loc)
+            else:
+                if settings.DEBUG:
+                    print "Can't move because file doesn't exist.  Shouldn't be trying to move anything to Failed if isn't there."
             return False
             
 #        except etree.XMLSyntaxError, error:
@@ -150,13 +160,20 @@ class FileHandler:
         self.processExisting()
         
         # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
+        if settings.DEBUG:
+            print 'monitoring starting ...'
         new_files = self.monitor() 
-        print 'monitoring...'
-    
+        
+        if settings.DEBUG:
+            print 'monitoring done ...'
+            print 'new_files is', new_files
+        if not new_files:
+            print "No new files, returning"
+            return
+        
         for new_file in new_files:
             if settings.DEBUG:
                 print 'Processing: %s' % new_file
-        
             self.processFiles(new_file)
     
     def nonGUIWindowsRun(self):
@@ -190,33 +207,68 @@ class FileHandler:
         else:
             if settings.DEBUG:
                 print "We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()"
-            self.nonGUIPOSIXRun()   
+            self.nonGUIPOSIXRun()  
+            print "back to nonGUIRun, so returning" 
                     
     def monitor(self):
-        'function to start and stop the monitor' 
-        self.file_input_watcher.monitor()
-        print 'waiting...'
-        
-        #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
-        files = list()
-        _QTO = None
-        while 1:
-            try:
-                result = self.queue.get(block='true', timeout=_QTO)
-                if settings.DEBUG:
-                    print 'found file: %s' % result
-                _QTO = 5
-            except Queue.Empty:
-                result = None
-                break
+       'function to start and stop the monitor' 
+       try:
+            result = self.file_input_watcher.monitor()
+            print "result of fileinputwatcher.monitor passed back up to selector.monitor is", result
+            #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
+            #In other words, the Queue fills up while pyinotify is working.  This empties the Queue, without stopping its function
             
-            # append all files into the file stack to be processed.
-            if result != None:
-                files.append(result)
-        
-        self.file_input_watcher.stop_monitoring()
-        #return result
-        return files
+            files = list()
+            _QTO = 5
+            while 1:
+                #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
+                if settings.DEBUG:
+                    print "waiting for new files..."
+                time.sleep(3)
+                try:
+                    file_found_path = self.queue.get(block='true', timeout=_QTO)                    
+                    if settings.DEBUG:
+                        print 'found file: %s' % file_found_path
+                    _QTO = 5
+                    
+                    if file_found_path != None:
+                        # append all files into the file stack to be processed.
+                        if settings.DEBUG:
+                            print "appending files"
+                        files.append(file_found_path)
+                    if settings.DEBUG:
+                        print "files found so far in while loop are ", files
+                    continue
+                
+                except Queue.Empty:
+                #Stop emptying the Queue and process the result and let it fill up again, since pyinotify is still watching
+                    if not files:
+                        #if settings.DEBUG:
+                            #print "Queue may be empty, but list of files is also empty, so let's keep monitoring"    
+                        continue
+                    #reverse the list so pop handles them FIFO
+                    files.reverse() 
+                    while files:
+                        if settings.DEBUG:
+                            print "Queue.Empty exception, but files list is not empty, so files to process are", files
+                        filepathitem = files.pop()
+                        print "processing ", filepathitem
+                        self.processFiles(filepathitem)
+                    #now go back to checking the Queue
+                    continue
+
+                except KeyboardInterrupt:
+                    print "KeyboardInterrupt caught in selector.monitor() while loop"
+                    self.file_input_watcher.stop_monitoring()
+                    break
+
+       except KeyboardInterrupt:
+            print "KeyboardInterrupt caught in selector.monitor() main section"
+            self.file_input_watcher.stop_monitoring()
+       except:
+            print "General Exception"
+            self.file_input_watcher.stop_monitoring()
+            raise
         
 class Selector:
     '''Figures out which data format is being received.'''
@@ -247,6 +299,7 @@ class Selector:
         readers = {HUDHMIS30XMLTest:HUDHMIS30XMLReader,HUDHMIS28XMLTest:HUDHMIS28XMLReader}
         if settings.DEBUG:
             print "readers are", readers
+        global results
         results = []
 
         for test in tests:
@@ -254,17 +307,31 @@ class Selector:
             result = test_instance.validate(instance_file_loc)
             results.append(result)
             if settings.DEBUG:
-                print "validation return results are", results
-            if result:
-                if settings.DEBUG:
-                    print "shredding..."
-                if shred:
+                print "validation return result is", result
+                print "results are cumulatively", results
+            if True in results:
+                #finds the first 'True' in the list; even if there are many, it gets the first one 
+                loc_true = results.index(True)
+                #if settings.DEBUG:
+                    #print "loc_true is", loc_true
+                length_list = len(results)
+                #if settings.DEBUG:
+                    #print "len(results) is: ", length_list
+                #if the first 'True' validation was the last validation result, go shred/move
+                if loc_true  == (length_list-1):
+                        #if settings.DEBUG:
+                        #print "loc_true is", (loc_true), "and that matches (length_list - 1) of ", (length_list - 1)
                     if settings.DEBUG:
-                        print "readers[test] is: ", readers[test]
-                    
-                    readers[test](instance_file_loc).shred()
-                break 
-        
+                        print "we haven't had a positive validation until now, so go ahead and shred/move it"
+                    if result:
+                        if settings.DEBUG:
+                            print "shredding..."
+                        if shred:
+                            if settings.DEBUG:
+                                print "readers[test] is: ", readers[test]
+                            readers[test](instance_file_loc).shred()
+        if not results:
+            print "results empty"                 
         return results
 
 class VendorXMLTest:
@@ -300,8 +367,8 @@ class HUDHMIS28XMLTest:
             if settings.DEBUG:
                 print "etreeschemaobject is:", etreeschemaobject
             xmlschema = etree.XMLSchema(etreeschemaobject)
-            if settings.DEBUG:
-                print "xmlschema is:", xmlschema
+            #if settings.DEBUG:
+                #print "xmlschema is:", xmlschema
             # make a copy of the doc, validate against the copy not the real doc
             copy_xml_instance_file_loc = "copy_xml_28_instance_file"
             FILEUTIL.copyFile(xml_instance_file, copy_xml_instance_file_loc)
@@ -318,7 +385,7 @@ class HUDHMIS28XMLTest:
                     FILEUTIL.makeBlock('The HMIS 2.8 XML successfully validated.')
                     return result
                 if result == False:
-                    FILEUTIL.makeBlock('The HMIS 2.8 XML did not successfully validate against the HMIS 2.8 XML Schema.')
+                    FILEUTIL.makeBlock('The XML did not successfully validate against the HMIS 2.8 XML Schema.')
                     try:
                         detailed_results = xmlschema.assertValid(etreeinstanceobject)
                         print detailed_results
@@ -365,13 +432,14 @@ class HUDHMIS30XMLTest:
                 print "xmlschema is:", xmlschema
                 
             # make a copy of the doc, validate against the copy not the real doc
-            copy_xml_instance_file_loc = "copy_xml_30_instance_file"
+            copy_xml_instance_file_loc = "copy_xml_30_candidate_instance_file"
             FILEUTIL.copyFile(xml_instance_file, copy_xml_instance_file_loc)
             if settings.DEBUG:   
                 print "copy of instance file is", copy_xml_instance_file_loc
     
             try:
-                print "This is what instance doc is being validated:", copy_xml_instance_file_loc
+                if settings.DEBUG:
+                    print "This is what instance doc is being validated:", copy_xml_instance_file_loc
                 etreeinstanceobject = etree.parse(copy_xml_instance_file_loc)
                 if settings.DEBUG:
                     print "validating against", self.schema_file_location
@@ -380,7 +448,7 @@ class HUDHMIS30XMLTest:
                     FILEUTIL.makeBlock('The HMIS 3.0 XML successfully validated.')
                     return result
                 if result == False:
-                    FILEUTIL.makeBlock('The HMIS 3.0 XML did not successfully validate against the HMIS 3.0 XML Schema.')
+                    FILEUTIL.makeBlock('The XML did not successfully validate against the HMIS 3.0 XML Schema.')
                     try:
                         detailed_results = xmlschema.assertValid(etreeinstanceobject)
                         print detailed_results

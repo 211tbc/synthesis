@@ -249,8 +249,8 @@ class FileUtilities:
                 os.mkdir(destDir)
                 
             shutil.move(source, destDir)        
-        except shutil.Error, detail:
-            print detail.value
+        except shutil.Error as detail:
+            print detail
             if settings.DEBUG:
                 print "renaming to incremented filename"
                 print "current name is ", source

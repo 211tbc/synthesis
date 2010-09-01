@@ -1,7 +1,7 @@
 '''
 This module watches multiple directories for new files and notifies \
-when a new file encountered.  It has posix and non-posix versions.  \
-The posix version uses a queue to run the watch as a thread and \
+when a new file encountered.  It has POSIX and win32 versions.  \
+The POSIX version uses a queue to run the watch as a thread and \
 make a non-polling notification.
 '''
 # The MIT License
@@ -26,26 +26,31 @@ make a non-polling notification.
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+global osiswin32
+import selector
+
 import os, time, exceptions
 from time import sleep
 from conf import settings
 
 # determine what environment we are running under, win32 or POSIX
-if os.name == 'nt':
-    if settings.DEBUG:
-        print "fileinputwatcher.py determined we are running windows nt"
-    import win32file
-    import win32event
-    import win32con
+if os.name == 'nt':   
+    osiswin32 = True
+    try:
+        import win32file
+        import win32event
+        import win32con
+    except ImportError:
+        print 'Could not import win32 modules.'     
+                
 else:
-    if settings.DEBUG:
-        print "fileinputwatcher.py determined we are running POSIX"
-    # POSIX
+    osiswin32 = False
     try:
         import pyinotify
         from pyinotify import WatchManager, ThreadedNotifier, ProcessEvent, EventsCodes
+        
     except ImportError:
-        print 'Could not import pyinotify modules.'
+        print 'Could not import POSIX pyinotify modules.'
 
 class FileInputWatcher:
     '''controlling class for file monitoring'''
@@ -57,37 +62,43 @@ class FileInputWatcher:
             print '*************Debugging On*************'
         
         self.queue = queue
-        self.dir_to_watch = dir_to_watch    
-        if os.name == 'nt':
-            if settings.DEBUG:
-                print "FileInputWatcher.__init__ saying we are running nt"   
-            self.osiswin32 = True
-        else:
-            self.osiswin32 = False
-            if settings.DEBUG:
-                print "FileInputWatcher.__init__ saying we are not running nt"   
+        self.dir_to_watch = dir_to_watch
+        
         # make a notifier (nothing)
-        self.notifier = None
+        self.notifier1 = None
+        self.notifier2 = None
                 
     def monitor(self):
-        '''The command to start monitoring a directory or set of them.  os independent, but only posix uses it.'''
+        '''The command to start monitoring a directory or set of them.'''
         print 'Monitoring Directories: %s' % self.dir_to_watch
         print "Watching started at %s" % (time.asctime())
-        if self.osiswin32:
+        if osiswin32:
             print 'Watching win32 OS'              
             return self.watch_win32(self.dir_to_watch)
         else:
             print 'Watching POSIX OS'
-            self.watch_posix_start()
-            
+            print 'sending to self.watch_posix_start()'
+            result = self.watch_posix_start()
+            print "It returned from self.watch_posix_start()!"
+            print "self.watch_posix_start() returned with value", result
+        return True
     def stop_monitoring(self):  
         '''os independent method to stop monitoring, but only posix uses it.'''
-        #self.watch_posix_stop()
-        # SBB20090917 Instead of stopping, pause while stuff is being processed, with notifier stopped, any files received are not tracked or processed
-        #sleep(5)
+        #print "self.notifier1.started", self.notifier1.__getattribute__('started')
+        if isinstance(self.notifier1, ThreadedNotifier):
+            #if settings.DEBUG:
+                #print "self.notifier1 is an instance"
+            if isinstance(self.notifier2, ThreadedNotifier):
+                #if settings.DEBUG:
+                    #print "self.notifier2 is an instance"
+                self.watch_posix_stop()
+                
+        else: 
+            if settings.DEBUG:
+                print "notifiers were not instantiated, so not calling self.watch_posix_stop() again"
         print 'Done Monitoring'
                 
-    def watch_win32(self, dir_to_watch): #IGNORE:R0201    
+    def watch_win32(self, dir_to_watch): 
         '''os-specific watch command'''
         # Loop forever, listing any file changes. The WaitFor... will
         #  time out every half a second allowing for keyboard interrupts
@@ -127,46 +138,87 @@ class FileInputWatcher:
         #finally:
         #	win32file.FindCloseChangeNotification(change_handle)
             
-    def watch_posix_start(self): #IGNORE:R0201
+    def watch_posix_start(self): 
         '''os-specific command to watch'''
         
         # test to see if we already have a notifier object, if not, make it, otherwise we are already watching a set of folders
-        if self.notifier == None:
+        if self.notifier1 == None and self.notifier2 == None:
+            
             try:
                 pyinotify.compatibility_mode()
                 print 'pyinotify running in compatibility mode'
             except:
                 print 'pyinotify running in standard mode'
             try:
-                watch_manager = WatchManager()
-            except NameError:
-                print 'hey'
-                return ['POSIX Watch Error']
-            mask = EventsCodes.IN_CREATE  #watched events IGNORE:E1101
-        
-            self.notifier = ThreadedNotifier(watch_manager, EventHandler(self.queue))#IGNORE:W0201
-            # SBB20090903 Turn on verbose mode
-            self.notifier.VERBOSE = settings.DEBUG
+                mask = EventsCodes.IN_CREATE  
+                #ECJ20100831 Reason why we have two threads: it never returns control ever to the main loop if only one thread, so no ctrl+c
+                #The second thread is a dummy, so it performs switching/relinquishing control
+                #Eventually, we want to watch many folders, so that is why we are using the ThreadedNotifier, versus the recommended Notifier.
+                #Even then, Notifier is still probably the way to go, but we'll use this as long as it works, because then you don't have to poll/While loop
+                
+                # Thread #1
+                watch_manager1 = WatchManager()
+                self.notifier1 = ThreadedNotifier(watch_manager1, EventHandler(self.queue))
+                self.notifier1.start()
+                print 'Starting the threaded notifier on ', self.dir_to_watch
+                watch_manager1.add_watch(self.dir_to_watch, mask)
+                # Thread #2
+                watch_manager2 = WatchManager()
+                self.notifier2 = ThreadedNotifier(watch_manager2, EventHandlerDummy(self.queue))
+                self.notifier2.start()
+                #just watch any place, but don't remove this or Ctrl+C will not work
+                watch_manager2.add_watch(settings.BASE_PATH, mask)
+                if settings.DEBUG:
+                    print "both notifiers started"
             
-            watch_manager.add_watch(self.dir_to_watch, mask)
-            print 'Starting the threaded notifier on ', self.dir_to_watch
-            self.notifier.start()
-            print 'Finished...'
+            except KeyboardInterrupt:
+                print "Keyboard Interrupt in notifier"
+                self.notifier1.stop()
+                self.notifier2.stop()
                 
-    def watch_posix_stop(self):#IGNORE:R0201
+                return
+            except NameError:
+                self.notifier1.stop()
+                self.notifier2.stop()
+                return ['POSIX Watch Error']
+            except:
+                print "General exception caught within notifier while loop, stopping both notifiers now"
+                self.notifier1.stop()
+                self.notifier2.stop()
+                
+                # SBB20090903 Turn on verbose mode
+                self.notifier1.VERBOSE = settings.DEBUG
+                print "returning to calling function"
+                return True
+            
+    def watch_posix_stop(self):
         'os specific call to stop monitoring'
-        print 'Stopping the threaded notifier.'
-        self.notifier.stop()
+        print 'Stopping the threaded notifiers.'
+        self.notifier1.stop()
+        print "stopped self.notifier1.stop()"
+        self.notifier2.stop()
+        print "stopped self.notifier2.stop()"
         return
-
-if os.name != 'nt':          
-    class EventHandler(ProcessEvent): #IGNORE:W0232
-        '''Event handler processing create events passed in to the \
-        watch manager by the notifier.''' 
-        def __init__(self, queue):
-            self.queue = queue
-                
-        def process_IN_CREATE(self, event):#IGNORE:C0103
-            '''What happens when a file is added'''
-            print "Create: %s" %  os.path.join(event.path, event.name)
-            self.queue.put(os.path.join(event.path, event.name))
+          
+class EventHandler(ProcessEvent): 
+    '''Event handler processing create events passed in to the \
+    watch manager by the notifier.''' 
+    def __init__(self, queue):
+        self.queue = queue
+            
+    def process_IN_CREATE(self, event):
+        '''What happens when a file is added'''
+        print "Create: %s" %  os.path.join(event.path, event.name)
+        self.queue.put(os.path.join(event.path, event.name))
+        print "queue is now", self.queue
+        
+class EventHandlerDummy(ProcessEvent): 
+    '''Event handler processing create events passed in to the \
+    watch manager by the notifier.''' 
+    def __init__(self, queue):
+        self.queue = queue
+            
+    def process_IN_CREATE(self, event):
+        '''What happens when a file is added'''
+        print "Create: %s" %  os.path.join(event.path, event.name)
+        

@@ -251,21 +251,23 @@ class HMISXML30Reader(DBObjects.databaseObjects):
     def parse_agency(self, element):
         ''' Element paths '''
         xpAgency = 'hmis:Agency'
-        xpAgencyDelete = '@hmis:Delete'
-        xpAgencyDeleteOccurredDate = '@hmis:DeleteOccurredDate'
-        xpAgencyDeleteEffective = '@hmis:DeleteEffective'
+        xpAgencyDelete = '../hmis:Agency/@Delete'
+        xpAgencyDeleteOccurredDate = '../hmis:Agency/@DeleteOccurredDate'
+        xpAgencyDeleteEffective = '../hmis:Agency/@DeleteEffective'
         xpAirsKey = 'airs:Key'
         xpAirsName = 'airs:Name'
         xpAgencyDescription = 'airs:AgencyDescription'
         xpIRSStatus = 'airs:IRSStatus'
         xpSourceOfFunds = 'airs:SourceOfFunds'
-        xpRecordOwner = '@hmis:RecordOwner'
-        xpFEIN = '@hmis:FEIN'
-        xpYearInc = '@hmis:YearInc'
-        xpAnnualBudgetTotal = '@hmis:AnnualBudgetTotal'
-        xpLegalStatus = '@hmis:LegalStatus'
-        xpExcludeFromWebsite = '@hmis:ExcludeFromWebsite'
-        xpExcludeFromDirectory = '@hmis:ExcludeFromDirectory'
+        #xpRecordOwner = '@hmis:RecordOwner'
+        xpRecordOwner = '../hmis:Agency/@RecordOwner'
+        #xpFEIN = '@hmis:FEIN'
+        xpFEIN = '../hmis:Agency/@FEIN'
+        xpYearInc = '../hmis:Agency/@YearInc'
+        xpAnnualBudgetTotal = '../hmis:Agency/@AnnualBudgetTotal'
+        xpLegalStatus = '../hmis:Agency/@LegalStatus'
+        xpExcludeFromWebsite = '../hmis:Agency/@ExcludeFromWebsite'
+        xpExcludeFromDirectory = '../hmis:Agency/@ExcludeFromDirectory'
         
         itemElements = element.xpath(xpAgency, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:
@@ -281,16 +283,18 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('agency_description', item.xpath(xpAgencyDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('irs_status', item.xpath(xpIRSStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('source_of_funds', item.xpath(xpSourceOfFunds, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('fein', item.xpath(xpFEIN, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('record_owner', item.xpath(xpRecordOwner, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('year_inc', item.xpath(xpYearInc, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('annual_budget_total', item.xpath(xpAnnualBudgetTotal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('legal_status', item.xpath(xpLegalStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('exclude_from_website', item.xpath(xpExcludeFromWebsite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('exclude_from_directory', item.xpath(xpExcludeFromDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('fein', item.xpath(xpFEIN, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('record_owner', item.xpath(xpRecordOwner, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('year_inc', item.xpath(xpYearInc, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('annual_budget_total', item.xpath(xpAnnualBudgetTotal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('legal_status', item.xpath(xpLegalStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_website', item.xpath(xpExcludeFromWebsite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_directory', item.xpath(xpExcludeFromDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
-                self.existence_test_and_add('export_id', self.export_id, 'text')
+                # SBB20100901 Agency foreign key field is export_index_id
+                #self.existence_test_and_add('export_id', self.export_id, 'text')
+                self.existence_test_and_add('export_index_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.Agency)

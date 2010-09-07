@@ -16,6 +16,12 @@ libpq-dev
 
 
 -Get the code:
+-do this:
+mkdir ~/workspace/synthesis
+cd ~/workspace/synthesis
+lftp -e mirror http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/
+
+-or do this (may cause problems if you run buildout again):
 user@host:~/workspace$ svn co http://xsd.alexandriaconsulting.com/repos/trunk/synthesis
 
 -Prep the environment for buildout:

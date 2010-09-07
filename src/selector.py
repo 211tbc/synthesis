@@ -214,16 +214,20 @@ class FileHandler:
        'function to start and stop the monitor' 
        try:
             result = self.file_input_watcher.monitor()
-            print "result of fileinputwatcher.monitor passed back up to selector.monitor is", result
+            #if settings.DEBUG:
+                #print "result of fileinputwatcher.monitor passed back up to selector.monitor is", result
             #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
             #In other words, the Queue fills up while pyinotify is working.  This empties the Queue, without stopping its function
             
             files = list()
             _QTO = 5
+            if settings.DEBUG:    
+                wait_counter = 0
             while 1:
                 #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
                 if settings.DEBUG:
-                    print "waiting for new files..."
+                    print "waiting for new files...", wait_counter
+                    wait_counter+=1
                 time.sleep(3)
                 try:
                     file_found_path = self.queue.get(block='true', timeout=_QTO)                    

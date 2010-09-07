@@ -77,10 +77,12 @@ class FileInputWatcher:
             return self.watch_win32(self.dir_to_watch)
         else:
             print 'Watching POSIX OS'
-            print 'sending to self.watch_posix_start()'
+            #if settings.DEBUG:
+                #print 'sending to self.watch_posix_start()'
             result = self.watch_posix_start()
-            print "It returned from self.watch_posix_start()!"
-            print "self.watch_posix_start() returned with value", result
+            #if settings.DEBUG:
+                #print "It returned from self.watch_posix_start()!"
+                #print "self.watch_posix_start() returned with value", result
         return True
     def stop_monitoring(self):  
         '''os independent method to stop monitoring, but only posix uses it.'''

@@ -3670,8 +3670,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpDescription = 'airs:Description'
         xpType = 'airs:Type'
         xpFunction = 'airs:Function'
-        xpTollFree = '@airs:TollFree'
-        xpConfidential = '@airs:Confidential'
+        xpTollFree = "../%s/%s" % (xpPhone, '@TollFree')
+        xpConfidential = "../%s/%s" % (xpPhone, '@Confidential')
 
         itemElements = element.xpath(xpPhone, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:

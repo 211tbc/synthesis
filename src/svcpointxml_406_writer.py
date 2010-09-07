@@ -639,7 +639,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
 	need.attrib["record_id"] = recID 
 	need.attrib["system_id"] = sysID
 	#need.attrib["odbid"] = "5"
-	need.attrib["odbid"] = "%s" % self.configurationRec.odbid
+	# SBB20100907 removed from Need.  Not needed.
+	#need.attrib["odbid"] = "%s" % self.configurationRec.odbid
 	
 	need.attrib["date_added"] = datetime.now().isoformat()
 	need.attrib["date_updated"] = datetime.now().isoformat()

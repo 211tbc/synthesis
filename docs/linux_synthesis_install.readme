@@ -6,6 +6,7 @@ gcc
 make
 python (2.6.4ubuntu1)
 python-dev
+python-paramiko
 python-setuptools
 zlib1g-dev
 libreadline5

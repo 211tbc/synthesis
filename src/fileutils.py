@@ -242,12 +242,32 @@ class FileUtilities:
         print 'Done Grabbing Files'
         return validFiles
     
+    def getUniqueFileName(self, attempted_filename, destDir):
+        '''Returns a new unique timestamped filename to use at destDir indicated'''
+        unique_filename = None
+        new_filepath = destDir + "/" + attempted_filename
+        if settings.DEBUG:
+            if os.path.isfile(new_filepath):
+                print "output location", new_filepath, "already exists"
+        fileprefix = os.path.splitext(attempted_filename)[0]
+        filesuffix = os.path.splitext(attempted_filename)[1]
+        fileprefix = fileprefix + str(datetime.datetime.now())
+        stamped_pathname = fileprefix + filesuffix
+        if settings.DEBUG:
+            print "stamped_pathname is: ", stamped_pathname
+        if os.path.isfile(stamped_pathname):
+            print "The renamed file is also already there, please check this out."
+        #stamped_pathname is a whole path, so just return the filename part without path
+        (filepath, unique_filename) = os.path.split(stamped_pathname)
+            
+        #return just the filename
+        return unique_filename
+    
     def moveFile(self, source, destDir):
         # SBB20090831 Test if the destination exists, if not make it.  Encapsulated w/ Try
         try:
             if not os.path.exists(destDir):
                 os.mkdir(destDir)
-                
             shutil.move(source, destDir)        
         except shutil.Error as detail:
             print detail

@@ -149,6 +149,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_household(item)
                 self.parse_region(item)
                 self.parse_agency(item)
+                
+                
+                
                 self.parse_person(item)
                 self.parse_service(item)
                 self.parse_site(item)
@@ -300,17 +303,34 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.shred(self.parse_dict, DBObjects.Agency)
     
                 ''' Parse sub-tables '''
-                self.parse_service_group(item)
-                self.parse_license_accreditation(item)
+                
+                
                 self.parse_agency_service(item)
-                self.parse_url(item)
+                
                 self.parse_aka(item)
-                self.parse_resource_info(item)
-                self.parse_contact(item)      
-                self.parse_email(item)      
+                # SBB20100907 Missing, adding back in.
+                self.parse_agency_location(item)
+                
                 self.parse_phone(item)      
+                self.parse_url(item)
+                self.parse_email(item)      
+                self.parse_contact(item)
+                self.parse_license_accreditation(item)
+                self.parse_service_group(item)
+                
+                # need to reset the contact index once we start processing a site element (because site can have their own contacts)
+                self.contact_index_id = None
+                
                 self.parse_site(item)
-                      
+                # SBB20100907 clear out the agency primary key - fouling up other parsers
+                self.site_index_id = None
+                
+                self.parse_resource_info(item)
+                
+                # SBB20100907 clear out the agency primary key - fouling up other parsers
+                # done with Agency, clear out the agency primary key, don't want it floating down to other elements.
+                self.agency_index_id = None
+                
                 
     def parse_person(self, element):
         ''' Element paths '''
@@ -649,9 +669,11 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_languages(item)
                 self.parse_time_open(item)            
                 self.parse_inventory(item)
-                self.parse_contact(item)            
+                #self.parse_contact(item)            
                 self.parse_email(item)      
-                self.parse_phone(item)      
+                self.parse_phone(item)
+                # SBB20100907 moved till after email and phone (which are part of the site record, contact will drive it's own searches for email and phone (of the contact))
+                self.parse_contact(item) 
                 
     def parse_site_service(self, element):
         ''' Element paths '''
@@ -937,6 +959,10 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Parse sub-tables '''
                             
 
+    # subbed out for EJ
+    def parse_agency_location(self, element):
+        pass
+        
     def parse_aka(self, element):
         ''' Element paths '''
         xpAka = 'airs:AKA'
@@ -3608,6 +3634,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Foreign Keys '''
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 except: pass
+                # SBB20100908 Need to test this.  A site doesn't have resource Info but contacts do under other elements
                 try: self.existence_test_and_add('resource_info_index_id', self.resource_info_index_id, 'no_handling')
                 except: pass
                 try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
@@ -3685,8 +3712,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('description', item.xpath(xpDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('type', item.xpath(xpType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('function', item.xpath(xpFunction, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('toll_free', item.xpath(xpTollFree, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('confidential', item.xpath(xpConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('toll_free', item.xpath(xpTollFree, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('confidential', item.xpath(xpConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')

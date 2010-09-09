@@ -253,8 +253,8 @@ class FileUtilities:
         filesuffix = os.path.splitext(attempted_filename)[1]
         fileprefix = fileprefix + str(datetime.datetime.now())
         stamped_pathname = fileprefix + filesuffix
-        if settings.DEBUG:
-            print "stamped_pathname is: ", stamped_pathname
+        #if settings.DEBUG:
+            #print "stamped_pathname is: ", stamped_pathname
         if os.path.isfile(stamped_pathname):
             print "The renamed file is also already there, please check this out."
         #stamped_pathname is a whole path, so just return the filename part without path

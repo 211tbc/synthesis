@@ -105,9 +105,33 @@ class interpretPickList:
 			"Veteran's Benefits":"veteran&apos;s pension (hud)",
 			"":"worker&apos;s compensation (hud)"
 		}
+#		2.8 Picklists <xsd:simpleType name="residenceBase">
+#        <xsd:annotation>
+#            <xsd:documentation xml:lang="en">    
+#                Residence Type
+#                1 = Emergency shelter
+#                2 = Transitional housing
+#                3 = Permanent housing
+#                4 = Psychiatric hospital or other psychiatric facility
+#                5 = Substance abuse treatment facility or detox center
+#                6 = Hospital (non-psychiatric)
+#                7 = Jail, prison or juvenile detention facility
+#                8 = Don't know
+#                9 = Refused
+#                10 = Room apartment or house that you rent
+#                11 = Apartment or house that you own
+#                12 = Staying or living in a family member's room, apartment or house
+#                13 = Staying or living in a friend's room, apartment or house
+#                14 = Hotel or motel paid for without emergency shelter voucher
+#                15 = Foster care home or foster care group home
+#                16 = Place not meant for habitation
+#                17 = Other
+#            </xsd:documentation>
+#            
+		
 		,"LIVINGSITTYPESPickOption":{
 			"Domestic Violence":"domestic violence situation",
-			"?":"don&apos;t know (hud)",
+			"?":"don't know (hud)",
 			"Emergency Shelter/TH":"emergency shelter (hud)",
 			"Foster Care":"foster care/group home (hud)",
 			"Hospital":"hospital (hud)",
@@ -116,7 +140,6 @@ class interpretPickList:
 			"Living With Family":"living with family (hud)",
 			"Living with Friend":"living with friends (hud)",
 			"Living With Friend":"living with friends (hud)",
-			"Other":"other (hud)",
 			"Own Home":"own house/apartment (hud)",
 			"Halfway House":"permanent housing for formerly homeless (hud)",
 			"Street":"place not meant for habitation (hud)",
@@ -125,7 +148,24 @@ class interpretPickList:
 			"Rented":"rental house/apartment (hud)",
 			"Housing Subsized":"subsidized housing",
 			"Treatment Center":"substance abuse treatment center (hud)",
-			"Transitional Housing":"transitional housing for homeless(hud)"
+			"Transitional Housing":"transitional housing for homeless(hud)",
+			"1":"emergency shelter (hud)",
+			"2":"transitional housing for homeless(hud)",
+			"3":"permanent housing for formerly homeless (hud)",
+			"4":"psychiatric hospital or facility (hud)",
+			"5":"substance abuse treatment center (hud)",
+			"6":"hospital (hud)",
+			"7":"jail, prison or juvenile facility  (hud)",
+			"8":"don't know (hud)",
+			"9":"refused (hud)",
+			"10":"rental house/apartment (hud)",
+			"11":"own house/apartment (hud)",
+			"12":"living with family (hud)",
+			"13":"living with friends (hud)",
+			"14":"hotel/motel without emergency shelter(hud)",
+			"15":"foster care/group home (hud)",
+			"16":"place not meant for habitation (hud)",
+			"17":"other (hud)"
 		}
 		,"ENHANCEDYESNOPickOption":{
 			"dontknow":"don&apos;t know (hud)",
@@ -237,7 +277,7 @@ class interpretPickList:
 			"0":"female",
 			"male":"male",
 			"1":"male",
-			"confused":"transgender",
+			"confused":"transgender",  #ECJ20100808 omg!!!
 			"other":"unknown"
 			}
 		,"EmploymentPick":{

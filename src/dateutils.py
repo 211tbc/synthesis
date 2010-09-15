@@ -91,3 +91,18 @@ def convertIntegerToDateTime(self, intDate):
     if self.debug == True:
         print 'Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime)
     return isodatetime
+
+def getDateTimeObj(self, inputDate):
+        dateParts = inputDate.split('/')
+        if len(dateParts[2]) == 4:
+            inputDateFmt = "%m/%d/%Y"
+        else:
+        # can't determine the date format, try to determine from other attributes
+            if len(inputDate) == 10 or len(inputDate) == 9:
+                inputDateFmt = "%m/%d/%Y"
+            else:
+                inputDateFmt = "%m/%d/%y"
+            
+        # format a Datetime Obj so we can do some math on it.
+        newDate = datetime(*strptime(inputDate, inputDateFmt)[0:3])
+        return newDate

@@ -682,8 +682,23 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         taxonomy = ET.SubElement(xml, "hmis:Taxonomy")
         return taxonomy
     
-    def customizeTaxonomy(self, xml):
-        pass
+    def customizeTaxonomy(self, xml, taxonomyData=[]):
+        
+        #bHasParentElement = False
+        elementCounter = 0
+        taxonomyElement = ET.SubElement(xml, "airs:%s" % 'Taxonomy')
+        
+        for taxonomyRow in taxonomyData:
+            
+            if elementCounter == 2:
+                elementCounter = 0
+                taxonomyElement = ET.SubElement(xml, "airs:%s" % 'Taxonomy')
+                
+            # make subelements
+            taxonomySubElement = ET.SubElement(taxonomyElement, "Code")
+            taxonomySubElement.text = taxonomyRow.code
+            
+            elementCounter += 1
     
     def createPerson(self, records):
         person = ET.SubElement(records, "hmis:Person")
@@ -967,7 +982,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     def manageSiteService(self, export):
         # SiteService
         siteservice = self.createSiteService(export)
-        siteservice = self.customizeSiteService(siteservice)
+        siteservice = self.customizeSiteService(siteservice, siteServiceData=None)
         
         # Sub Element of SiteService
         phone = self.createSiteServicePhone(siteservice)
@@ -1009,7 +1024,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         # Taxonomy
         taxonomy = self.createTaxonomy(siteservice)
-        taxonomy = self.customizeTaxonomy(taxonomy)
+        taxonomy = self.customizeTaxonomy(taxonomy, [])
         
         # Languages
         languages = self.createSubElement(siteservice, ns = 'airs', element = 'Languages')
@@ -1407,6 +1422,151 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         agency = ET.SubElement(xml, "hmis:Agency")
         return agency
     
+    def queryTaxonomy(self, siteServiceID=None, needID=None):
+        #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        #Column('need_index_id', Integer, ForeignKey(Need.c.id)),
+        return self.session.query(DBObjects.Taxonomy).filter(and_(DBObjects.Taxonomy.site_service_index_id == siteServiceID,
+                                                                         DBObjects.Taxonomy.need_index_id == needID,
+                                                                 )).all()
+        
+    def querySpatialLocation(self, siteID=None, agencyLocationID=None):
+        return self.session.query(DBObjects.SpatialLocation).filter(and_(DBObjects.SpatialLocation.site_index_id == siteID,
+                                                                         DBObjects.SpatialLocation.agency_location_index_id == agencyLocationID,
+                                                                 )).all()
+    def querySiteService(self, exportID=None, reportID=None, siteID=None, agencyLocationID=None):
+#        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+#        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
+#        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+        return self.session.query(DBObjects.SiteService).filter(and_(DBObjects.SiteService.export_index_id == exportID,
+                                                                   DBObjects.SiteService.report_index_id == reportID,
+                                                                   DBObjects.SiteService.site_index_id == siteID,
+                                                                   DBObjects.SiteService.agency_location_index_id == agencyLocationID,
+                                                                 )).all()
+    
+    def queryLanguages(self, siteID=None, siteServiceID=None, agencyLocationID=None):
+        #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        return self.session.query(DBObjects.Languages).filter(and_(DBObjects.Languages.site_index_id == siteID,
+                                                                   DBObjects.Languages.site_service_index_id == siteServiceID,
+                                                                   DBObjects.Languages.agency_location_index_id == agencyLocationID,
+                                                                 )).all()
+        
+    def queryCrossStreet(self, siteID=None):
+        return self.session.query(DBObjects.CrossStreet).filter(and_(DBObjects.CrossStreet.site_index_id == siteID,
+                                                                 )).all()
+        
+    def queryAKA(self, agencyID=None, siteID=None, agencyLocationID=None ):
+#        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+#        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+        
+        return self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.site_index_id == siteID,
+                                                             DBObjects.Aka.agency_index_id == agencyID,
+                                                             DBObjects.Aka.agency_location_index_id == agencyLocationID,
+                                                                 )).all()
+        
+    def queryOtherAddress(self, siteID=None, agencyLocationID=None):
+        return self.session.query(DBObjects.OtherAddress).filter(and_(DBObjects.OtherAddress.site_index_id == siteID,
+                                                                      DBObjects.OtherAddress.agency_location_index_id == agencyLocationID,
+                                                                 )).all()
+    
+    def queryResourceInfo(self, agencyID=None, siteServiceID=None):
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        return self.session.query(DBObjects.ResourceInfo).filter(and_(DBObjects.ResourceInfo.agency_index_id == agencyID,
+                                                                      DBObjects.ResourceInfo.site_service_index_id == siteServiceID,
+                                                                 )).all()
+        
+    def querySite(self, exportID=None, reportID=None, agencyID=None):
+        #Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
+        #Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        return self.session.query(DBObjects.Site).filter(and_(DBObjects.Site.agency_index_id == agencyID,
+                                                                 )).all()
+        
+    def queryService(self, agencyID=None):
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        return self.session.query(DBObjects.Service).filter(and_(DBObjects.Service.agency_index_id == agencyID,
+                                                                 )).all()
+    
+    def queryServiceGroup(self, agencyID=None):
+        
+        return self.session.query(DBObjects.ServiceGroup).filter(and_(DBObjects.ServiceGroup.agency_index_id == agencyID,
+                                                                 )).all()
+        
+    def queryLicenseAccreditation(self, agencyID=None):
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
+        return self.session.query(DBObjects.LicenseAccreditation).filter(and_(DBObjects.LicenseAccreditation.agency_index_id == agencyID,
+                                                                 )).all()
+        
+    def queryTimeOpen(self, siteID=None, languageID=None, siteServiceID=None, agencyLocationID=None):
+#        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+#        Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
+#        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)),
+#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+        return self.session.query(DBObjects.TimeOpen).filter(and_(DBObjects.TimeOpen.site_index_id == siteID,
+                                                                  DBObjects.TimeOpen.languages_index_id == languageID,
+                                                                 DBObjects.TimeOpen.site_service_index_id == siteServiceID,
+                                                                 DBObjects.TimeOpen.agency_location_index_id == agencyLocationID
+                                                                 )).all()
+    
+    def queryContact(self, agencyID=None, resourceID=None, siteID=None, agencyLocationID=None):
+        # foreign keys include
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)),
+        #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+    
+        return self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyID,
+                                                                 DBObjects.Contact.resource_info_index_id == resourceID,
+                                                                 DBObjects.Contact.site_index_id == siteID,
+                                                                 DBObjects.Contact.agency_location_index_id == agencyLocationID
+                                                                 )).all()
+        
+    def queryEmail(self, agencyID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
+        # foreign keys for email
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('contact_index_id', Integer, ForeignKey(Contact.c.id)), 
+        #Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
+        #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+        
+        return self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyID,
+                                                               DBObjects.Email.contact_index_id == contactID,
+                                                               DBObjects.Email.resource_info_index_id == resourceID,
+                                                               DBObjects.Email.site_index_id == siteID,
+                                                               DBObjects.Email.person_historical_index_id == personHistoricalID,
+                                                               )).all()
+    def queryURL(self, agencyID=None, siteID=None):
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        
+        return self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID,
+                                                             DBObjects.Url.site_index_id == siteID,
+                                                             )).all()
+    
+    def queryAgencyLocation(self, agencyID=None):
+        return self.session.query(DBObjects.AgencyLocation).filter(and_(DBObjects.AgencyLocation.agency_index_id == agencyID,
+                                                                 )).all()
+        
+    def queryPhone(self, agencyID=None, contactID=None, resourceID=None, siteID=None, siteServiceID=None, personHistoricalID=None, agencyLocationID=None):
+        # Phone has these foreign keys, they must either be null or supplied by some value to query properly
+        #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        #Column('contact_index_id', Integer, ForeignKey(Contact.c.id)), 
+        #Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
+        #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+        
+        return  self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyID,
+                                                                DBObjects.Phone.contact_index_id == contactID,
+                                                                DBObjects.Phone.resource_info_index_id == resourceID,
+                                                                DBObjects.Phone.site_index_id == siteID,
+                                                                DBObjects.Phone.site_service_index_id == siteServiceID,
+                                                                DBObjects.Phone.person_historical_index_id == personHistoricalID,
+                                                                DBObjects.Phone.agency_location_index_id == agencyLocationID
+                                                                )).all()
+        
     def customizeAgency(self, xml, agencyData, siteIndexID = None):
         
         #sourceID = ET.SubElement(xml, "hmis:SourceID")
@@ -1431,14 +1591,9 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             'URL',
             'Email',
             'Contact',
-            'LicenseAccreditation',
-            'IRSStatus',
-            'SourceOfFunds',
-            'ServiceGroup',
-            'Service',
-            'Site',
-            'ResourceInfo',
-        ]
+            ]
+        
+        
         
         # Define the elements   
         theElements = {}
@@ -1457,27 +1612,125 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         AKA = theElements['AKA']
         
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
-        AKARows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteIndexID)).all()
+        AKARows = self.queryAKA(agencyData.id)
+        #AKARows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteIndexID)).all()
         
         for AKARow in AKARows:
             akarow = self.customizeAgencyAKA(AKA, AKARow)
         
         # FIXME (Eric is working on writing this code need to uncomment when he's done            
         # Agency Location
-        #AgencyLocationElement = theElements['AgencyLocation']
+        AgencyLocationElement = theElements['AgencyLocation']
+        AgencyLocationData = self.queryAgencyLocation(agencyID = agencyData.id)
         
-        #AgencyDataRows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteIndexID)).all()
-        #for agencylocationdata in AgencyLocationRows:
-        #    agencyLoc = self.customizeAgencyLocation(AgencyLocationElement, agencylocationdata)
+        for agencylocationRows in AgencyLocationData:
+            agencyLoc = self.customizeAgencyLocation(AgencyLocationElement, agencyData, agencylocationRows)
         
         # Phone
-        Phone = theElements['Phone']
+        PhoneElement = theElements['Phone']
         
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
-        AgencyPhoneData = self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteIndexID)).all()
+        AgencyPhoneData = self.queryPhone(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
         
-        for AKARow in AKARows:
-            akarow = self.customizeAgencyAKA(AKA, AKARow)
+        for phoneRow in AgencyPhoneData:
+            phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)
+        
+        # URL
+        urlElement = theElements['URL']
+        
+        AgencyURLData = self.queryURL(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        
+        for urlRow in AgencyURLData:
+            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+        
+        # Email
+        EmailElement = theElements['Email']
+        
+        AgencyEmailData = self.queryEmail(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        
+        for emailRow in AgencyEmailData:
+            urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
+        
+        
+        # Contact
+        ContactElement = theElements['Contact']
+        
+        AgencyContactData = self.queryContact(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for contactRow in AgencyContactData:
+            contactSubElement = self.customizeAgencyContact(ContactElement, contactRow, agencyData)
+            
+            
+        # LicenseAccreditation
+        
+        AgencyLicenseAccreditationData = self.queryLicenseAccreditation(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for accreditationRow in AgencyLicenseAccreditationData:
+            LicenseAccreditationElement = ET.SubElement(xml, "airs:LicenseAccreditation")
+            licenseAcreditationSubElement = self.customizeAgencyLicenseAccreditation(LicenseAccreditationElement, accreditationRow)
+        
+        # Part II of the Agency elements, we had to do some backflips to get the data formatted properly, so now process the remaining elements
+        elements = [
+            #'LicenseAccreditation',
+            'IRSStatus',
+            'SourceOfFunds',
+            'ServiceGroup',
+            'Service',
+            'Site',
+            'ResourceInfo',
+        ]
+        
+        theElements = {}
+        # build a dictionary of the field names above then we can assign values spinning through the dictionary
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        # IRSStatus
+        theElements['IRSStatus'] = agencyData.irs_status
+        # SourceOfFunds
+        theElements['SourceOfFunds'] = agencyData.source_of_funds
+        
+        # ServiceGroup
+        ServiceGroupElement = theElements['ServiceGroup']
+        
+        AgencyServiceGroupData = self.queryServiceGroup(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for serviceGroupRow in AgencyServiceGroupData:
+            serviceGroupSubElement = self.customizeAgencyServiceGroup(ServiceGroupElement, serviceGroupRow)
+        
+        # Service
+        #ServiceElement = theElements['Service']
+        #
+        #AgencyServiceData = self.queryService(agencyData.id)
+        ##self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #
+        #for serviceRow in AgencyServiceData:
+        #    serviceSubElement = self.customizeAgencyService(ServiceElement, serviceGroupRow)
+        
+        # Site
+        SiteElement = theElements['Site']
+        
+        AgencySiteData = self.querySite(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for siteRow in AgencySiteData:
+            serviceGroupSubElement = self.customizeAgencySite(SiteElement, agencyData, siteRow)
+        
+        # ResourceInfo
+        ResourceInfoElement = theElements['ResourceInfo']
+        resourceInfoData = self.queryResourceInfo(agencyID = agencyData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for resourceInfoRow in resourceInfoData:
+            serviceGroupSubElement = self.customizeAgencyResourceInfo(ResourceInfoElement, resourceInfoRow)
+        
+        
         
         #theElements[''].text = agencyData.
         #theElements[''].text = agencyData.
@@ -1491,6 +1744,56 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         AKA = ET.SubElement(xml, "airs:AKA")
         return AKA
     
+    def customizeMailingAddress(self, xml, agencyLocationData):
+        xml.attrib['Confidential'] = agencyLocationData.mailing_address_confidential
+        xml.attrib['Description'] = agencyLocationData.mailing_address_description
+        
+        elements = [
+            'PreAddressLine',
+            'Line1',
+            'Line2',
+            'City',
+            'State',
+            'County',
+            'ZipCode',
+            'Country',
+            'ReasonWithheld',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+
+        # PreAddressLine
+        theElements['PreAddressLine'].text = agencyLocationData.mailing_address_pre_address_line
+        
+        # Line1
+        theElements['Line1'].text = agencyLocationData.mailing_address_line_1
+        
+        # Line2
+        theElements['Line2'].text = agencyLocationData.mailing_address_line_2
+        
+        # City
+        theElements['City'].text = agencyLocationData.mailing_address_city
+        
+        # State
+        theElements['State'].text = agencyLocationData.mailing_address_state
+        
+        # County
+        theElements['County'].text = agencyLocationData.mailing_address_county
+        
+        # ZipCode
+        theElements['ZipCode'].text = agencyLocationData.mailing_address_zip_code
+        
+        # Country
+        theElements['Country'].text = agencyLocationData.mailing_address_country
+        
+        # ReasonWithheld
+        theElements['ReasonWithheld'].text = agencyLocationData.mailing_address_reason_withheld
+        
+        return
+        
+        
     def customizeAgencyAKA(self, xml, AKAData):
         # next process the elements
         
@@ -1507,7 +1810,550 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         theElements['Confidential'].text = AKAData.confidential
         theElements['Description'].text = AKAData.description
         
+    def customizeAgencyLocation(self, xml, agencyData, agencyLocationData):
         
+        xml.attrib['PublicAccessToTransportation'] = agencyLocationData.public_access_to_transportation
+        xml.attrib['YearInc'] = agencyLocationData.year_inc
+        xml.attrib['AnnualBudgetTotal'] = agencyLocationData.annual_budget_total
+        xml.attrib['LegalStatus'] = agencyLocationData.legal_status
+        xml.attrib['ExcludeFromWebsite'] = agencyLocationData.exclude_from_website
+        xml.attrib['ExcludeFromDirectory'] = agencyLocationData.exclude_from_directory
+        
+        elements = [
+            'Key',
+            'Name',
+            'SiteDescription',
+            'AKA',
+            'MailingAddress',
+            'OtherAddress',
+            'CrossStreet',
+            'Phone',
+            'URL',
+            'Email',
+            'Contact',
+            'TimeOpen',
+            'Languages',
+            'DisabilitiesAccess',
+            'PhysicalLocationDescription',
+            'BusServiceAccess',
+            'SiteService',
+            'SpatialLocation',
+            ]
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        # Key
+        theElements['Key'].text = agencyLocationData.key
+        
+        # Name
+        theElements['Name'].text = agencyLocationData.name
+        
+        # SiteDescription
+        theElements['SiteDescription'].text = agencyLocationData.site_description
+        
+        # AKA
+        akaElement = theElements['AKA']
+        AKARows = self.queryAKA(agencyID=agencyData.id, agencyLocationID=agencyLocationData.id)
+        
+        for AKARow in AKARows:
+            akarow = self.customizeAgencyAKA(akaElement, AKARow)
+            
+        # MailingAddress
+        mailAddressElement = theElements['MailingAddress']
+        self.customizeMailingAddress(mailAddressElement, agencyLocationData)
+         
+        # OtherAddress
+        otheraddressElement = theElements['OtherAddress']
+        
+        OtherAddressData = self.queryOtherAddress(siteID=None, agencyLocationID=agencyLocationData.id)
+        
+        for otheraddressRow in OtherAddressData:
+            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)
+        
+         
+        # CrossStreet
+        # Unlike rest of model, these are created for each occurence of row in DB (make the element and assign data value)
+        #crossStreeElement = theElements['CrossStreet']
+        crossStreetData = self.queryCrossStreet(agencyLocationData.id)
+        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        
+        for crossStreetRow in crossStreetData:
+            crossStreetSubElement = ET.SubElement(xml, "airs:CrossStreet")
+            crossStreetSubElement.text = crossStreetRow.cross_street
+        
+        # Phone
+        phoneElement = theElements['Phone']
+        sitePhoneData = self.queryPhone(agencyID=agencyData.id, contactID=None, resourceID=None, agencyLocationID=agencyLocationData.id)
+        
+        for phoneRow in sitePhoneData:
+            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)
+                    
+         
+        # URL
+        urlElement = theElements['URL']
+        SiteURLData = self.queryURL(agencyID = agencyLocationData.id, siteID=None)
+        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        
+        for urlRow in SiteURLData:
+            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+        
+        # Email
+        emailElement = theElements['Email']
+        SiteEmailData = self.queryEmail(agencyData.id, siteID=None)
+        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        
+        for emailRow in SiteEmailData:
+            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
+         
+        # Contact
+        contactElement = theElements['Contact']
+        siteContactData = self.queryContact(agencyID = agencyData.id, siteID=None,agencyLocationID=agencyLocationData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for siteContactRow in siteContactData:
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+        
+        # TimeOpen
+        timeopenElement = theElements['TimeOpen']
+        timeOpenData = self.queryTimeOpen(siteID=None, languageID=None, siteServiceID=None, agencyLocationID=agencyLocationData.id)
+        
+        for timeOpenRow in timeOpenData:
+            timeopenSubElement = self.customizeTimeOpen(timeopenElement, timeOpenRow)
+         
+        # Languages
+        languagesElement = theElements['Languages']
+        siteLanguageData = self.queryLanguages(agencyLocationID=agencyLocationData.id )
+        
+        for siteLanguageRow in siteLanguageData:
+            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)
+         
+        # DisabilitiesAccess
+        theElements['DisabilitiesAccess'].text = agencyLocationData.disabilities_access
+        
+         
+        # PhysicalLocationDescription
+        theElements['PhysicalLocationDescription'].text = agencyLocationData.physical_location_description
+        
+         
+        # BusServiceAccess
+        theElements['BusServiceAccess'].text = agencyLocationData.bus_service_access
+        
+        # SiteService
+        siteServiceElement = theElements['SiteService']
+        siteServiceData = self.querySiteService(agencyLocationID=agencyLocationData.id)
+        
+        for siteServiceRow in siteServiceData:
+            siteServiceSubElement = self.customizeSiteService(siteServiceElement, siteServiceRow)
+         
+        # SpatialLocation
+        spatiallocationElement = theElements['SpatialLocation']
+        siteSpatialLocationData = self.querySpatialLocation(agencyLocationID=agencyLocationData.id)
+        
+        for siteSpatialLocationRow in siteSpatialLocationData:
+            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)
+        
+    def customizeAgencyPhone(self, xml, phoneData):
+        # next process the elements
+        
+        xml.attrib['TollFree'] = phoneData.toll_free
+        xml.attrib['Confidential'] = phoneData.confidential
+        
+        elements = [
+            'PhoneNumber',
+            'ReasonWithheld',
+            'Extension',
+            'Description',
+            'Type',
+            'Function',
+            ]
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['PhoneNumber'].text = phoneData.phone_number
+        if not phoneData.reason_withheld is None:
+            theElements['ReasonWithheld'].text = phoneData.reason_withheld
+        if not phoneData.extension is None:
+            theElements['Extension'].text = phoneData.extension
+        if not phoneData.description is None:
+            theElements['Description'].text = phoneData.description
+        if not phoneData.type is None:
+            theElements['Type'].text = phoneData.type
+        if not phoneData.function is None:
+            theElements['Function'].text = phoneData.function
+    
+    def customizeAgencyURL(self, xml, URLData):
+        
+        elements = [
+            'Address',
+            'Note',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Address'].text = URLData.address
+        theElements['Note'].text = URLData.note
+        
+    def customizeAgencyEmail(self, xml, EmailData):
+        elements = [
+            'Address',
+            'Note',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Address'].text = EmailData.address
+        theElements['Note'].text = EmailData.note
+        
+    def customizeSiteLanguage(self, xml, LanguagesData):
+        elements = [
+            'Name',
+            'TimeOpen',
+            'Notes'
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+            
+        theElements['Name'].text = LanguagesData.name
+        #theElements['TimeOpen'].text = LanguagesData.title
+        theElements['Notes'].text = LanguagesData.notes
+        
+    def customizeSiteService(self, xml, siteServiceData):
+        if siteServiceData is None:
+            return xml
+        
+        xml.attrib['AreaFlexibility'] = siteServiceData.area_flexibility
+        xml.attrib['ServiceNotAlwaysAvailable'] = siteServiceData.service_not_always_available
+        xml.attrib['ServiceGroupKey'] = siteServiceData.service_group_key
+        
+        elements = [
+            'Key',
+            
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Key'].text = siteServiceData.key
+        
+        taxonomyData = self.queryTaxonomy(siteServiceID=siteServiceData.id)
+        if len(taxonomyData) > 0:            
+            # Taxonomy
+            #taxonomyElement =ET.SubElement(xml, "airs:%s" % 'Taxonomy')
+            
+            taxonomySubElement = self.customizeTaxonomy(xml, taxonomyData)
+        
+    def customizeSpatialLocation(self, xml, spatialLocationData):
+        elements = [
+            'Description',
+            'Datum',
+            'Latitude',
+            'Longitude',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Description'].text = spatialLocationData.description
+        theElements['Datum'].text = spatialLocationData.datum
+        theElements['Latitude'].text = spatialLocationData.latitude
+        theElements['Longitude'].text = spatialLocationData.longitude
+    
+    def customizeTimeOpen(self, xml, TimeOpenData):
+        pass
+    
+    def customizeAgencyContact(self, xml, ContactData, agencyData):
+        xml.attrib['type'] = ContactData.type
+        
+        elements = [
+            'Title',
+            'Name',
+            'Email',
+            'Phone',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Title'].text = ContactData.title
+        theElements['Name'].text = ContactData.name
+        
+        # Email
+        EmailElement = theElements['Email']
+        
+        AgencyEmailData = self.queryEmail(agencyData.id, ContactData.id)
+        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        
+        for emailRow in AgencyEmailData:
+            urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
+        
+        # now get the phone and email subelements of Contact
+        PhoneElement = theElements['Phone']
+        
+        # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
+        AgencyPhoneData = self.queryPhone(agencyData.id, ContactData.id)
+        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        
+        for phoneRow in AgencyPhoneData:
+            phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)
+        
+    
+    def customizeAgencyLicenseAccreditation(self, xml, AccreditationData):
+        elements = [
+            'License',
+            'LicensedBy',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['License'].text = AccreditationData.license
+        theElements['LicensedBy'].text = AccreditationData.licensed_by
+        
+    def customizeAgencyServiceGroup(self, xml, serviceGroupData):
+        elements = [
+            'Key',
+            'Name',
+            'ProgramName',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Key'].text = serviceGroupData.key
+        theElements['Name'].text = serviceGroupData.name
+        theElements['ProgramName'].text = serviceGroupData.program_name
+    
+    def customizeSiteOtherAddress(self, xml, siteOtherAddress):
+        xml.attrib['Confidential'] = siteOtherAddress.confidential
+        xml.attrib['Description'] = siteOtherAddress.description
+        
+        elements = [
+            'Line1',
+            'Line2',
+            'City',
+            'State',
+            'County',
+            'ZipCode',
+            'Country',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+            
+        # Line1
+        theElements['Line1'].text = siteOtherAddress.line_1
+        
+        # Line2
+        theElements['Line2'].text = siteOtherAddress.line_2
+        
+        # City
+        theElements['City'].text = siteOtherAddress.city
+        
+        # State
+        theElements['State'].text = siteOtherAddress.state
+        
+        # County
+        theElements['County'].text = siteOtherAddress.county
+        
+        # ZipCode
+        theElements['ZipCode'].text = siteOtherAddress.zip_code
+        
+        # Country
+        theElements['Country'].text = siteOtherAddress.country
+        
+    def customizeAgencyResourceInfo(self, xml, agencyData):
+        xml.attrib['AvailableForDirectory'] = agencyData.available_for_directory
+        xml.attrib['AvailableForReferral'] = agencyData.available_for_referral
+        xml.attrib['AvailableForResearch'] = agencyData.available_for_research
+        xml.attrib['DateAdded'] = agencyData.date_added.isoformat()
+        xml.attrib['DateLastVerified'] = agencyData.date_last_verified.isoformat()
+        xml.attrib['DateOfLastAction'] = agencyData.date_of_last_action.isoformat()
+        xml.attrib['LastActionType'] = agencyData.last_action_type
+        
+        elements = [
+            'Contact',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+            
+        # Contact
+        contactElement = theElements['Contact']
+        siteContactData = self.queryContact(agencyID = agencyData.id, siteID=None)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for siteContactRow in siteContactData:
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+        
+    def customizeAgencySite(self, xml, agencyData, siteData):
+        
+        xml.attrib['PublicAccessToTransportation'] = siteData.public_access_to_transportation
+        xml.attrib['YearInc'] = siteData.year_inc
+        xml.attrib['AnnualBudgetTotal'] = siteData.annual_budget_total
+        xml.attrib['LegalStatus'] = siteData.legal_status
+        xml.attrib['ExcludeFromWebsite'] = siteData.exclude_from_website
+        xml.attrib['ExcludeFromDirectory'] = siteData.exclude_from_directory
+        
+        elements = [
+            'Key',
+            'Name',
+            'SiteDescription',
+            'AKA',
+            'OtherAddress',
+            #'CrossStreet',
+            'Phone',
+            'URL',
+            'Email',
+            'Contact',
+            'TimeOpen',
+            'Languages',
+            'DisabilitiesAccess',
+            'PhysicalLocationDescription',
+            'BusServiceAccess',
+            'SpatialLocation',
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+            
+        # Key
+        theElements['Key'].text = siteData.airs_key
+        
+        # Name
+        theElements['Name'].text = siteData.airs_name
+        
+        # SiteDescription
+        theElements['SiteDescription'].text = siteData.site_description
+        
+        # AKA
+        akaElement = theElements['AKA']
+        AKARows = self.queryAKA(agencyID=agencyData.id, siteID=siteData.id)
+        #AKARows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteData.id)).all()
+        
+        for AKARow in AKARows:
+            akarow = self.customizeAgencyAKA(akaElement, AKARow)
+         
+        # OtherAddress
+        otheraddressElement = theElements['OtherAddress']
+        
+        OtherAddressData = self.queryOtherAddress(siteData.id)
+        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        
+        for otheraddressRow in OtherAddressData:
+            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)
+        
+         
+        # CrossStreet
+        # Unlike rest of model, these are created for each occurence of row in DB (make the element and assign data value)
+        #crossStreeElement = theElements['CrossStreet']
+        crossStreetData = self.queryCrossStreet(siteData.id)
+        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        
+        for crossStreetRow in crossStreetData:
+            crossStreetSubElement = ET.SubElement(xml, "airs:CrossStreet")
+            crossStreetSubElement.text = crossStreetRow.cross_street
+        
+        # Phone
+        phoneElement = theElements['Phone']
+        sitePhoneData = self.queryPhone(agencyID=agencyData.id, contactID=None, resourceID=None, siteID=siteData.id)
+        
+        for phoneRow in sitePhoneData:
+            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)
+                    
+         
+        # URL
+        urlElement = theElements['URL']
+        SiteURLData = self.queryURL(agencyID = agencyData.id, siteID=siteData.id)
+        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        
+        for urlRow in SiteURLData:
+            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+        
+        # Email
+        emailElement = theElements['Email']
+        SiteEmailData = self.queryEmail(agencyData.id, siteID=siteData.id)
+        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        
+        for emailRow in SiteEmailData:
+            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
+         
+        # Contact
+        contactElement = theElements['Contact']
+        siteContactData = self.queryContact(agencyID = agencyData.id, siteID=siteData.id)
+        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        
+        for siteContactRow in siteContactData:
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+        
+        
+        # TimeOpen
+        timeopenElement = theElements['TimeOpen']
+        
+         
+        # Languages
+        languagesElement = theElements['Languages']
+        siteLanguageData = self.queryLanguages(siteID=siteData.id)
+        
+        for siteLanguageRow in siteLanguageData:
+            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)
+         
+        # DisabilitiesAccess
+        theElements['DisabilitiesAccess'].text = siteData.disabilities_access
+        
+         
+        # PhysicalLocationDescription
+        theElements['PhysicalLocationDescription'].text = siteData.physical_location_description
+        
+         
+        # BusServiceAccess
+        theElements['BusServiceAccess'].text = siteData.bus_service_access
+        
+         
+        # SpatialLocation
+        spatiallocationElement = theElements['SpatialLocation']
+        siteSpatialLocationData = self.querySpatialLocation(siteID=siteData.id)
+        
+        for siteSpatialLocationRow in siteSpatialLocationData:
+            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)
+        
+        
+        # Start plugging data in here...
+        #theElements['Key'].text = siteData.key
+        #theElements['Name'].text = siteData.name
+        #theElements['ProgramName'].text = siteData.program_name
+        
+    def customizeAgencyService(self):
+        elements = [
+            'Name',
+            'Confidential',
+            'Description'
+            ]
+        
+        theElements = {}
+        for element in elements:
+            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        
+        theElements['Name'].text = AKAData.name
+        theElements['Confidential'].text = AKAData.confidential
+        theElements['Description'].text = AKAData.description
+        
+    
     def processXML(self):
         self.root_element = self.createDoc() #makes root element with XML header attributes
         
@@ -1564,7 +2410,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             
             # subelement of need
             taxonomy = self.createTaxonomy(need)
-            taxonomy = self.customizeTaxonomy(taxonomy)
+            taxonomy = self.customizeTaxonomy(taxonomy, [])
             
             # OtherNames - subelement of person
             othernames = self.createOtherNames(person)

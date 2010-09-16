@@ -311,11 +311,15 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 # SBB20100907 Missing, adding back in.
                 self.parse_agency_location(item)
                 
+                # remove this once done with routine, shouldn't pollute keys for other values being parsed
+                self.agency_location_index_id = None
+                
                 self.parse_phone(item)      
                 self.parse_url(item)
                 self.parse_email(item)      
                 self.parse_contact(item)
                 self.parse_license_accreditation(item)
+                
                 self.parse_service_group(item)
                 
                 # need to reset the contact index once we start processing a site element (because site can have their own contacts)
@@ -597,12 +601,12 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpDisabilitiesAccess = 'airs:DisabilitiesAccess'
         xpPhysicalLocationDescription = 'airs:PhysicalLocationDescription'
         xpBusServiceAccess = 'airs:BusServiceAccess'
-        xpPublicAccessToTransportation = 'airs:PublicAccessToTransportation'
-        xpYearInc = 'airs:YearInc'
-        xpAnnualBudgetTotal = 'airs:AnnualBudgetTotal'
-        xpLegalStatus = 'airs:LegalStatus'
-        xpExcludeFromWebsite = 'airs:ExcludeFromWebsite'
-        xpExcludeFromDirectory = 'airs:ExcludeFromDirectory'
+        xpPublicAccessToTransportation = "../%s/%s" % (xpSite, '@PublicAccessToTransportation')
+        xpYearInc = "../%s/%s" % (xpSite, '@YearInc')
+        xpAnnualBudgetTotal = "../%s/%s" % (xpSite, '@AnnualBudgetTotal')
+        xpLegalStatus = "../%s/%s" % (xpSite, '@LegalStatus')
+        xpExcludeFromWebsite = "../%s/%s" % (xpSite, '@ExcludeFromWebsite')
+        xpExcludeFromDirectory = "../%s/%s" % (xpSite, '@ExcludeFromDirectory')
         xpAgencyKey = 'airs:AgencyKey'
 
         itemElements = element.xpath(xpSite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
@@ -642,12 +646,12 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('disabilities_access', item.xpath(xpDisabilitiesAccess, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('physical_location_description', item.xpath(xpPhysicalLocationDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('bus_service_access', item.xpath(xpBusServiceAccess, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('public_access_to_transportation', item.xpath(xpPublicAccessToTransportation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('year_inc', item.xpath(xpYearInc, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('annual_budget_total', item.xpath(xpAnnualBudgetTotal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('legal_status', item.xpath(xpLegalStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('exclude_from_website', item.xpath(xpExcludeFromWebsite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('exclude_from_directory', item.xpath(xpExcludeFromDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('public_access_to_transportation', item.xpath(xpPublicAccessToTransportation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('year_inc', item.xpath(xpYearInc, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('annual_budget_total', item.xpath(xpAnnualBudgetTotal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('legal_status', item.xpath(xpLegalStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_website', item.xpath(xpExcludeFromWebsite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_directory', item.xpath(xpExcludeFromDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
                 self.existence_test_and_add('agency_key', item.xpath(xpAgencyKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Foreign Keys '''
@@ -674,10 +678,11 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_phone(item)
                 # SBB20100907 moved till after email and phone (which are part of the site record, contact will drive it's own searches for email and phone (of the contact))
                 self.parse_contact(item) 
-                
-    def parse_site_service(self, element):
+    
+    # SBB20100916 Adding namespace, site_service can be in both hmis and airs namespaces, needs to be passed by calling context defaulting to hmis, overridden from calling function as airs
+    def parse_site_service(self, element, namespace='hmis'):
         ''' Element paths '''
-        xpSiteService = 'hmis:SiteService'
+        xpSiteService = '%s:SiteService' % namespace
         xpSiteServiceDeleteOccurredDate = '@airs:DeleteOccurredDate'
         xpSiteServiceDeleteEffective = '@airs:DeleteEffective'
         xpSiteServiceDelete = '@airs:Delete'
@@ -686,9 +691,11 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpDescription = 'airs:Description'
         xpFeeStructure = 'airs:FeeStructure'
         xpGenderRequirements = 'airs:GenderRequirements'
-        xpAreaFlexibility = 'airs:AreaFlexibility'
-        xpServiceNotAlwaysAvailable = 'airs:ServiceNotAlwaysAvailable'
-        xpServiceGroupKey = 'airs:ServiceGroupKey'
+        
+        xpAreaFlexibility = "../%s/@%s" % (xpSiteService, 'AreaFlexibility')
+        xpServiceNotAlwaysAvailable = "../%s/@%s" % (xpSiteService, 'ServiceNotAlwaysAvailable')
+        xpServiceGroupKey = "../%s/@%s" % (xpSiteService, 'ServiceGroupKey')
+        
         xpServiceID = 'airs:ServiceID'
         xpSiteID = 'airs:SiteID'
         xpGeographicCode = 'airs:GeographicCode'
@@ -719,9 +726,11 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('description', item.xpath(xpDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('fee_structure', item.xpath(xpFeeStructure, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('gender_requirements', item.xpath(xpGenderRequirements, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('area_flexibility', item.xpath(xpAreaFlexibility, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_not_always_available', item.xpath(xpServiceNotAlwaysAvailable, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('service_group_key', item.xpath(xpServiceGroupKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                
+                self.existence_test_and_add('area_flexibility', item.xpath(xpAreaFlexibility, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('service_not_always_available', item.xpath(xpServiceNotAlwaysAvailable, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('service_group_key', item.xpath(xpServiceGroupKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                
                 self.existence_test_and_add('service_id', item.xpath(xpServiceID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('site_id', item.xpath(xpSiteID, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('geographic_code', item.xpath(xpGeographicCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
@@ -742,6 +751,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 try: self.existence_test_and_add('export_id', self.export_id, 'text')
                 except: pass
                 try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                except: pass
+                # SBB20100916 missing
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
                 except: pass
                 
                 ''' Shred to database '''
@@ -861,6 +873,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
                 except: pass
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.Url)
@@ -888,7 +902,10 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('longitude', item.xpath(xpLongitude, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Foreign Keys '''
-                self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                try:self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                except: pass
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.SpatialLocation)
@@ -908,8 +925,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpZipCode = 'airs:ZipCode'
         xpCountry = 'airs:Country'
         xpReasonWithheld = 'airs:ReasonWithheld'
-        xpConfidential = '@airs:Confidential'
-        xpDescription = '@airs:Description'
+        xpConfidential = "../%s/%s" % (xpOtherAddress, '@Confidential')
+        xpDescription = "../%s/%s" % (xpOtherAddress, '@Description')
 
         itemElements = element.xpath(xpOtherAddress, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:
@@ -926,11 +943,14 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('zip_code', item.xpath(xpZipCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('country', item.xpath(xpCountry, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('reason_withheld', item.xpath(xpReasonWithheld, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('confidential', item.xpath(xpConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('description', item.xpath(xpDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('confidential', item.xpath(xpConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('description', item.xpath(xpDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                # SBB20100916 missing
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.OtherAddress)
@@ -948,10 +968,15 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('cross_street', item.xpath(xpCrossStreet, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                # SBB20100916 No need to xpath this.  These are the elements, just stuff in the DB
+                #self.existence_test_and_add('cross_street', item.xpath(xpCrossStreet, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('cross_street', item, 'text')
 
                 ''' Foreign Keys '''
                 self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                # SBB20100916 missing..
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.CrossStreet)
@@ -959,9 +984,128 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Parse sub-tables '''
                             
 
-    # subbed out for EJ
+    # SBB20100914 adding in..missing
     def parse_agency_location(self, element):
-        pass
+        ''' Element paths '''
+        # base tag
+        xpAgencyLocation = 'airs:AgencyLocation'
+        xpKey = 'airs:Key'
+        xpName = 'airs:Name'
+        xpSiteDescription = 'airs:SiteDescription'
+        xpPhysicalAddressPreAddressLine = 'airs:PhysicalAddress/airs:PreAddressLine'
+        xpPhysicalAddressLine1 = 'airs:PhysicalAddress/airs:Line1'
+        xpPhysicalAddressLine2 = 'airs:PhysicalAddress/airs:Line2'
+        xpPhysicalAddressCity = 'airs:PhysicalAddress/airs:City'
+        xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'
+        xpPhysicalAddressState = 'airs:PhysicalAddress/airs:State'
+        xpPhysicalAddressZipCode = 'airs:PhysicalAddress/airs:ZipCode'
+        xpPhysicalAddressCountry = 'airs:PhysicalAddress/airs:Country'
+        xpPhysicalAddressReasonWithheld = 'airs:PhysicalAddress/airs:ReasonWithheld'
+        xpPhysicalAddressConfidential = "../%s/@%s" % ('airs:PhysicalAddress', 'Confidential') 
+        xpPhysicalAddressDescription = "../%s/@%s" % ('airs:PhysicalAddress', 'Description') 
+        xpMailingAddressPreAddressLine = 'airs:MailingAddress/airs:PreAddressLine'
+        xpMailingAddressLine1 = 'airs:MailingAddress/airs:Line1'
+        xpMailingAddressLine2 = 'airs:MailingAddress/airs:Line2'
+        xpMailingAddressCity = 'airs:MailingAddress/airs:City'
+        xpMailingAddressCounty = 'airs:MailingAddress/airs:County'
+        xpMailingAddressState = 'airs:MailingAddress/airs:State'
+        xpMailingAddressZipCode = 'airs:MailingAddress/airs:ZipCode'
+        xpMailingAddressCountry = 'airs:MailingAddress/airs:Country'
+        xpMailingAddressReasonWithheld = 'airs:MailingAddress/airs:ReasonWithheld'
+        
+        xpMailingAddressConfidential = "%s/@%s" % ('airs:MailingAddress', 'Confidential')
+        xpMailingAddressDescription = "%s/@%s" % ('airs:MailingAddress', 'Description')
+        
+        xpNoPhysicalAddressDescription = 'airs:NoPhysicalAddress/airs:Description'        
+        xpNoPhysicalAddressExplanation = 'airs:NoPhysicalAddress/airs:Explanation'        
+        xpDisabilitiesAccess = 'airs:DisabilitiesAccess'
+        xpPhysicalLocationDescription = 'airs:PhysicalLocationDescription'
+        xpBusServiceAccess = 'airs:BusServiceAccess'
+        
+        # attributes
+        xpPublicAccessToTransportation = "../%s/@%s" % (xpAgencyLocation, 'PublicAccessToTransportation')
+        xpYearInc = "../%s/@%s" % (xpAgencyLocation, 'YearInc')
+        xpAnnualBudgetTotal = "../%s/@%s" % (xpAgencyLocation, 'AnnualBudgetTotal')
+        xpLegalStatus = "../%s/@%s" % (xpAgencyLocation, 'LegalStatus')
+        xpExcludeFromWebsite = "../%s/@%s" % (xpAgencyLocation, 'ExcludeFromWebsite')
+        xpExcludeFromDirectory = "../%s/@%s" % (xpAgencyLocation, 'ExcludeFromDirectory')
+        
+        xpName = 'airs:Name'
+        xpConfidential = 'airs:Confidential'
+        xpDescription = 'airs:Description'
+
+        itemElements = element.xpath(xpAgencyLocation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
+        if itemElements is not None:
+            for item in itemElements:
+                self.parse_dict = {}
+                
+                ''' Map elements to database columns '''
+                self.existence_test_and_add('key', item.xpath(xpKey, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('name', item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('site_description', item.xpath(xpSiteDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_pre_address_line', item.xpath(xpPhysicalAddressPreAddressLine, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_line_1', item.xpath(xpPhysicalAddressLine1, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_line_2', item.xpath(xpPhysicalAddressLine2, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_city', item.xpath(xpPhysicalAddressCity, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_state', item.xpath(xpPhysicalAddressState, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_zip_code', item.xpath(xpPhysicalAddressZipCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_country', item.xpath(xpPhysicalAddressCountry, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_reason_withheld', item.xpath(xpPhysicalAddressReasonWithheld, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_confidential', item.xpath(xpPhysicalAddressConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_address_description', item.xpath(xpPhysicalAddressDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_pre_address_line', item.xpath(xpMailingAddressPreAddressLine, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_line_1', item.xpath(xpMailingAddressLine1, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_line_2', item.xpath(xpMailingAddressLine2, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_city', item.xpath(xpMailingAddressCity, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_state', item.xpath(xpMailingAddressState, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_zip_code', item.xpath(xpMailingAddressZipCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_country', item.xpath(xpMailingAddressCountry, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_reason_withheld', item.xpath(xpMailingAddressReasonWithheld, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('mailing_address_confidential', item.xpath(xpMailingAddressConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('mailing_address_description', item.xpath(xpMailingAddressDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')    
+                self.existence_test_and_add('no_physical_address_description', item.xpath(xpNoPhysicalAddressDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')      
+                self.existence_test_and_add('no_physical_address_explanation', item.xpath(xpNoPhysicalAddressExplanation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text') 
+                self.existence_test_and_add('disabilities_access', item.xpath(xpDisabilitiesAccess, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('physical_location_description', item.xpath(xpPhysicalLocationDescription, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('bus_service_access', item.xpath(xpBusServiceAccess, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                
+                # attriubtes
+                self.existence_test_and_add('public_access_to_transportation', item.xpath(xpPublicAccessToTransportation, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('year_inc', item.xpath(xpYearInc, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('annual_budget_total', item.xpath(xpAnnualBudgetTotal, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('legal_status', item.xpath(xpLegalStatus, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_website', item.xpath(xpExcludeFromWebsite, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('exclude_from_directory', item.xpath(xpExcludeFromDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+
+                ''' Foreign Keys '''
+                try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
+                except: pass
+                
+                ''' Shred to database '''
+                self.shred(self.parse_dict, DBObjects.AgencyLocation)
+    
+                ''' Parse sub-tables '''
+                self.parse_aka(item)
+                
+                # need to set this up, off agency_location this doesn't exist yet but is needed to parse other_address
+                self.site_index_id = None
+                
+                self.parse_other_address(item)
+                self.parse_cross_street(item)
+                self.parse_phone(item)
+                self.parse_url(item)
+                self.parse_email(item)      
+                self.parse_contact(item)
+                self.parse_time_open(item)
+                self.parse_languages(item)
+                
+                self.parse_site_service(item, 'airs')
+                self.parse_spatial_location(item)
+                
+                # reset the contacts index (used inside agency location but should not flow back up to Agency)
+                self.contact_index_id = None
+                
+                
         
     def parse_aka(self, element):
         ''' Element paths '''
@@ -984,6 +1128,9 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 except: pass
                 try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                except: pass
+                # SBB20100914 new...
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
                 except: pass
                 
                 ''' Shred to database '''
@@ -1143,20 +1290,32 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('name', item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('notes', item.xpath(xpNotes, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-
-                ''' Foreign Keys '''
-                try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
-                except: pass
-                try: self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
-                except: pass
+                # SBB20100915 Don't use xpath to retreive values, since there are many languages under the languages element.  Need all so using getchildren()
+                # These are Lists of values, need to iterate over them to stuff into the DB
+                valsName = item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
+                valsNotes = item.xpath(xpNotes, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
                 
-                ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Languages)
-    
-                ''' Parse sub-tables '''
-                self.parse_time_open(item)            
+                # map over them together
+                for name, note in map(None, valsName, valsNotes):
+
+                    self.existence_test_and_add('name', name,'text')
+                    # test for missing
+                    if not note is None:
+                        self.existence_test_and_add('notes', note, 'text')
+
+                    ''' Foreign Keys '''
+                    try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                    except: pass
+                    try: self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
+                    except: pass
+                    try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                    except: pass
+                    
+                    ''' Shred to database '''
+                    self.shred(self.parse_dict, DBObjects.Languages)
+        
+                    ''' Parse sub-tables '''
+                    self.parse_time_open(item)            
 
     def parse_time_open(self, element):
         ''' Unique method that has 2nd loop for each day of week '''
@@ -1178,6 +1337,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 try: self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 except: pass
                 try: self.existence_test_and_add('languages_index_id', self.languages_index_id, 'no_handling')
+                except: pass
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
                 except: pass
                 
                 ''' Shred to database '''
@@ -1680,18 +1841,26 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                self.existence_test_and_add('code', item.xpath(xpCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-
-                ''' Foreign Keys '''
-                try: self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
-                except: pass
-                try: self.existence_test_and_add('need_index_id', self.need_index_id, 'no_handling')
-                except: pass
+                # SBB20100916 Again, this returns  a list of items which must be processed into the DB as rows
+                #self.existence_test_and_add('code', item.xpath(xpCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 
-                ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Taxonomy)
+                # These are Lists of values, need to iterate over them to stuff into the DB
+                valsName = item.xpath(xpCode, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
+                
+                # map over them together
+                for code in valsName:
+                    self.existence_test_and_add('code', code, 'text')
+
+                    ''' Foreign Keys '''
+                    try: self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
+                    except: pass
+                    try: self.existence_test_and_add('need_index_id', self.need_index_id, 'no_handling')
+                    except: pass
+                
+                    ''' Shred to database '''
+                    self.shred(self.parse_dict, DBObjects.Taxonomy)
     
-                ''' Parse sub-tables '''
+                    ''' Parse sub-tables '''
                             
 
     def parse_service_event(self, element):
@@ -3577,13 +3746,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         ''' Element paths '''
         xpResourceInfo = 'airs:ResourceInfo'
         xpResourceSpecialist = 'airs:ResourceSpecialist'
-        xpAvailableForDirectory = 'airs:AvailableForDirectory'
-        xpAvailableForReferral = 'airs:AvailableForReferral'
-        xpAvailableForResearch = 'airs:AvailableForResearch'
-        xpDateAdded = 'airs:DateAdded'
-        xpDateLastVerified = 'airs:DateLastVerified'
-        xpDateOfLastAction = 'airs:DateOfLastAction'
-        xpLastActionType = 'airs:LastActionType'
+        xpAvailableForDirectory = "../%s/%s" % (xpResourceInfo, '@AvailableForDirectory')
+        xpAvailableForReferral = "../%s/%s" % (xpResourceInfo, '@AvailableForReferral')
+        xpAvailableForResearch = "../%s/%s" % (xpResourceInfo, '@AvailableForResearch')
+        xpDateAdded = "../%s/%s" % (xpResourceInfo, '@DateAdded')
+        xpDateLastVerified = "../%s/%s" % (xpResourceInfo, '@DateLastVerified')
+        xpDateOfLastAction = "../%s/%s" % (xpResourceInfo, '@DateOfLastAction')
+        xpLastActionType = "../%s/%s" % (xpResourceInfo, '@LastActionType')
 
         itemElements = element.xpath(xpResourceInfo, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:
@@ -3592,13 +3761,13 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('resource_specialist', item.xpath(xpResourceSpecialist, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('available_for_directory', item.xpath(xpAvailableForDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('available_for_referral', item.xpath(xpAvailableForReferral, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('available_for_research', item.xpath(xpAvailableForResearch, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('date_added', item.xpath(xpDateAdded, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('date_last_verified', item.xpath(xpDateLastVerified, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('date_of_last_action', item.xpath(xpDateOfLastAction, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('last_action_type', item.xpath(xpLastActionType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                self.existence_test_and_add('available_for_directory', item.xpath(xpAvailableForDirectory, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('available_for_referral', item.xpath(xpAvailableForReferral, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('available_for_research', item.xpath(xpAvailableForResearch, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('date_added', item.xpath(xpDateAdded, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('date_last_verified', item.xpath(xpDateLastVerified, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('date_of_last_action', item.xpath(xpDateOfLastAction, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
+                self.existence_test_and_add('last_action_type', item.xpath(xpLastActionType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
@@ -3619,7 +3788,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         xpContact = 'airs:Contact'
         xpTitle = 'airs:Title'
         xpName = 'airs:Name'
-        xpType = 'airs:Type'
+        xpType = "../%s/%s" % (xpContact, '@Type')
 
         itemElements = element.xpath(xpContact, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace})
         if itemElements is not None:
@@ -3629,7 +3798,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 ''' Map elements to database columns '''
                 self.existence_test_and_add('title', item.xpath(xpTitle, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
                 self.existence_test_and_add('name', item.xpath(xpName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
-                self.existence_test_and_add('type', item.xpath(xpType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
+                # SBB20100909 wrong type element (attribute)
+                self.existence_test_and_add('type', item.xpath(xpType, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
@@ -3638,6 +3808,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 try: self.existence_test_and_add('resource_info_index_id', self.resource_info_index_id, 'no_handling')
                 except: pass
                 try: self.existence_test_and_add('site_index_id', self.site_index_id, 'no_handling')
+                except: pass
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
                 except: pass
                 
                 ''' Shred to database '''
@@ -3681,6 +3853,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 try: self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 except: pass
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 
                 ''' Shred to database '''
                 self.shred(self.parse_dict, DBObjects.Email)
@@ -3716,6 +3890,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('confidential', item.xpath(xpConfidential, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'attribute_text')
 
                 ''' Foreign Keys '''
+                try: self.existence_test_and_add('agency_location_index_id', self.agency_location_index_id, 'no_handling')
+                except: pass
                 try: self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 except: pass
                 try: self.existence_test_and_add('contact_index_id', self.contact_index_id, 'no_handling')
@@ -3775,6 +3951,11 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         if mapping.__name__ == "Agency":
             self.agency_index_id = mapped.id
             print "Agency:",self.agency_index_id
+            
+        # SBB20100914 adding new
+        if mapping.__name__ == "AgencyLocation":
+            self.agency_location_index_id = mapped.id
+            print "Agency Location:",self.agency_location_index_id
 
         if mapping.__name__ == "Site":
             self.site_index_id = mapped.id
@@ -3874,7 +4055,27 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 print "Need to specify the handling"
                 return False
         else:
-            return False
+            # SBB20100915 added to handle non-list element values
+            if type(query_string) == type(list()):
+                return False
+            # not empty list now evaluate it
+            else:
+                if handling == 'attribute_text':
+                    self.persist(db_column, query_string = str(query_string))
+                    #print query_string
+                    return True
+                if handling == 'text':
+                    self.persist(db_column, query_string = query_string.text)
+                    #print query_string
+                    return True
+                elif handling == 'attribute_date':
+                    self.persist(db_column, query_string = dateutil.parser.parse(query_string))
+                    #print query_string
+                    return True
+                elif handling == 'element_date':
+                    self.persist(db_column, query_string = dateutil.parser.parse(query_string.text))
+                    #print query_string
+                    return True
             
     def persist(self, db_column, query_string):
         ''' Adds dictionary item with database column and associated data element '''

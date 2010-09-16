@@ -74,6 +74,7 @@ class databaseObjects:
         self.service_group_2010_map()
         self.license_accreditation_2010_map()
         self.agency_service_2010_map()
+        self.agency_location_2010_map()
         self.site_2010_map()
         self.url_2010_map()
         self.spatial_location_2010_map()
@@ -191,7 +192,7 @@ class databaseObjects:
         table_metadata,
         #Column('id', Integer, primary_key=True),
         Column('source_rec_id', Integer, ForeignKey(Person.c.id), primary_key=True),
-	Column('destination_rec_id', Integer, ForeignKey(Person.c.id), primary_key=True),
+        Column('destination_rec_id', Integer, ForeignKey(Person.c.id), primary_key=True),
         Column('weight_factor', Integer),
         useexisting = True
         )
@@ -1576,7 +1577,9 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		# SBB20100916 Added Agency Location foreign key
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('attr_delete', String(32)),
         Column('attr_delete_occurred_date', DateTime(timezone=True)),
         Column('attr_effective', DateTime(timezone=True)),
@@ -1725,7 +1728,9 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		# SBB20100914 Added Agency Location foreign key
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('name', String(50)),
         Column('confidential', String(50)),
         Column('description', String(50)),
@@ -1880,7 +1885,8 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('title', String(50)),
         Column('name', String(50)),
         Column('type', String(50)),
@@ -1918,7 +1924,8 @@ class databaseObjects:
         'cross_street_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('cross_street', String(50)),
         useexisting = True
         )
@@ -2029,6 +2036,57 @@ class databaseObjects:
         mapper(NonCashBenefits, non_cash_benefits_table)
         return
         
+    def agency_location_2010_map(self):
+        table_metadata = MetaData(bind=self.pg_db, reflect=True)
+        agency_location_table = Table(
+        'agency_location_2010',
+        table_metadata,
+        Column('id', Integer, primary_key=True),
+        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+        Column('key', String(50)),
+        Column('name', String(50)),
+        Column('site_description', String(50)),
+        # address fields
+        Column('physical_address_pre_address_line', String(100)),
+        Column('physical_address_line_1', String(100)),
+        Column('physical_address_line_2', String(100)),
+        Column('physical_address_city', String(50)),
+        Column('physical_address_country', String(50)),
+        Column('physical_address_state', String(50)),
+        Column('physical_address_zip_code', String(50)),
+        Column('physical_address_county', String(50)),
+        Column('physical_address_reason_withheld', String(50)),
+        Column('physical_address_confidential', String(50)),
+        Column('physical_address_description', String(50)),
+        Column('mailing_address_pre_address_line', String(100)),
+        Column('mailing_address_line_1', String(100)),
+        Column('mailing_address_line_2', String(100)),
+        Column('mailing_address_city', String(50)),
+        Column('mailing_address_county', String(50)),
+        Column('mailing_address_state', String(50)),
+        Column('mailing_address_zip_code', String(50)),
+        Column('mailing_address_country', String(50)),
+        Column('mailing_address_reason_withheld', String(50)),
+        Column('mailing_address_confidential', String(50)),
+        Column('mailing_address_description', String(50)),
+        Column('no_physical_address_description', String(50)),
+        Column('no_physical_address_explanation', String(50)),
+        Column('disabilities_access', String(50)),
+        Column('physical_location_description', String(50)),
+        Column('bus_service_access', String(50)),
+        # Attributes
+        Column('public_access_to_transportation', String(50)),
+        Column('year_inc', String(50)),
+        Column('annual_budget_total', String(50)),
+        Column('legal_status', String(50)),
+        Column('exclude_from_website', String(50)),
+        Column('exclude_from_directory', String(50)),
+        useexisting = True
+        )
+        table_metadata.create_all()
+        mapper(AgencyLocation, agency_location_table)
+        return
+    
     def agency_service_2010_map(self):
         table_metadata = MetaData(bind=self.pg_db, reflect=True)
         agency_service_table = Table(
@@ -2082,7 +2140,10 @@ class databaseObjects:
         'other_address_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		# SBB20100914 Adding foreign key to agency_location
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+		#
         Column('pre_address_line', String(100)),
         Column('line_1', String(100)),
         Column('line_2', String(100)),
@@ -2125,7 +2186,8 @@ class databaseObjects:
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('phone_number', String(50)),
         Column('reason_withheld', String(50)),
         Column('extension', String(50)),
@@ -2447,7 +2509,8 @@ class databaseObjects:
         Column('contact_index_id', Integer, ForeignKey(Contact.c.id)), 
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)), 
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('address', String(100)),
         Column('note', String(50)),
         Column('person_email', String(50)),
@@ -2659,7 +2722,8 @@ class databaseObjects:
         'spatial_location_2010',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('description', String(50)),
         Column('datum', String(50)),
         Column('latitude', String(50)),
@@ -2781,7 +2845,8 @@ class databaseObjects:
         Column('id', Integer, primary_key=True),
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('notes', String(50)),
         useexisting = True
         )
@@ -2812,7 +2877,8 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('address', String(50)),
         Column('note', String(50)),
         useexisting = True
@@ -2979,7 +3045,8 @@ class databaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)),
+		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         Column('name', String(50)),
         Column('notes', String(50)),
         useexisting = True
@@ -3083,6 +3150,10 @@ class Agency(baseObject):
 
 class AgencyChild(baseObject):
     pass
+
+# SBB20100914 Missing..
+class AgencyLocation(baseObject):
+	pass
 
 class AgencyService(baseObject):
     pass

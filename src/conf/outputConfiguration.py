@@ -15,7 +15,7 @@ Configuration = \
     '9999':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'svcpoint',
+            'outputFormat': 'hmisxml',
             'destinationURL': 'localhost',
             'transportConfiguration': 'sys.stdout'
         },

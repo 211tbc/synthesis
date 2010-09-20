@@ -9,8 +9,9 @@ install_requires = [
     'setuptools',
 ]
 
-if sys.platform.startswith("linux"):
-    install_requires.append("pyinotify==0.8.8")
+#ECJ20100920 needed to remove this hard-coded dependency condition, since pyinotify 0.8.8 isn't installing, whilst 0.9.0 seems to work fine
+#if sys.platform.startswith("linux"):
+#    install_requires.append("pyinotify==0.8.8")
 
 setup(
     name = 'synthesis',

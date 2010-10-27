@@ -1,27 +1,13 @@
 import clsExceptions
 import os.path
 import DBObjects
-from XMLUtilities import XMLUtilities
+import XMLUtilities
 from sys import version
 from conf import settings
 from datetime import datetime
 from sqlalchemy import or_, and_, between
+
 ''' HUD 3.0 XML export plugin '''
-
-#** LAST TOUCHED: 6.24.2010
-
-    
-'''
-    This code is in a very rough state!
-    
-    Notes:
-        - base class is defined
-        - uses HMISXML28Writer as template
-        - stripped out all non-3.0 specific code for now, 
-          need to add from the 2.8 writer
-        - started carrying over re-usable methods from 2.8
-        - started defining new elements for 3.0 specific
-'''
 
 '''
 ToDo:
@@ -354,24 +340,25 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     
     def __init__(self, poutDirectory, processingOptions, debug=False): #, debugMessages=None):
         self.errorMsgs = []
-        self.xmlU = XMLUtilities()
+        self.iDG = XMLUtilities.IDGeneration()
         # adding a debug switch that is managed in the INI
         self.debug = debug
         self.outDirectory = poutDirectory
         self.mappedObjects = DBObjects.databaseObjects()
         self.options = processingOptions
         
-
     def write(self):    
         self.startTransaction()
         self.processXML()
         self.prettify()
-        self.writeOutXML()
+        #self.writeOutXML()
+        #XMLUtilities.writeOutXML()
+        XMLUtilities.writeOutXML(self)
         #self.commitTransaction()
         return True
 
     def prettify(self):
-        self.xmlU.indent(self.root_element)
+        XMLUtilities.indent(self.root_element)
     
     def startTransaction(self):
         # fixme (when in VirtualEnv)
@@ -383,10 +370,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     # get a handle to our session object
     
     def createDoc(self):
-        root_element = ET.Element("HMIS:Sources")
+        root_element = ET.Element("hmis:Sources")
         root_element.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-        root_element.attrib["xsi:noNamespaceSchemaLocation"] = "hud_2010_30_01.xsd" 
-        root_element.attrib["schema_revision"] = "2010_30_01"
+        root_element.attrib["xmlns:airs"]="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
+        root_element.attrib["xmlns:hmis"]="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+        #root_element.attrib["xsi:noNamespaceSchemaLocation"] = "HUD_HMIS.xsd" 
+        root_element.attrib["xsi:schemaLocation"] = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+        root_element.attrib["hmis:version"] = "3.0"
         root_element.text = "\n"
         return root_element
 
@@ -695,7 +685,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
                 taxonomyElement = ET.SubElement(xml, "airs:%s" % 'Taxonomy')
                 
             # make subelements
-            taxonomySubElement = ET.SubElement(taxonomyElement, "Code")
+            taxonomySubElement = ET.SubElement(taxonomyElement, "airs:%s" % 'Code')
             taxonomySubElement.text = taxonomyRow.code
             
             elementCounter += 1
@@ -783,7 +773,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     
     def createMember(self, members):
         keyval = 'member'
-        recID = self.xmlU.generateRecID(keyval) 
+        recID = self.iDG.generateRecID(keyval) 
         member = ET.SubElement(members, "member")
         member.attrib["record_id"] = recID
         member.attrib["date_added"] = datetime.now().isoformat()
@@ -1388,7 +1378,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             IDStr.text = sourceData.source_id_id_id_num_2010
         
         fields = [
-        'sourceSoftwareVendor',
+        'SoftwareVendor',
         'SoftwareVersion',
         'SourceContactEmail',
         'SourceContactExtension',
@@ -1402,7 +1392,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         for field in fields:
             theElements[field] = ET.SubElement(xml, "hmis:%s" % field)
         
-        theElements['sourceSoftwareVendor'].text = sourceData.software_vendor_2010
+        theElements['SoftwareVendor'].text = sourceData.software_vendor_2010
         theElements['SoftwareVersion'].text = sourceData.software_version_2010
         theElements['SourceContactEmail'].text = sourceData.source_contact_email_2010
         theElements['SourceContactExtension'].text = sourceData.source_contact_extension
@@ -1537,17 +1527,40 @@ class HMISXMLWriter(DBObjects.databaseObjects):
                                                                DBObjects.Email.site_index_id == siteID,
                                                                DBObjects.Email.person_historical_index_id == personHistoricalID,
                                                                )).all()
-    def queryURL(self, agencyID=None, siteID=None):
+                                                               
+    def queryAgencyLocationEmail(self, agencyID=None, agencyLocationID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
+        return self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyID,
+                                                               DBObjects.Email.contact_index_id == contactID,
+                                                               DBObjects.Email.resource_info_index_id == resourceID,
+                                                               DBObjects.Email.site_index_id == siteID,
+                                                               DBObjects.Email.person_historical_index_id == personHistoricalID,
+                                                               DBObjects.Email.agency_location_index_id == agencyLocationID
+                                                               )).all()
+     
+                                                               
+    def queryAgencyURL(self, agencyID=None, siteID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+#        print "Start of queryAgencyURL result"
+#        print "agencyID is", agencyID
+        filter_result = self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID, DBObjects.Url.site_index_id == siteID, DBObjects.Url.agency_location_index_id == None)).all()
+#        print "queryAgencyURL result is: ", filter_result
+#        print "End of queryAgencyURL result"
+        return filter_result                                                     
+                                                             
+    def queryAgencyLocationURL(self, agencyLocationID=None, agencyID=None):
+            #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
+            #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
+#            print "Start of queryAgencyLocationURL result"
+#            print "agencyLocationID is", agencyLocationID
+#            print "agencyID is", agencyID
+            result = self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID, DBObjects.Url.agency_location_index_id == agencyLocationID, agencyLocationID != None)).all()
+#            print "queryAgencyLocationURL result is: ", result
+#            print "End of queryAgencyLocationURL result"
+            return result
         
-        return self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID,
-                                                             DBObjects.Url.site_index_id == siteID,
-                                                             )).all()
-    
     def queryAgencyLocation(self, agencyID=None):
-        return self.session.query(DBObjects.AgencyLocation).filter(and_(DBObjects.AgencyLocation.agency_index_id == agencyID,
-                                                                 )).all()
+        return self.session.query(DBObjects.AgencyLocation).filter(and_(DBObjects.AgencyLocation.agency_index_id == agencyID,)).all()
         
     def queryPhone(self, agencyID=None, contactID=None, resourceID=None, siteID=None, siteServiceID=None, personHistoricalID=None, agencyLocationID=None):
         # Phone has these foreign keys, they must either be null or supplied by some value to query properly
@@ -1590,7 +1603,6 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             'Phone',
             'URL',
             'Email',
-            'Contact',
             ]
         
         
@@ -1639,11 +1651,11 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # URL
         urlElement = theElements['URL']
         
-        AgencyURLData = self.queryURL(agencyID = agencyData.id)
+        AgencyURLData = self.queryAgencyURL(agencyID = agencyData.id)
         #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in AgencyURLData:
-            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)
         
         # Email
         EmailElement = theElements['Email']
@@ -1655,18 +1667,15 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
         
         
-        # Contact
-        ContactElement = theElements['Contact']
-        
+        # Contact        
         AgencyContactData = self.queryContact(agencyID = agencyData.id)
         #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
-        
-        for contactRow in AgencyContactData:
-            contactSubElement = self.customizeAgencyContact(ContactElement, contactRow, agencyData)
-            
-            
+        if AgencyContactData:
+            ContactElement = ET.SubElement(xml, "airs:%s" % 'Contact')
+            for contactRow in AgencyContactData:
+                contactSubElement = self.customizeAgencyContact(ContactElement, contactRow, agencyData)
+
         # LicenseAccreditation
-        
         AgencyLicenseAccreditationData = self.queryLicenseAccreditation(agencyID = agencyData.id)
         #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
         
@@ -1753,11 +1762,11 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             'Line1',
             'Line2',
             'City',
-            'State',
             'County',
+            'State',
             'ZipCode',
             'Country',
-            'ReasonWithheld',
+            #'ReasonWithheld',
             ]
         
         theElements = {}
@@ -1789,7 +1798,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         theElements['Country'].text = agencyLocationData.mailing_address_country
         
         # ReasonWithheld
-        theElements['ReasonWithheld'].text = agencyLocationData.mailing_address_reason_withheld
+        #theElements['ReasonWithheld'].text = agencyLocationData.mailing_address_reason_withheld
         
         return
         
@@ -1826,7 +1835,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             'AKA',
             'MailingAddress',
             'OtherAddress',
-            'CrossStreet',
+            #'CrossStreet',
             'Phone',
             'URL',
             'Email',
@@ -1892,15 +1901,15 @@ class HMISXMLWriter(DBObjects.databaseObjects):
          
         # URL
         urlElement = theElements['URL']
-        SiteURLData = self.queryURL(agencyID = agencyLocationData.id, siteID=None)
+        SiteURLData = self.queryAgencyLocationURL(agencyLocationData.id, agencyData.id)
         #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
-            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)
         
         # Email
         emailElement = theElements['Email']
-        SiteEmailData = self.queryEmail(agencyData.id, siteID=None)
+        SiteEmailData = self.queryAgencyLocationEmail(agencyData.id, agencyLocationData.id, siteID=None)
         #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in SiteEmailData:
@@ -1961,7 +1970,8 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         elements = [
             'PhoneNumber',
-            'ReasonWithheld',
+            #Reason withheld is a choice with PhoneNumber
+            #'ReasonWithheld',
             'Extension',
             'Description',
             'Type',
@@ -1972,8 +1982,9 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             theElements[element] = ET.SubElement(xml, "airs:%s" % element)
         
         theElements['PhoneNumber'].text = phoneData.phone_number
-        if not phoneData.reason_withheld is None:
-            theElements['ReasonWithheld'].text = phoneData.reason_withheld
+#        if not phoneData.reason_withheld is None:
+#
+#            theElements['ReasonWithheld'].text = phoneData.reason_withheld
         if not phoneData.extension is None:
             theElements['Extension'].text = phoneData.extension
         if not phoneData.description is None:
@@ -1983,7 +1994,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         if not phoneData.function is None:
             theElements['Function'].text = phoneData.function
     
-    def customizeAgencyURL(self, xml, URLData):
+    def addURL(self, xml, URLData):
         
         elements = [
             'Address',
@@ -2072,41 +2083,42 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         pass
     
     def customizeAgencyContact(self, xml, ContactData, agencyData):
-        xml.attrib['type'] = ContactData.type
+        xml.attrib['Type'] = ContactData.type
         
-        elements = [
-            'Title',
-            'Name',
-            'Email',
-            'Phone',
-            ]
-        
-        theElements = {}
-        for element in elements:
-            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        
-        theElements['Title'].text = ContactData.title
-        theElements['Name'].text = ContactData.name
-        
-        # Email
-        EmailElement = theElements['Email']
-        
+#        elements = [
+#            'Title',
+#            'Name',
+#            'Email',
+#            'Phone',
+#            ]
+#        
+#        theElements = {}
+#        for element in elements:
+#            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+        if ContactData.title:
+            title = ET.SubElement(xml, "airs:%s" % 'Title')
+            title.text = ContactData.title
+        if ContactData.name:
+            name = ET.SubElement(xml, "airs:%s" % 'Name')
+            name.text = ContactData.name
+        # Email        
         AgencyEmailData = self.queryEmail(agencyData.id, ContactData.id)
+        print 'agency contact email results:', AgencyEmailData
+        if AgencyEmailData:
         #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
-        
-        for emailRow in AgencyEmailData:
-            urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
+            email = ET.SubElement(xml, "airs:%s" % 'Email')
+            for emailRow in AgencyEmailData:
+                urlSubElement = self.customizeAgencyEmail(email, emailRow)
         
         # now get the phone and email subelements of Contact
-        PhoneElement = theElements['Phone']
-        
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
         AgencyPhoneData = self.queryPhone(agencyData.id, ContactData.id)
+        print 'agency contact phone results:', AgencyPhoneData
         #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
-        
-        for phoneRow in AgencyPhoneData:
-            phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)
-        
+        if AgencyPhoneData:
+            phone = ET.SubElement(xml, "airs:%s" % 'Phone')
+            for phoneRow in AgencyPhoneData:
+                phoneSubElement = self.customizeAgencyPhone(phone, phoneRow)
     
     def customizeAgencyLicenseAccreditation(self, xml, AccreditationData):
         elements = [
@@ -2145,7 +2157,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             'Line2',
             'City',
             'State',
-            'County',
+            #'County',
             'ZipCode',
             'Country',
             ]
@@ -2167,7 +2179,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         theElements['State'].text = siteOtherAddress.state
         
         # County
-        theElements['County'].text = siteOtherAddress.county
+        #theElements['County'].text = siteOtherAddress.county
         
         # ZipCode
         theElements['ZipCode'].text = siteOtherAddress.zip_code
@@ -2278,12 +2290,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
                     
          
         # URL
+        #ECJ20100923 We have a problem with this: it's also pulling AgencyLocation URLs in addition to the base URL, need to change the query.
         urlElement = theElements['URL']
-        SiteURLData = self.queryURL(agencyID = agencyData.id, siteID=siteData.id)
+        SiteURLData = self.queryAgencyURL(agencyID = agencyData.id, siteID=siteData.id)
         #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
-            urlSubElement = self.customizeAgencyURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)
         
         # Email
         emailElement = theElements['Email']
@@ -2456,12 +2469,12 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             self.manageSiteService(export)
 
 
-    def writeOutXML(self):
-        tree = ET.ElementTree(self.root_element)
-        if self.debug == True:
-            print "trying to write XML to: %s " % os.path.join(self.outDirectory, "page.xml")
-        
-        tree.write(os.path.join(self.outDirectory, "page.xml"), encoding="UTF-8")
+#    def writeOutXML(self):
+#        tree = ET.ElementTree(self.root_element)
+#        if self.debug == True:
+#            print "trying to write XML to: %s " % os.path.join(self.outDirectory, "page.xml")
+#        
+#        tree.write(os.path.join(self.outDirectory, "page.xml"), encoding="UTF-8")
 
 	
 if __name__ == "__main__":

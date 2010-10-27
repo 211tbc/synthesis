@@ -3,7 +3,7 @@ import os.path
 from interpretPicklist import interpretPickList
 from datetime import timedelta, date, datetime
 from time import strptime, time
-from XMLUtilities import XMLUtilities
+from XMLUtilities import IDGeneration
 
 # Alchemy Libraries
 from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence

@@ -4,7 +4,7 @@ from interpretPicklist import interpretPickList
 import dateutils
 from datetime import timedelta, date, datetime
 from time import strptime, time
-from XMLUtilities import XMLUtilities
+import XMLUtilities
 #from mx.DateTime import ISO
 # SBB20070920 Adding exceptions class
 #from clsExceptions import dataFormatError, ethnicityPickNotFound
@@ -78,7 +78,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	
     	# SBB20070628 adding a buffer for errors to be displayed at the end of the process.
     	self.errorMsgs = []
-    	self.xmlU = XMLUtilities()
+    	self.iDG = XMLUtilities.IDGeneration()
     	self.mappedObjects = DBObjects.databaseObjects()
     	
     	#import logging
@@ -90,7 +90,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	self.startTransaction()
     	self.processXML()
     	self.prettify()
-    	self.writeOutXML()
+    	XMLUtilities.writeOutXML()
     	#self.commitTransaction()
     	return True
 
@@ -109,7 +109,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	    pass
 
     def prettify(self):
-    	self.xmlU.indent(self.root_element)
+    	FileUtilities.indent(self.root_element)
 
     def dumpErrors(self):
     	print "Error Reporting"
@@ -160,7 +160,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	    print "Appending XML to Base Record"
     	
     	# generate the SystemID Number based on the Current Users Data, You must pass in the word 'system' in order to create the current users key.
-    	self.SystemID = self.xmlU.generateSystemID('system')
+    	self.SystemID = self.iDG.generateSystemID('system')
     
     	# start the clients
     	
@@ -208,7 +208,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	    
     	    # Instead of generating a number (above), use the client number that is already provided in the legacy system
     	    # or
-    	    self.xmlU.initializeSystemID(self.person.id)
+    	    self.iDG.initializeSystemID(self.person.id)
     	    self.sysID = self.person.id
             #if settings.DEBUG:
                 #print "self.person is:", self.person 
@@ -370,9 +370,9 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     def customizeClient(self, client):
     	keyval = 'client'
     	# SBB20071021 changed signature of the generateSysID function.
-    	#sysID = self.xmlU.generateSysID(keyval)
-    	sysID = self.xmlU.generateSysID2(keyval, self.sysID)	
-    	recID = self.xmlU.generateRecID(keyval)
+    	#sysID = self.iDG.generateSysID(keyval)
+    	sysID = self.iDG.generateSysID2(keyval, self.sysID)	
+    	recID = self.iDG.generateRecID(keyval)
     
     	    
     	client.attrib["record_id"] = recID 
@@ -389,9 +389,9 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     def customizeClientForEntryExit(self, client):
     	keyval = 'client'
     	# SBB20071021 changed signature of the generateSysID function.
-    	#sysID = self.xmlU.generateSysID(keyval)
-    	sysID = self.xmlU.generateSysID2(keyval, self.sysID)	
-    	recID = self.xmlU.generateRecID(keyval)		
+    	#sysID = self.iDG.generateSysID(keyval)
+    	sysID = self.iDG.generateSysID2(keyval, self.sysID)	
+    	recID = self.iDG.generateRecID(keyval)		
     	client.attrib["record_id"] = recID 
     	#client.attrib["odbid"] = "5"
     	client.attrib["odbid"] = "%s" % self.configurationRec.odbid
@@ -512,7 +512,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     
     def createNeed(self, needs, needData):
     	keyval = 'need'
-    	sysID = self.xmlU.generateSysID(keyval)
+    	sysID = self.iDG.generateSysID(keyval)
     	
     	#append the need start date to the client's need_id so the need system_ids are unique for each need
     	#since we don't store needs in the database
@@ -520,9 +520,9 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	#We should have the shelter switch to a 4 digit year, then change the %y to %Y
     	date_object_format = dateutils.fixDate(needData.need_idid_num_date_collected)
     	sysID = sysID + str(date_object_format)
-    	recID = self.xmlU.generateRecID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	# fixme (need odbid) / is this OK as fixed value or needs to be calculated.
-    	#odbid = self.xmlU.generateRecID(keyval)
+    	#odbid = self.iDG.generateRecID(keyval)
     	
     	
     	need = ET.SubElement(needs, "need")
@@ -633,9 +633,9 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     #Services in SP408 are like HUD ServiceEvents    
     def createService(self, serviceRecord, services):       
         keyval = 'service'
-        #sysID = self.xmlU.generateSysID(keyval)
-        #sysID = self.xmlU.generateSysID2(keyval, self.sysID)    
-        recID = self.xmlU.generateRecID(keyval)
+        #sysID = self.iDG.generateSysID(keyval)
+        #sysID = self.iDG.generateSysID2(keyval, self.sysID)    
+        recID = self.iDG.generateRecID(keyval)
         service = ET.SubElement(services, "service")
     	service.attrib["record_id"] = recID
     	service.attrib["system_id"] = serviceRecord.service_event_idid_num
@@ -681,8 +681,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
         
     def createGoal(self, goals):
     	keyval = 'goal'
-    	sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)		
+    	sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)		
     	goal = ET.SubElement(goals, "goal")
     	
     	goal.attrib["record_id"] = recID
@@ -712,8 +712,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     
     def createAction_step(self, action_steps):
     	keyval = 'action_step'
-    	sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)		
+    	sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)		
     	action_step = ET.SubElement(action_steps, "action_step")
     	action_step.attrib["record_id"] = recID
     	action_step.attrib["system_id"] = sysID
@@ -757,14 +757,14 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
         
     def createEntryExit(self, entry_exits, EE):
     	keyval = 'entry_exit'
-    	sysID = self.xmlU.generateSysID(keyval)
+    	sysID = self.iDG.generateSysID(keyval)
     	#append the entry_exit start date to the client's entry_exit_id so the entry_exit system_ids are unique for each entry_exit
     	#since we don't store entry_exits in the database
     	date_for_entry_exit_id = EE.participation_dates_start_date
     	#We should have the shelter switch to a 4 digit year, then change the %y to %Y
     	entry_exit_date_object_format = dateutils.fixDate(date_for_entry_exit_id)
     	sysID = sysID + str(entry_exit_date_object_format)
-    	recID = self.xmlU.generateRecID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	entry_exit = ET.SubElement(entry_exits, "entry_exit")
     	
     	# SBB20100225 Removing this, not allowed for Service Point (SP) validation
@@ -784,8 +784,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     
     def createEntryExitMember(self,entry_exit):
     	keyval = 'member'
-    	sysID = self.xmlU.generateSysID2(keyval,self.sysID)
-    	recID = self.xmlU.generateRecID(keyval)
+    	sysID = self.iDG.generateSysID2(keyval,self.sysID)
+    	recID = self.iDG.generateRecID(keyval)
     	members = ET.SubElement(entry_exit, "members")
     	
     	member = ET.SubElement(members, "member")
@@ -799,7 +799,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	#0r else this entry_exit won't show up under the correct client record.
     	client_id = ET.SubElement(member,"client_id")
     	keyval = "client"
-    	client_id.text = self.xmlU.generateSysID2(keyval,self.sysID)
+    	client_id.text = self.iDG.generateSysID2(keyval,self.sysID)
     
     	if dateutils.fixDate(self.outcom['Exit Date']) is not None:
     		exit_date = ET.SubElement(member, "exit_date")
@@ -868,8 +868,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
         
     def createInfo_release(self, info_releases):
     	keyval = 'info_release'
-    	sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)
+    	sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	
     	info_release = ET.SubElement(info_releases, "info_release")
     	
@@ -1203,8 +1203,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
         
     def createHousehold(self, households):
     	keyval = 'household'
-    	sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)
+    	sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	
     	household = ET.SubElement(households, "household")
     
@@ -1225,8 +1225,8 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     
     def createMember(self, members):
     	keyval = 'member'
-    	#sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)
+    	#sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	
     	member = ET.SubElement(members, "member")
     
@@ -1235,7 +1235,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	member.attrib["record_id"] = recID
     	member.attrib["date_added"] = datetime.now().isoformat()
     	member.attrib["date_updated"] = datetime.now().isoformat()
-    	member.attrib["system_id"] = self.xmlU.generateSysID2('service', self.sysID)
+    	member.attrib["system_id"] = self.iDG.generateSysID2('service', self.sysID)
     	
     	return member
         
@@ -1243,14 +1243,14 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	member = ET.SubElement(members, "member")
     	
     	keyval = 'member'
-    	#sysID = self.xmlU.generateSysID(keyval)
-    	recID = self.xmlU.generateRecID(keyval)
+    	#sysID = self.iDG.generateSysID(keyval)
+    	recID = self.iDG.generateRecID(keyval)
     	
     	# assign household attributes
     	member.attrib["record_id"] = recID
     	member.attrib["date_added"] = datetime.now().isoformat()
     	member.attrib["date_updated"] = datetime.now().isoformat()
-    	member.attrib["system_id"] = self.xmlU.generateSysID2('service', self.sysID)
+    	member.attrib["system_id"] = self.iDG.generateSysID2('service', self.sysID)
     	
     	return member
         
@@ -1359,18 +1359,6 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	subsidy = ET.SubElement(EEMember_element, "subsidy")
     	subsidy.text = ''
     	
-
-    def writeOutXML(self):
-    	tree = ET.ElementTree(self.root_element)
-    	if settings.DEBUG:
-    	    print "trying to write XML to: %s " % os.path.join(self.outDirectory, "page.xml")
-    	fileutil = fileutils.FileUtilities()
-        #check if output directory even exists and create it if it doesn't
-        fileutil.checkPath(self.outDirectory)
-        #figure out what to call the new filename.  can't overwrite an existing page.xml
-        attempted_filename = 'page.xml'
-        unique_filename = fileutil.getUniqueFileName(attempted_filename, self.outDirectory)
-    	tree.write(os.path.join(self.outDirectory, unique_filename))
     	
     	# qs_(name goes here) is a naming convention that designates that the 
     	# result of the lookup is a queryset object.  Python List/Dictionary object)

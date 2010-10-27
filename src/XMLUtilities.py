@@ -2,14 +2,38 @@
 
 #import sys
 import os
+import fileutils
 #import glob
 import string
 #import copy
 import pickle
+from conf import settings
+from sys import version
 
-class XMLUtilities:
-			
-	
+if float(settings.MINPYVERSION) < float(version[0:3]):
+    try:
+        # FIXME ( remove this once done debugging namespace issue )
+        #import xml.etree.cElementTree as ET
+        import xml.etree.ElementTree as ET
+        from xml.etree.ElementTree import Element, SubElement, dump
+    except ImportError:
+        import xml.etree.ElementTree as ET
+        from xml.etree.ElementTree import Element, SubElement
+elif thisVersion == '2.4':
+    try:
+    # Try to use the much faster C-based ET.
+        import cElementTree as ET
+        from elementtree.ElementTree import Element, SubElement, dump
+    except ImportError:
+    # Fall back on the pure python one.
+        import elementtree.ElementTree as ET
+        from elementtree.ElementTree import Element, SubElement
+else:
+    print 'Sorry, please see the minimum requirements to run this Application'
+    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+    raise SoftwareCompatibilityError, theError
+
+class IDGeneration:	
 	def __init__(self):
 		print "XMLUtilities initialized..."
 		# initialize the dictionary of sequences
@@ -104,7 +128,7 @@ class XMLUtilities:
 		
 		output.close()
 		
-	def indent(self, elem, level=0):
+def indent(elem, level=0):
 	    i = "\n" + level*"  "
 	    if len(elem):
 		if not elem.text or not elem.text.strip():
@@ -112,13 +136,26 @@ class XMLUtilities:
 		if not elem.tail or not elem.tail.strip():
 		    elem.tail = i
 		for elem in elem:
-		    self.indent(elem, level+1)
+		    indent(elem, level+1)
 		if not elem.tail or not elem.tail.strip():
 		    elem.tail = i
 	    else:
 		if level and (not elem.tail or not elem.tail.strip()):
-		    elem.tail = i
-	
+		    elem.tail = i	
+		    
+def writeOutXML(writer_instance):
+	print 'root_element is ', writer_instance.root_element
+	tree = ET.ElementTree(writer_instance.root_element)
+	if settings.DEBUG:
+		print "trying to write XML to: %s " % os.path.join(writer_instance.outDirectory, "page.xml")
+	fileutil = fileutils.FileUtilities()
+	#check if output directory even exists and create it if it doesn't
+	fileutil.checkPath(writer_instance.outDirectory)
+	#figure out what to call the new filename.  can't overwrite an existing page.xml
+	attempted_filename = 'page.xml'
+	unique_filename = fileutil.getUniqueFileName(attempted_filename, writer_instance.outDirectory)
+	tree.write(os.path.join(writer_instance.outDirectory, unique_filename))
+		    
 if __name__ == "__main__":
 	xmlU = XMLUtilities()
 	sequences = ["need", "client", "service", "goal", 'entry_exit']

@@ -1,8 +1,0 @@
-README
-setup.py
-src/synthesis.egg-info/PKG-INFO
-src/synthesis.egg-info/SOURCES.txt
-src/synthesis.egg-info/dependency_links.txt
-src/synthesis.egg-info/namespace_packages.txt
-src/synthesis.egg-info/requires.txt
-src/synthesis.egg-info/top_level.txt

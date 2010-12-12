@@ -7,12 +7,12 @@ from zope.interface import implements
 from lxml import etree
 from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
-import clsExceptions
-import DBObjects
-from fileutils import FileUtilities
+import clsexceptions
+import dbobjects  as dbobjects
+import fileutils
 from errcatalog import catalog
 
-class JFCSXMLReader(DBObjects.databaseObjects):
+class JFCSXMLReader(dbobjects.DatabaseObjects):
     ''' Synthesis import plugin for JFCS XML 
         JFCS provides 2 simple XML files
         - 1 for service data
@@ -24,13 +24,10 @@ class JFCSXMLReader(DBObjects.databaseObjects):
     
     implements (Reader)
     
-    global FILEUTIL
-    FILEUTIL = FileUtilities()
-    
     def __init__(self, xml_file):
         self.xml_file = xml_file
         ''' instantiate database object '''
-        dbo = DBObjects.databaseObjects()
+        dbo = dbobjects.DatabaseObjects()
         self.session = dbo.session()
     
     def read(self):
@@ -49,7 +46,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
         ''' iterate through JFCS service simple xml calling appropriate parsers '''
 
         ''' we have to lookup person_index_id and site_service_participation_index_id '''
-        self.mappedObjects = DBObjects.databaseObjects()
+        self.mappedObjects = dbobjects.DatabaseObjects()
         ''' insert xml data into native data structure '''
         for row_element in tree.getiterator(tag="row"):
             self.row_dict = {}
@@ -125,7 +122,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
                 test = self.normalize_date(self.row_dict.__getitem__('end_date'))
                 if test == True: self.existence_test_and_add('service_period_end_date', self.row_dict.__getitem__('end_date'), 'element_date')
             if self.row_dict.has_key('cunits'): self.existence_test_and_add('quantity_of_service', self.row_dict.__getitem__('cunits'), 'text')
-            self.shred(self.parse_dict, DBObjects.ServiceEvent)
+            self.shred(self.parse_dict, dbobjects.ServiceEvent)
     
     def parse_person(self):
         ''' parse data for person table '''
@@ -148,7 +145,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
             if ethnicity is not None:
                 self.existence_test_and_add('person_ethnicity_unhashed', ethnicity, 'text')
         if self.row_dict.has_key('c4ssno'): self.existence_test_and_add('person_social_security_number_unhashed', self.row_dict.__getitem__('c4ssno').replace('-', ''), 'text')     
-        self.shred(self.parse_dict, DBObjects.Person)
+        self.shred(self.parse_dict, dbobjects.Person)
         ''' person index id is now in memory, go to the sub-table parsers '''
         self.parse_other_names()
         self.parse_races()
@@ -163,7 +160,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
             if self.row_dict.__getitem__('c4lastname').lower() != self.row_dict.__getitem__('c4last_s01').lower():
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 self.existence_test_and_add('other_last_name_unhashed', self.row_dict.__getitem__('c4last_s01'), 'text')     
-                self.shred(self.parse_dict, DBObjects.OtherNames)
+                self.shred(self.parse_dict, dbobjects.OtherNames)
 
     def parse_races(self):
         ''' parse data for races table '''
@@ -178,7 +175,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
             if race is not None:
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 self.existence_test_and_add('race_unhashed', race, 'text')
-                self.shred(self.parse_dict, DBObjects.Races)
+                self.shred(self.parse_dict, dbobjects.Races)
         
     def parse_site_service_participation(self):
         ''' parse data for site_service_participation table '''
@@ -191,14 +188,14 @@ class JFCSXMLReader(DBObjects.databaseObjects):
         if self.row_dict.has_key('t_date'):
             test = self.normalize_date(self.row_dict.__getitem__('t_date'))
             if test == True: self.existence_test_and_add('participation_dates_end_date', self.row_dict.__getitem__('t_date'), 'element_date')                
-        self.shred(self.parse_dict, DBObjects.SiteServiceParticipation)
+        self.shred(self.parse_dict, dbobjects.SiteServiceParticipation)
         
     def parse_household(self):
         ''' parse data for household table '''
         self.parse_dict = {}
         if self.row_dict.has_key('family_id'):
             self.existence_test_and_add('household_id_num', self.row_dict.__getitem__('family_id'), 'text')
-            self.shred(self.parse_dict, DBObjects.Household)
+            self.shred(self.parse_dict, dbobjects.Household)
             ''' household index id is now in memory, go to the sub-table parsers '''
             self.parse_members()
         
@@ -207,7 +204,7 @@ class JFCSXMLReader(DBObjects.databaseObjects):
         self.parse_dict = {}
         self.existence_test_and_add('household_index_id', self.household_index_id, 'no_handling')
         if self.row_dict.has_key('c4clientid'): self.existence_test_and_add('person_id_unhashed', self.row_dict.__getitem__('c4clientid'), 'text')
-        self.shred(self.parse_dict, DBObjects.Members)
+        self.shred(self.parse_dict, dbobjects.Members)
         
     def shred(self, parse_dict, mapping):
         '''Commits the record set to the database'''
@@ -267,14 +264,14 @@ class JFCSXMLReader(DBObjects.databaseObjects):
     
     def lookup_person(self):
         ''' lookup person_index_id from person table '''
-        Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.person_id_unhashed == self.row_dict.__getitem__('c4clientid'))
+        Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.person_id_unhashed == self.row_dict.__getitem__('c4clientid'))
         for self.person in Persons:
             self.person_index_id = self.person.id
             self.lookup_service()
         
     def lookup_service(self):
         ''' lookup service_index_id from site_service_participation table '''  
-        Services = self.session.query(DBObjects.SiteServiceParticipation).filter(DBObjects.SiteServiceParticipation.person_index_id == self.person_index_id)
+        Services = self.session.query(dbobjects.SiteServiceParticipation).filter(dbobjects.SiteServiceParticipation.person_index_id == self.person_index_id)
         for self.service in Services:
             self.service_index_id = self.service.id        
     

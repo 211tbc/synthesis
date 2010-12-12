@@ -1,21 +1,21 @@
 import os.path
-from interpretPicklist import interpretPickList
+from interpretpicklist import Interpretpicklist
 #our synthesis specific date handling functions
 import dateutils
 from datetime import timedelta, date, datetime
 from time import strptime, time
-import XMLUtilities
+import xmlutilities
 #from mx.DateTime import ISO
 # SBB20070920 Adding exceptions class
-#from clsExceptions import dataFormatError, ethnicityPickNotFound
+#from clsexceptions import dataFormatError, ethnicityPickNotFound
 
 #import logging
-import clsLogger
+import logger
 
 from sys import version
 from conf import settings
-import clsExceptions
-import DBObjects
+import clsexceptions
+import dbobjects
 import fileutils
 from writer import Writer
 from zope.interface import implements
@@ -52,7 +52,7 @@ def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
-class SVCPOINTXMLWriter(DBObjects.databaseObjects):
+class SVCPOINTXMLWriter(dbobjects.DatabaseObjects):
 	
     # Writer Interface
     implements (Writer)
@@ -69,17 +69,17 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	if settings.DEBUG:
     	    print "XML File to be dumped to: %s" % poutDirectory
     	    
-    	    self.log = clsLogger.clsLogger(configFile='logging.ini', loglevel=40)
+    	    self.log = logger.Logger(configFile='logging.ini', loglevel=40)
     		
     	self.outDirectory = poutDirectory
-    	self.pickList = interpretPickList()
+    	self.pickList = Interpretpicklist()
     	# SBB20070626 Adding the declaration for outcomes list
     	self.options = processingOptions
     	
     	# SBB20070628 adding a buffer for errors to be displayed at the end of the process.
     	self.errorMsgs = []
-    	self.iDG = XMLUtilities.IDGeneration()
-    	self.mappedObjects = DBObjects.databaseObjects()
+    	self.iDG = xmlutilities.IDGeneration()
+    	self.mappedObjects = dbobjects.DatabaseObjects()
     	
     	#import logging
     	#logging.basicConfig()
@@ -90,7 +90,7 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	self.startTransaction()
     	self.processXML()
     	self.prettify()
-    	XMLUtilities.writeOutXML()
+    	xmlutilities.writeOutXML()
     	#self.commitTransaction()
     	return True
 
@@ -141,19 +141,19 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
         # SBB20100402 Querying for configuration information
     def pullConfiguration(self, pExportID):
 	# need to use both ExportID and Processing Mode (Test or Prod)
-    	source = self.session.query(DBObjects.Source).filter(DBObjects.Source.export_id == pExportID).one()
+    	source = self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID).one()
         #ECJ20100908 Adding some debugging
         #if settings.DEBUG:
             #print "trying to do pullConfiguration"
             #print "source is:", source
             #print "pExportID is", pExportID
             #print "source.source_id is: ", source.source_id
-            #print "DBObjects.SystemConfiguration.source_id is ", DBObjects.SystemConfiguration.source_id
-            #print "test DBObjects.SystemConfiguration.source_id == source.source_id yields ", assert DBObjects.SystemConfiguration.source_id == source.source_id
-            #print "DBObjects.Source.export_id is", DBObjects.Source.export_id
-            #print "self.session.query(DBObjects.Source).filter(DBObjects.Source.export_id == pExportID) is: ", self.session.query(DBObjects.Source).filter(DBObjects.Source.export_id == pExportID)
+            #print "dbobjects.SystemConfiguration.source_id is ", dbobjects.SystemConfiguration.source_id
+            #print "test dbobjects.SystemConfiguration.source_id == source.source_id yields ", assert dbobjects.SystemConfiguration.source_id == source.source_id
+            #print "dbobjects.Source.export_id is", dbobjects.Source.export_id
+            #print "self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID) is: ", self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID)
             #print "self.session.query().one() is", self.session.query().one()
-        self.configurationRec = self.session.query(DBObjects.SystemConfiguration).filter(and_(DBObjects.SystemConfiguration.source_id == source.source_id, DBObjects.SystemConfiguration.processing_mode == settings.MODE)).one()
+        self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
 	
     def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
     	if settings.DEBUG:
@@ -174,21 +174,21 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	# first get the export object then get it's related objects
     	
     	if self.options.reported == True:
-    	    Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
+    	    Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
     	elif self.options.unreported == True:
-    	    Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
+    	    Persons = self.session.query(dbobjects.Person).filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
     	elif self.options.reported == None:
-    	    Persons = self.session.query(DBObjects.Person)
+    	    Persons = self.session.query(dbobjects.Person)
     	else:
     	    pass
     	
     	# try to append the filter object to the predefined result set
     	# this works, it now applies the dates to the result set.
-    	Persons = Persons.filter(between(DBObjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
+    	Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
     	
     	#or_(User.name == 'ed', User.name == 'wendy')
-    	#Persons = self.session.query(DBObjects.Person)
-    	#Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == None) (works)
+    	#Persons = self.session.query(dbobjects.Person)
+    	#Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == None) (works)
     	
     	
     	for self.person in Persons:
@@ -248,9 +248,9 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
                             
 							#ECJ20100912 Now put the service events (aka services in sp408 XML) within each need.  They aren't nested in the XML, so need to query
 #                            if settings.DEBUG:
-#                                print "DBObjects.ServiceEvent is: ", DBObjects.ServiceEvent
+#                                print "dbobjects.ServiceEvent is: ", dbobjects.ServiceEvent
                             
-                            ServiceEvents =  self.session.query(DBObjects.ServiceEvent).filter(DBObjects.ServiceEvent.service_event_idid_num == needRecord.service_event_idid_num)
+                            ServiceEvents =  self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.service_event_idid_num == needRecord.service_event_idid_num)
 #                            if settings.DEBUG:
 #                                print "ServiceEvents are: ", ServiceEvents
 #                                for item in ServiceEvents:
@@ -276,19 +276,19 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     
     	# Query Mechanism
     	if self.options.reported == True:
-    	    #Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
-    	    site_service_part = self.session.query(DBObjects.SiteServiceParticipation).filter(DBObjects.SiteServiceParticipation.reported == True)
+    	    #Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
+    	    site_service_part = self.session.query(dbobjects.SiteServiceParticipation).filter(dbobjects.SiteServiceParticipation.reported == True)
     	elif self.options.unreported == True:
-    	    #Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
-    	    site_service_part = self.session.query(DBObjects.SiteServiceParticipation).filter(or_(DBObjects.SiteServiceParticipation.reported == False, DBObjects.SiteServiceParticipation.reported == None))
+    	    #Persons = self.session.query(dbobjects.Person).filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
+    	    site_service_part = self.session.query(dbobjects.SiteServiceParticipation).filter(or_(dbobjects.SiteServiceParticipation.reported == False, dbobjects.SiteServiceParticipation.reported == None))
     	elif self.options.reported == None:
-    	    #Persons = self.session.query(DBObjects.Person)
-    	    site_service_part = self.session.query(DBObjects.SiteServiceParticipation)
+    	    #Persons = self.session.query(dbobjects.Person)
+    	    site_service_part = self.session.query(dbobjects.SiteServiceParticipation)
     	else:
     	    pass
     	
     	# setup the date filter also
-    	site_service_part = site_service_part.filter(between(DBObjects.SiteServiceParticipation.site_service_participation_idid_num_date_collected, self.options.startDate, self.options.endDate))
+    	site_service_part = site_service_part.filter(between(dbobjects.SiteServiceParticipation.site_service_participation_idid_num_date_collected, self.options.startDate, self.options.endDate))
     
     	
     	
@@ -308,19 +308,19 @@ class SVCPOINTXMLWriter(DBObjects.databaseObjects):
     	    entry_exit = self.createEntryExit(entry_exits, EE)
 
     	if self.options.reported == True:
-    	    #Persons = self.session.query(DBObjects.Person).filter(DBObjects.Person.reported == True)
-    	    Household = self.session.query(DBObjects.Household).filter(DBObjects.Household.reported == True)
+    	    #Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
+    	    Household = self.session.query(dbobjects.Household).filter(dbobjects.Household.reported == True)
     	elif self.options.unreported == True:
-    	    #Persons = self.session.query(DBObjects.Person).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
-    	    Household = self.session.query(DBObjects.Household).filter(or_(DBObjects.Household.reported == False, DBObjects.Household.reported == None))
+    	    #Persons = self.session.query(dbobjects.Person).filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
+    	    Household = self.session.query(dbobjects.Household).filter(or_(dbobjects.Household.reported == False, dbobjects.Household.reported == None))
     	elif self.options.reported == None:
-    	    #Persons = self.session.query(DBObjects.Person)
-    	    Household = self.session.query(DBObjects.Household)
+    	    #Persons = self.session.query(dbobjects.Person)
+    	    Household = self.session.query(dbobjects.Household)
     	else:
     	    pass
     	
     	# setup the date filter also
-    	Household = Household.filter(between(DBObjects.Household.household_id_num_date_collected, self.options.startDate, self.options.endDate))
+    	Household = Household.filter(between(dbobjects.Household.household_id_num_date_collected, self.options.startDate, self.options.endDate))
     	
     	if Household <> None and Household.count() > 0:
     	    

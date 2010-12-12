@@ -13,7 +13,7 @@ MODE = 'TEST'                               # This is the switch that runs the p
 GUI = False  
 # DB settings:
 DB_DATABASE = "synthesis"
-DB_USER = "user_name_here"
+DB_USER = "eric"
 DB_PASSWD = "password"
 DB_PORT = 5432
 DB_HOST = "localhost"
@@ -21,9 +21,11 @@ DB_HOST = "localhost"
 # Which SvcPt version is this site using, if any?  This version number pulls the xsd schema in and configures the plug in as well.
 SVCPT_VERSION = '406'                    # this is 4.06
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.
-BASE_PATH = os.getcwd()
-#BASE_PATH = ""
+SOURCE_PATH = 'synthesis'
+BASE_PATH = os.path.join(os.getcwd(), SOURCE_PATH)
+print "BASE_PATH is: ", BASE_PATH
 
+#ABS_SOURCE_PATH = os.path.abspath(os.getcwd() + SOURCE_PATH)
 PATH_TO_GPG = '/usr/bin/gpg'
 PGPHOMEDIR = ''
 PASSPHRASE = ''
@@ -31,25 +33,37 @@ PASSPHRASE = ''
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
 INPUTFILES_PATH = [
-            "/home/user_name_here/workspace/synthesis/installer/build/InputFiles"
+            BASE_PATH + "/input_files"
             ,
             ]
-
+WEB_SERVICE_INPUTFILES_PATH = [
+            BASE_PATH + "/ws_input_files"
+            ,
+            ]
 # subfolder 
+#XSD_PATH = SOURCE_PATH + "/" + "xsd"
 XSD_PATH = "xsd"
-
 # file path subdirectories
-OUTPUTFILES_PATH = os.path.join(BASE_PATH, "OutputFiles")
+OUTPUTFILES_PATH = os.path.join(BASE_PATH, "output_files")
 if not os.path.exists(OUTPUTFILES_PATH):
     os.mkdir(OUTPUTFILES_PATH)
     
-USEDFILES_PATH = os.path.join(BASE_PATH, "UsedFiles")
+USEDFILES_PATH = os.path.join(BASE_PATH, "used_files")
 if not os.path.exists(USEDFILES_PATH):
     os.mkdir(USEDFILES_PATH)
     
-FAILEDFILES_PATH = os.path.join(BASE_PATH, "FailedFiles")
+FAILEDFILES_PATH = os.path.join(BASE_PATH, "failed_files")
 if not os.path.exists(FAILEDFILES_PATH):
     os.mkdir(FAILEDFILES_PATH)
+
+#logging settings file location setup
+logging_ini_file_name = 'logging.ini'
+relative_logging_ini_filepath = os.path.join(BASE_PATH, logging_ini_file_name)
+logging_ini_filepath = os.path.abspath(relative_logging_ini_filepath)
+print 'logging.ini filepath is at: ', logging_ini_filepath
+if not os.path.isfile(logging_ini_filepath):
+    print "no logging.ini found"
+LOGGING_INI = logging_ini_filepath
     
 LOGS = os.path.join(BASE_PATH, "logs")
 if not os.path.exists(LOGS):
@@ -57,7 +71,6 @@ if not os.path.exists(LOGS):
 
 PROCESSED_PATH = ""
 
-#ECJ20100829 using the HMISXML_version setting is deprecated, because selector.py now can tell between 2.8 and 3.0 through validation tests.  ServicePoint XML should work the same in the future
 SCHEMA_DOCS = {
 'hud_hmis_xml_2_8':os.path.join(BASE_PATH, XSD_PATH, 'versions','HMISXML','28','HUD_HMIS.xsd'),               
 'hud_hmis_xml_3_0':os.path.join(BASE_PATH, XSD_PATH, 'versions','HMISXML','30','HUD_HMIS.xsd'),
@@ -67,9 +80,9 @@ SCHEMA_DOCS = {
 'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd')
                }
 
-DEBUG = True									# Debug the application layer
+DEBUG = True								# Debug the application layer
 DEBUG_ALCHEMY = False							# Debug the ORM Layer
-DEBUG_DB = False								# Debug the DB layer of the applicHMIation
+DEBUG_DB = False								# Debug the DB layer of the application
 
 # This mechanism provides an override to the settings above.  create a file called local_settings.py and simply
 # override the values like BASE_PATH='/home/mypath'.  Then import like this: from conf import settings
@@ -83,7 +96,7 @@ SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS =	{
-     "/home/user_name_here/workspace/synthesis/installer/build/InputFiles":
+     "/home/eric/synthesis/synthesis/synthesis/input_files":
 		{
         'VENDOR_NAME': 'SomeVendor',
 		'SMTPTOADDRESS': ['someone@somedomain.com',],

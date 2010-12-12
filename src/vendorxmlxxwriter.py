@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import os.path
-from interpretPicklist import interpretPickList
+import interpretpicklist
 from datetime import timedelta, date, datetime
 from time import strptime, time
-from XMLUtilities import IDGeneration
+from xmlutilities import IDGeneration
 
 # Alchemy Libraries
 from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
@@ -12,14 +12,14 @@ from sqlalchemy.types import DateTime, Date
 
 from sys import version
 from conf import settings
-import clsExceptions
-import DBObjects
+import clsexceptions
+import dbobjects
 from writer import Writer
 
 from zope.interface import implements
 
 
-class VendorXMLXXWriter(DBObjects.databaseObjects):
+class VendorXMLXXWriter(dbobjects.DatabaseObjects):
 
     # Writer Interface
     implements (Writer)

@@ -11,14 +11,14 @@ from lxml import etree
 from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 from conf import settings
-import clsExceptions
-import DBObjects
-from fileutils import FileUtilities
+import clsexceptions
+import dbobjects as dbobjects
+import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
-#class HMISXML30Reader(DBObjects.databaseObjects):
-class HMISXML30Reader(DBObjects.databaseObjects): 
+#class HMISXML30Reader(dbobjects.DatabaseObjects):
+class HMISXML30Reader(dbobjects.DatabaseObjects): 
     ''' Implements reader interface '''
     implements (Reader) 
 
@@ -27,17 +27,14 @@ class HMISXML30Reader(DBObjects.databaseObjects):
     airs_namespace = "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
 
-    ''' Instantiate FileUtilities '''
-    global FILEUTIL
-    FILEUTIL = FileUtilities()
 
     def __init__(self, xml_file):
         ''' Put XML file into local object '''
         self.xml_file = xml_file
 
         ''' Instantiate database object '''
-        dbo = DBObjects.databaseObjects()
-        self.session = dbo.session()
+        dbo = dbobjects.DatabaseObjects()
+        self.session = dbo.Session()
 
     def read(self):
         ''' Takes an XML instance file and reads it into memory as a node tree '''
@@ -96,7 +93,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('source_name', item.xpath(xpSourceName, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'text')
 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Source)
+                self.shred(self.parse_dict, dbobjects.Source)
 
                 ''' Parse all exports for this specific source '''
                 self.parse_export(item)
@@ -140,7 +137,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_period_end_date', item.xpath(xpExportPeriodEndDate, namespaces={'hmis':self.hmis_namespace,'airs':self.airs_namespace}), 'element_date')
 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Export)
+                self.shred(self.parse_dict, dbobjects.Export)
                 
                 ''' Create source to export link '''
                 self.record_source_export_link()
@@ -181,7 +178,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Household)
+                self.shred(self.parse_dict, dbobjects.Household)
     
                 ''' Parse sub-tables '''
                 self.parse_members(item)
@@ -210,7 +207,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('household_index_id', self.household_index_id, 'no_handling')
         
                     ''' Shred to database '''
-                    self.shred(self.parse_dict, DBObjects.Members)
+                    self.shred(self.parse_dict, dbobjects.Members)
 
     def parse_region(self, element):
         ''' Element paths '''
@@ -249,7 +246,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Region)
+                self.shred(self.parse_dict, dbobjects.Region)
     
     def parse_agency(self, element):
         ''' Element paths '''
@@ -300,7 +297,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_index_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Agency)
+                self.shred(self.parse_dict, dbobjects.Agency)
     
                 ''' Parse sub-tables '''
                 
@@ -497,7 +494,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Person)
+                self.shred(self.parse_dict, dbobjects.Person)
     
                 ''' Parse sub-tables '''
                 self.parse_site_service_participation(item)
@@ -559,7 +556,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_id', self.export_id, 'text')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Service)
+                self.shred(self.parse_dict, dbobjects.Service)
     
                 ''' Parse sub-tables '''
                 self.parse_funding_source(item)
@@ -661,7 +658,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                     
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Site)
+                self.shred(self.parse_dict, dbobjects.Site)
     
                 ''' Parse sub-tables '''
                 self.parse_url(item)
@@ -757,7 +754,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.SiteService)
+                self.shred(self.parse_dict, dbobjects.SiteService)
     
                 ''' Parse sub-tables '''
                 self.parse_seasonal(item)
@@ -799,7 +796,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ServiceGroup)
+                self.shred(self.parse_dict, dbobjects.ServiceGroup)
     
                 ''' Parse sub-tables '''
 
@@ -822,7 +819,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.LicenseAccreditation)
+                self.shred(self.parse_dict, dbobjects.LicenseAccreditation)
     
                 ''' Parse sub-tables '''
                             
@@ -848,7 +845,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.AgencyService)
+                self.shred(self.parse_dict, dbobjects.AgencyService)
     
                 ''' Parse sub-tables '''
                             
@@ -877,7 +874,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Url)
+                self.shred(self.parse_dict, dbobjects.Url)
     
                 ''' Parse sub-tables '''
                             
@@ -908,7 +905,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.SpatialLocation)
+                self.shred(self.parse_dict, dbobjects.SpatialLocation)
     
                 ''' Parse sub-tables '''
                             
@@ -953,7 +950,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.OtherAddress)
+                self.shred(self.parse_dict, dbobjects.OtherAddress)
     
                 ''' Parse sub-tables '''
                             
@@ -979,7 +976,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.CrossStreet)
+                self.shred(self.parse_dict, dbobjects.CrossStreet)
     
                 ''' Parse sub-tables '''
                             
@@ -1082,7 +1079,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.AgencyLocation)
+                self.shred(self.parse_dict, dbobjects.AgencyLocation)
     
                 ''' Parse sub-tables '''
                 self.parse_aka(item)
@@ -1134,7 +1131,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Aka)
+                self.shred(self.parse_dict, dbobjects.Aka)
     
                 ''' Parse sub-tables '''
                             
@@ -1160,7 +1157,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Seasonal)
+                self.shred(self.parse_dict, dbobjects.Seasonal)
     
                 ''' Parse sub-tables '''
                             
@@ -1181,7 +1178,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ResidencyRequirements)
+                self.shred(self.parse_dict, dbobjects.ResidencyRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -1223,7 +1220,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PitCountSet)
+                self.shred(self.parse_dict, dbobjects.PitCountSet)
     
                 ''' Parse sub-tables '''
                 self.parse_pit_counts(item)            
@@ -1252,7 +1249,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('pit_count_set_index_id', self.pit_count_set_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PitCounts)
+                self.shred(self.parse_dict, dbobjects.PitCounts)
     
                 ''' Parse sub-tables '''
                             
@@ -1273,7 +1270,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.OtherRequirements)
+                self.shred(self.parse_dict, dbobjects.OtherRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -1312,7 +1309,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                     except: pass
                     
                     ''' Shred to database '''
-                    self.shred(self.parse_dict, DBObjects.Languages)
+                    self.shred(self.parse_dict, dbobjects.Languages)
         
                     ''' Parse sub-tables '''
                     self.parse_time_open(item)            
@@ -1342,7 +1339,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.TimeOpen)
+                self.shred(self.parse_dict, dbobjects.TimeOpen)
 
                 ''' parse each specific day of week '''
                 weekDays = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
@@ -1371,7 +1368,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('time_open_index_id', self.time_open_index_id, 'no_handling')
 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.TimeOpenDays)
+                self.shred(self.parse_dict, dbobjects.TimeOpenDays)
 
     def parse_inventory(self, element):
         ''' Element paths '''
@@ -1429,7 +1426,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Inventory)
+                self.shred(self.parse_dict, dbobjects.Inventory)
     
                 ''' Parse sub-tables '''
                             
@@ -1450,7 +1447,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.IncomeRequirements)
+                self.shred(self.parse_dict, dbobjects.IncomeRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -1502,7 +1499,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HmisAsset)
+                self.shred(self.parse_dict, dbobjects.HmisAsset)
     
                 ''' Parse sub-tables '''
                 self.parse_assignment(item)            
@@ -1540,7 +1537,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('hmis_asset_index_id', self.hmis_asset_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Assignment)
+                self.shred(self.parse_dict, dbobjects.Assignment)
     
                 ''' Parse sub-tables '''
                 self.parse_assignment_period(item)            
@@ -1564,7 +1561,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('assignment_index_id', self.assignment_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.AssignmentPeriod)
+                self.shred(self.parse_dict, dbobjects.AssignmentPeriod)
     
                 ''' Parse sub-tables '''
                             
@@ -1598,7 +1595,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.GeographicAreaServed)
+                self.shred(self.parse_dict, dbobjects.GeographicAreaServed)
     
                 ''' Parse sub-tables '''
                             
@@ -1621,7 +1618,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.DocumentsRequired)
+                self.shred(self.parse_dict, dbobjects.DocumentsRequired)
     
                 ''' Parse sub-tables '''
                             
@@ -1642,7 +1639,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.AidRequirements)
+                self.shred(self.parse_dict, dbobjects.AidRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -1668,7 +1665,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.AgeRequirements)
+                self.shred(self.parse_dict, dbobjects.AgeRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -1708,7 +1705,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.SiteServiceParticipation)
+                self.shred(self.parse_dict, dbobjects.SiteServiceParticipation)
     
                 ''' Parse sub-tables '''
                 self.parse_reasons_for_leaving(item)  
@@ -1757,7 +1754,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ReasonsForLeaving)
+                self.shred(self.parse_dict, dbobjects.ReasonsForLeaving)
     
                 ''' Parse sub-tables '''
                             
@@ -1781,7 +1778,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ApplicationProcess)
+                self.shred(self.parse_dict, dbobjects.ApplicationProcess)
     
                 ''' Parse sub-tables '''
                             
@@ -1824,7 +1821,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Need)
+                self.shred(self.parse_dict, dbobjects.Need)
     
                 ''' Parse sub-tables '''
                 self.parse_taxonomy(item)
@@ -1858,7 +1855,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                     except: pass
                 
                     ''' Shred to database '''
-                    self.shred(self.parse_dict, DBObjects.Taxonomy)
+                    self.shred(self.parse_dict, dbobjects.Taxonomy)
     
                     ''' Parse sub-tables '''
                             
@@ -1925,7 +1922,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ServiceEvent)
+                self.shred(self.parse_dict, dbobjects.ServiceEvent)
     
                 ''' Parse sub-tables '''
                 self.parse_service_event_notes(item)     
@@ -1964,7 +1961,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('service_event_index_id', self.service_event_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ServiceEventNotes)
+                self.shred(self.parse_dict, dbobjects.ServiceEventNotes)
     
                 ''' Parse sub-tables '''
                             
@@ -1985,7 +1982,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('site_service_index_id', self.site_service_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.FamilyRequirements)
+                self.shred(self.parse_dict, dbobjects.FamilyRequirements)
     
                 ''' Parse sub-tables '''
                             
@@ -2014,7 +2011,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PersonHistorical)
+                self.shred(self.parse_dict, dbobjects.PersonHistorical)
     
                 ''' Parse sub-tables '''
                 self.parse_housing_status(item)   
@@ -2073,7 +2070,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HousingStatus)
+                self.shred(self.parse_dict, dbobjects.HousingStatus)
     
                 ''' Parse sub-tables '''
 
@@ -2151,7 +2148,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranMilitaryBranches)
+                self.shred(self.parse_dict, dbobjects.VeteranMilitaryBranches)
     
                 ''' Parse sub-tables '''
                             
@@ -2178,7 +2175,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranMilitaryServiceDuration)
+                self.shred(self.parse_dict, dbobjects.VeteranMilitaryServiceDuration)
     
                 ''' Parse sub-tables '''
                             
@@ -2205,7 +2202,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranServedInWarZone)
+                self.shred(self.parse_dict, dbobjects.VeteranServedInWarZone)
     
                 ''' Parse sub-tables '''
                             
@@ -2232,7 +2229,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranServiceEra)
+                self.shred(self.parse_dict, dbobjects.VeteranServiceEra)
     
                 ''' Parse sub-tables '''
                             
@@ -2259,7 +2256,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranVeteranStatus)
+                self.shred(self.parse_dict, dbobjects.VeteranVeteranStatus)
     
                 ''' Parse sub-tables '''
                             
@@ -2321,7 +2318,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VeteranWarzonesServed)
+                self.shred(self.parse_dict, dbobjects.VeteranWarzonesServed)
     
                 ''' Parse sub-tables '''
                             
@@ -2348,7 +2345,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.VocationalTraining)
+                self.shred(self.parse_dict, dbobjects.VocationalTraining)
     
                 ''' Parse sub-tables '''
                             
@@ -2392,7 +2389,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.SubstanceAbuseProblem)
+                self.shred(self.parse_dict, dbobjects.SubstanceAbuseProblem)
     
                 ''' Parse sub-tables '''
                             
@@ -2437,7 +2434,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Pregnancy)
+                self.shred(self.parse_dict, dbobjects.Pregnancy)
     
                 ''' Parse sub-tables '''
                             
@@ -2483,7 +2480,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PriorResidence)
+                self.shred(self.parse_dict, dbobjects.PriorResidence)
     
                 ''' Parse sub-tables '''
                             
@@ -2519,7 +2516,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PhysicalDisability)
+                self.shred(self.parse_dict, dbobjects.PhysicalDisability)
     
                 ''' Parse sub-tables '''
                             
@@ -2573,7 +2570,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.NonCashBenefits)
+                self.shred(self.parse_dict, dbobjects.NonCashBenefits)
     
                 ''' Parse sub-tables '''
 
@@ -2599,7 +2596,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.NonCashBenefitsLast30Days)
+                self.shred(self.parse_dict, dbobjects.NonCashBenefitsLast30Days)
     
                 ''' Parse sub-tables '''
                             
@@ -2643,7 +2640,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.MentalHealthProblem)
+                self.shred(self.parse_dict, dbobjects.MentalHealthProblem)
     
                 ''' Parse sub-tables '''
                             
@@ -2670,7 +2667,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.LengthOfStayAtPriorResidence)
+                self.shred(self.parse_dict, dbobjects.LengthOfStayAtPriorResidence)
     
                 ''' Parse sub-tables '''
                             
@@ -2697,7 +2694,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.IncomeTotalMonthly)
+                self.shred(self.parse_dict, dbobjects.IncomeTotalMonthly)
     
                 ''' Parse sub-tables '''
                             
@@ -2724,7 +2721,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HudChronicHomeless)
+                self.shred(self.parse_dict, dbobjects.HudChronicHomeless)
     
                 ''' Parse sub-tables '''
                             
@@ -2751,7 +2748,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.IncomeLast30Days)
+                self.shred(self.parse_dict, dbobjects.IncomeLast30Days)
     
                 ''' Parse sub-tables '''
                             
@@ -2778,7 +2775,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HighestSchoolLevel)
+                self.shred(self.parse_dict, dbobjects.HighestSchoolLevel)
     
                 ''' Parse sub-tables '''
                             
@@ -2814,7 +2811,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HivAidsStatus)
+                self.shred(self.parse_dict, dbobjects.HivAidsStatus)
     
                 ''' Parse sub-tables '''
                             
@@ -2841,7 +2838,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HealthStatus)
+                self.shred(self.parse_dict, dbobjects.HealthStatus)
     
                 ''' Parse sub-tables '''
                             
@@ -2867,7 +2864,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.EngagedDate)
+                self.shred(self.parse_dict, dbobjects.EngagedDate)
     
                 ''' Parse sub-tables '''
                             
@@ -2929,7 +2926,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Employment)
+                self.shred(self.parse_dict, dbobjects.Employment)
     
                 ''' Parse sub-tables '''
                             
@@ -2965,7 +2962,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.DomesticViolence)
+                self.shred(self.parse_dict, dbobjects.DomesticViolence)
     
                 ''' Parse sub-tables '''
                             
@@ -2992,7 +2989,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.DisablingCondition)
+                self.shred(self.parse_dict, dbobjects.DisablingCondition)
     
                 ''' Parse sub-tables '''
                             
@@ -3028,7 +3025,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.DevelopmentalDisability)
+                self.shred(self.parse_dict, dbobjects.DevelopmentalDisability)
     
                 ''' Parse sub-tables '''
                             
@@ -3074,7 +3071,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Destinations)
+                self.shred(self.parse_dict, dbobjects.Destinations)
     
                 ''' Parse sub-tables '''
                             
@@ -3112,7 +3109,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Degree)
+                self.shred(self.parse_dict, dbobjects.Degree)
     
                 ''' Parse sub-tables '''
                 self.parse_degree_code(item)            
@@ -3139,7 +3136,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('degree_index_id', self.degree_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.DegreeCode)
+                self.shred(self.parse_dict, dbobjects.DegreeCode)
     
                 ''' Parse sub-tables '''
                             
@@ -3166,7 +3163,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.CurrentlyInSchool)
+                self.shred(self.parse_dict, dbobjects.CurrentlyInSchool)
     
                 ''' Parse sub-tables '''
                             
@@ -3204,7 +3201,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ContactMade)
+                self.shred(self.parse_dict, dbobjects.ContactMade)
     
                 ''' Parse sub-tables '''
                             
@@ -3273,7 +3270,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ChildEnrollmentStatus)
+                self.shred(self.parse_dict, dbobjects.ChildEnrollmentStatus)
     
                 ''' Parse sub-tables '''
                 self.parse_child_enrollment_status_barrier(item)            
@@ -3319,7 +3316,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('child_enrollment_status_index_id', self.child_enrollment_status_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ChildEnrollmentStatusBarrier)
+                self.shred(self.parse_dict, dbobjects.ChildEnrollmentStatusBarrier)
     
                 ''' Parse sub-tables '''
                             
@@ -3355,7 +3352,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ChronicHealthCondition)
+                self.shred(self.parse_dict, dbobjects.ChronicHealthCondition)
     
                 ''' Parse sub-tables '''
                             
@@ -3407,7 +3404,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ReleaseOfInformation)
+                self.shred(self.parse_dict, dbobjects.ReleaseOfInformation)
     
                 ''' Parse sub-tables '''
                             
@@ -3469,7 +3466,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.IncomeAndSources)
+                self.shred(self.parse_dict, dbobjects.IncomeAndSources)
     
                 ''' Parse sub-tables '''
                             
@@ -3493,7 +3490,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.HUDHomelessEpisodes)
+                self.shred(self.parse_dict, dbobjects.HUDHomelessEpisodes)
     
                 ''' Parse sub-tables '''
                             
@@ -3599,7 +3596,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.PersonAddress)
+                self.shred(self.parse_dict, dbobjects.PersonAddress)
     
                 ''' Parse sub-tables '''
                             
@@ -3670,7 +3667,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.OtherNames)
+                self.shred(self.parse_dict, dbobjects.OtherNames)
     
                 ''' Parse sub-tables '''
                             
@@ -3697,7 +3694,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Races)
+                self.shred(self.parse_dict, dbobjects.Races)
     
                 ''' Parse sub-tables '''
         
@@ -3737,7 +3734,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.FundingSource)
+                self.shred(self.parse_dict, dbobjects.FundingSource)
     
                 ''' Parse sub-tables '''
                             
@@ -3776,7 +3773,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.ResourceInfo)
+                self.shred(self.parse_dict, dbobjects.ResourceInfo)
     
                 ''' Parse sub-tables '''
                 self.parse_contact(item)            
@@ -3813,7 +3810,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Contact)
+                self.shred(self.parse_dict, dbobjects.Contact)
     
                 ''' Parse sub-tables '''
                 self.parse_email(item)      
@@ -3857,7 +3854,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Email)
+                self.shred(self.parse_dict, dbobjects.Email)
     
                 ''' Parse sub-tables '''
                             
@@ -3906,7 +3903,7 @@ class HMISXML30Reader(DBObjects.databaseObjects):
                 except: pass
                                 
                 ''' Shred to database '''
-                self.shred(self.parse_dict, DBObjects.Phone)
+                self.shred(self.parse_dict, dbobjects.Phone)
     
                 ''' Parse sub-tables '''
                             
@@ -3917,14 +3914,14 @@ class HMISXML30Reader(DBObjects.databaseObjects):
         ''' record the link between source and export '''
         self.existence_test_and_add('source_index_id', self.source_index_id, 'no_handling')
         self.existence_test_and_add('export_index_id', self.export_index_id, 'no_handling')
-        self.shred(self.parse_dict, DBObjects.SourceExportLink)
+        self.shred(self.parse_dict, dbobjects.SourceExportLink)
         return            
 
     def record_agency_child_link(self):
         ''' record the link between agency and any children '''
         self.existence_test_and_add('agency_index_id', self.agency_index_id, 'no_handling')
         self.existence_test_and_add('export_index_id', self.export_index_id, 'no_handling')
-        self.shred(self.parse_dict, DBObjects.AgencyChild)
+        self.shred(self.parse_dict, dbobjects.AgencyChild)
         return            
 
     ''' Utility methods '''
@@ -3932,8 +3929,8 @@ class HMISXML30Reader(DBObjects.databaseObjects):
     def shred(self, parse_dict, mapping):
         ''' commits the record set to the database '''
         mapped = mapping(parse_dict)
-        self.session.save(mapped)
-        self.session.flush()
+        #self.session.merge(mapped)
+        #self.session.flush()
         
         ''' store foreign keys '''
         if mapping.__name__ == "Source":

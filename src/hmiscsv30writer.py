@@ -13,12 +13,12 @@ from zope.interface import implements
 import csv
 
 from conf import settings
-import clsExceptions
-import DBObjects
+import clsexceptions
+import dbobjects
 from writer import Writer
 
 
-class HmisCsv30Writer(DBObjects.databaseObjects):
+class HmisCsv30Writer(dbobjects.DatabaseObjects):
 
     # Writer Interface
     implements (Writer)
@@ -152,16 +152,16 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
             print "CSV Files to be created in: %s" % outDirectory
 
         self.outDirectory = outDirectory
-        #self.pickList = interpretPickList()
+        #self.pickList = Interpretpicklist()
         self.errorMsgs = []
         self.debug = debug
 
-        print "Setting up DBObjects..."
+        print "Setting up dbobjects..."
         import time
         startReal = time.time()
-        self.mappedObjects = DBObjects.databaseObjects()
+        self.mappedObjects = dbobjects.DatabaseObjects()
         endReal = time.time()
-        print "DBObjects setup finished after %0.2f real seconds." % (endReal - startReal)
+        print "dbobjects setup finished after %0.2f real seconds." % (endReal - startReal)
 
 
         if debug == True:
@@ -276,8 +276,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     def getHistoryRelatedColumnData(self, phIndex, table, *columns):
 
-        query = "self.session.query(DBObjects.%s)" % table\
-              + ".filter(DBObjects.%s.person_historical_index_id == phIndex)" % table\
+        query = "self.session.query(dbobjects.%s)" % table\
+              + ".filter(dbobjects.%s.person_historical_index_id == phIndex)" % table\
               +".first()"
         row = eval(query)
             
@@ -306,9 +306,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
         
 
     def getSchoolBarrier(self, cesIndex):
-        barrier = self.session.query(DBObjects.ChildEnrollmentStatusBarrier)\
-            .filter(DBObjects.ChildEnrollmentStatusBarrier.\
-                    child_enrollment_status_index_id == cesIndex).first()
+        barrier = self.session.query(dbobjects.ChildEnrollmentStatusBarrier)\
+            .filter(dbobjects.ChildEnrollmentStatusBarrier.child_enrollment_status_index_id == cesIndex).first()
         # TBD: Do we care which zipCode_status record gets returned?
 
         if not barrier:
@@ -327,10 +326,10 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getRelationshipToHeadData(self, hhId):
-        members = self.session.query(DBObjects.Household, DBObjects.Members)\
-            .filter(and_(or_(DBObjects.Household.household_id_num == hhId,
-                             DBObjects.Household.household_id_str == hhId),
-                         DBObjects.Household.id == DBObjects.Members.household_index_id))\
+        members = self.session.query(dbobjects.Household, dbobjects.Members)\
+            .filter(and_(or_(dbobjects.Household.household_id_num == hhId,
+                             dbobjects.Household.household_id_str == hhId),
+                         dbobjects.Household.id == dbobjects.Members.household_index_id))\
             .first()
 
         if not members:
@@ -349,9 +348,9 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getPriorZipCodeData(self, phIndex):
-        address = self.session.query(DBObjects.PersonAddress)\
-            .filter(and_(DBObjects.PersonAddress.person_historical_index_id == phIndex,
-                         DBObjects.PersonAddress.is_last_permanent_zip == 1)).first()
+        address = self.session.query(dbobjects.PersonAddress)\
+            .filter(and_(dbobjects.PersonAddress.person_historical_index_id == phIndex,
+                         dbobjects.PersonAddress.is_last_permanent_zip == 1)).first()
         # TBD: Do we care which zipCode_status record gets returned?
 
         if not address:
@@ -374,8 +373,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getReasonForLeavingData(self, sspIndex):
-        reason = self.session.query(DBObjects.ReasonsForLeaving)\
-            .filter(DBObjects.ReasonsForLeaving.site_service_participation_index_id 
+        reason = self.session.query(dbobjects.ReasonsForLeaving)\
+            .filter(dbobjects.ReasonsForLeaving.site_service_participation_index_id 
                     == sspIndex)\
             .first()
         # TBD: Do we care which reason_status record gets returned?
@@ -396,8 +395,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getPersonHistoricalIndexData(self, sspIndex):
-        historical = self.session.query(DBObjects.PersonHistorical)\
-            .filter(DBObjects.PersonHistorical.site_service_index_id == sspIndex).first()
+        historical = self.session.query(dbobjects.PersonHistorical)\
+            .filter(dbobjects.PersonHistorical.site_service_index_id == sspIndex).first()
         
         # TBD: Do we care which person historical record's index gets returned?
 
@@ -417,8 +416,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getRacesData(self, personIndex):
-        races = self.session.query(DBObjects.Races)\
-                    .filter(DBObjects.Races.person_index_id == personIndex)
+        races = self.session.query(dbobjects.Races)\
+                    .filter(dbobjects.Races.person_index_id == personIndex)
 
         # TBD: Do we care about which two races get output?
 
@@ -436,8 +435,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getReleaseGrantedData(self, personIndex):
-        roi = self.session.query(DBObjects.ReleaseOfInformation)\
-                  .filter(DBObjects.ReleaseOfInformation.person_index_id == personIndex)\
+        roi = self.session.query(dbobjects.ReleaseOfInformation)\
+                  .filter(dbobjects.ReleaseOfInformation.person_index_id == personIndex)\
                   .first()
 
         if not roi:
@@ -453,8 +452,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     
     def getReceivesMcKinneyFundingData(self, serviceIndex):
-        funding = self.session.query(DBObjects.FundingSource)\
-            .filter(DBObjects.FundingSource.service_index_id == serviceIndex).first()
+        funding = self.session.query(dbobjects.FundingSource)\
+            .filter(dbobjects.FundingSource.service_index_id == serviceIndex).first()
 
         if not funding:
             return None
@@ -469,8 +468,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getFundingSourceData(self, seIndex):
-        funding = self.session.query(DBObjects.FundingSource)\
-            .filter(DBObjects.FundingSource.service_event_index_id == seIndex).first()
+        funding = self.session.query(dbobjects.FundingSource)\
+            .filter(dbobjects.FundingSource.service_event_index_id == seIndex).first()
 
         if not funding:
             return None
@@ -497,8 +496,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     def getNonCashBenefitsData(self, phIndex):
         print "in gncbd"
-        nonCashBens = self.session.query(DBObjects.NonCashBenefits)\
-            .filter(DBObjects.NonCashBenefits.person_historical_index_id == phIndex)
+        nonCashBens = self.session.query(dbobjects.NonCashBenefits)\
+            .filter(dbobjects.NonCashBenefits.person_historical_index_id == phIndex)
 
         if not nonCashBens.count():
             return
@@ -517,8 +516,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     def getIncomeAndSourcesData(self, phIndex):
         print "in gisd"
-        incomes = self.session.query(DBObjects.IncomeAndSources)\
-            .filter(DBObjects.IncomeAndSources.person_historical_index_id == phIndex)
+        incomes = self.session.query(dbobjects.IncomeAndSources)\
+            .filter(dbobjects.IncomeAndSources.person_historical_index_id == phIndex)
 
         if not incomes.count():
             return
@@ -536,8 +535,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getPersonHistoricalData(self, personIndex, personId):
-        historicals = self.session.query(DBObjects.PersonHistorical)\
-            .filter(DBObjects.PersonHistorical.person_index_id == personIndex)
+        historicals = self.session.query(dbobjects.PersonHistorical)\
+            .filter(dbobjects.PersonHistorical.person_index_id == personIndex)
 
         if not historicals.count():
             print "Warning: no data in person_historical table for person %s." \
@@ -564,8 +563,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getServiceEventData(self, personIndex, personId):
-        serviceEvents = self.session.query(DBObjects.ServiceEvent)\
-            .filter(DBObjects.ServiceEvent.person_index_id_2010 == personIndex)
+        serviceEvents = self.session.query(dbobjects.ServiceEvent)\
+            .filter(dbobjects.ServiceEvent.person_index_id_2010 == personIndex)
 
         if not serviceEvents.count():
             print "Warning: no data in service_event table for person %s." % personId
@@ -591,8 +590,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getParticipationData(self, personIndex, personId):
-        participations = self.session.query(DBObjects.SiteServiceParticipation)\
-            .filter(DBObjects.SiteServiceParticipation.person_index_id == personIndex)
+        participations = self.session.query(dbobjects.SiteServiceParticipation)\
+            .filter(dbobjects.SiteServiceParticipation.person_index_id == personIndex)
 
         if not participations.count():
             print "Warning: no data in site_service_participation table for person %s." \
@@ -619,8 +618,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getPersonData(self, exportId):
-        persons = self.session.query(DBObjects.Person)\
-                      .filter(DBObjects.Person.export_id == exportId)
+        persons = self.session.query(dbobjects.Person)\
+                      .filter(dbobjects.Person.export_id == exportId)
 
         if exportId == None:
             print "listen, bub, you cant select on null export id"
@@ -628,9 +627,9 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
         # TBD: Figure out if/how to correctly handle reported:
         """
         if self.options.reported:
-            persons = persons.filter(DBObjects.Person.reported == True)
+            persons = persons.filter(dbobjects.Person.reported == True)
         elif self.options.unreported:
-            persons = persons.filter(DBObjects.Person.reported != True)
+            persons = persons.filter(dbobjects.Person.reported != True)
         """
 
         if not persons.count():
@@ -657,8 +656,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getInventoryData(self, siteServiceIndex):
-        inventories = self.session.query(DBObjects.Inventory)\
-            .filter(DBObjects.Inventory.site_service_index_id == siteServiceIndex)
+        inventories = self.session.query(dbobjects.Inventory)\
+            .filter(dbobjects.Inventory.site_service_index_id == siteServiceIndex)
 
         if not inventories.count():
             print "Warning: no data in inventory for site_service_id %s." \
@@ -684,8 +683,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getRegionData(self, siteServiceId):
-        regions = self.session.query(DBObjects.Region)\
-                      .filter(DBObjects.Region.site_service_id == siteServiceId)
+        regions = self.session.query(dbobjects.Region)\
+                      .filter(dbobjects.Region.site_service_id == siteServiceId)
 
         if not regions.count():
             print "Warning: no data in region for site_service_id %s." % siteServiceId
@@ -711,8 +710,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     def getSiteServiceData(self, siteIndex):
         siteServices \
-            = self.session.query(DBObjects.SiteService)\
-                  .filter(DBObjects.SiteService.site_index_id == siteIndex)
+            = self.session.query(dbobjects.SiteService)\
+                  .filter(dbobjects.SiteService.site_index_id == siteIndex)
 
         if not siteServices.count():
             print "Warning: no data in site_service for site index %s." \
@@ -739,12 +738,12 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
     def getAgencyProgramData(self, exportIndex):
         agencyPrograms \
-            = self.session.query(DBObjects.Agency, DBObjects.Service, DBObjects.Site)\
-                  .filter(and_(DBObjects.Agency.export_index_id == exportIndex,
-                               DBObjects.Service.export_index_id == exportIndex,
-                               DBObjects.Site.export_index_id == exportIndex,
-                               DBObjects.Agency.airs_key == DBObjects.Service.airs_key,
-                               DBObjects.Agency.id == DBObjects.Site.agency_index_id))
+            = self.session.query(dbobjects.Agency, dbobjects.Service, dbobjects.Site)\
+                  .filter(and_(dbobjects.Agency.export_index_id == exportIndex,
+                               dbobjects.Service.export_index_id == exportIndex,
+                               dbobjects.Site.export_index_id == exportIndex,
+                               dbobjects.Agency.airs_key == dbobjects.Service.airs_key,
+                               dbobjects.Agency.id == dbobjects.Site.agency_index_id))
 
         if not agencyPrograms.count():
             print "Warning: no data in (agency x service x site) for export %s." \
@@ -772,8 +771,8 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getSourceData(self, exportId):
-        sources = self.session.query(DBObjects.Source)\
-                      .filter(DBObjects.Source.export_id == exportId).first()
+        sources = self.session.query(dbobjects.Source)\
+                      .filter(dbobjects.Source.export_id == exportId).first()
                       
         if not sources:
             print "Warning: there's no data in source table for export %s." \
@@ -792,7 +791,7 @@ class HmisCsv30Writer(DBObjects.databaseObjects):
 
 
     def getExportData(self):
-        exports = self.session.query(DBObjects.Export)
+        exports = self.session.query(dbobjects.Export)
 
         if not exports.count():
             print "Warning: there's no data in export table."

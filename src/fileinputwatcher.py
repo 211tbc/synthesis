@@ -27,7 +27,7 @@ make a non-polling notification.
 # THE SOFTWARE.
 
 global osiswin32
-import selector
+#import selector
 
 import os, time, exceptions
 from time import sleep
@@ -48,9 +48,9 @@ else:
     try:
         import pyinotify
         from pyinotify import WatchManager, ThreadedNotifier, ProcessEvent, EventsCodes
-        
     except ImportError:
         print 'Could not import POSIX pyinotify modules.'
+
 
 class FileInputWatcher:
     '''controlling class for file monitoring'''
@@ -79,11 +79,12 @@ class FileInputWatcher:
             print 'Watching POSIX OS'
             #if settings.DEBUG:
                 #print 'sending to self.watch_posix_start()'
-            result = self.watch_posix_start()
+            self.watch_posix_start()
             #if settings.DEBUG:
                 #print "It returned from self.watch_posix_start()!"
                 #print "self.watch_posix_start() returned with value", result
         return True
+    
     def stop_monitoring(self):  
         '''os independent method to stop monitoring, but only posix uses it.'''
         #print "self.notifier1.started", self.notifier1.__getattribute__('started')
@@ -152,7 +153,8 @@ class FileInputWatcher:
             except:
                 print 'pyinotify running in standard mode'
             try:
-                mask = EventsCodes.IN_CREATE  
+                #mask = EventsCodes.IN_CREATE |EventsCodes.IN_MOVED_TO 
+                mask = pyinotify.ALL_EVENTS
                 #ECJ20100831 Reason why we have two threads: it never returns control ever to the main loop if only one thread, so no ctrl+c
                 #The second thread is a dummy, so it performs switching/relinquishing control
                 #Eventually, we want to watch many folders, so that is why we are using the ThreadedNotifier, versus the recommended Notifier.
@@ -210,9 +212,21 @@ class EventHandler(ProcessEvent):
             
     def process_IN_CREATE(self, event):
         '''What happens when a file is added'''
-        print "Create: %s" %  os.path.join(event.path, event.name)
-        self.queue.put(os.path.join(event.path, event.name))
-        print "queue is now", self.queue
+        if event.name[0] == '.':
+            print 'ignoring ', event.name
+        else:
+            print "Create: %s" %  os.path.join(event.path, event.name)
+            self.queue.put(os.path.join(event.path, event.name))
+            print "queue is now", self.queue
+        
+    def process_IN_MOVED_TO(self, event):
+            '''What happens when a file is added'''
+            if event.name[0] == '.':
+                print 'ignoring ', event.name
+            else:
+                print "In_Moved_To: %s" %  os.path.join(event.path, event.name)
+                self.queue.put(os.path.join(event.path, event.name))
+                print "queue is now", self.queue
         
 class EventHandlerDummy(ProcessEvent): 
     '''Event handler processing create events passed in to the \

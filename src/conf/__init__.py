@@ -1,1 +1,1 @@
-__all__ = ['errcatalog']
+__all__ = ['settings', 'outputConfiguration']

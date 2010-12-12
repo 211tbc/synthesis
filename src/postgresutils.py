@@ -36,7 +36,6 @@ class Utils:
         print 'cleared the employee_table table'
         
     def create_database(self, databaseName):
-        
         if not databaseName == '':
              
             parameters = ['--host=localhost', '--username=%s' % settings.DB_USER, settings.DB_DATABASE, "Synthesis Project Database for %s" % settings.MODE]
@@ -48,12 +47,12 @@ class Utils:
             return rc
             
         else:
-            raise dbCreateError()
+            raise
             
-    def create_database():
-        '''creates a new, empty database.'''
-        metadata = MetaData()
-        metadata.create_all(bind=synthesis_engine)
+#    def create_database(self):
+#        '''creates a new, empty database.'''
+#        metadata = MetaData()
+#        metadata.create_all(bind=synthesis_engine)
 
     def create_test_table(self): 
         self.employee_table = Table(
@@ -71,8 +70,8 @@ class Utils:
 
     def blank_database(self):
         self.synthesis_metadata.reflect()
-        #for table in reversed(self.synthesis_metadata.sorted_tables):
-        for table in self.synthesis_metadata.table_iterator(reverse=True, tables=None):
+        for table in reversed(self.synthesis_metadata.sorted_tables):
+        #for table in self.synthesis_metadata.table_iterator(reverse=True, tables=None):
             print table, "found"
             table.drop(checkfirst=True)
             #self.synthesis_engine.execute(table.delete())

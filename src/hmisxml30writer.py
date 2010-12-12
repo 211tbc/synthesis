@@ -1,7 +1,7 @@
-import clsExceptions
+from clsexceptions import SoftwareCompatibilityError
 import os.path
-import DBObjects
-import XMLUtilities
+import dbobjects as dbobjects
+import xmlutilities
 from sys import version
 from conf import settings
 from datetime import datetime
@@ -303,8 +303,8 @@ parse_source(root_element)
 
 
 '''
-
-if float(settings.MINPYVERSION) < float(version[0:3]):
+thisVersion = version[0:3]
+if float(settings.MINPYVERSION) < float(thisVersion):
     try:
         # FIXME ( remove this once done debugging namespace issue )
         #import xml.etree.cElementTree as ET
@@ -328,7 +328,7 @@ else:
     raise SoftwareCompatibilityError, theError
 
 # SBB20100810 Making this generic so it can be configured from the settings file
-class HMISXMLWriter(DBObjects.databaseObjects):
+class HMISXMLWriter(dbobjects.DatabaseObjects):
     
     
     hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
@@ -340,11 +340,11 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     
     def __init__(self, poutDirectory, processingOptions, debug=False): #, debugMessages=None):
         self.errorMsgs = []
-        self.iDG = XMLUtilities.IDGeneration()
+        self.iDG = xmlutilities.IDGeneration()
         # adding a debug switch that is managed in the INI
         self.debug = debug
         self.outDirectory = poutDirectory
-        self.mappedObjects = DBObjects.databaseObjects()
+        self.mappedObjects = dbobjects.DatabaseObjects()
         self.options = processingOptions
         
     def write(self):    
@@ -352,13 +352,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         self.processXML()
         self.prettify()
         #self.writeOutXML()
-        #XMLUtilities.writeOutXML()
-        XMLUtilities.writeOutXML(self)
+        #xmlutilities.writeOutXML()
+        xmlutilities.writeOutXML(self)
         #self.commitTransaction()
         return True
 
     def prettify(self):
-        XMLUtilities.indent(self.root_element)
+        xmlutilities.indent(self.root_element)
     
     def startTransaction(self):
         # fixme (when in VirtualEnv)
@@ -1405,8 +1405,8 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
     def pullConfiguration(self, pExportID):
         # need to use both ExportID and Processing Mode (Test or Prod)
-        source = self.session.query(DBObjects.Source).filter(DBObjects.Source.export_id == pExportID).one()
-        self.configurationRec = self.session.query(DBObjects.SystemConfiguration).filter(and_(DBObjects.SystemConfiguration.source_id == source.source_id, DBObjects.SystemConfiguration.processing_mode == settings.MODE)).one()
+        source = self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID).one()
+        self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
     
     def createAgency(self, xml):
         agency = ET.SubElement(xml, "hmis:Agency")
@@ -1415,90 +1415,90 @@ class HMISXMLWriter(DBObjects.databaseObjects):
     def queryTaxonomy(self, siteServiceID=None, needID=None):
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
         #Column('need_index_id', Integer, ForeignKey(Need.c.id)),
-        return self.session.query(DBObjects.Taxonomy).filter(and_(DBObjects.Taxonomy.site_service_index_id == siteServiceID,
-                                                                         DBObjects.Taxonomy.need_index_id == needID,
+        return self.session.query(dbobjects.Taxonomy).filter(and_(dbobjects.Taxonomy.site_service_index_id == siteServiceID,
+                                                                         dbobjects.Taxonomy.need_index_id == needID,
                                                                  )).all()
         
     def querySpatialLocation(self, siteID=None, agencyLocationID=None):
-        return self.session.query(DBObjects.SpatialLocation).filter(and_(DBObjects.SpatialLocation.site_index_id == siteID,
-                                                                         DBObjects.SpatialLocation.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.SpatialLocation).filter(and_(dbobjects.SpatialLocation.site_index_id == siteID,
+                                                                         dbobjects.SpatialLocation.agency_location_index_id == agencyLocationID,
                                                                  )).all()
     def querySiteService(self, exportID=None, reportID=None, siteID=None, agencyLocationID=None):
 #        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
 #        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
 #        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
-#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
-        return self.session.query(DBObjects.SiteService).filter(and_(DBObjects.SiteService.export_index_id == exportID,
-                                                                   DBObjects.SiteService.report_index_id == reportID,
-                                                                   DBObjects.SiteService.site_index_id == siteID,
-                                                                   DBObjects.SiteService.agency_location_index_id == agencyLocationID,
+#        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+        return self.session.query(dbobjects.SiteService).filter(and_(dbobjects.SiteService.export_index_id == exportID,
+                                                                   dbobjects.SiteService.report_index_id == reportID,
+                                                                   dbobjects.SiteService.site_index_id == siteID,
+                                                                   dbobjects.SiteService.agency_location_index_id == agencyLocationID,
                                                                  )).all()
     
     def queryLanguages(self, siteID=None, siteServiceID=None, agencyLocationID=None):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        return self.session.query(DBObjects.Languages).filter(and_(DBObjects.Languages.site_index_id == siteID,
-                                                                   DBObjects.Languages.site_service_index_id == siteServiceID,
-                                                                   DBObjects.Languages.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.Languages).filter(and_(dbobjects.Languages.site_index_id == siteID,
+                                                                   dbobjects.Languages.site_service_index_id == siteServiceID,
+                                                                   dbobjects.Languages.agency_location_index_id == agencyLocationID,
                                                                  )).all()
         
     def queryCrossStreet(self, siteID=None):
-        return self.session.query(DBObjects.CrossStreet).filter(and_(DBObjects.CrossStreet.site_index_id == siteID,
+        return self.session.query(dbobjects.CrossStreet).filter(and_(dbobjects.CrossStreet.site_index_id == siteID,
                                                                  )).all()
         
     def queryAKA(self, agencyID=None, siteID=None, agencyLocationID=None ):
 #        Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
 #        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
-#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+#        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         
-        return self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.site_index_id == siteID,
-                                                             DBObjects.Aka.agency_index_id == agencyID,
-                                                             DBObjects.Aka.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.site_index_id == siteID,
+                                                             dbobjects.Aka.agency_index_id == agencyID,
+                                                             dbobjects.Aka.agency_location_index_id == agencyLocationID,
                                                                  )).all()
         
     def queryOtherAddress(self, siteID=None, agencyLocationID=None):
-        return self.session.query(DBObjects.OtherAddress).filter(and_(DBObjects.OtherAddress.site_index_id == siteID,
-                                                                      DBObjects.OtherAddress.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.OtherAddress).filter(and_(dbobjects.OtherAddress.site_index_id == siteID,
+                                                                      dbobjects.OtherAddress.agency_location_index_id == agencyLocationID,
                                                                  )).all()
     
     def queryResourceInfo(self, agencyID=None, siteServiceID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        return self.session.query(DBObjects.ResourceInfo).filter(and_(DBObjects.ResourceInfo.agency_index_id == agencyID,
-                                                                      DBObjects.ResourceInfo.site_service_index_id == siteServiceID,
+        return self.session.query(dbobjects.ResourceInfo).filter(and_(dbobjects.ResourceInfo.agency_index_id == agencyID,
+                                                                      dbobjects.ResourceInfo.site_service_index_id == siteServiceID,
                                                                  )).all()
         
     def querySite(self, exportID=None, reportID=None, agencyID=None):
         #Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         #Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        return self.session.query(DBObjects.Site).filter(and_(DBObjects.Site.agency_index_id == agencyID,
+        return self.session.query(dbobjects.Site).filter(and_(dbobjects.Site.agency_index_id == agencyID,
                                                                  )).all()
         
     def queryService(self, agencyID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        return self.session.query(DBObjects.Service).filter(and_(DBObjects.Service.agency_index_id == agencyID,
+        return self.session.query(dbobjects.Service).filter(and_(dbobjects.Service.agency_index_id == agencyID,
                                                                  )).all()
     
     def queryServiceGroup(self, agencyID=None):
         
-        return self.session.query(DBObjects.ServiceGroup).filter(and_(DBObjects.ServiceGroup.agency_index_id == agencyID,
+        return self.session.query(dbobjects.ServiceGroup).filter(and_(dbobjects.ServiceGroup.agency_index_id == agencyID,
                                                                  )).all()
         
     def queryLicenseAccreditation(self, agencyID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
-        return self.session.query(DBObjects.LicenseAccreditation).filter(and_(DBObjects.LicenseAccreditation.agency_index_id == agencyID,
+        return self.session.query(dbobjects.LicenseAccreditation).filter(and_(dbobjects.LicenseAccreditation.agency_index_id == agencyID,
                                                                  )).all()
         
     def queryTimeOpen(self, siteID=None, languageID=None, siteServiceID=None, agencyLocationID=None):
 #        Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
 #        Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
 #        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)),
-#		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
-        return self.session.query(DBObjects.TimeOpen).filter(and_(DBObjects.TimeOpen.site_index_id == siteID,
-                                                                  DBObjects.TimeOpen.languages_index_id == languageID,
-                                                                 DBObjects.TimeOpen.site_service_index_id == siteServiceID,
-                                                                 DBObjects.TimeOpen.agency_location_index_id == agencyLocationID
+#        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
+        return self.session.query(dbobjects.TimeOpen).filter(and_(dbobjects.TimeOpen.site_index_id == siteID,
+                                                                  dbobjects.TimeOpen.languages_index_id == languageID,
+                                                                 dbobjects.TimeOpen.site_service_index_id == siteServiceID,
+                                                                 dbobjects.TimeOpen.agency_location_index_id == agencyLocationID
                                                                  )).all()
     
     def queryContact(self, agencyID=None, resourceID=None, siteID=None, agencyLocationID=None):
@@ -1507,10 +1507,10 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)),
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
     
-        return self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyID,
-                                                                 DBObjects.Contact.resource_info_index_id == resourceID,
-                                                                 DBObjects.Contact.site_index_id == siteID,
-                                                                 DBObjects.Contact.agency_location_index_id == agencyLocationID
+        return self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyID,
+                                                                 dbobjects.Contact.resource_info_index_id == resourceID,
+                                                                 dbobjects.Contact.site_index_id == siteID,
+                                                                 dbobjects.Contact.agency_location_index_id == agencyLocationID
                                                                  )).all()
         
     def queryEmail(self, agencyID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
@@ -1521,20 +1521,20 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         
-        return self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyID,
-                                                               DBObjects.Email.contact_index_id == contactID,
-                                                               DBObjects.Email.resource_info_index_id == resourceID,
-                                                               DBObjects.Email.site_index_id == siteID,
-                                                               DBObjects.Email.person_historical_index_id == personHistoricalID,
+        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,
+                                                               dbobjects.Email.contact_index_id == contactID,
+                                                               dbobjects.Email.resource_info_index_id == resourceID,
+                                                               dbobjects.Email.site_index_id == siteID,
+                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,
                                                                )).all()
                                                                
     def queryAgencyLocationEmail(self, agencyID=None, agencyLocationID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
-        return self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyID,
-                                                               DBObjects.Email.contact_index_id == contactID,
-                                                               DBObjects.Email.resource_info_index_id == resourceID,
-                                                               DBObjects.Email.site_index_id == siteID,
-                                                               DBObjects.Email.person_historical_index_id == personHistoricalID,
-                                                               DBObjects.Email.agency_location_index_id == agencyLocationID
+        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,
+                                                               dbobjects.Email.contact_index_id == contactID,
+                                                               dbobjects.Email.resource_info_index_id == resourceID,
+                                                               dbobjects.Email.site_index_id == siteID,
+                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,
+                                                               dbobjects.Email.agency_location_index_id == agencyLocationID
                                                                )).all()
      
                                                                
@@ -1543,7 +1543,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
 #        print "Start of queryAgencyURL result"
 #        print "agencyID is", agencyID
-        filter_result = self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID, DBObjects.Url.site_index_id == siteID, DBObjects.Url.agency_location_index_id == None)).all()
+        filter_result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.site_index_id == siteID, dbobjects.Url.agency_location_index_id == None)).all()
 #        print "queryAgencyURL result is: ", filter_result
 #        print "End of queryAgencyURL result"
         return filter_result                                                     
@@ -1554,13 +1554,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
 #            print "Start of queryAgencyLocationURL result"
 #            print "agencyLocationID is", agencyLocationID
 #            print "agencyID is", agencyID
-            result = self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyID, DBObjects.Url.agency_location_index_id == agencyLocationID, agencyLocationID != None)).all()
+            result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.agency_location_index_id == agencyLocationID, agencyLocationID != None)).all()
 #            print "queryAgencyLocationURL result is: ", result
 #            print "End of queryAgencyLocationURL result"
             return result
         
     def queryAgencyLocation(self, agencyID=None):
-        return self.session.query(DBObjects.AgencyLocation).filter(and_(DBObjects.AgencyLocation.agency_index_id == agencyID,)).all()
+        return self.session.query(dbobjects.AgencyLocation).filter(and_(dbobjects.AgencyLocation.agency_index_id == agencyID,)).all()
         
     def queryPhone(self, agencyID=None, contactID=None, resourceID=None, siteID=None, siteServiceID=None, personHistoricalID=None, agencyLocationID=None):
         # Phone has these foreign keys, they must either be null or supplied by some value to query properly
@@ -1571,13 +1571,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
         #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         
-        return  self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyID,
-                                                                DBObjects.Phone.contact_index_id == contactID,
-                                                                DBObjects.Phone.resource_info_index_id == resourceID,
-                                                                DBObjects.Phone.site_index_id == siteID,
-                                                                DBObjects.Phone.site_service_index_id == siteServiceID,
-                                                                DBObjects.Phone.person_historical_index_id == personHistoricalID,
-                                                                DBObjects.Phone.agency_location_index_id == agencyLocationID
+        return  self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyID,
+                                                                dbobjects.Phone.contact_index_id == contactID,
+                                                                dbobjects.Phone.resource_info_index_id == resourceID,
+                                                                dbobjects.Phone.site_index_id == siteID,
+                                                                dbobjects.Phone.site_service_index_id == siteServiceID,
+                                                                dbobjects.Phone.person_historical_index_id == personHistoricalID,
+                                                                dbobjects.Phone.agency_location_index_id == agencyLocationID
                                                                 )).all()
         
     def customizeAgency(self, xml, agencyData, siteIndexID = None):
@@ -1625,7 +1625,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
         AKARows = self.queryAKA(agencyData.id)
-        #AKARows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteIndexID)).all()
+        #AKARows = self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.agency_index_id == agencyData.id,dbobjects.Aka.site_index_id == siteIndexID)).all()
         
         for AKARow in AKARows:
             akarow = self.customizeAgencyAKA(AKA, AKARow)
@@ -1643,7 +1643,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
         AgencyPhoneData = self.queryPhone(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for phoneRow in AgencyPhoneData:
             phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)
@@ -1652,7 +1652,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         urlElement = theElements['URL']
         
         AgencyURLData = self.queryAgencyURL(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in AgencyURLData:
             urlSubElement = self.addURL(urlElement, urlRow)
@@ -1661,7 +1661,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         EmailElement = theElements['Email']
         
         AgencyEmailData = self.queryEmail(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in AgencyEmailData:
             urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
@@ -1669,7 +1669,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         # Contact        
         AgencyContactData = self.queryContact(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         if AgencyContactData:
             ContactElement = ET.SubElement(xml, "airs:%s" % 'Contact')
             for contactRow in AgencyContactData:
@@ -1677,7 +1677,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
 
         # LicenseAccreditation
         AgencyLicenseAccreditationData = self.queryLicenseAccreditation(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for accreditationRow in AgencyLicenseAccreditationData:
             LicenseAccreditationElement = ET.SubElement(xml, "airs:LicenseAccreditation")
@@ -1708,7 +1708,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         ServiceGroupElement = theElements['ServiceGroup']
         
         AgencyServiceGroupData = self.queryServiceGroup(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for serviceGroupRow in AgencyServiceGroupData:
             serviceGroupSubElement = self.customizeAgencyServiceGroup(ServiceGroupElement, serviceGroupRow)
@@ -1717,7 +1717,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #ServiceElement = theElements['Service']
         #
         #AgencyServiceData = self.queryService(agencyData.id)
-        ##self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        ##self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         #
         #for serviceRow in AgencyServiceData:
         #    serviceSubElement = self.customizeAgencyService(ServiceElement, serviceGroupRow)
@@ -1726,7 +1726,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         SiteElement = theElements['Site']
         
         AgencySiteData = self.querySite(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteRow in AgencySiteData:
             serviceGroupSubElement = self.customizeAgencySite(SiteElement, agencyData, siteRow)
@@ -1734,7 +1734,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # ResourceInfo
         ResourceInfoElement = theElements['ResourceInfo']
         resourceInfoData = self.queryResourceInfo(agencyID = agencyData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for resourceInfoRow in resourceInfoData:
             serviceGroupSubElement = self.customizeAgencyResourceInfo(ResourceInfoElement, resourceInfoRow)
@@ -1885,7 +1885,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Unlike rest of model, these are created for each occurence of row in DB (make the element and assign data value)
         #crossStreeElement = theElements['CrossStreet']
         crossStreetData = self.queryCrossStreet(agencyLocationData.id)
-        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for crossStreetRow in crossStreetData:
             crossStreetSubElement = ET.SubElement(xml, "airs:CrossStreet")
@@ -1902,7 +1902,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # URL
         urlElement = theElements['URL']
         SiteURLData = self.queryAgencyLocationURL(agencyLocationData.id, agencyData.id)
-        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
             urlSubElement = self.addURL(urlElement, urlRow)
@@ -1910,7 +1910,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Email
         emailElement = theElements['Email']
         SiteEmailData = self.queryAgencyLocationEmail(agencyData.id, agencyLocationData.id, siteID=None)
-        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in SiteEmailData:
             emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
@@ -1918,7 +1918,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Contact
         contactElement = theElements['Contact']
         siteContactData = self.queryContact(agencyID = agencyData.id, siteID=None,agencyLocationID=agencyLocationData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
             contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
@@ -2105,7 +2105,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         AgencyEmailData = self.queryEmail(agencyData.id, ContactData.id)
         print 'agency contact email results:', AgencyEmailData
         if AgencyEmailData:
-        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
             email = ET.SubElement(xml, "airs:%s" % 'Email')
             for emailRow in AgencyEmailData:
                 urlSubElement = self.customizeAgencyEmail(email, emailRow)
@@ -2114,7 +2114,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
         AgencyPhoneData = self.queryPhone(agencyData.id, ContactData.id)
         print 'agency contact phone results:', AgencyPhoneData
-        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         if AgencyPhoneData:
             phone = ET.SubElement(xml, "airs:%s" % 'Phone')
             for phoneRow in AgencyPhoneData:
@@ -2207,7 +2207,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Contact
         contactElement = theElements['Contact']
         siteContactData = self.queryContact(agencyID = agencyData.id, siteID=None)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
             contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
@@ -2256,7 +2256,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # AKA
         akaElement = theElements['AKA']
         AKARows = self.queryAKA(agencyID=agencyData.id, siteID=siteData.id)
-        #AKARows = self.session.query(DBObjects.Aka).filter(and_(DBObjects.Aka.agency_index_id == agencyData.id,DBObjects.Aka.site_index_id == siteData.id)).all()
+        #AKARows = self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.agency_index_id == agencyData.id,dbobjects.Aka.site_index_id == siteData.id)).all()
         
         for AKARow in AKARows:
             akarow = self.customizeAgencyAKA(akaElement, AKARow)
@@ -2265,7 +2265,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         otheraddressElement = theElements['OtherAddress']
         
         OtherAddressData = self.queryOtherAddress(siteData.id)
-        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for otheraddressRow in OtherAddressData:
             otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)
@@ -2275,7 +2275,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Unlike rest of model, these are created for each occurence of row in DB (make the element and assign data value)
         #crossStreeElement = theElements['CrossStreet']
         crossStreetData = self.queryCrossStreet(siteData.id)
-        #self.session.query(DBObjects.Phone).filter(and_(DBObjects.Phone.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for crossStreetRow in crossStreetData:
             crossStreetSubElement = ET.SubElement(xml, "airs:CrossStreet")
@@ -2293,7 +2293,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         #ECJ20100923 We have a problem with this: it's also pulling AgencyLocation URLs in addition to the base URL, need to change the query.
         urlElement = theElements['URL']
         SiteURLData = self.queryAgencyURL(agencyID = agencyData.id, siteID=siteData.id)
-        #self.session.query(DBObjects.Url).filter(and_(DBObjects.Url.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
             urlSubElement = self.addURL(urlElement, urlRow)
@@ -2301,7 +2301,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Email
         emailElement = theElements['Email']
         SiteEmailData = self.queryEmail(agencyData.id, siteID=siteData.id)
-        #self.session.query(DBObjects.Email).filter(and_(DBObjects.Email.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in SiteEmailData:
             emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
@@ -2309,7 +2309,7 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         # Contact
         contactElement = theElements['Contact']
         siteContactData = self.queryContact(agencyID = agencyData.id, siteID=siteData.id)
-        #self.session.query(DBObjects.Contact).filter(and_(DBObjects.Contact.agency_index_id == agencyData.id,)).all()
+        #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
             contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
@@ -2372,13 +2372,13 @@ class HMISXMLWriter(DBObjects.databaseObjects):
         
         # This is the start, we pull from the top and work our way down.
         if self.options.reported == True:
-            #Source = self.session.query(DBObjects.Source).filter(DBObjects.Person.reported == True)
-            Sources = self.session.query(DBObjects.Source)
+            #Source = self.session.query(dbobjects.Source).filter(dbobjects.Person.reported == True)
+            Sources = self.session.query(dbobjects.Source)
         elif self.options.unreported == True:
-            #Source = self.session.query(DBObjects.Source).filter(or_(DBObjects.Person.reported == False, DBObjects.Person.reported == None))
-            Sources = self.session.query(DBObjects.Source)
+            #Source = self.session.query(dbobjects.Source).filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
+            Sources = self.session.query(dbobjects.Source)
         elif self.options.reported == None:
-            Sources = self.session.query(DBObjects.Source)
+            Sources = self.session.query(dbobjects.Source)
         else:
             pass
         
@@ -2388,11 +2388,11 @@ class HMISXMLWriter(DBObjects.databaseObjects):
             # This needs a parameter with datavalues passed in, right now it's structure only.
             source = self.customizeSource(source, sourceData)
             # pull the link
-            link = self.session.query(DBObjects.SourceExportLink).filter(DBObjects.SourceExportLink.source_index_id == sourceData.id).one()
+            link = self.session.query(dbobjects.SourceExportLink).filter(dbobjects.SourceExportLink.source_index_id == sourceData.id).one()
             export_rec_id = link.export_index_id
-			
-			# pull the export record
-            exportRecs = self.session.query(DBObjects.Export).filter(DBObjects.Export.export_id == export_rec_id).all()			
+            
+            # pull the export record
+            exportRecs = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == export_rec_id).all()            
             for exportData in exportRecs:
                 export = self.createExport(source)
             
@@ -2404,20 +2404,20 @@ class HMISXMLWriter(DBObjects.databaseObjects):
                 agency = self.createAgency(export)
                 
                 # pull agency from the export data
-                agencyRecs = self.session.query(DBObjects.Agency).filter(DBObjects.Agency.export_index_id == export_rec_id).all()
+                agencyRecs = self.session.query(dbobjects.Agency).filter(dbobjects.Agency.export_index_id == export_rec_id).all()
                 for agencyData in agencyRecs:
                     agency = self.customizeAgency(agency, agencyData)
                 
                     
-			
+            
                 houseHold = self.createHousehold(export)
                 houseHold = self.customizeHousehold(houseHold)
                 
                 person = self.createPerson(export)
                 
             person = self.customizePerson(person)
-			
-			# off person you need to make (Need, OtherNames, PersonHistorical, Race, ReleaseOfInformation, ServiceEvent, SiteServiceParticipation, )
+            
+            # off person you need to make (Need, OtherNames, PersonHistorical, Race, ReleaseOfInformation, ServiceEvent, SiteServiceParticipation, )
             need = self.createNeed(person)
             need = self.customizeNeed(need)
             
@@ -2476,12 +2476,12 @@ class HMISXMLWriter(DBObjects.databaseObjects):
 #        
 #        tree.write(os.path.join(self.outDirectory, "page.xml"), encoding="UTF-8")
 
-	
+    
 if __name__ == "__main__":
     
-    from queryObject import queryObject
+    from queryobject import QueryObject
     
-    optParse = queryObject()
+    optParse = QueryObject()
     options = optParse.getOptions()
     
     if options != None:
@@ -2490,7 +2490,7 @@ if __name__ == "__main__":
             vld = HMISXMLWriter(".", options)
             vld.write()        
             
-        except clsExceptions.UndefinedXMLWriter:
+        except clsexceptions.UndefinedXMLWriter:
             print "Please specify a format for outputting your XML"
             raise
     

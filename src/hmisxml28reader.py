@@ -13,51 +13,30 @@ from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
 from conf import settings
-import clsExceptions
-import DBObjects
-from fileutils import FileUtilities
+import clsexceptions as clsexceptions
+import dbobjects as dbobjects
+import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
-#class HMISXML28Reader(DBObjects.databaseObjects):
-class HMISXML28Reader(DBObjects.databaseObjects):
+#class HMISXML28Reader(dbobjects.DatabaseObjects):
+class HMISXML28Reader(dbobjects.DatabaseObjects):
     '''Implements reader interface.'''
     implements (Reader) 
     
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
-    global FILEUTIL
-    FILEUTIL = FileUtilities()
 
     def __init__(self, xml_file):
-        
-        # Validate that we have a valid username & password to access the database
-        #if settings.DB_USER == "":
-        #    raise clsExceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
-        #if settings.DB_PASSWD == "":
-        #    raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
-        #    
-        #self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-        ##self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
+      
         self.xml_file = xml_file
-        #self.db_metadata = MetaData(self.pg_db)
-        ##self.db_metadata = MetaData(self.sqlite_db)
-        #Session = sessionmaker(bind=self.pg_db, autoflush=True, transactional=True)
-        ##Session = sessionmaker(bind=self.sqlite_db, autoflush=True, transactional=True)
-        #
-        #self.session = Session()
-        
-        ##logging.basicConfig(filename='./sql.log')
-        ##logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
-        ##logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG) 
-        #
         ## good practice to clear the mapper.  Especially when we are running our tests
         #clear_mappers()
         
         # moved all mapping ORM logic to new module/class
-        dbo = DBObjects.databaseObjects()
-        self.session = dbo.session()
+        dbo = dbobjects.DatabaseObjects()
+        self.session = dbo.Session()
         #self.export_map()
         #self.database_map()
         #self.person_map()
@@ -89,9 +68,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
         try:
             self.parse_export(root_element)
         except IntegrityError:
-            FILEUTIL.makeBlock("CAUGHT INTEGRITY ERROR")
+            fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
+            raise clsexceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 
@@ -157,7 +136,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('source_contact_phone_date_collected', item.xpath(xpSourceContactPhonedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 self.existence_test_and_add('source_name', item.xpath(xpSourceName, namespaces={'hmis': self.hmis_namespace}), 'text')
                 self.existence_test_and_add('source_name_date_collected', item.xpath(xpSourceNamedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, DBObjects.Source)
+                self.shred(self.parse_dict, dbobjects.Source)
                 #had to hard code this to just use root element, since we're not allowing multiple database_ids per XML file
                 self.parse_person(root_element)
                 self.parse_household(root_element)
@@ -214,14 +193,14 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_software_version_date_collected', item.xpath(xpExportSoftwareVersiondateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
 #                self.session.flush()
 #                print 'export id is', Export.c.id
-                self.shred(self.parse_dict, DBObjects.Export)
+                self.shred(self.parse_dict, dbobjects.Export)
                 self.parse_source(root_element)
                 #current projects only using client sections, not resources    
                 #self.parse_site_service(database_id_tag)
 
         #current projects only using client sections, not resources      
         else:
-            self.shred(self.parse_dict, DBObjects.Export)
+            self.shred(self.parse_dict, dbobjects.Export)
             return
 
     def parse_other_names(self, person_tag):
@@ -279,9 +258,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 if test is False:
                     self.existence_test_and_add('other_suffix_hashed', item.xpath(xpOtherSuffixHashed, namespaces={'hmis': self.hmis_namespace}),'text')
                     self.existence_test_and_add('other_suffix_date_collected', item.xpath(xpOtherSuffixDateCollectedHashed, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                self.shred(self.parse_dict, DBObjects.OtherNames)
+                self.shred(self.parse_dict, dbobjects.OtherNames)
         else:
-            self.shred(self.parse_dict, DBObjects.OtherNames)
+            self.shred(self.parse_dict, dbobjects.OtherNames)
             return
         
     
@@ -313,9 +292,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                     
                 ### HudHomelessEpisodes (Shred)
-                    self.shred(self.parse_dict, DBObjects.HudHomelessEpisodes)
+                    self.shred(self.parse_dict, dbobjects.HUDHomelessEpisodes)
 
-		### Parse any subtables
+    ### Parse any subtables
     def parse_veteran(self, element):
     ### xpPath Definitions
         xpVeteran = 'hmis:Veteran'
@@ -417,7 +396,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
     
             ### Veteran (Shred)
-                self.shred(self.parse_dict, DBObjects.Veteran)
+                self.shred(self.parse_dict, dbobjects.Veteran)
     
     def parse_person_address(self, element):
         ### xpPath Definitions
@@ -538,7 +517,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                     ### PersonAddress (Shred)
-                    self.shred(self.parse_dict, DBObjects.PersonAddress)
+                    self.shred(self.parse_dict, dbobjects.PersonAddress)
             
     def parse_income_and_sources(self, item):
         ### xpPath Definitions
@@ -577,7 +556,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
         
                 ### IncomeAndSources (Shred)
-                    self.shred(self.parse_dict, DBObjects.IncomeAndSources)
+                    self.shred(self.parse_dict, dbobjects.IncomeAndSources)
         
     def parse_person_historical(self, person_tag):
         '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
@@ -953,7 +932,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 fldName='vocational_training_date_collected'
                 self.existence_test_and_add(fldName, item.xpath(xpVocationalTrainingDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 
-                self.shred(self.parse_dict, DBObjects.PersonHistorical)
+                self.shred(self.parse_dict, dbobjects.PersonHistorical)
             
             ### Parse any subtables
                 self.parse_hud_homeless_episodes(item) 
@@ -962,7 +941,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.parse_veteran(item)
                 
         else:
-            self.shred(self.parse_dict, DBObjects.PersonHistorical)
+            self.shred(self.parse_dict, dbobjects.PersonHistorical)
             return
 
     def parse_person(self, root_element):
@@ -1072,7 +1051,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_social_security_number_date_collected', item.xpath(xpPersonSocialSecurityNumberDateCollectedHashed, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')                    
                 self.existence_test_and_add('person_social_sec_number_quality_code', item.xpath(xpPersonSocialSecNumberQualityCode, namespaces={'hmis': self.hmis_namespace}), 'text')                
                 self.existence_test_and_add('person_social_sec_number_quality_code_date_collected', item.xpath(xpPersonSocialSecNumberQualityCodeDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')                
-                self.shred(self.parse_dict, DBObjects.Person)
+                self.shred(self.parse_dict, dbobjects.Person)
                 self.parse_person_historical(item)
                 self.parse_other_names(item)
                 self.parse_races(item)
@@ -1082,7 +1061,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
 #                print 'export id is', Export.c.
             return
         else:
-            self.shred(self.parse_dict, DBObjects.Person)
+            self.shred(self.parse_dict, dbobjects.Person)
             return
         
     def parse_races(self, person_tag):
@@ -1106,9 +1085,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 if test is False:
                     self.existence_test_and_add('race_hashed', item.xpath(xpRaceHashed, namespaces={'hmis': self.hmis_namespace}), 'text')
                     self.existence_test_and_add('race_date_collected', item.xpath(xpRaceDateCollectedHashed, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, DBObjects.Races)           
+                self.shred(self.parse_dict, dbobjects.Races)           
         else:
-            self.shred(self.parse_dict, DBObjects.Races)
+            self.shred(self.parse_dict, dbobjects.Races)
             return
         
     def parse_household(self, element):
@@ -1154,7 +1133,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     fldName='head_of_household_id_hashed_date_collected'
                     self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDHashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 ### Household (Shred)
-                    self.shred(self.parse_dict, DBObjects.Household)
+                    self.shred(self.parse_dict, dbobjects.Household)
         
                 ### Parse any subtables
                     self.parse_members(item)
@@ -1203,7 +1182,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                         self.existence_test_and_add('household_index_id', self.household_index_id, 'no_handling')
             
                     ### Member (Shred)
-                        self.shred(self.parse_dict, DBObjects.Members)
+                        self.shred(self.parse_dict, dbobjects.Members)
             
                     ### Parse any subtables
     
@@ -1284,7 +1263,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
     
             ### ReleaseOfInformation (Shred)
-                self.shred(self.parse_dict, DBObjects.ReleaseOfInformation)
+                self.shred(self.parse_dict, dbobjects.ReleaseOfInformation)
             
 
     def parse_need(self, element):
@@ -1361,7 +1340,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpTaxonomy, namespaces=self.nsmap), 'text')
         
             ### Need (Shred)
-                self.shred(self.parse_dict, DBObjects.Need)
+                self.shred(self.parse_dict, dbobjects.Need)
         
             ### Parse any subtables
 
@@ -1479,7 +1458,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                     self.existence_test_and_add(fldName, item.xpath(xpVeteranStatusDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
         
                 ### SiteServiceParticipation (Shred)
-                    self.shred(self.parse_dict, DBObjects.SiteServiceParticipation)
+                    self.shred(self.parse_dict, dbobjects.SiteServiceParticipation)
         
                 ### Parse any subtables
                     #self.parse_participation_dates(item)
@@ -1602,7 +1581,7 @@ class HMISXML28Reader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpTypeOfServiceOtherDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
             
             ### ServiceEvent (Shred)
-                self.shred(self.parse_dict, DBObjects.ServiceEvent)
+                self.shred(self.parse_dict, dbobjects.ServiceEvent)
             
             ### Parse any subtables
                 #self.parse_service_period(item)
@@ -1627,8 +1606,9 @@ class HMISXML28Reader(DBObjects.databaseObjects):
     def shred(self, parse_dict, mapping):
         '''Commits the record set to the database'''
         mapped = mapping(parse_dict)
-        self.session.save(mapped)
-        self.session.flush()
+        #self.session.commit(mapped)
+        #self.session.merge(mapped)
+        #self.session.flush()
         #Save the indexes generated at run-time so can be used
         #in dependent tables
         if mapping.__name__ == "Household":
@@ -1687,21 +1667,21 @@ def main(argv=None):
     #inputFile = "/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/ExampleSBB_HUD_HMIS_2_8_Instance_dupTest3.xml"
     
     #inputFile = "/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/HMIS_2_8_Project_Heart_10-07-2009v2.xml"
-    inputFile = "/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/Example_HUD_HMIS_2_8_Instance.xml"
-    
-    if settings.DB_PASSWD == "":
-        settings.DB_PASSWD = raw_input("Please enter your password: ")
-    
-    if os.path.isfile(inputFile) is True:#_adapted_further
-        try:
-            xml_file = open(inputFile,'r') 
-        except:
-            print "error"
-            
-        reader = HMISXML28Reader(xml_file)
-        tree = reader.read()
-        reader.process_data(tree)
-        xml_file.close()
+#    inputFile = "/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/Staging/Example_HUD_HMIS_2_8_Instance.xml"
+#    
+#    if settings.DB_PASSWD == "":
+#        settings.DB_PASSWD = raw_input("Please enter your password: ")
+#    
+#    if os.path.isfile(inputFile) is True:#_adapted_further
+#        try:
+#            self.xml_file = open(inputFile,'r') 
+#        except:
+#            print "error"
+#            
+#        reader = HMISXML28Reader(self.xml_file)
+#        tree = reader.read()
+#        reader.process_data(tree)
+#        self.xml_file.close()
 
 if __name__ == "__main__":
     sys.exit(main()) 

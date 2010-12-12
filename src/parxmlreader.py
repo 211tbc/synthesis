@@ -60,12 +60,12 @@ from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
 from conf import settings
-import clsExceptions
-import DBObjects
-from fileutils import FileUtilities
+import clsexceptions
+import dbobjects as dbobjects
+import fileutils
 from errcatalog import catalog
 
-class PARXMLReader(DBObjects.databaseObjects):
+class PARXMLReader(dbobjects.DatabaseObjects):
     '''Implements reader interface.'''
     implements (Reader) 
     
@@ -74,17 +74,14 @@ class PARXMLReader(DBObjects.databaseObjects):
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     ext_namespace = "http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/export/344/trunk/synthesis/xsd/Operation_PAR_Extend_HUD_HMIS_2_8.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : ext_namespace}
-    
-    global FILEUTIL
-    FILEUTIL = FileUtilities()
 
     def __init__(self, xml_file):
         
         # Validate that we have a valid username & password to access the database
         #if settings.DB_USER == "":
-        #    raise clsExceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
+        #    raise clsexceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
         #if settings.DB_PASSWD == "":
-        #    raise clsExceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
+        #    raise clsexceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
         #    
         #self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
         ##self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
@@ -104,7 +101,7 @@ class PARXMLReader(DBObjects.databaseObjects):
         #clear_mappers()
         
         # moved all mapping ORM logic to new module/class
-        dbo = DBObjects.databaseObjects()
+        dbo = dbobjects.DatabaseObjects()
         self.session = dbo.session()
         #self.export_map()
         #self.database_map()
@@ -137,9 +134,9 @@ class PARXMLReader(DBObjects.databaseObjects):
         try:
             self.parse_export(root_element)
         except IntegrityError:
-            FILEUTIL.makeBlock("CAUGHT INTEGRITY ERROR")
+            fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise clsExceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
+            raise clsexceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 
@@ -205,7 +202,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add('source_contact_phone_date_collected', item.xpath(xpSourceContactPhonedateCollected, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'attribute_date')
                 self.existence_test_and_add('source_name', item.xpath(xpSourceName, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'text')
                 self.existence_test_and_add('source_name_date_collected', item.xpath(xpSourceNamedateCollected, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, DBObjects.Source)
+                self.shred(self.parse_dict, dbobjects.Source)
                 #had to hard code this to just use root element, since we're not allowing multiple database_ids per XML file
                 self.parse_person(root_element)
                 self.parse_household(root_element)
@@ -262,14 +259,14 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add('export_software_version_date_collected', item.xpath(xpExportSoftwareVersiondateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
 #                self.session.flush()
 #                print 'export id is', Export.c.id
-                self.shred(self.parse_dict, DBObjects.Export)
+                self.shred(self.parse_dict, dbobjects.Export)
                 self.parse_source(root_element)
                 #current projects only using client sections, not resources    
                 #self.parse_site_service(database_id_tag)
 
         #current projects only using client sections, not resources      
         else:
-            self.shred(self.parse_dict, DBObjects.Export)
+            self.shred(self.parse_dict, dbobjects.Export)
             return
 
     def parse_other_names(self, person_tag):
@@ -327,9 +324,9 @@ class PARXMLReader(DBObjects.databaseObjects):
                 if test is False:
                     self.existence_test_and_add('other_suffix_hashed', item.xpath(xpOtherSuffixHashed, namespaces={'hmis': self.hmis_namespace}),'text')
                     self.existence_test_and_add('other_suffix_date_collected', item.xpath(xpOtherSuffixDateCollectedHashed, namespaces={'hmis': self.hmis_namespace}),'attribute_date')
-                self.shred(self.parse_dict, DBObjects.OtherNames)
+                self.shred(self.parse_dict, dbobjects.OtherNames)
         else:
-            self.shred(self.parse_dict, DBObjects.OtherNames)
+            self.shred(self.parse_dict, dbobjects.OtherNames)
             return
         
     
@@ -361,7 +358,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                     
                 ### HudHomelessEpisodes (Shred)
-                    self.shred(self.parse_dict, DBObjects.HUDHomelessEpisodes)
+                    self.shred(self.parse_dict, dbobjects.HUDHomelessEpisodes)
 
         ### Parse any subtables
     def parse_veteran(self, element):
@@ -465,7 +462,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
     
             ### Veteran (Shred)
-                self.shred(self.parse_dict, DBObjects.Veteran)
+                self.shred(self.parse_dict, dbobjects.Veteran)
     
     def parse_person_address(self, element):
         ### xpPath Definitions
@@ -586,7 +583,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                     ### PersonAddress (Shred)
-                    self.shred(self.parse_dict, DBObjects.PersonAddress)
+                    self.shred(self.parse_dict, dbobjects.PersonAddress)
             
     def parse_income_and_sources(self, item):
         ### xpPath Definitions
@@ -625,7 +622,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
         
                 ### IncomeAndSources (Shred)
-                    self.shred(self.parse_dict, DBObjects.IncomeAndSources)
+                    self.shred(self.parse_dict, dbobjects.IncomeAndSources)
 
     def parse_emergency_contact(self, element):
         ### xpPath Definitions
@@ -754,7 +751,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
                 
                     ### EmergencyContact (Shred)
-                    self.shred(self.parse_dict, DBObjects.EmergencyContact)    
+                    self.shred(self.parse_dict, dbobjects.EmergencyContact)    
                         
     def parse_drug_history(self, element):
         ### xpPath Definitions
@@ -801,7 +798,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_historical_index_id', self.person_historical_index_id, 'no_handling')
 
                     ### PersonAddress (Shred)
-                    self.shred(self.parse_dict, DBObjects.DrugHistory)
+                    self.shred(self.parse_dict, dbobjects.DrugHistory)
 
     def parse_person_historical(self, person_tag):
         '''Looks for an PersonHistorical tag and related fields in the XML and persists it.'''      
@@ -1243,7 +1240,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 fldName='visually_impaired_date_collected'
                 self.existence_test_and_add(fldName, item.xpath(xpVisuallyImpairedDateCollected, namespaces={'ext': self.ext_namespace, 'hmis': self.hmis_namespace}), 'attribute_date')                
                 
-                self.shred(self.parse_dict, DBObjects.PersonHistorical)
+                self.shred(self.parse_dict, dbobjects.PersonHistorical)
             
             ### Parse any subtables
                 self.parse_hud_homeless_episodes(item) 
@@ -1254,7 +1251,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.parse_emergency_contact(item)
                 
         else:
-            self.shred(self.parse_dict, DBObjects.PersonHistorical)
+            self.shred(self.parse_dict, dbobjects.PersonHistorical)
             return
 
     def parse_person(self, root_element):
@@ -1364,7 +1361,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     self.existence_test_and_add('person_social_security_number_date_collected', item.xpath(xpPersonSocialSecurityNumberDateCollectedHashed, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'attribute_date')                    
                 self.existence_test_and_add('person_social_sec_number_quality_code', item.xpath(xpPersonSocialSecNumberQualityCode, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'text')                
                 self.existence_test_and_add('person_social_sec_number_quality_code_date_collected', item.xpath(xpPersonSocialSecNumberQualityCodeDateCollected, namespaces={'hmis': self.hmis_namespace, 'ext': self.ext_namespace}), 'attribute_date')                
-                self.shred(self.parse_dict, DBObjects.Person)
+                self.shred(self.parse_dict, dbobjects.Person)
                 self.parse_person_historical(item)
                 self.parse_other_names(item)
                 self.parse_races(item)
@@ -1374,7 +1371,7 @@ class PARXMLReader(DBObjects.databaseObjects):
 #                print 'export id is', Export.c.
             return
         else:
-            self.shred(self.parse_dict, DBObjects.Person)
+            self.shred(self.parse_dict, dbobjects.Person)
             return
         
     def parse_races(self, person_tag):
@@ -1398,9 +1395,9 @@ class PARXMLReader(DBObjects.databaseObjects):
                 if test is False:
                     self.existence_test_and_add('race_hashed', item.xpath(xpRaceHashed, namespaces={'hmis': self.hmis_namespace}), 'text')
                     self.existence_test_and_add('race_date_collected', item.xpath(xpRaceDateCollectedHashed, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, DBObjects.Races)           
+                self.shred(self.parse_dict, dbobjects.Races)           
         else:
-            self.shred(self.parse_dict, DBObjects.Races)
+            self.shred(self.parse_dict, dbobjects.Races)
             return
         
     def parse_household(self, element):
@@ -1446,7 +1443,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                     fldName='head_of_household_id_hashed_date_collected'
                     self.existence_test_and_add(fldName, item.xpath(xpHeadOfHouseholdIDHashedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 ### Household (Shred)
-                    self.shred(self.parse_dict, DBObjects.Household)
+                    self.shred(self.parse_dict, dbobjects.Household)
         
                 ### Parse any subtables
                     self.parse_members(item)
@@ -1495,7 +1492,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                         self.existence_test_and_add('household_index_id', self.household_index_id, 'no_handling')
             
                     ### Member (Shred)
-                        self.shred(self.parse_dict, DBObjects.Members)
+                        self.shred(self.parse_dict, dbobjects.Members)
             
                     ### Parse any subtables
     
@@ -1576,7 +1573,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpReleaseGrantedDateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
     
             ### ReleaseOfInformation (Shred)
-                self.shred(self.parse_dict, DBObjects.ReleaseOfInformation)
+                self.shred(self.parse_dict, dbobjects.ReleaseOfInformation)
             
 
     def parse_need(self, element):
@@ -1653,7 +1650,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpTaxonomy, namespaces=self.nsmap), 'text')
         
             ### Need (Shred)
-                self.shred(self.parse_dict, DBObjects.Need)
+                self.shred(self.parse_dict, dbobjects.Need)
         
             ### Parse any subtables
 
@@ -1800,7 +1797,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                         
         
                 ### SiteServiceParticipation (Shred)
-                    self.shred(self.parse_dict, DBObjects.SiteServiceParticipation)
+                    self.shred(self.parse_dict, dbobjects.SiteServiceParticipation)
         
                 ### Parse any subtables
                     #self.parse_participation_dates(item)
@@ -1930,7 +1927,7 @@ class PARXMLReader(DBObjects.databaseObjects):
                 self.existence_test_and_add(fldName, item.xpath(xpTypeOfServicePAR, namespaces={'ext': self.ext_namespace}), 'text')
                 
             ### ServiceEvent (Shred)
-                self.shred(self.parse_dict, DBObjects.ServiceEvent)
+                self.shred(self.parse_dict, dbobjects.ServiceEvent)
             
             ### Parse any subtables
                 #self.parse_service_period(item)

@@ -14,15 +14,12 @@ from parxmlreader import PARXMLReader
 from lxml import etree
 import Queue
 from conf import settings
-from emailProcessor import XMLProcessorNotifier
-from fileRouter import router
+from emailprocessor import XMLProcessorNotifier
+from filerouter import router
 from os import path
-from clsExceptions import DuplicateXMLDocumentError
 import traceback
-from clsSecurity import clsSecurity
 import copy
-from StringIO import StringIO
-from clsSocketComm import serviceController
+from clssocketcomm import serviceController
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -35,15 +32,15 @@ class FileHandler:
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
         #ECJ20100815 Commented out for now until debugged 
-        #self.crypto = clsSecurity()
-	   
+        #self.crypto = ClsSecurity()
+       
         if settings.GUI:
-               if settings.DEBUG:
-                   print "Now running the GUI serviceController code"
-               #ECJ 20100815 todo: make it so this also works for UNIX, not just win32
-    	       # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
-    	       sc = serviceController(True)					# True is Server
-    	       sc.listen()
+            if settings.DEBUG:
+                print "Now running the GUI serviceController code"
+                #ECJ 20100815 todo: make it so this also works for UNIX, not just win32
+                # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
+                sc = serviceController(True)                    # True is Server
+                sc.listen()
         #If GUI to control the app being used, just run code with pyinotify or windows listener
         #ECJ 20100815 Make sure windows listener is working without the GUI
         else:
@@ -69,10 +66,13 @@ class FileHandler:
         folderName = path.split(docName)[0]
         if settings.DEBUG:
             print "folder name to email is", folderName
-        try:
-            self.ProcessingOptions = settings.SMTPRECIPIENTS[folderName]
-        except:
-            raise
+        if os.path.isdir(folderName): 
+            try:
+                self.ProcessingOptions = settings.SMTPRECIPIENTS[folderName]
+            except:
+                raise
+        else:
+            print "folder", folderName, "is not a directory"
         
     def processFiles(self, new_file_loc):
         self.setProcessingOptions(new_file_loc)
@@ -104,11 +104,11 @@ class FileHandler:
                     valid = True
                     try:
                         self.email.notifyValidationSuccess()
-                    except exception:
-                        print exception
+                    except:
+                        print traceback.print_exc(file=sys.stdout)
                         pass
                     if settings.DEBUG:
-                        print "moving to Used", 
+                        print "moving to used_files", 
                     self.router.moveUsed(new_file_loc)
     #                break
                     return True
@@ -147,7 +147,7 @@ class FileHandler:
         listOfFiles = list()
         # Loop over list of file locations [list]
         for folder in settings.INPUTFILES_PATH:
-            listOfFiles.extend(FILEUTIL.grabFiles(path.join(folder,'*.xml')))
+            listOfFiles.extend(fileutils.grabFiles(path.join(folder,'*')))
             if settings.DEBUG:
                     print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
@@ -211,9 +211,9 @@ class FileHandler:
             print "back to nonGUIRun, so returning" 
                     
     def monitor(self):
-       'function to start and stop the monitor' 
-       try:
-            result = self.file_input_watcher.monitor()
+        'function to start and stop the monitor' 
+        try:
+            self.file_input_watcher.monitor()
             #if settings.DEBUG:
                 #print "result of fileinputwatcher.monitor passed back up to selector.monitor is", result
             #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
@@ -232,7 +232,7 @@ class FileHandler:
                 try:
                     file_found_path = self.queue.get(block='true', timeout=_QTO)                    
                     if settings.DEBUG:
-                        print 'found file: %s' % file_found_path
+                        print 'found a new file: %s' % file_found_path
                     _QTO = 5
                     
                     if file_found_path != None:
@@ -266,18 +266,16 @@ class FileHandler:
                     self.file_input_watcher.stop_monitoring()
                     break
 
-       except KeyboardInterrupt:
+        except KeyboardInterrupt:
             print "KeyboardInterrupt caught in selector.monitor() main section"
             self.file_input_watcher.stop_monitoring()
-       except:
+        except:
             print "General Exception"
             self.file_input_watcher.stop_monitoring()
             raise
         
 class Selector:
     '''Figures out which data format is being received.'''
-    global FILEUTIL
-    FILEUTIL = fileutils.FileUtilities()
     
     def __init__(self):
         
@@ -370,7 +368,7 @@ class HUDHMIS28XMLTest:
             instance_parsed = etree.parse(instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
-                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -388,9 +386,8 @@ class HUDHMIS28XMLTest:
                 was either valid or invalid."
                 return results
         except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
-            raise    
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            pass   
 
 class HUDHMIS30XMLTest:
     '''Load in the HUD HMIS Schema, version 3.0.'''
@@ -398,6 +395,7 @@ class HUDHMIS30XMLTest:
         self.name = 'HUDHMIS30XML'
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
+        print "settings.SCHEMA_DOCS['hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -411,7 +409,7 @@ class HUDHMIS30XMLTest:
             instance_parsed = etree.parse(instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
-                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -429,9 +427,8 @@ class HUDHMIS30XMLTest:
                 was either valid or invalid."
                 return results
         except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
-            raise
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            pass
         
 class SVCPOINT20XMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
@@ -452,7 +449,7 @@ class SVCPOINT20XMLTest:
             instance_parsed = etree.parse(instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
-                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -494,7 +491,7 @@ class SVCPOINT406XMLTest:
             instance_parsed = etree.parse(instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             if results == True:
-                FILEUTIL.makeBlock('The %s successfully validated.' % self.name)
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
                 print 'The xml did not successfully validate against %s' % self.name
@@ -543,25 +540,25 @@ class JFCSXMLTest:
         
         results = self.schemaTest(copy_instance_stream, self.service_schema_filename)
         if results == True:
-            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service schema.')
+            fileutils.makeBlock('JFCS service XML data found.  Determined by service schema.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
         if results == True:
-            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client schema.')
+            fileutils.makeBlock('JFCS client XML data found.  Determined by client schema.')
             JFCSXMLInputReader.data_type = 'client'
             return results
 
         results = self.elementTest(copy_instance_stream, self.service_elements)
         if results == True:
-            FILEUTIL.makeBlock('JFCS service XML data found.  Determined by service elements.')
+            fileutils.makeBlock('JFCS service XML data found.  Determined by service elements.')
             JFCSXMLInputReader.data_type = 'service'
             return results
         
         results = self.elementTest(copy_instance_stream, self.client_elements)
         if results == True:
-            FILEUTIL.makeBlock('JFCS client XML data found.  Determined by client elements.')
+            fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
             JFCSXMLInputReader.data_type = 'client'
             return results  
         
@@ -671,7 +668,7 @@ class PARXMLTest:
                 
                 #return False ## return invalid, use this to only test validation of string lengths and exit                        
                 
-                FILEUTIL.makeBlock('The Operation PAR XML successfully validated.')
+                fileutils.makeBlock('The Operation PAR XML successfully validated.')
                 return results
             if results == False:
                 print 'The xml did not successfully validate against \
@@ -746,5 +743,5 @@ class VendorXMLReader():
     def shred(self):
         '''implementation of interface's shred method'''
         print '\nThe', self.name, 'test not implemented.'
-        print '...but intended to shred the XML Document: %s' % instance_filename
+        print '...but intended to shred the XML Document: %s' % self.instance_filename
         return False

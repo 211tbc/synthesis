@@ -1,38 +1,46 @@
 #!/usr/bin/env python
 
-from setuptools import setup # this is new
+#from distutils.core import setup
+from setuptools import setup, find_packages
+import sys
 
-setup(name='synthesis',
-version='1.0',
-py_modules=['borg'
-,'clsLogger'
-,'clsExceptions'
-,'DBObjects'
-,'DBObjects_unit_test'
-,'emailProcessor'
-,'fileinput_unit_test_file_exists'
-,'fileinput_unit_test_no_file'
-,'fileinputwatcher'
-,'fileRouter'
-,'fileutils'
-,'hmiscsv27writer'
-,'hmisxml28reader'
-,'hmisxml28writer'
-,'interpretPicklist'
-,'MainProcessor'
-,'nodebuilder'
-,'optimized_al'
-,'postgresutils'
-,'reader'
-,'selector'
-,'selector_unit_test'
-,'smtpLibrary'
-,'svcpointxml20writer'
-,'testCase_settings'
-,'translator'
-,'validate_unit_test'
-,'vendorxmlxxwriter'
-,'writer'
-'XMLUtilities'],
-packages=['conf','errcatalog','xsd','InputFiles','Used',]
-)
+version = '1.104'
+
+install_requires = [
+    'setuptools',
+]
+
+#ECJ20100920 needed to remove this hard-coded dependency condition, since pyinotify 0.8.8 isn't installing, whilst 0.9.0 seems to work fine
+#if sys.platform.startswith("linux"):
+#    install_requires.append("pyinotify==0.8.8")
+
+setup(
+    name = 'synthesis',
+    version = version,
+    description='Health and Human Services Data Integration Server',
+    license = 'MIT',
+    author='Alexandria Consulting LLC',
+    author_email='eric@alexandriaconsulting.com',
+    url='http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src',
+    packages = ['synthesis', 'synthesis.conf', 'synthesis.errcatalog']
+    #namespace_packages=[],
+    #packages = find_packages('src'),
+    #package_dir = {'': 'src'},
+    #include_package_data = True,
+    #install_requires = install_requires,
+    )
+    
+long_description="""Health and Human Services Data Integration Server""",
+classifiers=[
+      "License :: OSI Approved :: The MIT License",
+      "Programming Language :: Python",
+      "Intended Audience :: Human Services Practitioners",
+      "Topic :: Human Services Data Integration",
+],
+keywords='human services data integration hmis 211 niem',
+license='MIT',
+install_requires=[
+    'setuptools',
+    ]
+
+    

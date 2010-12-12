@@ -8,35 +8,28 @@ Configuration = \
     '8888':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'hmisxml30',
+            'outputFormat': 'hmiscsv',
             'destinationURL': 'localhost',
             'transportConfiguration': ''
         },
     '9999':
         {
             'vendor': 'System Operator',
-            'outputFormat': 'hmiscsv30',
-            'destinationURL': 'localhost',
-            'transportConfiguration': 'sys.stdout'
-        },
-    '7777':
-        {
-            'vendor': 'System Operator',
-            'outputFormat': 'hmisxml28',
+            'outputFormat': 'hmisxml',
             'destinationURL': 'localhost',
             'transportConfiguration': 'sys.stdout'
         },
     '1234':
         {
             'vendor': 'Some Vendor Name',
-            'outputFormat': 'svcpoint406',
+            'outputFormat': 'svcpoint',
             'destinationURL': 'someone@somewhere.net',
             'transportConfiguration': 'email'
         },
     '5678':
         {
             'vendor': 'Some Vendor Name2',
-            'outputFormat': 'svcpoint20',
+            'outputFormat': 'svcpoint',
             'destinationURL': 'subdomain.domain.net',
             'transportConfiguration': 'sftp',
             'username': 'someuser',
@@ -45,7 +38,7 @@ Configuration = \
     '91011':
         {
             'vendor': 'Some Vendor Name3',
-            'outputFormat': 'svcpoint406',
+            'outputFormat': 'svcpoint',
             'destinationURL': '192.168.0.208',
             'transportConfiguration': 'sftp',
             'username': 'someuser2',
@@ -53,7 +46,7 @@ Configuration = \
         }, 
      '1313': 
         { 
-             'outputFormat': 'hmiscsv30', 
+             'outputFormat': 'hmiscsv', 
              'destinationURL': 'user@localhost', 
              'transportConfiguration': 'email' 
         },

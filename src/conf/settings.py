@@ -13,7 +13,7 @@ MODE = 'TEST'                               # This is the switch that runs the p
 GUI = False  
 # DB settings:
 DB_DATABASE = "synthesis"
-DB_USER = "eric"
+DB_USER = "$USER"
 DB_PASSWD = "password"
 DB_PORT = 5432
 DB_HOST = "localhost"
@@ -96,7 +96,7 @@ SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS =	{
-     "/home/eric/synthesis/synthesis/synthesis/input_files":
+     "/home/$USER/synthesis/synthesis/synthesis/input_files":
 		{
         'VENDOR_NAME': 'SomeVendor',
 		'SMTPTOADDRESS': ['someone@somedomain.com',],

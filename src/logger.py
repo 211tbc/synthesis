@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import logging
-import logging.config
-import sys, os
-from borg import Borg
+
+import logging 
+from logging import config
+from synthesis.borg import Borg
 
 _defaultConfig = {}
 
@@ -10,7 +10,7 @@ class Logger(Borg):
     def __init__(self, configFile, loglevel=1):
         # make our class a singleton
         Borg.__init__(self)
-        print "Logging with INIFile from Logger: %s" % (configFile)
+        #print "Logging with INIFile from Logger: %s" % (configFile)
         
         self.LEVELS = {'debug': logging.DEBUG,
           'info': logging.INFO,

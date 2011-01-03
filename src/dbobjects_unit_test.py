@@ -3,8 +3,8 @@ selector.py.'''
 #from dbobjects import DatabaseObjects, Export, Database, Household, HUDHomelessEpisodes, IncomeAndSources, Members, OtherNames, Person, PersonAddress, PersonHistorical, Races,
 import dbobjects
 import unittest
-import os
-import postgresutils
+#import os
+#from synthesis import postgresutils
 
 class SelectorTestCase(unittest.TestCase):
     '''see if the return value is a file path'''
@@ -207,9 +207,9 @@ if __name__ == '__main__':
     #import postgresutils
     #UTILS = postgresutils.Utils()
     #UTILS.blank_database()
-    from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
-    from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
-    from sqlalchemy.types import DateTime, Date
+    from sqlalchemy import create_engine#, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
+    #from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
+    #from sqlalchemy.types import DateTime, Date
     from conf import settings
     
     print 'Settings _debug val: %s' % settings.DEBUG

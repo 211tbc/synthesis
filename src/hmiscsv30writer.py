@@ -564,7 +564,7 @@ class HmisCsv30Writer(dbobjects.DatabaseObjects):
 
     def getServiceEventData(self, personIndex, personId):
         serviceEvents = self.session.query(dbobjects.ServiceEvent)\
-            .filter(dbobjects.ServiceEvent.person_index_id_2010 == personIndex)
+            .filter(dbobjects.ServiceEvent.person_index_id == personIndex)
 
         if not serviceEvents.count():
             print "Warning: no data in service_event table for person %s." % personId
@@ -846,11 +846,11 @@ class HmisCsv30Writer(dbobjects.DatabaseObjects):
                 seType = se.type_of_service
                 seStartDt = se.service_period_start_date
                 seEndDt  = se.service_period_end_date
-                serviceCd = se.hmis_service_event_code_type_of_service_2010
+                serviceCd = se.hmis_service_event_code_type_of_service
                 serviceAirsCd = se.service_airs_code
                 isReferral = se.is_referral
                 quantFreq = se.quantity_of_service
-                fundCat = se.hprp_financial_assistance_service_event_code_2010
+                fundCat = se.hprp_financial_assistance_service_event_code
 
                 (faAmt, grantId, advArrears) = self.getFundingSourceData(seIndex)
 
@@ -1209,8 +1209,8 @@ class HmisCsv30Writer(dbobjects.DatabaseObjects):
                 personIndex = person.id
 
                 # Get the fields in person table:
-                personId = self.chooseId(person.person_id_id_num_2010, 
-                                         person.person_id_id_str_2010)
+                personId = self.chooseId(person.person_id_id_num, 
+                                         person.person_id_id_str)
                 personId = self.chooseId(personId, person.person_id_hashed)
                 
                 firstName = person.person_legal_first_name_unhashed
@@ -1537,8 +1537,8 @@ class HmisCsv30Writer(dbobjects.DatabaseObjects):
                 contactEmail = getattr(source, "source_email", None)
 
                 # TBD: These are moved from export for 3.0:
-                swVendor = getattr(source, "software_vendor_2010", None)
-                swVersion = getattr(source, "software_version_2010", None)
+                swVendor = getattr(source, "software_vendor", None)
+                swVersion = getattr(source, "software_version", None)
                     
             except:
                     print "Unable to interpret data from source table!"

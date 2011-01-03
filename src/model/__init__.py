@@ -1,5 +1,5 @@
 """The application's model objects"""
-from model.meta import Session, Base
+from synthesis.model.meta import Session, Base
 
 
 def init_model(engine):

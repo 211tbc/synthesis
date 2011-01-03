@@ -3,23 +3,24 @@ or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 
 import os
-import fileutils
+from synthesis import fileutils
 import sys
 import time
-from fileinputwatcher import FileInputWatcher
-from hmisxml28reader import HMISXML28Reader
-from hmisxml30reader import HMISXML30Reader
-from jfcsxmlreader import JFCSXMLReader
-from parxmlreader import PARXMLReader
+from synthesis.fileinputwatcher import FileInputWatcher
+from synthesis.hmisxml28reader import HMISXML28Reader
+from synthesis.hmisxml30reader import HMISXML30Reader
+from synthesis.jfcsxmlreader import JFCSXMLReader
+from synthesis.occhmisxml30reader import OCCHUDHMISXML30Reader
+from synthesis.parxmlreader import PARXMLReader
 from lxml import etree
 import Queue
 from conf import settings
-from emailprocessor import XMLProcessorNotifier
-from filerouter import router
+from synthesis.emailprocessor import XMLProcessorNotifier
+from synthesis.filerouter import router
 from os import path
 import traceback
 import copy
-from clssocketcomm import serviceController
+from synthesis.clssocketcomm import serviceController
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -96,7 +97,7 @@ class FileHandler:
             
         if settings.DEBUG:
             print "attempting validation tests on", new_file_loc
-            print "os.path.isfile(new_file_loc) is ", os.path.isfile(new_file_loc)
+            #print "os.path.isfile(new_file_loc) is ", os.path.isfile(new_file_loc)
         if os.path.isfile(new_file_loc):
             results = self.selector.validate(new_file_loc)
             for item in results:
@@ -177,7 +178,6 @@ class FileHandler:
             self.processFiles(new_file)
     
     def nonGUIWindowsRun(self):
-        import os, time
         BASE_PATH = os.getcwd()
         path_to_watch = os.path.join(BASE_PATH, "InputFiles")
         before = dict ([(f, None) for f in os.listdir (path_to_watch)])
@@ -292,13 +292,15 @@ class Selector:
         
         #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
         #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
-        tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
+        tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest,OCCHUDHMIS30XMLTest]
         #tests = [HUDHMIS30XMLTest]
         #tests = [HUDHMIS28XMLTest]
         if settings.DEBUG:
             print "tests are", tests
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
-        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLReader,HUDHMIS28XMLTest:HUDHMIS28XMLReader}
+        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader,HUDHMIS28XMLTest:HUDHMIS28XMLInputReader,OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader}
+        #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
+        
         if settings.DEBUG:
             print "readers are", readers
         global results
@@ -331,7 +333,9 @@ class Selector:
                         if shred:
                             if settings.DEBUG:
                                 print "readers[test] is: ", readers[test]
+                                print "instance_file_loc: ", instance_file_loc
                             readers[test](instance_file_loc).shred()
+                            
         if not results:
             print "results empty"                 
         return results
@@ -396,6 +400,48 @@ class HUDHMIS30XMLTest:
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
         print "settings.SCHEMA_DOCS['hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
+    
+    def validate(self, instance_stream):
+        '''This specific data format's validation process.'''
+        schema = open(self.schema_filename,'r')
+        schema_parsed = etree.parse(schema)
+        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        # make a copy of the stream, validate against the copy not the real stream
+        #copy_instance_stream = copy.copy(instance_stream)
+        
+        try:
+            instance_parsed = etree.parse(instance_stream)
+            results = schema_parsed_xsd.validate(instance_parsed)
+            if results == True:
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
+                return results
+            if results == False:
+                print 'The xml did not successfully validate against %s' % self.name
+                try:
+                    detailed_results = schema_parsed_xsd.assertValid\
+                    (instance_parsed)
+                    print detailed_results
+                    return results
+                except etree.DocumentInvalid, error:
+                    print 'Document Invalid Exception.  Here is the detail:'
+                    print error
+                    return results
+            if results == None:
+                print "The validator erred and couldn't determine if the xml \
+                was either valid or invalid."
+                return results
+        except etree.XMLSyntaxError, error:
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            pass
+
+
+class OCCHUDHMIS30XMLTest:
+    '''Load in the HUD HMIS Schema, version 3.0.'''
+    def __init__(self):
+        self.name = 'OCCHUDHMIS30XML'
+        print 'running the', self.name, 'test'
+        self.schema_filename = settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0']
+        print "settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0']
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -690,8 +736,22 @@ class PARXMLTest:
             print 'XML Syntax Error.  There appears to be malformed XML.  '\
             , error
             raise 
+        
+#class GenericXMLInputReader(readertype):
+#    def __init__(self, instance_filename):
+#        self.reader = OCCHUDHMISXML30Reader(instance_filename)
+#        if settings.DEBUG:
+#            print "self.reader to be read is: ", self.reader
+#            print "does self.reader exist?", os.path.exists(self.reader)
+#        
+#    def shred(self):
+#        tree = self.reader.read()
+#        try:
+#            self.reader.process_data(tree)
+#        except:
+#            raise        
     
-class HUDHMIS28XMLReader(HMISXML28Reader):
+class HUDHMIS28XMLInputReader(HMISXML28Reader):
     def __init__(self, instance_filename):
         self.reader = HMISXML28Reader(instance_filename)
         
@@ -702,7 +762,7 @@ class HUDHMIS28XMLReader(HMISXML28Reader):
         except:
             raise
 
-class HUDHMIS30XMLReader(HMISXML30Reader):
+class HUDHMIS30XMLInputReader(HMISXML30Reader):
     def __init__(self, instance_filename):
         self.reader = HMISXML30Reader(instance_filename)
         
@@ -712,6 +772,21 @@ class HUDHMIS30XMLReader(HMISXML30Reader):
             self.reader.process_data(tree)
         except:
             raise
+        
+class OCCHUDHMIS30XMLInputReader(OCCHUDHMISXML30Reader):
+    def __init__(self, instance_filename):
+        #if settings.DEBUG:
+            #print "does ", instance_filename, "exist?", os.path.exists(instance_filename)
+        self.reader = OCCHUDHMISXML30Reader(instance_filename)
+        if settings.DEBUG:    
+            print "self.reader to be read is: ", self.reader
+    def shred(self):
+        tree = self.reader.read()
+        try:
+            self.reader.process_data(tree)
+        except:
+            raise        
+
 
 class JFCSXMLInputReader(JFCSXMLReader):
     def __init__(self, instance_filename):
@@ -724,18 +799,18 @@ class JFCSXMLInputReader(JFCSXMLReader):
         except:
             raise
 
-class PARXMLInputReader(PARXMLReader):
-    def __init__(self, instance_filename):
-        self.reader = PARXMLReader(instance_filename)
-        
-    def shred(self):
-        tree = self.reader.read()
-        try:
-            self.reader.process_data(tree)
-        except:
-            raise
+#class PARXMLInputReader(PARXMLReader):
+#    def __init__(self, instance_filename):
+#        self.reader = PARXMLReader(instance_filename)
+#        
+#    def shred(self):
+#        tree = self.reader.read()
+#        try:
+#            self.reader.process_data(tree)
+#        except:
+#            raise
     
-class VendorXMLReader():
+class VendorXMLInputReader():
     def __init__(self, xml_instance_file):
         self.name = 'Vendor XML'
         pass

@@ -5,21 +5,21 @@ from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
-from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 #from app.lib.mymiddleware import MyMiddleware
 
-from config.environment import load_environment
-from lib.eatexceptions import EatExceptions
+from synthesis.config.environment import load_environment
+from synthesis.lib.eatexceptions import EatExceptions
 
 
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
-    
+    #print "test1"
+    #print "test2"
     #start the server (non wsgi) loop
     child_pid = os.fork()
     if child_pid == 0:
-        from mainprocessor import MainProcessor
+        from synthesis.mainprocessor import MainProcessor
         MainProcessor()
     
     #main parent process

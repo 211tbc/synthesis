@@ -4,12 +4,12 @@ import os
 from mako.lookup import TemplateLookup
 from pylons.configuration import PylonsConfig
 from pylons.error import handle_mako_error
+#from pylons import app_globals
 from sqlalchemy import engine_from_config
-
-import lib.app_globals as app_globals
-import lib.helpers
-from config.routing import make_map
-from model import init_model
+from synthesis.model import init_model
+import synthesis.lib.app_globals as app_globals
+import synthesis.lib.helpers
+from synthesis.config.routing import make_map
 
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
@@ -29,7 +29,7 @@ def load_environment(global_conf, app_conf):
 
     config['routes.map'] = make_map(config)
     config['pylons.app_globals'] = app_globals.Globals(config)
-    config['pylons.h'] = lib.helpers
+    config['pylons.h'] = synthesis.lib.helpers
     
     # Setup cache object as early as possible
     import pylons

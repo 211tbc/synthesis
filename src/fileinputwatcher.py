@@ -217,7 +217,7 @@ class EventHandler(ProcessEvent):
         else:
             print "Create: %s" %  os.path.join(event.path, event.name)
             self.queue.put(os.path.join(event.path, event.name))
-            print "queue is now", self.queue
+            #print "queue is now", self.queue
         
     def process_IN_MOVED_TO(self, event):
             '''What happens when a file is added'''

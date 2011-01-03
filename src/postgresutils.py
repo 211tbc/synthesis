@@ -4,7 +4,6 @@ associated with this code.'''
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData
 from sqlalchemy.orm import sessionmaker, mapper
 from conf import settings
-import sys
 import os
 
 class Employee(object):

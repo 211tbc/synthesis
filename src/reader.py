@@ -27,7 +27,7 @@ from zope.interface import Interface
 class Reader(Interface): #IGNORE:W0232
     '''Interface documentation'''
 
-    def read(input_file): #IGNORE:E0213
+    def read(self, input_file): #IGNORE:E0213
         '''Method interface for reading in an input file to memory'''
         # Note that there is no self argument, since it's just an interface
     

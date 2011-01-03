@@ -1326,10 +1326,10 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         # setup the attributes
         self.processIDDeleteAttributes(exportID, exportData)
         IDStr = ET.SubElement(exportID, "hmis:IDStr")
-        if exportData.export_id_id_id_num_2010 == "" or exportData.export_id_id_id_num_2010 is None:
-            IDStr.text = exportData.export_id_id_id_str_2010
+        if exportData.export_id_id_id_num == "" or exportData.export_id_id_id_num is None:
+            IDStr.text = exportData.export_id_id_id_str
         else:
-            IDStr.text = exportData.export_id_id_id_num_2010
+            IDStr.text = exportData.export_id_id_id_num
 
         fields = [
         #'ExportID',
@@ -1372,10 +1372,10 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         
         IDStr = ET.SubElement(sourceID, "hmis:IDStr")
         
-        if sourceData.source_id_id_id_num_2010 == "" or sourceData.source_id_id_id_num_2010 is None:
-            IDStr.text = sourceData.source_id_id_id_str_2010
+        if sourceData.source_id_id_id_num == "" or sourceData.source_id_id_id_num is None:
+            IDStr.text = sourceData.source_id_id_id_str
         else:
-            IDStr.text = sourceData.source_id_id_id_num_2010
+            IDStr.text = sourceData.source_id_id_id_num
         
         fields = [
         'SoftwareVendor',
@@ -1392,9 +1392,9 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         for field in fields:
             theElements[field] = ET.SubElement(xml, "hmis:%s" % field)
         
-        theElements['SoftwareVendor'].text = sourceData.software_vendor_2010
-        theElements['SoftwareVersion'].text = sourceData.software_version_2010
-        theElements['SourceContactEmail'].text = sourceData.source_contact_email_2010
+        theElements['SoftwareVendor'].text = sourceData.software_vendor
+        theElements['SoftwareVersion'].text = sourceData.software_version
+        theElements['SourceContactEmail'].text = sourceData.source_contact_email
         theElements['SourceContactExtension'].text = sourceData.source_contact_extension
         theElements['SourceContactFirst'].text = sourceData.source_contact_first
         theElements['SourceContactLast'].text = sourceData.source_contact_last

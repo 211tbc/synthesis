@@ -1,17 +1,13 @@
-from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
-from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
-from sqlalchemy.types import DateTime, Date
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import dbobjects
-
 from conf import settings
-from datetime import datetime
-import sys
 
 def loadData():
     pg_db = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-    dbo = dbobjects.DatabaseObjects()
+    dbobjects.DatabaseObjects()
     #model.init_model(self.pg_db)
-    Session = sessionmaker(bind=pg_db, autoflush=True, transactional=True)
+    Session = sessionmaker(bind=pg_db, autoflush=True)
     session = Session()
     
     newRec = {
@@ -23,8 +19,8 @@ def loadData():
         'userid': '906'
         }
     
-    syscon1 = dbobjects.SystemConfiguration(newRec)
-    session.save(syscon1)
+    dbobjects.SystemConfiguration(newRec)
+    session.commit
     
     newRec = {
         'vendor_name': 'BASIX_JFCS',
@@ -34,8 +30,8 @@ def loadData():
         'providerid': '115',
         'userid': '906'
         }
-    syscon1 = dbobjects.SystemConfiguration(newRec)
-    session.save(syscon1)
+    dbobjects.SystemConfiguration(newRec)
+    session.commit
     
     newRec = {
         'vendor_name': 'BASIX_HEART',
@@ -46,8 +42,8 @@ def loadData():
         'userid': '907'
         }
     
-    syscon1 = dbobjects.SystemConfiguration(newRec)
-    session.save(syscon1)
+    dbobjects.SystemConfiguration(newRec)
+    session.commit
     
     newRec = {
         'vendor_name': 'BASIX_HEART',
@@ -57,8 +53,8 @@ def loadData():
         'providerid': '2105',
         'userid': '907'
         }
-    syscon1 = dbobjects.SystemConfiguration(newRec)
-    session.save(syscon1)
+    dbobjects.SystemConfiguration(newRec)
+    session.commit
     
     session.flush()
     session.commit()

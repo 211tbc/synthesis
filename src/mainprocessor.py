@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-from conf import settings
-import fileutils
+from synthesis.conf import settings
+from synthesis import fileutils
 from selector import FileHandler
-import traceback
 import os
 import sys
-from logger import Logger
+from synthesis.logger import Logger
 
 class MainProcessor:
     def __init__(self):
@@ -27,7 +26,7 @@ class MainProcessor:
                 
         # test if we are in debug and TEST Mode.  If so we clear out the DB every processing run, PROD mode need should never do this.
         if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Test mode
-            import postgresutils as postgresutils
+            from synthesis import postgresutils
             utils = postgresutils.Utils()
             utils.blank_database()    
         
@@ -51,7 +50,7 @@ class MainProcessor:
         try:
             if settings.DEBUG:
                 print "Now instantiating FileHandler"
-            filehandler = FileHandler() 
+            FileHandler() 
             print "calling sys.exit"
             sys.exit
         

@@ -54,6 +54,7 @@ $ ./bin/paster create -t pylons synthesis
 ~/synthesis$ cd synthesis/synthesis
 
 -grab the synthesis project sources:
+#note these wget options aren't working correctly as many of the files in the subdirectories are not obtained, also all the index.html files are annoying
 ~/synthesis/synthesis/synthesis$ wget -r --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
 -if you want to develop, tell buildout.cfg about your development egg, by uncommenting:
 

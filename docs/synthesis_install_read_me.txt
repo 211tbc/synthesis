@@ -13,36 +13,40 @@ There are workarounds, but nobody has requested this for Windows.
 
 -Create a directory to share all buildout files and your Pylons project: 
 ~$ cd ~
-~$ mkdir synthesis
-~$ cd synthesis
+~$ mkdir myrestservice
+~$ cd myrestservice
 
 -Get the latest version of buildout's bootstrap script:
-~/synthesis$ wget "http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py"
+~/myrestservice$ wget "http://svn.zope.org/*checkout*/zc.buildout/trunk/bootstrap/bootstrap.py"
 
 -Get the buildout script: 
-~/synthesis$ wget "http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/docs/buildout.cfg"
+~/myrestservice$ wget "http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/docs/buildout.cfg"
 
 -Now we have a clean buildout config. Let's bootstrap the buildout and run it:
 
-~/synthesis$ mkdir downloads
-~/synthesis$ python bootstrap.py
-~/synthesis$ ./bin/buildout
+~/myrestservice$ mkdir downloads
+~/myrestservice$ python bootstrap.py
+
+-you should get "Generated script '~/myrestservice/bin/buildout'."
+-Now run the generated script
+
+~/myrestservice$ ./bin/buildout
 
 This will take a while.
 
 You now have two new binaries in the bin/ directory:
 
-~/synthesis$ ls bin
+~/myrestservice$ ls bin
 buildout*  nosetests* paster*
 
 All eggs can be found in eggs/:
 
-~/synthesis$ ls eggs
+~/myrestservice$ ls eggs
 Beaker-1.2-py2.5.egg/         Pylons-0.9.7rc4-py2.5.egg/
 FormAlchemy-1.1.1-py2.5.egg/  Routes-1.10.2-py2.5.egg/
 ...
-Make a synthesis directory: 
-~/synthesis$ mkdir synthesis 
+Make a synthesis development egg directory: 
+~/myrestservice$ mkdir synthesis 
 
 Create a pylons project with the newly created paster binary:
 
@@ -51,12 +55,13 @@ $ ./bin/paster create -t pylons synthesis
 -choose the 'mako' template engine, and say 'True' to sqlalchemy as well.
 
 -go into this new project folder
-~/synthesis$ cd synthesis/synthesis
+~/myrestservice$ cd synthesis/synthesis
 
 -grab the synthesis project sources:
-#note these wget options aren't working correctly as many of the files in the subdirectories are not obtained, also all the index.html files are annoying
-~/synthesis/synthesis/synthesis$ wget -r --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
--if you want to develop, tell buildout.cfg about your development egg, by uncommenting:
+#note these wget options aren't working correctly as many of the files in the subdirectories are not obtained, also all the index.html files are annoying, I think wget -m might work
+#maybe use rsync -avz --delete to copy the files if you also can't get wget to behave.  I use rsync -avz --delete -e'ssh -p 1234' source dest
+~/myrestservice/synthesis/synthesis$ wget -r --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
+-if you want to develop, tell buildout.cfg about your development egg, by uncommenting two lines:
 
 [buildout]
 ...
@@ -69,17 +74,22 @@ eggs=
 #uncomment this to develop
 #   synthesis
 
--edit ~/synthesis/synthesis/synthesis/fileconverter.ini with the correct path to the logging file
+-edit ~/myrestservice/synthesis/synthesis/fileconverter.ini with the correct path to the logging file
 
-args=('/home/yourusername/synthesis/synthesis/synthesis/logs/synthesis.log', 'a')
+args=('/home/yourusername/myrestservice/synthesis/synthesis/logs/synthesis.log', 'a')
 
--start the server:
-~/synthesis$ ./bin/paster serve ./synthesis/development.ini start
+-start the server, but first move to the newly built location:
+-we do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
+#need to fix this: the generated ./bin/python does not have the   '~/myrestservice/synthesis/synthesis', path in it.  Need to manually add it until buildout is fixed. Probably just need to add 'develop synthesis/synthesis' to buildout 
+~/myrestservice$ cd synthesis
+~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
+or make it run outside the console: ~/myrestservice/synthesis$ nohup ../bin/python ../bin/paster serve ./development.ini start > pylons_nohup &2>1&
+stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
 
--Note, the wget operation will drop index.html files into you input_files folder, but it'l just get moved to failed_files.
+-Note, on first run, the wget -r --no-parent operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files.
 
 Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested. 
  
-
+next, read the testing readme at: docs/synthesis_testing_read_me.txt
 
 

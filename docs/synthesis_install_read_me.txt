@@ -58,10 +58,8 @@ $ ./bin/paster create -t pylons synthesis
 ~/myrestservice$ cd synthesis/synthesis
 
 -grab the synthesis project sources:
-#note these wget options aren't working correctly as many of the files in the subdirectories are not obtained, also all the index.html files are annoying, I think wget -m might work
-#maybe use rsync -avz --delete to copy the files if you also can't get wget to behave.  I use rsync -avz --delete -e'ssh -p 1234' source dest
-~/myrestservice/synthesis/synthesis$ wget -r --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
--if you want to develop, tell buildout.cfg about your development egg, by uncommenting two lines:
+~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
+-Now, tell buildout.cfg about your development egg, by uncommenting two lines:
 
 [buildout]
 ...
@@ -86,7 +84,7 @@ args=('/home/yourusername/myrestservice/synthesis/synthesis/logs/synthesis.log',
 or make it run outside the console: ~/myrestservice/synthesis$ nohup ../bin/python ../bin/paster serve ./development.ini start > pylons_nohup &2>1&
 stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
 
--Note, on first run, the wget -r --no-parent operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files.
+-Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files.
 
 Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested. 
  

@@ -19,7 +19,7 @@ class Utils:
     '''Contains some utility methods for a Postgres database'''
     def __init__(self):
         self.metadata = MetaData()
-        self.synthesis_engine = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
+        self.synthesis_engine = create_engine('postgresql+psycopg2://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE) , echo=settings.DEBUG_DB)#, server_side_cursors=True)
         self.synthesis_metadata = MetaData(self.synthesis_engine)
         #Session = sessionmaker(bind=self.synthesis_engine, autoflush=True, transactional=True)
         Session = sessionmaker(bind=self.synthesis_engine, autoflush=True)

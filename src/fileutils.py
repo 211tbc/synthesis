@@ -288,8 +288,9 @@ def moveFile(source_file_path, destination_directory):
         shutil.move(temp_file_path, timestamped_temp_file_path)
         try:
             shutil.move(timestamped_temp_file_path, destination_directory)
-        except shutil.Error as detail:
-            print detail
+        except shutil.Error:# as detail:
+            raise
+            #print detail
 #                if settings.DEBUG:
 #                    print "new temp filepath should be: ", new_temp_filepath
 #                    if os.path.isfile(new_temp_filepath):

@@ -20,7 +20,6 @@ class DatabaseObjects:
     # this is needed to do real work.'
     Session = sessionmaker(bind=pg_db_engine)
     print "session is: ", Session
-    print "testing this out"
     def __init__(self):
         try:
             
@@ -1449,6 +1448,7 @@ class DatabaseObjects:
         Column('individual_family_code', String(50)),
         Column('residential_tracking_method', String(50)),
         Column('service_type', String(50)),
+        Column('jfcs_service_type', String(50)),
         Column('service_effective_period_start_date', DateTime(timezone=False)),
         Column('service_effective_period_end_date', DateTime(timezone=False)),
         Column('service_recorded_date', DateTime(timezone=False)),

@@ -81,7 +81,7 @@ args=('/home/yourusername/myrestservice/synthesis/synthesis/logs/synthesis.log',
 #need to fix this: the generated ./bin/python does not have the   '~/myrestservice/synthesis/synthesis', path in it.  Need to manually add it until buildout is fixed. Probably just need to add 'develop synthesis/synthesis' to buildout 
 ~/myrestservice$ cd synthesis
 ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
-or make it run outside the console: ~/myrestservice/synthesis$ paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
+or make it run outside the console: ~/myrestservice/synthesis$ ../bin/python paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
 stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster --pid-file=./paster.pid serve ./development.ini stop
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files.

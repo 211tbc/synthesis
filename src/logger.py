@@ -19,7 +19,7 @@ class Logger(Borg):
           'critical': logging.CRITICAL}
         
         try:
-            logging.config.fileConfig(configFile, _defaultConfig)
+            config.fileConfig(configFile, _defaultConfig)
         except IOError:
             raise
         

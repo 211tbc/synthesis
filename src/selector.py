@@ -225,10 +225,10 @@ class FileHandler:
                 wait_counter = 0
             while 1:
                 #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
-                if settings.DEBUG:
-                    print "waiting for new files...", wait_counter
-                    wait_counter+=1
-                time.sleep(3)
+                #if settings.DEBUG:
+                #    print "waiting for new files...", wait_counter
+                 #   wait_counter+=1
+                #time.sleep(3)
                 try:
                     file_found_path = self.queue.get(block='true', timeout=_QTO)                    
                     if settings.DEBUG:
@@ -292,13 +292,13 @@ class Selector:
         
         #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
         #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
-        tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest,OCCHUDHMIS30XMLTest]
+        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest]
         #tests = [HUDHMIS30XMLTest]
         #tests = [HUDHMIS28XMLTest]
         if settings.DEBUG:
             print "tests are", tests
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
-        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader,HUDHMIS28XMLTest:HUDHMIS28XMLInputReader,OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader}
+        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader}
         #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
         
         if settings.DEBUG:

@@ -1,16 +1,11 @@
 #!/usr/bin/python env
 
 import sys, os
-from conf import settings
 from reader import Reader
 from zope.interface import implements
 from lxml import etree
-from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
-import clsexceptions
 import dbobjects  as dbobjects
-import fileutils
-from errcatalog import catalog
 
 class JFCSXMLReader(dbobjects.DatabaseObjects):
     ''' Synthesis import plugin for JFCS XML 
@@ -28,7 +23,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         self.xml_file = xml_file
         ''' instantiate database object '''
         dbo = dbobjects.DatabaseObjects()
-        self.session = dbo.session()
+        self.session = dbo.Session()
     
     def read(self):
         ''' suck in raw xml file and build etree object '''
@@ -111,8 +106,8 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         self.lookup_person()
         if self.person_index_id != '':
             self.existence_test_and_add('site_service_index_id', self.service_index_id, 'no_handling')
-            if self.row_dict.has_key('qprogram'): self.existence_test_and_add('service_event_idid_num', self.row_dict.__getitem__('qprogram'), 'text')
-            if self.row_dict.has_key('serv_code'): self.existence_test_and_add('type_of_service', self.row_dict.__getitem__('serv_code'), 'text')
+            if self.row_dict.has_key('qprogram'): self.existence_test_and_add('site_service_idid_num', self.row_dict.__getitem__('qprogram'), 'text')
+            if self.row_dict.has_key('serv_code'): self.existence_test_and_add('jfcs_type_of_service', self.row_dict.__getitem__('serv_code'), 'text')
             ''' dates may come in filled, blank, or contain just dashes'''
             ''' normalize the date field before sending to db '''
             if self.row_dict.has_key('trdate'):
@@ -181,7 +176,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         ''' parse data for site_service_participation table '''
         self.parse_dict = {}
         self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
-        if self.row_dict.has_key('aprgcode'): self.existence_test_and_add('site_service_participation_idid_num', self.row_dict.__getitem__('aprgcode'), 'text')
+        if self.row_dict.has_key('aprgcode'): self.existence_test_and_add('site_service_idid_num', self.row_dict.__getitem__('aprgcode'), 'text')
         if self.row_dict.has_key('a_date'):
             test = self.normalize_date(self.row_dict.__getitem__('a_date'))
             if test == True: self.existence_test_and_add('participation_dates_start_date', self.row_dict.__getitem__('a_date'), 'element_date')
@@ -209,8 +204,8 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
     def shred(self, parse_dict, mapping):
         '''Commits the record set to the database'''
         mapped = mapping(parse_dict)
-        self.session.save(mapped)
-        self.session.flush()
+        self.session.add(mapped)
+        self.session.commit()
         #Save the indexes generated at run-time so can be used
         #in dependent tables
         if mapping.__name__ == "Household":

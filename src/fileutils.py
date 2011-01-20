@@ -29,7 +29,7 @@ import shutil
 import csv
 from time import sleep as ossleep
 import datetime
-from conf import settings
+from synthesis.conf import settings
       
 def sleep(sleepTime):
     print 'Sleeping for %s' % sleepTime

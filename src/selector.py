@@ -11,7 +11,7 @@ from synthesis.hmisxml28reader import HMISXML28Reader
 from synthesis.hmisxml30reader import HMISXML30Reader
 from synthesis.jfcsxmlreader import JFCSXMLReader
 from synthesis.occhmisxml30reader import OCCHUDHMISXML30Reader
-from synthesis.parxmlreader import PARXMLReader
+#from synthesis.parxmlreader import PARXMLReader
 from lxml import etree
 import Queue
 from conf import settings
@@ -214,21 +214,22 @@ class FileHandler:
         'function to start and stop the monitor' 
         try:
             self.file_input_watcher.monitor()
-            #if settings.DEBUG:
+            if settings.DEBUG:
+                print "waiting for new input..."
                 #print "result of fileinputwatcher.monitor passed back up to selector.monitor is", result
             #now make a file whilst pyinotify thread is running need to keep pulling from the queue (set to timeout after 5 seconds: subsequent passes)
             #In other words, the Queue fills up while pyinotify is working.  This empties the Queue, without stopping its function
             
             files = list()
             _QTO = 5
-            if settings.DEBUG:    
-                wait_counter = 0
+#            if settings.DEBUG:    
+#                wait_counter = 0
             while 1:
                 #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
-                #if settings.DEBUG:
-                #    print "waiting for new files...", wait_counter
-                 #   wait_counter+=1
-                #time.sleep(3)
+#                if settings.DEBUG:
+#                    print "waiting for new files...", wait_counter
+#                    wait_counter+=1
+#                time.sleep(3)
                 try:
                     file_found_path = self.queue.get(block='true', timeout=_QTO)                    
                     if settings.DEBUG:
@@ -300,6 +301,13 @@ class Selector:
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
         readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader}
         #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
+        
+        if settings.SKIP_VALIDATION_TEST is True:
+            print 'skipping tests battery for debugging'
+            print "just shredding with JFCSXMLReader service_event schema"
+            JFCSXMLInputReader.data_type = 'service_event'
+            readers[JFCSXMLTest](instance_file_loc).shred()
+            return
         
         if settings.DEBUG:
             print "readers are", readers
@@ -561,11 +569,11 @@ class SVCPOINT406XMLTest:
     
 class JFCSXMLTest:
     ''' Tests for JFCS data 
-        * There are 2 possible data source types ('service' or 'client')
+        * There are 2 possible data source types ('service_event' or 'client')
         Steps: (will stop and return True on first success)
-            1 - Attempt to validate against 'service' schema: 'JFCS_service.xsd'
-            2 - Attempt to validate against 'client' schema: 'JFCS_client.xsd'
-            3 - Check for known 'service' elements anywhere in the tree
+            1 - Attempt to validate against 'service_event' schema: 'JFCS_SERVICE.xsd'
+            2 - Attempt to validate against 'client' schema: 'JFCS_CLIENT.xsd'
+            3 - Check for known 'service_event' elements anywhere in the tree
             4 - Check for known 'client' elements anywhere in the tree
     '''
     
@@ -574,20 +582,20 @@ class JFCSXMLTest:
         print 'running the', self.name, 'test'
         
         ''' Define schemas and elements for testing '''
-        self.service_schema_filename = settings.SCHEMA_DOCS['jfcs_service_xml']
+        self.service_event_schema_filename = settings.SCHEMA_DOCS['jfcs_service_event_xml']
         self.client_schema_filename = settings.SCHEMA_DOCS['jfcs_client_xml']
-        self.service_elements = ['c4clientid','qprogram','serv_code','trdate','end_date','cunits']
+        self.service_event_elements = ['c4clientid','qprogram','serv_code','trdate','end_date','cunits']
         self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno','c4last_s01']
         
     def validate(self, instance_filename, ):
-        '''JCFS data format validation process'''
+        '''JFCS data format validation process'''
         
         copy_instance_stream = copy.copy(instance_filename)
         
-        results = self.schemaTest(copy_instance_stream, self.service_schema_filename)
+        results = self.schemaTest(copy_instance_stream, self.service_event_schema_filename)
         if results == True:
-            fileutils.makeBlock('JFCS service XML data found.  Determined by service schema.')
-            JFCSXMLInputReader.data_type = 'service'
+            fileutils.makeBlock('JFCS service event XML data found.  Determined by service event schema.')
+            JFCSXMLInputReader.data_type = 'service_event'
             return results
         
         results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
@@ -598,8 +606,8 @@ class JFCSXMLTest:
 
         results = self.elementTest(copy_instance_stream, self.service_elements)
         if results == True:
-            fileutils.makeBlock('JFCS service XML data found.  Determined by service elements.')
-            JFCSXMLInputReader.data_type = 'service'
+            fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
+            JFCSXMLInputReader.data_type = 'service_event'
             return results
         
         results = self.elementTest(copy_instance_stream, self.client_elements)
@@ -786,7 +794,6 @@ class OCCHUDHMIS30XMLInputReader(OCCHUDHMISXML30Reader):
             self.reader.process_data(tree)
         except:
             raise        
-
 
 class JFCSXMLInputReader(JFCSXMLReader):
     def __init__(self, instance_filename):

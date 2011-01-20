@@ -7,7 +7,9 @@ There are workarounds, but nobody has requested this for Windows.
 
 -Install a postgres database.  Get it from your package manager, then configure it.  Here are notes for Debian: http://codeghar.wordpress.com/2009/01/24/postgresql-83-on-debian-lenny/
 
--Make sure you create a new database with your user.  It can have any name, like '$ createdb synthesis'.  Save the db password for later.
+-Make sure you create a new database with your user.  It can have any name, like '$ createdb synthesis'.  
+To be able to run the createdb command, you'll probably first need to edit the pg_hba.conf and create a postgres user with postgres@localhost:$ createuser -s -P your_user_name
+Save the db password for later.
 
 2.1 also get gcc, python-dev, libpq-dev (for postgres connectivity), make, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
 
@@ -57,7 +59,7 @@ $ ./bin/paster create -t pylons synthesis
 -go into this new project folder
 ~/myrestservice$ cd synthesis/synthesis
 
--grab the synthesis project sources:
+-grab the synthesis project sources (you need to be owner of the dirs for this to work, so chown if needed):
 ~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
 -Now, tell buildout.cfg about your development egg, by uncommenting two lines:
 
@@ -72,7 +74,11 @@ eggs=
 #uncomment this to develop
 #   synthesis
 
--edit ~/myrestservice/synthesis/synthesis/fileconverter.ini with the correct path to the logging file
+run buildout again: 
+~/myrestservice$ ./bin/buildout
+
+-edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc.
+-edit ~/myrestservice/synthesis/synthesis/logging.ini with the correct path to the logging file
 
 args=('/home/yourusername/myrestservice/synthesis/synthesis/logs/synthesis.log', 'a')
 
@@ -81,7 +87,7 @@ args=('/home/yourusername/myrestservice/synthesis/synthesis/logs/synthesis.log',
 #need to fix this: the generated ./bin/python does not have the   '~/myrestservice/synthesis/synthesis', path in it.  Need to manually add it until buildout is fixed. Probably just need to add 'develop synthesis/synthesis' to buildout 
 ~/myrestservice$ cd synthesis
 ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
-or make it run outside the console: ~/myrestservice/synthesis$ ../bin/python paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
+or make it run outside the console: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
 stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster --pid-file=./paster.pid serve ./development.ini stop
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files.

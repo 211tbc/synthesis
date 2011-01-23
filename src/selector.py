@@ -604,17 +604,20 @@ class JFCSXMLTest:
             JFCSXMLInputReader.data_type = 'client'
             return results
 
-        results = self.elementTest(copy_instance_stream, self.service_elements)
-        if results == True:
-            fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
-            JFCSXMLInputReader.data_type = 'service_event'
-            return results
+        try:
+            results = self.elementTest(copy_instance_stream, self.service_elements)
+            if results == True:
+                fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
+                JFCSXMLInputReader.data_type = 'service_event'
+                return results
         
-        results = self.elementTest(copy_instance_stream, self.client_elements)
-        if results == True:
-            fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
-            JFCSXMLInputReader.data_type = 'client'
-            return results  
+            results = self.elementTest(copy_instance_stream, self.client_elements)
+            if results == True:
+                fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
+                JFCSXMLInputReader.data_type = 'client'
+                return results
+        except Exception, exception:
+            print 'XML Syntax Error.  There appears to be malformed XML.    ', exception
         
         return False
     

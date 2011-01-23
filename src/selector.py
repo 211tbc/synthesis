@@ -628,9 +628,7 @@ class JFCSXMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             return results
         except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.    '\
-            , error
-            raise
+            print 'XML Syntax Error.  There appears to be malformed XML.    ', error
         return False
         
     def elementTest(self, copy_instance_stream, elements):

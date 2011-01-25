@@ -259,38 +259,22 @@ class DatabaseObjects:
         
         Column('id', Integer, primary_key=True),
         Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.id)),
-    
-    # dbCol: need_idid_num
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('need_idid_num', String(32)),
         Column('need_idid_num_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: need_idid_str
         Column('need_idid_str', String(32)),
         Column('need_idid_str_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: site_service_idid_num
         Column('site_service_idid_num', String(32)),
         Column('site_service_idid_num_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: site_service_idid_str
         Column('site_service_idid_str', String(32)),
         Column('site_service_idid_str_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: service_event_idid_num
         Column('service_event_idid_num', String(32)),
         Column('service_event_idid_num_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: service_event_idid_str
         Column('service_event_idid_str', String(32)),
         Column('service_event_idid_str_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: need_status
         Column('need_status', String(32)),
         Column('need_status_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: taxonomy
         Column('taxonomy', String(32)),
-        
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
@@ -373,6 +357,7 @@ class DatabaseObjects:
         table_metadata, 
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('race_unhashed', Integer(2)),
         Column('race_hashed', String(32)),
         Column('race_date_collected', DateTime(timezone=False)),
@@ -457,7 +442,8 @@ class DatabaseObjects:
         Column('report_id_id_id_str', String(50)),
         Column('report_id_id_delete_occurred_date', DateTime(timezone=False)),
         Column('report_id_id_delete_effective_date', DateTime(timezone=False)),        
-        Column('report_id_id_delete', String(32)),        
+        Column('report_id_id_delete', String(32)), 
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         useexisting = True
         )
         table_metadata.create_all()
@@ -477,6 +463,7 @@ class DatabaseObjects:
         table_metadata, 
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.id)), 
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('other_first_name_unhashed', String(50)),
         Column('other_first_name_hashed', String(50)),
         Column('other_first_name_date_collected', DateTime(timezone=False)),
@@ -513,15 +500,11 @@ class DatabaseObjects:
         
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        
-    # dbCol: start_date
+        Column('export_index_id', Integer, ForeignKey(Export.id)),        
         Column('start_date', String(32)),
         Column('start_date_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: end_date
         Column('end_date', String(32)),
         Column('end_date_date_collected', DateTime(timezone=False)),
-    
         useexisting = True)
         table_metadata.create_all()
     
@@ -537,50 +520,29 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-    # dbCol: service_era
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('service_era', Integer),
         Column('service_era_date_collected', DateTime(timezone=False)),
-
-    # dbCol: military_service_duration
         Column('military_service_duration', Integer),
         Column('military_service_duration_date_collected', DateTime(timezone=False)),
-
-    # dbCol: served_in_war_zone
         Column('served_in_war_zone', Integer),
         Column('served_in_war_zone_date_collected', DateTime(timezone=False)),
-
-    # dbCol: war_zone
         Column('war_zone', Integer),
         Column('war_zone_date_collected', DateTime(timezone=False)),
-
-    # dbCol: war_zone_other
         Column('war_zone_other', String(50)),
         Column('war_zone_other_date_collected', DateTime(timezone=False)),
-
-    # dbCol: months_in_war_zone
         Column('months_in_war_zone', Integer),
         Column('months_in_war_zone_date_collected', DateTime(timezone=False)),
-
-    # dbCol: received_fire
         Column('received_fire', Integer),
         Column('received_fire_date_collected', DateTime(timezone=False)),
-
-    # dbCol: military_branch
         Column('military_branch', Integer),
         Column('military_branch_date_collected', DateTime(timezone=False)),
-
-    # dbCol: military_branch_other
         Column('military_branch_other', String(50)),
         Column('military_branch_other_date_collected', DateTime(timezone=False)),
-
-    # dbCol: discharge_status
         Column('discharge_status', Integer),
         Column('discharge_status_date_collected', DateTime(timezone=False)),
-
-    # dbCol: discharge_status_other
         Column('discharge_status_other', String(50)),
         Column('discharge_status_other_date_collected', DateTime(timezone=False)),
-        
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
         
@@ -597,17 +559,13 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-
-        # dbCol: drug_history_id
-            Column('drug_history_id', String(32)),
-            Column('drug_history_id_date_collected', DateTime(timezone=False)),
-        # dbCol: drug_code
-            Column('drug_code', Integer(2)),
-            Column('drug_code_date_collected', DateTime(timezone=False)),    
-        # dbCol: drug_use_frequency
-            Column('drug_use_frequency', Integer(2)),
-            Column('drug_use_frequency_date_collected', DateTime(timezone=False)),
-
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
+        Column('drug_history_id', String(32)),
+        Column('drug_history_id_date_collected', DateTime(timezone=False)),
+        Column('drug_code', Integer(2)),
+        Column('drug_code_date_collected', DateTime(timezone=False)),    
+        Column('drug_use_frequency', Integer(2)),
+        Column('drug_use_frequency_date_collected', DateTime(timezone=False)),
         # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
@@ -624,45 +582,33 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-
-        # dbCol: emergency_contact_id
-            Column('emergency_contact_id', String(32)),
-            Column('emergency_contact_id_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_name
-            Column('emergency_contact_name', String(32)),
-            Column('emergency_contact_name_date_collected', DateTime(timezone=False)),    
-        # dbCol: emergency_contact_phone_number-0
-            Column('emergency_contact_phone_number_0', String(32)),
-            Column('emergency_contact_phone_number_date_collected_0', DateTime(timezone=False)),
-            Column('emergency_contact_phone_number_type_0', String(32)),
-        # dbCol: emergency_contact_phone_number-1
-            Column('emergency_contact_phone_number_1', String(32)),
-            Column('emergency_contact_phone_number_date_collected_1', DateTime(timezone=False)),
-            Column('emergency_contact_phone_number_type_1', String(32)),
-        # dbCol: emergency_contact_address
-            Column('emergency_contact_address_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_start_date
-            Column('emergency_contact_address_start_date', DateTime(timezone=False)),
-            Column('emergency_contact_address_start_date_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_end_date
-            Column('emergency_contact_address_end_date', DateTime(timezone=False)),
-            Column('emergency_contact_address_end_date_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_line1
-            Column('emergency_contact_address_line1', String(32)),
-            Column('emergency_contact_address_line1_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_line2
-            Column('emergency_contact_address_line2', String(32)),
-            Column('emergency_contact_address_line2_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_city
-            Column('emergency_contact_address_city', String(32)),
-            Column('emergency_contact_address_city_date_collected', DateTime(timezone=False)),
-        # dbCol: emergency_contact_address_state
-            Column('emergency_contact_address_state', String(32)),
-            Column('emergency_contact_address_state_date_collected', DateTime(timezone=False)),    
-        # dbCol: emergency_contact_relation_to_client
-            Column('emergency_contact_relation_to_client', String(32)),
-            Column('emergency_contact_relation_to_client_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
+        Column('emergency_contact_id', String(32)),
+        Column('emergency_contact_id_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_name', String(32)),
+        Column('emergency_contact_name_date_collected', DateTime(timezone=False)),    
+        Column('emergency_contact_phone_number_0', String(32)),
+        Column('emergency_contact_phone_number_date_collected_0', DateTime(timezone=False)),
+        Column('emergency_contact_phone_number_type_0', String(32)),
+        Column('emergency_contact_phone_number_1', String(32)),
+        Column('emergency_contact_phone_number_date_collected_1', DateTime(timezone=False)),
+        Column('emergency_contact_phone_number_type_1', String(32)),
+        Column('emergency_contact_address_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_start_date', DateTime(timezone=False)),
+        Column('emergency_contact_address_start_date_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_end_date', DateTime(timezone=False)),
+        Column('emergency_contact_address_end_date_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_line1', String(32)),
+        Column('emergency_contact_address_line1_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_line2', String(32)),
+        Column('emergency_contact_address_line2_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_city', String(32)),
+        Column('emergency_contact_address_city_date_collected', DateTime(timezone=False)),
+        Column('emergency_contact_address_state', String(32)),
+        Column('emergency_contact_address_state_date_collected', DateTime(timezone=False)),    
+        Column('emergency_contact_relation_to_client', String(32)),
+        Column('emergency_contact_relation_to_client_date_collected', DateTime(timezone=False)),
+    # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
         Column('reported', Boolean),
 
         useexisting = True
@@ -679,6 +625,7 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('address_period_start_date',DateTime(timezone=False)),
         Column('address_period_start_date_date_collected',DateTime(timezone=False)),
         Column('address_period_end_date',DateTime(timezone=False)),
@@ -826,6 +773,7 @@ class DatabaseObjects:
         'person_historical', 
         table_metadata, 
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_index_id', Integer, ForeignKey(Person.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.id)),
         Column('person_historical_id_id_num', String(32)),
@@ -833,176 +781,90 @@ class DatabaseObjects:
         Column('person_historical_id_delete_effective_date', DateTime(timezone=False)),
         Column('person_historical_id_delete', Integer),
         Column('person_historical_id_delete_occurred_date', DateTime(timezone=False)),
-
-    # dbCol: barrier_code
         Column('barrier_code', String(32)),
         Column('barrier_code_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: barrier_other
         Column('barrier_other', String(32)),
         Column('barrier_other_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: child_currently_enrolled_in_school
         Column('child_currently_enrolled_in_school', String(32)),
         Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: currently_employed
         Column('currently_employed', String(32)),
         Column('currently_employed_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: currently_in_school
         Column('currently_in_school', String(32)),
         Column('currently_in_school_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: degree_code
         Column('degree_code', String(32)),
         Column('degree_code_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: degree_other
         Column('degree_other', String(32)),
         Column('degree_other_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: developmental_disability
         Column('developmental_disability', String(32)),
         Column('developmental_disability_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: domestic_violence
         Column('domestic_violence', String(32)),
         Column('domestic_violence_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: domestic_violence_how_long
         Column('domestic_violence_how_long', String(32)),
         Column('domestic_violence_how_long_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: due_date
         Column('due_date', String(32)),
         Column('due_date_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: employment_tenure
         Column('employment_tenure', String(32)),
         Column('employment_tenure_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: health_status
         Column('health_status', String(32)),
         Column('health_status_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: highest_school_level
         Column('highest_school_level', String(32)),
         Column('highest_school_level_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: hivaids_status
         Column('hivaids_status', String(32)),
         Column('hivaids_status_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: hours_worked_last_week
         Column('hours_worked_last_week', String(32)),
         Column('hours_worked_last_week_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: hud_chronic_homeless
         Column('hud_chronic_homeless', String(32)),
         Column('hud_chronic_homeless_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: hud_homeless
         Column('hud_homeless', String(32)),
         Column('hud_homeless_date_collected', DateTime(timezone=False)),
-    
         ###HUDHomelessEpisodes (subtable)
-    
         ###IncomeAndSources (subtable)
-    
-    # dbCol: length_of_stay_at_prior_residence
         Column('length_of_stay_at_prior_residence', String(32)),
         Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: looking_for_work
         Column('looking_for_work', String(32)),
         Column('looking_for_work_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: mental_health_indefinite
         Column('mental_health_indefinite', String(32)),
         Column('mental_health_indefinite_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: mental_health_problem
         Column('mental_health_problem', String(32)),
         Column('mental_health_problem_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: non_cash_source_code
         Column('non_cash_source_code', String(32)),
         Column('non_cash_source_code_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: non_cash_source_other
         Column('non_cash_source_other', String(32)),
         Column('non_cash_source_other_date_collected', DateTime(timezone=False)),
-    
         ###PersonAddress (subtable)
-    
-    # dbCol: person_email
         Column('person_email', String(32)),
         Column('person_email_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: person_phone_number
         Column('person_phone_number', String(32)),
         Column('person_phone_number_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: physical_disability
         Column('physical_disability', String(32)),
         Column('physical_disability_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: pregnancy_status
         Column('pregnancy_status', String(32)),
         Column('pregnancy_status_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: prior_residence
         Column('prior_residence', String(32)),
         Column('prior_residence_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: prior_residence_other
         Column('prior_residence_other', String(32)),
         Column('prior_residence_other_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: reason_for_leaving
         Column('reason_for_leaving', String(32)),
         Column('reason_for_leaving_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: reason_for_leaving_other
         Column('reason_for_leaving_other', String(32)),
         Column('reason_for_leaving_other_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: school_last_enrolled_date
         Column('school_last_enrolled_date', String(32)),
         Column('school_last_enrolled_date_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: school_name
         Column('school_name', String(32)),
         Column('school_name_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: school_type
         Column('school_type', String(32)),
         Column('school_type_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: subsidy_other
         Column('subsidy_other', String(32)),
         Column('subsidy_other_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: subsidy_type
         Column('subsidy_type', String(32)),
         Column('subsidy_type_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: substance_abuse_indefinite
         Column('substance_abuse_indefinite', String(32)),
         Column('substance_abuse_indefinite_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: substance_abuse_problem
         Column('substance_abuse_problem', String(32)),
         Column('substance_abuse_problem_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: total_income
         Column('total_income', String(32)),
         Column('total_income_date_collected', DateTime(timezone=False)),
-    
         ###Veteran (subtable)
-    
-    # dbCol: vocational_training
         Column('vocational_training', String(32)),
         Column('vocational_training_date_collected', DateTime(timezone=False)),
         
@@ -1060,6 +922,7 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('amount', Integer),
         Column('amount_date_collected', DateTime(timezone=False)),
         Column('income_source_code', Integer),
@@ -1143,7 +1006,7 @@ class DatabaseObjects:
         
         Column('id', Integer, primary_key=True),
         Column('person_index_id', Integer, ForeignKey(Person.id)),
-
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
     # dbCol: release_of_information_idid_num
         Column('release_of_information_idid_num', String(32)),
         Column('release_of_information_idid_num_date_collected', DateTime(timezone=False)),
@@ -1471,7 +1334,8 @@ class DatabaseObjects:
         'funding_source',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('service_index_id', Integer, ForeignKey(Service.id)), 
+        Column('service_index_id', Integer, ForeignKey(Service.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.id)), 
         Column('funding_source_id_id_num', String(50)),
         Column('funding_source_id_id_str', String(32)),
@@ -1495,6 +1359,7 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('resource_specialist', String(50)),
         Column('available_for_directory', String(50)),
@@ -1518,6 +1383,7 @@ class DatabaseObjects:
         table_metadata,
         Column('id', Integer, primary_key=True),
         Column('service_index_id', Integer, ForeignKey(Service.id)), 
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('inventory_delete', Integer),
         Column('inventory_delete_occurred_date', DateTime(timezone=False)),
@@ -1550,7 +1416,8 @@ class DatabaseObjects:
         'age_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('gender', String(50)),
         Column('minimum_age', String(50)),
         Column('maximum_age', String(50)),
@@ -1566,7 +1433,8 @@ class DatabaseObjects:
         'aid_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('aid_requirements', String(50)),
         useexisting = True
         )
@@ -1582,6 +1450,7 @@ class DatabaseObjects:
         Column('id', Integer, primary_key=True),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('site_index_id', Integer, ForeignKey(Site.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
 		# SBB20100914 Added Agency Location foreign key
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
         Column('name', String(50)),
@@ -1599,7 +1468,8 @@ class DatabaseObjects:
         'application_process',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('step', String(50)),
         Column('description', String(50)),
         useexisting = True
@@ -1614,7 +1484,8 @@ class DatabaseObjects:
         'assignment',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('hmis_asset_index_id', Integer, ForeignKey(HmisAsset.id)), 
+        Column('hmis_asset_index_id', Integer, ForeignKey(HmisAsset.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('assignment_id_id_num', String(50)),
         Column('assignment_id_id_str', String(32)),
         Column('assignment_id_delete', Integer),
@@ -1637,6 +1508,7 @@ class DatabaseObjects:
         'assignment_period',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('assignment_index_id', Integer, ForeignKey(Assignment.id)), 
         Column('assignment_period_start_date', DateTime(timezone=False)),
         Column('assignment_period_end_date', DateTime(timezone=False)),
@@ -1652,7 +1524,8 @@ class DatabaseObjects:
         'child_enrollment_status',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('child_enrollment_status_id_id_num', String(50)),
         Column('child_enrollment_status_id_id_str', String(32)),
         Column('child_enrollment_status_id_delete', Integer),
@@ -1689,7 +1562,8 @@ class DatabaseObjects:
         'child_enrollment_status_barrier',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('child_enrollment_status_index_id', Integer, ForeignKey(ChildEnrollmentStatus.id)), 
+        Column('child_enrollment_status_index_id', Integer, ForeignKey(ChildEnrollmentStatus.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('barrier_id_id_num', String(50)),
         Column('barrier_id_id_str', String(32)),
         Column('barrier_id_delete', Integer),
@@ -1715,7 +1589,8 @@ class DatabaseObjects:
         'chronic_health_condition',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('has_chronic_health_condition', String(50)),
         Column('has_chronic_health_condition_date_collected', DateTime(timezone=False)),
         Column('has_chronic_health_condition_date_effective', DateTime(timezone=False)),        
@@ -1736,7 +1611,8 @@ class DatabaseObjects:
         'contact',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
+        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)),
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
@@ -1755,7 +1631,8 @@ class DatabaseObjects:
         'contact_made',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('contact_id_id_num', String(50)),
         Column('contact_id_id_str', String(32)),
         Column('contact_id_delete', Integer),
@@ -1777,6 +1654,7 @@ class DatabaseObjects:
         'cross_street',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)),
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
         Column('cross_street', String(50)),
@@ -1792,6 +1670,7 @@ class DatabaseObjects:
         'currently_in_school',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('currently_in_school', String(50)),
         Column('currently_in_school_date_collected', DateTime(timezone=False)),
@@ -1809,6 +1688,7 @@ class DatabaseObjects:
         'license_accreditation',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('license', String(50)),
         Column('licensed_by', String(50)),
@@ -1824,6 +1704,7 @@ class DatabaseObjects:
         'mental_health_problem',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('has_mental_health_problem', String(50)),
         Column('has_mental_health_problem_date_collected', DateTime(timezone=False)),
@@ -1865,6 +1746,7 @@ class DatabaseObjects:
         'non_cash_benefits',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('non_cash_benefit_id_id_id_num', String(50)),
         Column('non_cash_benefit_id_id_id_str', String(32)),
@@ -1895,7 +1777,8 @@ class DatabaseObjects:
         'agency_location',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
+        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('key', String(50)),
         Column('name', String(50)),
         Column('site_description', String(50)),
@@ -1946,6 +1829,7 @@ class DatabaseObjects:
         'agency_service',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('key', String(50)),
         Column('agency_key', String(50)),
@@ -1962,6 +1846,7 @@ class DatabaseObjects:
         'non_cash_benefits_last_30_days',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('income_last_30_days', String(50)),
         Column('income_last_30_days_date_collected', DateTime(timezone=False)),
@@ -1993,6 +1878,7 @@ class DatabaseObjects:
         'other_address',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)),
 		# SBB20100914 Adding foreign key to agency_location
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
@@ -2020,6 +1906,7 @@ class DatabaseObjects:
         'other_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('other_requirements', String(50)),
         useexisting = True
@@ -2034,7 +1921,8 @@ class DatabaseObjects:
         'phone',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
+        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)), 
         Column('contact_index_id', Integer, ForeignKey(Contact.id)), 
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)), 
         Column('site_index_id', Integer, ForeignKey(Site.id)), 
@@ -2065,7 +1953,8 @@ class DatabaseObjects:
         'physical_disability',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
+        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('has_physical_disability', String(50)),
         Column('has_physical_disability_date_collected', DateTime(timezone=False)),
         Column('has_physical_disability_date_effective', DateTime(timezone=False)),        
@@ -2086,7 +1975,8 @@ class DatabaseObjects:
         'pit_count_set',
         table_metadata,
         Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
+        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('pit_count_set_id_id_num', String(50)),
         Column('pit_count_set_id_id_str', String(32)),
         Column('pit_count_set_id_delete', Integer),
@@ -2110,6 +2000,7 @@ class DatabaseObjects:
         'pit_counts',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('pit_count_set_index_id', Integer, ForeignKey(PitCountSet.id)), 
         Column('pit_count_value', String(50)),
         Column('pit_count_effective_period_start_date', DateTime(timezone=False)),
@@ -2128,6 +2019,7 @@ class DatabaseObjects:
         'pregnancy',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('pregnancy_id_id_id_num', String(50)),
         Column('pregnancy_id_id_id_str', String(32)),
@@ -2153,6 +2045,7 @@ class DatabaseObjects:
         'degree',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('degree_id_id_num', String(50)),
         Column('degree_id_id_str', String(32)),
@@ -2175,6 +2068,7 @@ class DatabaseObjects:
         'prior_residence',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('prior_residence_id_id_num', String(50)),
         Column('prior_residence_id_id_str', String(32)),
@@ -2201,6 +2095,7 @@ class DatabaseObjects:
         'degree_code',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('degree_index_id', Integer, ForeignKey(Degree.id)), 
         Column('degree_code', String(50)),
         Column('degree_date_collected', DateTime(timezone=False)),
@@ -2218,6 +2113,7 @@ class DatabaseObjects:
         'destinations',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('destination_id_id_num', String(50)),
         Column('destination_id_id_str', String(32)),
@@ -2244,6 +2140,7 @@ class DatabaseObjects:
         'reasons_for_leaving',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_participation_index_id', Integer, ForeignKey(SiteServiceParticipation.id)), 
         Column('reason_for_leaving_id_id_num', String(50)),
         Column('reason_for_leaving_id_id_str', String(32)),
@@ -2270,6 +2167,7 @@ class DatabaseObjects:
         'developmental_disability',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('has_developmental_disability', String(50)),
         Column('has_developmental_disability_date_collected', DateTime(timezone=False)),
@@ -2291,6 +2189,7 @@ class DatabaseObjects:
         'disabling_condition',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('disabling_condition', String(50)),
         Column('disabling_condition_date_collected', DateTime(timezone=False)),
@@ -2308,6 +2207,7 @@ class DatabaseObjects:
         'documents_required',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('documents_required', String(50)),
         Column('description', String(50)),
@@ -2323,6 +2223,7 @@ class DatabaseObjects:
         'residency_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('residency_requirements', String(50)),
         useexisting = True
@@ -2337,6 +2238,7 @@ class DatabaseObjects:
         'domestic_violence',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('domestic_violence_survivor', String(50)),
         Column('domestic_violence_survivor_date_collected', DateTime(timezone=False)),
@@ -2358,6 +2260,7 @@ class DatabaseObjects:
         'email',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('contact_index_id', Integer, ForeignKey(Contact.id)), 
         Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)), 
@@ -2382,6 +2285,7 @@ class DatabaseObjects:
         'seasonal',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('description', String(50)),
         Column('start_date', String(50)),
@@ -2398,6 +2302,7 @@ class DatabaseObjects:
         'employment',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('employment_id_id_id_num', String(50)),
         Column('employment_id_id_id_str', String(32)),
@@ -2432,6 +2337,7 @@ class DatabaseObjects:
         'engaged_date',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('engaged_date', DateTime(timezone=False)),
         Column('engaged_date_date_collected', DateTime(timezone=False)),        
@@ -2448,6 +2354,7 @@ class DatabaseObjects:
         'service_event_notes',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.id)), 
         Column('note_id_id_num', String(50)),
         Column('note_id_id_str', String(32)),
@@ -2470,6 +2377,7 @@ class DatabaseObjects:
         'family_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('family_requirements', String(50)),
         useexisting = True
@@ -2484,6 +2392,7 @@ class DatabaseObjects:
         'service_group',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('key', String(50)),
         Column('name', String(50)),
@@ -2500,6 +2409,7 @@ class DatabaseObjects:
         'geographic_area_served',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('zipcode', String(50)),
         Column('census_track', String(50)),
@@ -2520,6 +2430,7 @@ class DatabaseObjects:
         'health_status',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('health_status', String(50)),
         Column('health_status_date_collected', DateTime(timezone=False)),
@@ -2537,6 +2448,7 @@ class DatabaseObjects:
         'highest_school_level',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('highest_school_level', String(50)),
         Column('highest_school_level_date_collected', DateTime(timezone=False)),
@@ -2554,6 +2466,7 @@ class DatabaseObjects:
         'hiv_aids_status',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('has_hiv_aids', String(50)),
         Column('has_hiv_aids_date_collected', DateTime(timezone=False)),
@@ -2575,6 +2488,7 @@ class DatabaseObjects:
         'spatial_location',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)),
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
         Column('description', String(50)),
@@ -2593,6 +2507,7 @@ class DatabaseObjects:
         'hmis_asset',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)), 
         Column('asset_id_id_num', String(50)),
         Column('asset_id_id_str', String(32)),
@@ -2622,6 +2537,7 @@ class DatabaseObjects:
         'substance_abuse_problem',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('has_substance_abuse_problem', String(50)),
         Column('has_substance_abuse_problem_date_collected', DateTime(timezone=False)),
@@ -2647,6 +2563,7 @@ class DatabaseObjects:
         'housing_status',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('housing_status', String(50)),
         Column('housing_status_date_collected', DateTime(timezone=False)),
@@ -2664,6 +2581,7 @@ class DatabaseObjects:
         'taxonomy',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('need_index_id', Integer, ForeignKey(Need.id)), 
         Column('code', String(50)),
@@ -2679,6 +2597,7 @@ class DatabaseObjects:
         'hud_chronic_homeless',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('hud_chronic_homeless', String(50)),
         Column('hud_chronic_homeless_date_collected', DateTime(timezone=False)),
@@ -2696,6 +2615,7 @@ class DatabaseObjects:
         'time_open',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)), 
         Column('languages_index_id', Integer, ForeignKey(Languages.id)), 
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
@@ -2713,6 +2633,7 @@ class DatabaseObjects:
         'time_open_days',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('time_open_index_id', Integer, ForeignKey(TimeOpen.id)), 
         Column('day_of_week', String(50)),
         Column('from', String(50)),
@@ -2729,6 +2650,7 @@ class DatabaseObjects:
         'url',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
         Column('site_index_id', Integer, ForeignKey(Site.id)),
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
@@ -2746,6 +2668,7 @@ class DatabaseObjects:
         'veteran_military_branches',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('military_branch_id_id_id_num', String(50)),
         Column('military_branch_id_id_id_str', String(32)),
@@ -2781,6 +2704,7 @@ class DatabaseObjects:
         'income_last_30_days',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('income_last_30_days', String(50)),
         Column('income_last_30_days_date_collected', DateTime(timezone=False)),
@@ -2798,6 +2722,7 @@ class DatabaseObjects:
         'veteran_military_service_duration',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('military_service_duration', String(50)),
         Column('military_service_duration_date_collected', DateTime(timezone=False)),
@@ -2815,6 +2740,7 @@ class DatabaseObjects:
         'income_requirements',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
         Column('income_requirements', String(50)),
         useexisting = True
@@ -2829,6 +2755,7 @@ class DatabaseObjects:
         'veteran_served_in_war_zone',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('served_in_war_zone', String(50)),
         Column('served_in_war_zone_date_collected', DateTime(timezone=False)),
@@ -2846,6 +2773,7 @@ class DatabaseObjects:
         'income_total_monthly',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('income_total_monthly', String(50)),
         Column('income_total_monthly_date_collected', DateTime(timezone=False)),
@@ -2863,6 +2791,7 @@ class DatabaseObjects:
         'veteran_service_era',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('service_era', String(50)),
         Column('service_era_date_collected', DateTime(timezone=False)),
@@ -2880,6 +2809,7 @@ class DatabaseObjects:
         'veteran_veteran_status',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('veteran_status', String(50)),
         Column('veteran_status_date_collected', DateTime(timezone=False)),
@@ -2897,6 +2827,7 @@ class DatabaseObjects:
         'languages',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('site_index_id', Integer, ForeignKey(Site.id)), 
         Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
 		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
@@ -2914,6 +2845,7 @@ class DatabaseObjects:
         'veteran_warzones_served',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('war_zone_id_id_id_num', String(50)),
         Column('war_zone_id_id_id_str', String(32)),
@@ -2948,6 +2880,7 @@ class DatabaseObjects:
         'length_of_stay_at_prior_residence',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('length_of_stay_at_prior_residence', String(50)),
         Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=False)),
@@ -2965,6 +2898,7 @@ class DatabaseObjects:
         'vocational_training',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('vocational_training', String(50)),
         Column('vocational_training_date_collected', DateTime(timezone=False)),
@@ -2982,6 +2916,7 @@ class DatabaseObjects:
         'foster_child_ever',
         table_metadata,
         Column('id', Integer, primary_key=True),
+        Column('export_index_id', Integer, ForeignKey(Export.id)),
         Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
         Column('foster_child_ever', Integer(2)),
         Column('foster_child_ever_date_collected', DateTime(timezone=False)),

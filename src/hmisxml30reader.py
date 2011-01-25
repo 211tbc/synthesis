@@ -214,7 +214,7 @@ def parse_members(self, element):
     
                 ''' Foreign Keys '''
                 existence_test_and_add(self, 'household_index_id', self.household_index_id, 'no_handling')
-    
+                existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
                 ''' Shred to database '''
                 shred(self, self.parse_dict, dbobjects.Members)
 
@@ -761,7 +761,7 @@ def parse_service_group(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ServiceGroup)
 
@@ -784,7 +784,7 @@ def parse_license_accreditation(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.LicenseAccreditation)
 
@@ -810,7 +810,7 @@ def parse_agency_service(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.AgencyService)
 
@@ -839,7 +839,8 @@ def parse_url(self, element):
             except: pass
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Url)
 
@@ -870,7 +871,8 @@ def parse_spatial_location(self, element):
             except: pass
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.SpatialLocation)
 
@@ -915,7 +917,8 @@ def parse_other_address(self, element):
             # SBB20100916 missing
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.OtherAddress)
 
@@ -939,7 +942,8 @@ def parse_cross_street(self, element):
             # SBB20100916 missing..
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.CrossStreet)
 
@@ -1042,7 +1046,8 @@ def parse_agency_location(self, element):
             ''' Foreign Keys '''
             try: existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.AgencyLocation)
 
@@ -1095,7 +1100,8 @@ def parse_aka(self, element):
             # SBB20100914 new...
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Aka)
 
@@ -1121,7 +1127,8 @@ def parse_seasonal(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Seasonal)
 
@@ -1142,7 +1149,8 @@ def parse_residency_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ResidencyRequirements)
 
@@ -1184,7 +1192,8 @@ def parse_pit_count_set(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PitCountSet)
 
@@ -1213,7 +1222,8 @@ def parse_pit_counts(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'pit_count_set_index_id', self.pit_count_set_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PitCounts)
 
@@ -1234,7 +1244,8 @@ def parse_other_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.OtherRequirements)
 
@@ -1273,7 +1284,8 @@ def parse_languages(self, element):
                 except: pass
                 try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
                 except: pass
-                
+                try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+                except: pass                
                 ''' Shred to database '''
                 shred(self, self.parse_dict, dbobjects.Languages)
     
@@ -1303,7 +1315,8 @@ def parse_time_open(self, element):
             except: pass
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.TimeOpen)
 
@@ -1332,7 +1345,8 @@ def parse_time_open_day(self, element, day):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'time_open_index_id', self.time_open_index_id, 'no_handling')
-
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.TimeOpenDays)
 
@@ -1386,6 +1400,8 @@ def parse_inventory(self, element):
             existence_test_and_add(self, 'unit_inventory', item.xpath(xpUnitInventory, namespaces = self.nsmap), 'text')
 
             ''' Foreign Keys '''
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             try: existence_test_and_add(self, 'service_index_id', self.service_index_id, 'no_handling')
             except: pass
             try: existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
@@ -1411,7 +1427,8 @@ def parse_income_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.IncomeRequirements)
 
@@ -1463,7 +1480,8 @@ def parse_hmis_asset(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HmisAsset)
 
@@ -1500,6 +1518,7 @@ def parse_assignment(self, element):
             existence_test_and_add(self, 'household_id_id_str', item.xpath(xpHouseholdIDIDStr, namespaces = self.nsmap), 'text')
 
             ''' Foreign Keys '''
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             existence_test_and_add(self, 'hmis_asset_index_id', self.hmis_asset_index_id, 'no_handling')
             
             ''' Shred to database '''
@@ -1525,7 +1544,7 @@ def parse_assignment_period(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'assignment_index_id', self.assignment_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')        
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.AssignmentPeriod)
 
@@ -1559,7 +1578,7 @@ def parse_geographic_area_served(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.GeographicAreaServed)
 
@@ -1582,7 +1601,7 @@ def parse_documents_required(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.DocumentsRequired)
 
@@ -1603,7 +1622,7 @@ def parse_aid_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.AidRequirements)
 
@@ -1629,7 +1648,7 @@ def parse_age_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.AgeRequirements)
 
@@ -1669,7 +1688,7 @@ def parse_site_service_participation(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.SiteServiceParticipation)
 
@@ -1718,7 +1737,7 @@ def parse_reasons_for_leaving(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ReasonsForLeaving)
 
@@ -1742,7 +1761,7 @@ def parse_application_process(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ApplicationProcess)
 
@@ -1781,6 +1800,8 @@ def parse_need(self, element):
             existence_test_and_add(self, 'need_status', item.xpath(xpNeedStatus, namespaces = self.nsmap), 'text')
 
             ''' Foreign Keys '''
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             try: existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             except: pass
             try: existence_test_and_add(self, 'site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
@@ -1819,7 +1840,8 @@ def parse_taxonomy(self, element):
                 except: pass
                 try: existence_test_and_add(self, 'need_index_id', self.need_index_id, 'no_handling')
                 except: pass
-            
+                try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+                except: pass            
                 ''' Shred to database '''
                 shred(self, self.parse_dict, dbobjects.Taxonomy)
 
@@ -1880,6 +1902,8 @@ def parse_service_event(self, element):
             existence_test_and_add(self, 'hprp_relocation_stabilization_service_event_code', item.xpath(xpHPRPRelocationStabilizationServiceEventCode, namespaces = self.nsmap), 'text')
 
             ''' Foreign Keys '''
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             try: existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             except: pass
             try: existence_test_and_add(self, 'need_index_id', self.need_index_id, 'no_handling')
@@ -1925,7 +1949,7 @@ def parse_service_event_notes(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'service_event_index_id', self.service_event_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ServiceEventNotes)
 
@@ -1946,7 +1970,7 @@ def parse_family_requirements(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.FamilyRequirements)
 
@@ -1981,7 +2005,8 @@ def parse_person_historical(self, element):
             except: pass
             try: existence_test_and_add(self, 'site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PersonHistorical)
 
@@ -2040,7 +2065,7 @@ def parse_housing_status(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HousingStatus)
 
@@ -2117,7 +2142,7 @@ def parse_veteran_military_branches(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranMilitaryBranches)
 
@@ -2144,7 +2169,7 @@ def parse_veteran_military_service_duration(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranMilitaryServiceDuration)
 
@@ -2171,7 +2196,7 @@ def parse_veteran_served_in_war_zone(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranServedInWarZone)
 
@@ -2198,7 +2223,7 @@ def parse_veteran_service_era(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranServiceEra)
 
@@ -2225,7 +2250,7 @@ def parse_veteran_veteran_status(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranVeteranStatus)
 
@@ -2287,7 +2312,7 @@ def parse_veteran_warzones_served(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VeteranWarzonesServed)
 
@@ -2314,7 +2339,7 @@ def parse_vocational_training(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.VocationalTraining)
 
@@ -2357,7 +2382,7 @@ def parse_substance_abuse_problem(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.SubstanceAbuseProblem)
 
@@ -2402,7 +2427,7 @@ def parse_pregnancy(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Pregnancy)
 
@@ -2448,7 +2473,7 @@ def parse_prior_residence(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PriorResidence)
 
@@ -2484,7 +2509,7 @@ def parse_physical_disability(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PhysicalDisability)
 
@@ -2538,7 +2563,7 @@ def parse_non_cash_benefits(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.NonCashBenefits)
 
@@ -2564,7 +2589,7 @@ def parse_non_cash_benefits_last_30_days(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.NonCashBenefitsLast30Days)
 
@@ -2608,7 +2633,7 @@ def parse_mental_health_problem(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.MentalHealthProblem)
 
@@ -2635,7 +2660,7 @@ def parse_length_of_stay_at_prior_residence(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.LengthOfStayAtPriorResidence)
 
@@ -2662,7 +2687,7 @@ def parse_income_total_monthly(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.IncomeTotalMonthly)
 
@@ -2689,7 +2714,7 @@ def parse_hud_chronic_homeless(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HudChronicHomeless)
 
@@ -2716,7 +2741,7 @@ def parse_income_last_30_days(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.IncomeLast30Days)
 
@@ -2743,7 +2768,7 @@ def parse_highest_school_level(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HighestSchoolLevel)
 
@@ -2779,7 +2804,7 @@ def parse_hiv_aids_status(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HivAidsStatus)
 
@@ -2806,7 +2831,7 @@ def parse_health_status(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HealthStatus)
 
@@ -2832,7 +2857,7 @@ def parse_engaged_date(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.EngagedDate)
 
@@ -2894,7 +2919,7 @@ def parse_employment(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Employment)
 
@@ -2930,7 +2955,7 @@ def parse_domestic_violence(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.DomesticViolence)
 
@@ -2957,7 +2982,7 @@ def parse_disabling_condition(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.DisablingCondition)
 
@@ -2993,7 +3018,7 @@ def parse_developmental_disability(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.DevelopmentalDisability)
 
@@ -3039,7 +3064,7 @@ def parse_destinations(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Destinations)
 
@@ -3077,7 +3102,7 @@ def parse_degree(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Degree)
 
@@ -3104,7 +3129,7 @@ def parse_degree_code(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'degree_index_id', self.degree_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.DegreeCode)
 
@@ -3131,7 +3156,7 @@ def parse_currently_in_school(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.CurrentlyInSchool)
 
@@ -3169,7 +3194,7 @@ def parse_contact_made(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ContactMade)
 
@@ -3238,7 +3263,7 @@ def parse_child_enrollment_status(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ChildEnrollmentStatus)
 
@@ -3284,7 +3309,7 @@ def parse_child_enrollment_status_barrier(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'child_enrollment_status_index_id', self.child_enrollment_status_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ChildEnrollmentStatusBarrier)
 
@@ -3320,7 +3345,7 @@ def parse_chronic_health_condition(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ChronicHealthCondition)
 
@@ -3372,7 +3397,7 @@ def parse_release_of_information(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ReleaseOfInformation)
 
@@ -3434,7 +3459,7 @@ def parse_income_and_sources(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.IncomeAndSources)
 
@@ -3459,7 +3484,7 @@ def parse_hud_homeless_episodes(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.HUDHomelessEpisodes)
 
@@ -3565,7 +3590,7 @@ def parse_person_address(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.PersonAddress)
 
@@ -3636,7 +3661,7 @@ def parse_other_names(self, element):
             
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.OtherNames)
 
@@ -3663,7 +3688,7 @@ def parse_races(self, element):
 
             ''' Foreign Keys '''
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
-            
+            existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Races)
 
@@ -3703,7 +3728,8 @@ def parse_funding_source(self, element):
             except: pass
             try: existence_test_and_add(self, 'service_event_index_id', self.service_event_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.FundingSource)
 
@@ -3742,7 +3768,8 @@ def parse_resource_info(self, element):
             except: pass
             try: existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.ResourceInfo)
 
@@ -3779,7 +3806,8 @@ def parse_contact(self, element):
             except: pass
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Contact)
 
@@ -3823,7 +3851,8 @@ def parse_email(self, element):
             except: pass
             try: existence_test_and_add(self, 'agency_location_index_id', self.agency_location_index_id, 'no_handling')
             except: pass
-            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Email)
 
@@ -3872,7 +3901,8 @@ def parse_phone(self, element):
             except: pass
             try: existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             except: pass
-                            
+            try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
+            except: pass                            
             ''' Shred to database '''
             shred(self, self.parse_dict, dbobjects.Phone)
 

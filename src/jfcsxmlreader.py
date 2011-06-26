@@ -95,7 +95,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
                     if child.tag == 'c4mi': self.row_dict.__setitem__('c4mi', child.text)
                     if child.tag == 'hispanic': self.row_dict.__setitem__('hispanic', child.text)
                     if child.tag == 'c4ssno': self.row_dict.__setitem__('c4ssno', child.text)
-                    if child.tag == 'c4last_s01': self.row_dict.__setitem__('c4last_s01', child.text)
+#                    if child.tag == 'c4last_s01': self.row_dict.__setitem__('c4last_s01', child.text)
                     if child.tag == 'ethnicity': self.row_dict.__setitem__('ethnicity', child.text)
                     if child.tag == 'aprgcode': self.row_dict.__setitem__('aprgcode', child.text)
                     if child.tag == 'a_date': self.row_dict.__setitem__('a_date', child.text)
@@ -158,6 +158,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         if self.row_dict.has_key('c4clientid'): self.existence_test_and_add('person_id_unhashed', self.row_dict.__getitem__('c4clientid'), 'text')
         if self.row_dict.has_key('c4dob'): self.existence_test_and_add('person_date_of_birth_unhashed', self.row_dict.__getitem__('c4dob'), 'text')
         if self.row_dict.has_key('c4sex'):
+            gender = None
             ''' convert gender to code '''
             if self.row_dict.__getitem__('c4sex').upper() == 'F': gender = "0"
             elif self.row_dict.__getitem__('c4sex').upper() == 'M': gender = "1"
@@ -168,6 +169,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         if self.row_dict.has_key('c4mi'): self.existence_test_and_add('person_legal_middle_name_unhashed', self.row_dict.__getitem__('c4mi'), 'text')
         ''' convert ethnicity to code '''
         if self.row_dict.has_key('hispanic'):
+            ethnicity = None
             if self.row_dict.__getitem__('hispanic').upper() == 'N': ethnicity = "0"
             elif self.row_dict.__getitem__('hispanic').upper() == 'Y': ethnicity = "1"
             if ethnicity is not None:
@@ -185,22 +187,30 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
         ''' parse data for other_names table '''
         self.parse_dict = {}
         ''' check if other last name is unique '''
-        if self.row_dict.has_key('c4last_s01') & self.row_dict.has_key('c4lastname'):
-            if self.row_dict.__getitem__('c4lastname').lower() != self.row_dict.__getitem__('c4last_s01').lower():
-                self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
-                self.existence_test_and_add('other_last_name_unhashed', self.row_dict.__getitem__('c4last_s01'), 'text')     
-                self.shred(self.parse_dict, dbobjects.OtherNames)
+        #c4last_s01 removed from JFCS XML
+        if self.row_dict.has_key('c4lastname'):
+            self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
+            self.existence_test_and_add('other_last_name_unhashed', self.row_dict.__getitem__('c4lastname'), 'text')     
+            self.shred(self.parse_dict, dbobjects.OtherNames)
+                
+#        if self.row_dict.has_key('c4last_s01') & self.row_dict.has_key('c4lastname'):
+#            if self.row_dict.__getitem__('c4lastname').lower() != self.row_dict.__getitem__('c4last_s01').lower():
+#                self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
+#                self.existence_test_and_add('other_last_name_unhashed', self.row_dict.__getitem__('c4last_s01'), 'text')     
+#                self.shred(self.parse_dict, dbobjects.OtherNames)
 
     def parse_races(self):
         ''' parse data for races table '''
         self.parse_dict = {}
         ''' convert race to code '''
         ''' JFCS uses ethnicity to define race '''
+        race = None
         if self.row_dict.has_key('ethnicity'):
             if self.row_dict.__getitem__('ethnicity').upper() == 'M': race = '5'
             elif self.row_dict.__getitem__('ethnicity').upper() == 'H': race = '5'
             elif self.row_dict.__getitem__('ethnicity').upper() == 'W': race = '5'
             elif self.row_dict.__getitem__('ethnicity').upper() == 'B': race = '3'
+            
             if race is not None:
                 self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
                 self.existence_test_and_add('race_unhashed', race, 'text')

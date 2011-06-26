@@ -2,25 +2,49 @@
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 
+"""
+The MIT License
+
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 import os
-from synthesis import fileutils
+import fileutils
 import sys
 import time
-from synthesis.fileinputwatcher import FileInputWatcher
-from synthesis.hmisxml28reader import HMISXML28Reader
-from synthesis.hmisxml30reader import HMISXML30Reader
-from synthesis.jfcsxmlreader import JFCSXMLReader
-from synthesis.occhmisxml30reader import OCCHUDHMISXML30Reader
+from fileinputwatcher import FileInputWatcher
+from hmisxml28reader import HMISXML28Reader
+from hmisxml30reader import HMISXML30Reader
+from jfcsxmlreader import JFCSXMLReader
+from occhmisxml30reader import OCCHUDHMISXML30Reader
 #from synthesis.parxmlreader import PARXMLReader
 from lxml import etree
 import Queue
 from conf import settings
 from synthesis.emailprocessor import XMLProcessorNotifier
-from synthesis.filerouter import router
+from filerouter import Router
 from os import path
 import traceback
 import copy
-from synthesis.clssocketcomm import serviceController
+from synthesis.socketcomm import ServiceController
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -33,14 +57,14 @@ class FileHandler:
         #Check the file to see if it validates against one of the tests.
         self.selector = Selector()
         #ECJ20100815 Commented out for now until debugged 
-        #self.crypto = ClsSecurity()
+        #self.crypto = Security()
        
         if settings.GUI:
             if settings.DEBUG:
-                print "Now running the GUI serviceController code"
+                print "Now running the GUI ServiceController code"
                 #ECJ 20100815 todo: make it so this also works for UNIX, not just win32
                 # SBB20100612 adding listener for data comm (win32 shutdown from GUI)
-                sc = serviceController(True)                    # True is Server
+                sc = ServiceController(True)                    # True is Server
                 sc.listen()
         #If GUI to control the app being used, just run code with pyinotify or windows listener
         #ECJ 20100815 Make sure windows listener is working without the GUI
@@ -78,7 +102,7 @@ class FileHandler:
     def processFiles(self, new_file_loc):
         self.setProcessingOptions(new_file_loc)
         self.email = XMLProcessorNotifier(new_file_loc)
-        self.router = router()
+        self.Router = Router()
         global valid 
         valid = False
         # test if the sender encrypts data, if so, decrypt, if not, just process
@@ -110,7 +134,7 @@ class FileHandler:
                         pass
                     if settings.DEBUG:
                         print "moving to used_files", 
-                    self.router.moveUsed(new_file_loc)
+                    self.Router.moveUsed(new_file_loc)
     #                break
                     return True
             
@@ -121,7 +145,7 @@ class FileHandler:
             if settings.DEBUG:
                 print "moving to Failed"
             if os.path.isfile(new_file_loc):
-                self.router.moveFailed(new_file_loc)
+                self.Router.moveFailed(new_file_loc)
             else:
                 if settings.DEBUG:
                     print "Can't move because file doesn't exist.  Shouldn't be trying to move anything to Failed if isn't there."
@@ -129,7 +153,7 @@ class FileHandler:
             
 #        except etree.XMLSyntaxError, error:
 #            self.email.notifyValidationFailure(error)
-#            self.router.moveFailed(new_file_loc)
+#            self.Router.moveFailed(new_file_loc)
 #            
 #        except DuplicateXMLDocumentError, inst:
 #            print type(inst)     # the exception instance
@@ -137,7 +161,7 @@ class FileHandler:
 #            print inst           # __str__ allows args to printed directly
 #
 #            self.email.notifyDuplicateDocumentError(inst.message)
-#            self.router.moveFailed(new_file_loc)
+#            self.Router.moveFailed(new_file_loc)
 #            return False
         
     def processExisting(self):
@@ -585,41 +609,52 @@ class JFCSXMLTest:
         self.service_event_schema_filename = settings.SCHEMA_DOCS['jfcs_service_event_xml']
         self.client_schema_filename = settings.SCHEMA_DOCS['jfcs_client_xml']
         self.service_event_elements = ['c4clientid','qprogram','serv_code','trdate','end_date','cunits']
-        self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno','c4last_s01']
+        #self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno','c4last_s01']
+        self.client_elements = ['aprgcode','a_date','t_date','family_id','c4clientid','c4dob','hispanic','c4sex','c4firstname','c4lastname','c4mi','ethnicity','c4ssno']
+
         
     def validate(self, instance_filename, ):
         '''JFCS data format validation process'''
         
         copy_instance_stream = copy.copy(instance_filename)
-        
-        results = self.schemaTest(copy_instance_stream, self.service_event_schema_filename)
-        if results == True:
-            fileutils.makeBlock('JFCS service event XML data found.  Determined by service event schema.')
-            JFCSXMLInputReader.data_type = 'service_event'
-            return results
-        
-        results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
-        if results == True:
-            fileutils.makeBlock('JFCS client XML data found.  Determined by client schema.')
-            JFCSXMLInputReader.data_type = 'client'
-            return results
-
-        try:
-            results = self.elementTest(copy_instance_stream, self.service_elements)
+       
+        try: 
+            print "Determining by service event schema"
+            results = self.schemaTest(copy_instance_stream, self.service_event_schema_filename)
             if results == True:
-                fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
+                fileutils.makeBlock('JFCS service event XML data found.  Determined by service event schema.')
                 JFCSXMLInputReader.data_type = 'service_event'
                 return results
-        
-            results = self.elementTest(copy_instance_stream, self.client_elements)
+            print "Determining by client schema"
+            results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
             if results == True:
-                fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
+                fileutils.makeBlock('JFCS client XML data found.  Determined by client schema.')
                 JFCSXMLInputReader.data_type = 'client'
                 return results
+            print "Determining by service event elements."
+            if self.service_event_elements is not None:
+                print self.service_event_elements
+                results = self.elementTest(copy_instance_stream, self.service_event_elements)
+                if results == True:
+                    fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
+                    JFCSXMLInputReader.data_type = 'service_event'
+                    return results
+            print "Determining by client elements."
+            if self.client_elements is not None:
+                print self.client_elements
+                results = self.elementTest(copy_instance_stream, self.client_elements)
+                if results == True:
+                    fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
+                    JFCSXMLInputReader.data_type = 'client'
+                    return results
+                print "returning False"
+                return False
+            else:
+                print "All the JFCS Tests Failed, returning False"
+                return False
         except Exception, exception:
-            print 'XML Syntax Error.  There appears to be malformed XML.    ', exception
-        
-        return False
+            print 'XML Syntax Error in validate.  There appears to be malformed XML.  ', exception
+            return False
     
     def schemaTest(self, copy_instance_stream, schema_filename):
         '''Attempt to validate input file against specific schema'''
@@ -631,16 +666,20 @@ class JFCSXMLTest:
             results = schema_parsed_xsd.validate(instance_parsed)
             return results
         except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.    ', error
-        return False
+            print 'XML Syntax Error in schemaTest.  There appears to be malformed XML.  ', error
+            return False
         
     def elementTest(self, copy_instance_stream, elements):
         '''Attempt to find elements in the input file by searching the tree'''
+        print "inside element test"
+        print "elements are: ", elements
         xml_doc = etree.parse(copy_instance_stream)
         for e in elements:
             search_term = ".//" + e
             if xml_doc.find(search_term) is None:
+                print "returning False from inside elementTest"
                 return False
+        print "returning True  from inside elementTest"
         return True
     
 class PARXMLTest:

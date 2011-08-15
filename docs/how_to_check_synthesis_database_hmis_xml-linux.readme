@@ -1,12 +1,12 @@
 Instructions for importing HUD HMIS XML 3.0 test data in the system:
 
--First, follow the instructions at: http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/linux_synthesis_install_readme  .  
--Make sure you pull a recent copy of the source (we changed a lot of things on 8/16/2010)
+-First, follow the instructions at: http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/synthesis_install_read_me.txt   .  
+-Make sure you pull a recent copy of the source 
 -Run the linux commands from a console (this presumes you have PostgreSQL database installed and running):
 
--In another console, or in a file manager, copy your input file to the InputFiles subdirectory.  Program should pick up the file and process it. 
+-In another console, or in a file manager, copy your input file to the input_files subdirectory.  Program should pick up the file and process it. 
 
-cp ~/workspace/synthesis/TestFiles/HUD_HMIS_3_0_Instance.xml ~/workspace/synthesis/installer/build/InputFiles/
+cp ~/myrestservice/synthesis/synthesis/test_files/HUD_HMIS_3_0_Instance.xml ~/myrestservice/synthesis/synthesis/input_files
 
 Check the tables in your synthesis database:
 

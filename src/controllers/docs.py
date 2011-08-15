@@ -1,7 +1,10 @@
-use_encryption = False
+#use_encryption = False
+use_encryption = True
+
 import os
 import logging
 from pylons import request, response, config
+
 from lib.base import BaseController
 import datetime
 from lxml import etree
@@ -35,20 +38,24 @@ class DocsController(BaseController):
         req = Request(request.environ)
         log.debug('Received HTTP Request: %s', req)
         print 'these are the request.params: ', request.params
+        print "request.environ is" , request.environ
+        #print "request.environ['CONTENT_LENGTH'] is" , request.environ['CONTENT_LENGTH']
         print "FULL RAW POST Data:"
+        #this CONTENT_LENGTH wasn't getting populated in the environment on remote installations using encryption
         print request.environ['wsgi.input'].read(int(request.environ['CONTENT_LENGTH']))
         print "FULL request.POST Data:"
         print request.POST
+        
         postdatakeys = request.POST.keys()
         print "keys are:", postdatakeys
         #accept only one posted file per request for now
         stream_fieldstorage = request.POST[postdatakeys[0]]
-        
+        print "size of post data in bytes", len(stream_fieldstorage.value)
         #print "CGI FileStorage uploaded is: ", myfile
         
         #Create a file in a permanent location, moving it out of CGI FieldStorage
         #make file
-        file_prefix = 'OCC_' + str(datetime.datetime.now())
+        file_prefix = 'received_data_' + str(datetime.datetime.now())
         file_prefix = file_prefix.replace(' ', '_')
         file_suffix_enc = '_encrypted.xml'
         file_suffix_unenc = '_unencrypted.xml'
@@ -95,7 +102,7 @@ class DocsController(BaseController):
         
         #check if a file was written, regardless of encryption    
         if not os.path.exists(file_full_path):
-            print "An file wasn't written"
+            print "A file wasn't written"
         else:
             print "A file was written at: ", file_full_path
         
@@ -110,7 +117,7 @@ class DocsController(BaseController):
             decrypted_stream = decrypt3des.decryptFile(encrypted_filepath = None, encrypted_stream=encrypted_file)
             file_suffix_unenc = '_decrypted.xml'
             file_name = file_prefix + file_suffix_unenc
-            file_full_path =  settings.INPUTFILES_PATH + file_name
+            file_full_path =  settings.INPUTFILES_PATH[0] + '/' + file_name
             try:
                 decrypted_file = open(file_full_path, 'w')
             except:

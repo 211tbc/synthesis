@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import logging 
 from logging import config
 from synthesis.borg import Borg
@@ -12,11 +10,13 @@ class Logger(Borg):
         Borg.__init__(self)
         #print "Logging with INIFile from Logger: %s" % (configFile)
         
-        self.LEVELS = {'debug': logging.DEBUG,
-          'info': logging.INFO,
-          'warning': logging.WARNING,
-          'error': logging.ERROR,
-          'critical': logging.CRITICAL}
+        self.LEVELS = {
+            'debug': logging.DEBUG,
+            'info': logging.INFO,
+            'warning': logging.WARNING,
+            'error': logging.ERROR,
+            'critical': logging.CRITICAL
+            }
         
         try:
             config.fileConfig(configFile, _defaultConfig)

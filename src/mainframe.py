@@ -3,7 +3,7 @@
 #import wx
 #import synthesiscontroller
 #from conf import settings
-#from clssocketcomm import serviceController
+#from clssocketcomm import ServiceController
 #import os
 #import subprocess
 #from time import sleep
@@ -18,7 +18,7 @@
 #		
 #		#self.m_textProcessingFolder.SetValue(unicodeString)
 #		
-#		self.sc = serviceController(False)
+#		self.sc = ServiceController(False)
 #		# get the status
 #		self.getStatus()
 #		

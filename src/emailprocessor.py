@@ -1,16 +1,15 @@
-
 from smtplibrary import smtpInterface
 from conf import settings
 import os
-from clssecurity import ClsSecurity
+from security import Security
 
 class XMLProcessorNotifier(smtpInterface):
-    # adding encyrption switch.  emailed sensitive data must be encrypted.
+    # adding encryption switch.  emailed sensitive data must be encrypted.
     def __init__(self, docName, docs=[], encrypt=False):
         # turn on encryption switch
         if encrypt:
             self.encrypt = encrypt
-            self.security = ClsSecurity()
+            self.security = Security()
         
         self.mailSystem = smtpInterface(settings)
         if docName <> '':
@@ -101,4 +100,26 @@ if __name__ == '__main__':
     filesToTransfer = ['/home/user/Documents/Development/AlexandriaConsulting/repos/trunk/synthesis/OutputFiles/page.xml']
     email = XMLProcessorNotifier("", filesToTransfer, True)
     email.sendDocumentAttachment('Your report results', msgBody, filesToTransfer)
+    
+#The MIT License
+#
+#Copyright (c) 2011, Alexandria Consulting LLC
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in
+#all copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#THE SOFTWARE.
     

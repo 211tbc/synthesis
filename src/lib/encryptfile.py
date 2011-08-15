@@ -1,6 +1,6 @@
 from Crypto.Cipher import DES3
 import base64
-import os
+#import os
 
 '''
 from https://secure.wikimedia.org/wikipedia/en/wiki/Triple_DES:
@@ -32,7 +32,9 @@ BLOCK_SIZE = 24 #hopefully, this achieves the highest keying option (#1)
 
 #use the gendeskey.py file to make a new 3DES secret key
 
-KEY_PATH ="/home/eric/occws/occws/keys/occ.key"
+#KEY_PATH ="/home/eric/keys/occ.key"
+KEY_PATH = "/home/eric/keys/3des3.txt"
+IV_PATH =  "/home/eric/keys/IV3.txt"
 
 def removePadding(BLOCK_SIZE, s):
     'Remove rfc 1423 padding from string.'
@@ -60,19 +62,26 @@ def appendPadding(BLOCK_SIZE, s):
 
 def encodeDES3(cipher, plain_text_string):
     encoded_string = base64.b64encode(cipher.encrypt(appendPadding(BLOCK_SIZE, plain_text_string)))
+    #encoded_string = cipher.encrypt(appendPadding(BLOCK_SIZE, plain_text_string))
     return encoded_string
 
 def encryptFile(unencrypted_filepath, path_to_encrypt_to):
     keyfile = open(KEY_PATH, 'r')
     secret = keyfile.read()
+    ivfile = open(IV_PATH, 'r')
+    #extract the iv file contents to a string, since the API requires an iv string
+    iv = ivfile.read()
     file_to_encrypt = open(unencrypted_filepath, 'r')
     text_to_encrypt = file_to_encrypt.read()
-    cipher = DES3.new(secret)
+    cipher = DES3.new(secret, DES3.MODE_CBC, iv)
+    #cipher = DES3.new(secret, DES3.MODE_CBC)
     encrypted_text = encodeDES3(cipher, text_to_encrypt)
     encrypted_file = open(path_to_encrypt_to,'w')
     encrypted_file.write(encrypted_text)
     return encrypted_file
 
-file_to_encrypt = '/home/eric/Desktop/just.xml'
-path_to_encrypt_to = '/home/eric/Desktop/HUD_HMIS_OCC_11-01-2010_1.xml.enc'
+#file_to_encrypt = '/home/eric/Alexandria_Consulting/Orlando_HSN/justxml.xml'
+file_to_encrypt = '/home/eric/Alexandria_Consulting/Orlando_HSN/validOCCtoencrypt.xml'
+#path_to_encrypt_to = '/home/eric/Alexandria_Consulting/Orlando_HSN/justxml.xml.enc'
+path_to_encrypt_to = '/home/eric/Alexandria_Consulting/Orlando_HSN/known_good_enc_only.xml.enc'
 encryptFile(file_to_encrypt, path_to_encrypt_to)

@@ -1,11 +1,10 @@
-from clsexceptions import SoftwareCompatibilityError
-import os.path
+from exceptions import SoftwareCompatibilityError
 import dbobjects as dbobjects
 import xmlutilities
 from sys import version
 from conf import settings
 from datetime import datetime
-from sqlalchemy import or_, and_, between
+from sqlalchemy import and_
 
 ''' HUD 3.0 XML export plugin '''
 
@@ -309,19 +308,19 @@ if float(settings.MINPYVERSION) < float(thisVersion):
         # FIXME ( remove this once done debugging namespace issue )
         #import xml.etree.cElementTree as ET
         import xml.etree.ElementTree as ET
-        from xml.etree.ElementTree import Element, SubElement, dump
-    except ImportError:
-        import xml.etree.ElementTree as ET
         from xml.etree.ElementTree import Element, SubElement
+    except ImportError:
+        import xml.etree.ElementTree as ET#IGNORE:@UnusedImport
+        from xml.etree.ElementTree import Element, SubElement#IGNORE:@UnusedImport
 elif thisVersion == '2.4':
     try:
     # Try to use the much faster C-based ET.
         import cElementTree as ET
-        from elementtree.ElementTree import Element, SubElement, dump
+        from elementtree.ElementTree import Element, SubElement
     except ImportError:
     # Fall back on the pure python one.
         import elementtree.ElementTree as ET
-        from elementtree.ElementTree import Element, SubElement
+        from elementtree.ElementTree import Element, SubElement#IGNORE:@UnusedImport
 else:
     print 'Sorry, please see the minimum requirements to run this Application'
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
@@ -395,18 +394,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -458,14 +457,14 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
@@ -574,18 +573,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -615,18 +614,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -651,18 +650,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -709,18 +708,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -742,18 +741,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -781,112 +780,90 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         return member
     
     def customizeMember(self, member):
-        client_id = ET.SubElement(member, "client_id")
-        date_entered = ET.SubElement(member, "date_entered")
-        date_ended = ET.SubElement(member, "date_ended")
-        head_of_household = ET.SubElement(member, "head_of_household")
-        relationship = ET.SubElement(member, "relationship")
-
-
-
-
-
-
-
-
-        xpRegion = 'hmis:Region'
-        xpRegionIDIDNum = 'hmis:RegionID/hmis:IDNum'
-        xpRegionIDIDStr = 'hmis:RegionID/hmis:IDStr'
-        xpSiteServiceID = 'hmis:SiteServiceID'
-        xpRegionType = 'hmis:RegionType'
-        xpRegionTypeDateCollected = 'hmis:RegionType/@hmis:dateCollected'
-        xpRegionTypeDateEffective = 'hmis:RegionType/@hmis:dateEffective'
-        xpRegionTypeDataCollectionStage = 'hmis:RegionType/@hmis:dataCollectionStage'
-        xpRegionDescription = 'hmis:RegionDescription'
-        xpRegionDescriptionDateCollected = 'hmis:RegionDescription/@hmis:dateCollected'
-        xpRegionDescriptionDateEffective = 'hmis:RegionDescription/@hmis:dateEffective'
-        xpRegionDescriptionDataCollectionStage = 'hmis:RegionDescription/@hmis:dataCollectionStage'
+        client_id = ET.SubElement(member, "client_id")#IGNORE:@UnusedVariable
+        date_entered = ET.SubElement(member, "date_entered")#IGNORE:@UnusedVariable
+        date_ended = ET.SubElement(member, "date_ended")#IGNORE:@UnusedVariable
+        head_of_household = ET.SubElement(member, "head_of_household")#IGNORE:@UnusedVariable
+        relationship = ET.SubElement(member, "relationship")#IGNORE:@UnusedVariable
+        xpRegion = 'hmis:Region'#IGNORE:@UnusedVariable
+        xpRegionIDIDNum = 'hmis:RegionID/hmis:IDNum'#IGNORE:@UnusedVariable
+        xpRegionIDIDStr = 'hmis:RegionID/hmis:IDStr'#IGNORE:@UnusedVariable
+        xpSiteServiceID = 'hmis:SiteServiceID'#IGNORE:@UnusedVariable
+        xpRegionType = 'hmis:RegionType'#IGNORE:@UnusedVariable
+        xpRegionTypeDateCollected = 'hmis:RegionType/@hmis:dateCollected'#IGNORE:@UnusedVariable
+        xpRegionTypeDateEffective = 'hmis:RegionType/@hmis:dateEffective'#IGNORE:@UnusedVariable
+        xpRegionTypeDataCollectionStage = 'hmis:RegionType/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
+        xpRegionDescription = 'hmis:RegionDescription'#IGNORE:@UnusedVariable
+        xpRegionDescriptionDateCollected = 'hmis:RegionDescription/@hmis:dateCollected'#IGNORE:@UnusedVariable
+        xpRegionDescriptionDateEffective = 'hmis:RegionDescription/@hmis:dateEffective'#IGNORE:@UnusedVariable
+        xpRegionDescriptionDataCollectionStage = 'hmis:RegionDescription/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
 
     def createRegion(self, records):
         region = ET.SubElement(records, "region")
         return region
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        xpAgency = 'hmis:Agency'
-        xpAgencyDelete = '@hmis:Delete'
-        xpAgencyDeleteOccurredDate = '@hmis:DeleteOccurredDate'
-        xpAgencyDeleteEffective = '@hmis:DeleteEffective'
-        xpAirsKey = 'airs:Key'
-        xpAirsName = 'airs:Name'
-        xpAgencyDescription = 'airs:AgencyDescription'
-        xpIRSStatus = 'airs:IRSStatus'
-        xpSourceOfFunds = 'airs:SourceOfFunds'
-        xpRecordOwner = '@hmis:RecordOwner'
-        xpFEIN = '@hmis:FEIN'
-        xpYearInc = '@hmis:YearInc'
-        xpAnnualBudgetTotal = '@hmis:AnnualBudgetTotal'
-        xpLegalStatus = '@hmis:LegalStatus'
-        xpExcludeFromWebsite = '@hmis:ExcludeFromWebsite'
-        xpExcludeFromDirectory = '@hmis:ExcludeFromDirectory'       
+        xpAgency = 'hmis:Agency'#IGNORE:@UnusedVariable
+        xpAgencyDelete = '@hmis:Delete'#IGNORE:@UnusedVariable
+        xpAgencyDeleteOccurredDate = '@hmis:DeleteOccurredDate'#IGNORE:@UnusedVariable
+        xpAgencyDeleteEffective = '@hmis:DeleteEffective'#IGNORE:@UnusedVariable
+        xpAirsKey = 'airs:Key'#IGNORE:@UnusedVariable
+        xpAirsName = 'airs:Name'#IGNORE:@UnusedVariable
+        xpAgencyDescription = 'airs:AgencyDescription'#IGNORE:@UnusedVariable
+        xpIRSStatus = 'airs:IRSStatus'#IGNORE:@UnusedVariable
+        xpSourceOfFunds = 'airs:SourceOfFunds'#IGNORE:@UnusedVariable
+        xpRecordOwner = '@hmis:RecordOwner'#IGNORE:@UnusedVariable
+        xpFEIN = '@hmis:FEIN'#IGNORE:@UnusedVariable
+        xpYearInc = '@hmis:YearInc'#IGNORE:@UnusedVariable
+        xpAnnualBudgetTotal = '@hmis:AnnualBudgetTotal'#IGNORE:@UnusedVariable
+        xpLegalStatus = '@hmis:LegalStatus'#IGNORE:@UnusedVariable
+        xpExcludeFromWebsite = '@hmis:ExcludeFromWebsite'#IGNORE:@UnusedVariable
+        xpExcludeFromDirectory = '@hmis:ExcludeFromDirectory'#IGNORE:@UnusedVariable   
 
     def createAgency_old2(self, records):
         agency = ET.SubElement(records, "agency")
         return agency
         
     def createAgency_old(self, records):
-
-
-
-        xpSite = 'airs:Site'
-        xpSiteDeleteOccurredDate = '@airs:DeleteOccurredDate'
-        xpSiteDeleteEffective = '@airs:DeleteEffective'
-        xpSiteDelete = '@airs:Delete'
-        xpKey = 'airs:Key'
-        xpName = 'airs:Name'
-        xpSiteDescription = 'airs:SiteDescription'
-        xpPhysicalAddressPreAddressLine = 'airs:PhysicalAddress/airs:PreAddressLine'
-        xpPhysicalAddressLine1 = 'airs:PhysicalAddress/airs:Line1'
-        xpPhysicalAddressLine2 = 'airs:PhysicalAddress/airs:Line2'
-        xpPhysicalAddressCity = 'airs:PhysicalAddress/airs:City'
-        xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'
-        xpPhysicalAddressState = 'airs:PhysicalAddress/airs:State'
-        xpPhysicalAddressZipCode = 'airs:PhysicalAddress/airs:ZipCode'
-        xpPhysicalAddressCountry = 'airs:PhysicalAddress/airs:Country'
-        xpPhysicalAddressReasonWithheld = 'airs:PhysicalAddress/airs:ReasonWithheld'
-        xpPhysicalAddressConfidential = 'airs:PhysicalAddress/@airs:Confidential'
-        xpPhysicalAddressDescription = 'airs:PhysicalAddress/@airs:Description' 
-        xpMailingAddressPreAddressLine = 'airs:MailingAddress/airs:PreAddressLine'
-        xpMailingAddressLine1 = 'airs:MailingAddress/airs:Line1'
-        xpMailingAddressLine2 = 'airs:MailingAddress/airs:Line2'
-        xpMailingAddressCity = 'airs:MailingAddress/airs:City'
-        xpMailingAddressCounty = 'airs:MailingAddress/airs:County'
-        xpMailingAddressState = 'airs:MailingAddress/airs:State'
-        xpMailingAddressZipCode = 'airs:MailingAddress/airs:ZipCode'
-        xpMailingAddressCountry = 'airs:MailingAddress/airs:Country'
-        xpMailingAddressReasonWithheld = 'airs:MailingAddress/airs:ReasonWithheld'
-        xpMailingAddressConfidential = 'airs:MailingAddress/@airs:Confidential'
-        xpMailingAddressDescription = 'airs:MailingAddress/@airs:Description'       
-        xpNoPhysicalAddressDescription = 'airs:NoPhysicalAddress/airs:Description'        
-        xpNoPhysicalAddressExplanation = 'airs:NoPhysicalAddress/airs:Explanation'        
-        xpDisabilitiesAccess = 'airs:DisabilitiesAccess'
-        xpPhysicalLocationDescription = 'airs:PhysicalLocationDescription'
-        xpBusServiceAccess = 'airs:BusServiceAccess'
-        xpPublicAccessToTransportation = 'airs:PublicAccessToTransportation'
-        xpYearInc = 'airs:YearInc'
-        xpAnnualBudgetTotal = 'airs:AnnualBudgetTotal'
-        xpLegalStatus = 'airs:LegalStatus'
-        xpExcludeFromWebsite = 'airs:ExcludeFromWebsite'
-        xpExcludeFromDirectory = 'airs:ExcludeFromDirectory'
-        xpAgencyKey = 'airs:AgencyKey'
+        xpSite = 'airs:Site'#IGNORE:@UnusedVariable
+        xpSiteDeleteOccurredDate = '@airs:DeleteOccurredDate'#IGNORE:@UnusedVariable
+        xpSiteDeleteEffective = '@airs:DeleteEffective'#IGNORE:@UnusedVariable
+        xpSiteDelete = '@airs:Delete'#IGNORE:@UnusedVariable
+        xpKey = 'airs:Key'#IGNORE:@UnusedVariable
+        xpName = 'airs:Name'#IGNORE:@UnusedVariable
+        xpSiteDescription = 'airs:SiteDescription'#IGNORE:@UnusedVariable
+        xpPhysicalAddressPreAddressLine = 'airs:PhysicalAddress/airs:PreAddressLine'#IGNORE:@UnusedVariable
+        xpPhysicalAddressLine1 = 'airs:PhysicalAddress/airs:Line1'#IGNORE:@UnusedVariable
+        xpPhysicalAddressLine2 = 'airs:PhysicalAddress/airs:Line2'#IGNORE:@UnusedVariable
+        xpPhysicalAddressCity = 'airs:PhysicalAddress/airs:City'#IGNORE:@UnusedVariable
+        xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'#IGNORE:@UnusedVariable
+        xpPhysicalAddressState = 'airs:PhysicalAddress/airs:State'#IGNORE:@UnusedVariable
+        xpPhysicalAddressZipCode = 'airs:PhysicalAddress/airs:ZipCode'#IGNORE:@UnusedVariable
+        xpPhysicalAddressCountry = 'airs:PhysicalAddress/airs:Country'#IGNORE:@UnusedVariable
+        xpPhysicalAddressReasonWithheld = 'airs:PhysicalAddress/airs:ReasonWithheld'#IGNORE:@UnusedVariable
+        xpPhysicalAddressConfidential = 'airs:PhysicalAddress/@airs:Confidential'#IGNORE:@UnusedVariable
+        xpPhysicalAddressDescription = 'airs:PhysicalAddress/@airs:Description'#IGNORE:@UnusedVariable
+        xpMailingAddressPreAddressLine = 'airs:MailingAddress/airs:PreAddressLine'#IGNORE:@UnusedVariable
+        xpMailingAddressLine1 = 'airs:MailingAddress/airs:Line1'#IGNORE:@UnusedVariable
+        xpMailingAddressLine2 = 'airs:MailingAddress/airs:Line2'#IGNORE:@UnusedVariable
+        xpMailingAddressCity = 'airs:MailingAddress/airs:City'#IGNORE:@UnusedVariable
+        xpMailingAddressCounty = 'airs:MailingAddress/airs:County'#IGNORE:@UnusedVariable
+        xpMailingAddressState = 'airs:MailingAddress/airs:State'#IGNORE:@UnusedVariable
+        xpMailingAddressZipCode = 'airs:MailingAddress/airs:ZipCode'#IGNORE:@UnusedVariable
+        xpMailingAddressCountry = 'airs:MailingAddress/airs:Country'#IGNORE:@UnusedVariable
+        xpMailingAddressReasonWithheld = 'airs:MailingAddress/airs:ReasonWithheld'#IGNORE:@UnusedVariable
+        xpMailingAddressConfidential = 'airs:MailingAddress/@airs:Confidential'#IGNORE:@UnusedVariable
+        xpMailingAddressDescription = 'airs:MailingAddress/@airs:Description'#IGNORE:@UnusedVariable       
+        xpNoPhysicalAddressDescription = 'airs:NoPhysicalAddress/airs:Description'#IGNORE:@UnusedVariable        
+        xpNoPhysicalAddressExplanation = 'airs:NoPhysicalAddress/airs:Explanation'#IGNORE:@UnusedVariable        
+        xpDisabilitiesAccess = 'airs:DisabilitiesAccess'#IGNORE:@UnusedVariable
+        xpPhysicalLocationDescription = 'airs:PhysicalLocationDescription'#IGNORE:@UnusedVariable
+        xpBusServiceAccess = 'airs:BusServiceAccess'#IGNORE:@UnusedVariable
+        xpPublicAccessToTransportation = 'airs:PublicAccessToTransportation'#IGNORE:@UnusedVariable
+        xpYearInc = 'airs:YearInc'#IGNORE:@UnusedVariable
+        xpAnnualBudgetTotal = 'airs:AnnualBudgetTotal'#IGNORE:@UnusedVariable
+        xpLegalStatus = 'airs:LegalStatus'#IGNORE:@UnusedVariable
+        xpExcludeFromWebsite = 'airs:ExcludeFromWebsite'#IGNORE:@UnusedVariable
+        xpExcludeFromDirectory = 'airs:ExcludeFromDirectory'#IGNORE:@UnusedVariable
+        xpAgencyKey = 'airs:AgencyKey'#IGNORE:@UnusedVariable
 
 
     def createSite_AKA(self, xml):
@@ -903,18 +880,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "airs", elements)
+        theElements = self.generateElements(xml, "airs", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -935,18 +912,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "airs", elements)
+        theElements = self.generateElements(xml, "airs", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -972,7 +949,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
     def manageSiteService(self, export):
         # SiteService
         siteservice = self.createSiteService(export)
-        siteservice = self.customizeSiteService(siteservice, siteServiceData=None)
+        siteservice = self.customizeSiteService1(siteservice, siteServiceData=None)
         
         # Sub Element of SiteService
         phone = self.createSiteServicePhone(siteservice)
@@ -1004,7 +981,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #   self.customizeSiteService_TimeOpen_DayOfWeek(elementDOW)
             
         # now terminate the timeopen element with notes
-        elementnotes = self.createSiteService_TimeOpen_Notes(timeopen, 'Notes')
+        elementnotes = self.createSiteService_TimeOpen_Notes(timeopen, 'Notes')#IGNORE:@UnusedVariable
         
         ###########################################################################
         
@@ -1026,7 +1003,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         self.customizeDOW(timeopen, data=[])
         
         # now terminate the timeopen element with notes
-        elementnotes = self.createSiteService_TimeOpen_Notes(timeopen, 'Notes')
+        elementnotes = self.createSiteService_TimeOpen_Notes(timeopen, 'Notes')#IGNORE:@UnusedVariable
         
         # GeographicAreaServed
         #elementName = "GeographicAreaServed"
@@ -1046,18 +1023,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, ns, subElements)
+        theElements = self.generateElements(xml, ns, subElements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1080,18 +1057,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, ns, elements)
+        theElements = self.generateElements(xml, ns, elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1101,7 +1078,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         siteservice = ET.SubElement(xml, "hmis:SiteService")
         return siteservice
     
-    def customizeSiteService(self, xml):
+    def customizeSiteService1(self, xml):
         attributes = [
         ]
         elements = [
@@ -1111,18 +1088,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "airs", elements)
+        theElements = self.generateElements(xml, "airs", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1153,18 +1130,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, ns, elements)
+        theElements = self.generateElements(xml, ns, elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1180,18 +1157,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, ns, elements)
+        theElements = self.generateElements(xml, ns, elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1216,18 +1193,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "airs", elements)
+        theElements = self.generateElements(xml, "airs", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1259,18 +1236,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1296,18 +1273,18 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         ]
 
         # Define the attributes
-        theAttributes = {}
+        theAttributes = {}#IGNORE:@UnusedVariable
         #household.attrib["system_id"] = sysID
         for attribute in attributes:
             #theAttributes[attribute] = ET.SubElement(xml, "airs:%s" % field)
             xml.attrib[attribute] = ''
         
         # Define the elements   
-        theElements = {}
+        theElements = {}#IGNORE:@UnusedVariable
         # build a dictionary of the field names above then we can assign values spinning through the dictionary
         #for element in elements:
         #   theElements[element] = ET.SubElement(xml, "airs:%s" % element)
-        theElements = self.generateElements(xml, "hmis", elements)
+        theElements = self.generateElements(xml, "hmis", elements)#IGNORE:@UnusedVariable
         
         # push data into elements here..
         
@@ -1405,8 +1382,8 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         
     def pullConfiguration(self, pExportID):
         # need to use both ExportID and Processing Mode (Test or Prod)
-        source = self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID).one()
-        self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
+        source = self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID).one()#IGNORE:@UndefinedVariable
+        self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()#IGNORE:@UndefinedVariable
     
     def createAgency(self, xml):
         agency = ET.SubElement(xml, "hmis:Agency")
@@ -1415,35 +1392,35 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
     def queryTaxonomy(self, siteServiceID=None, needID=None):
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
         #Column('need_index_id', Integer, ForeignKey(Need.c.id)),
-        return self.session.query(dbobjects.Taxonomy).filter(and_(dbobjects.Taxonomy.site_service_index_id == siteServiceID,
-                                                                         dbobjects.Taxonomy.need_index_id == needID,
+        return self.session.query(dbobjects.Taxonomy).filter(and_(dbobjects.Taxonomy.site_service_index_id == siteServiceID,#IGNORE:@UndefinedVariable
+                                                                         dbobjects.Taxonomy.need_index_id == needID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def querySpatialLocation(self, siteID=None, agencyLocationID=None):
-        return self.session.query(dbobjects.SpatialLocation).filter(and_(dbobjects.SpatialLocation.site_index_id == siteID,
-                                                                         dbobjects.SpatialLocation.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.SpatialLocation).filter(and_(dbobjects.SpatialLocation.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                         dbobjects.SpatialLocation.agency_location_index_id == agencyLocationID,#IGNORE:@UndefinedVariable
                                                                  )).all()
     def querySiteService(self, exportID=None, reportID=None, siteID=None, agencyLocationID=None):
 #        Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
 #        Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
 #        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
 #        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
-        return self.session.query(dbobjects.SiteService).filter(and_(dbobjects.SiteService.export_index_id == exportID,
-                                                                   dbobjects.SiteService.report_index_id == reportID,
-                                                                   dbobjects.SiteService.site_index_id == siteID,
-                                                                   dbobjects.SiteService.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.SiteService).filter(and_(dbobjects.SiteService.export_index_id == exportID,#IGNORE:@UndefinedVariable
+                                                                   dbobjects.SiteService.report_index_id == reportID,#IGNORE:@UndefinedVariable
+                                                                   dbobjects.SiteService.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                   dbobjects.SiteService.agency_location_index_id == agencyLocationID,#IGNORE:@UndefinedVariable
                                                                  )).all()
     
     def queryLanguages(self, siteID=None, siteServiceID=None, agencyLocationID=None):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        return self.session.query(dbobjects.Languages).filter(and_(dbobjects.Languages.site_index_id == siteID,
-                                                                   dbobjects.Languages.site_service_index_id == siteServiceID,
-                                                                   dbobjects.Languages.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.Languages).filter(and_(dbobjects.Languages.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                   dbobjects.Languages.site_service_index_id == siteServiceID,#IGNORE:@UndefinedVariable
+                                                                   dbobjects.Languages.agency_location_index_id == agencyLocationID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryCrossStreet(self, siteID=None):
-        return self.session.query(dbobjects.CrossStreet).filter(and_(dbobjects.CrossStreet.site_index_id == siteID,
+        return self.session.query(dbobjects.CrossStreet).filter(and_(dbobjects.CrossStreet.site_index_id == siteID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryAKA(self, agencyID=None, siteID=None, agencyLocationID=None ):
@@ -1451,43 +1428,43 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
 #        Column('site_index_id', Integer, ForeignKey(Site.c.id)),
 #        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
         
-        return self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.site_index_id == siteID,
-                                                             dbobjects.Aka.agency_index_id == agencyID,
-                                                             dbobjects.Aka.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                             dbobjects.Aka.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                             dbobjects.Aka.agency_location_index_id == agencyLocationID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryOtherAddress(self, siteID=None, agencyLocationID=None):
-        return self.session.query(dbobjects.OtherAddress).filter(and_(dbobjects.OtherAddress.site_index_id == siteID,
-                                                                      dbobjects.OtherAddress.agency_location_index_id == agencyLocationID,
+        return self.session.query(dbobjects.OtherAddress).filter(and_(dbobjects.OtherAddress.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                      dbobjects.OtherAddress.agency_location_index_id == agencyLocationID,#IGNORE:@UndefinedVariable
                                                                  )).all()
     
     def queryResourceInfo(self, agencyID=None, siteServiceID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
-        return self.session.query(dbobjects.ResourceInfo).filter(and_(dbobjects.ResourceInfo.agency_index_id == agencyID,
-                                                                      dbobjects.ResourceInfo.site_service_index_id == siteServiceID,
+        return self.session.query(dbobjects.ResourceInfo).filter(and_(dbobjects.ResourceInfo.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                                      dbobjects.ResourceInfo.site_service_index_id == siteServiceID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def querySite(self, exportID=None, reportID=None, agencyID=None):
         #Column('export_index_id', String(50), ForeignKey(Export.c.export_id)),
         #Column('report_index_id', String(50), ForeignKey(Report.c.report_id)), 
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        return self.session.query(dbobjects.Site).filter(and_(dbobjects.Site.agency_index_id == agencyID,
+        return self.session.query(dbobjects.Site).filter(and_(dbobjects.Site.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryService(self, agencyID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)), 
-        return self.session.query(dbobjects.Service).filter(and_(dbobjects.Service.agency_index_id == agencyID,
+        return self.session.query(dbobjects.Service).filter(and_(dbobjects.Service.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
                                                                  )).all()
     
     def queryServiceGroup(self, agencyID=None):
         
-        return self.session.query(dbobjects.ServiceGroup).filter(and_(dbobjects.ServiceGroup.agency_index_id == agencyID,
+        return self.session.query(dbobjects.ServiceGroup).filter(and_(dbobjects.ServiceGroup.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryLicenseAccreditation(self, agencyID=None):
         #Column('agency_index_id', Integer, ForeignKey(Agency.c.id)),
-        return self.session.query(dbobjects.LicenseAccreditation).filter(and_(dbobjects.LicenseAccreditation.agency_index_id == agencyID,
+        return self.session.query(dbobjects.LicenseAccreditation).filter(and_(dbobjects.LicenseAccreditation.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryTimeOpen(self, siteID=None, languageID=None, siteServiceID=None, agencyLocationID=None):
@@ -1495,10 +1472,10 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
 #        Column('languages_index_id', Integer, ForeignKey(Languages.c.id)), 
 #        Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)),
 #        Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.c.id)),
-        return self.session.query(dbobjects.TimeOpen).filter(and_(dbobjects.TimeOpen.site_index_id == siteID,
-                                                                  dbobjects.TimeOpen.languages_index_id == languageID,
-                                                                 dbobjects.TimeOpen.site_service_index_id == siteServiceID,
-                                                                 dbobjects.TimeOpen.agency_location_index_id == agencyLocationID
+        return self.session.query(dbobjects.TimeOpen).filter(and_(dbobjects.TimeOpen.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                  dbobjects.TimeOpen.languages_index_id == languageID,#IGNORE:@UndefinedVariable
+                                                                 dbobjects.TimeOpen.site_service_index_id == siteServiceID,#IGNORE:@UndefinedVariable
+                                                                 dbobjects.TimeOpen.agency_location_index_id == agencyLocationID#IGNORE:@UndefinedVariable
                                                                  )).all()
     
     def queryContact(self, agencyID=None, resourceID=None, siteID=None, agencyLocationID=None):
@@ -1507,10 +1484,10 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.c.id)),
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
     
-        return self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyID,
-                                                                 dbobjects.Contact.resource_info_index_id == resourceID,
-                                                                 dbobjects.Contact.site_index_id == siteID,
-                                                                 dbobjects.Contact.agency_location_index_id == agencyLocationID
+        return self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                                 dbobjects.Contact.resource_info_index_id == resourceID,#IGNORE:@UndefinedVariable
+                                                                 dbobjects.Contact.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                 dbobjects.Contact.agency_location_index_id == agencyLocationID#IGNORE:@UndefinedVariable
                                                                  )).all()
         
     def queryEmail(self, agencyID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
@@ -1521,20 +1498,20 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
         #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         
-        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,
-                                                               dbobjects.Email.contact_index_id == contactID,
-                                                               dbobjects.Email.resource_info_index_id == resourceID,
-                                                               dbobjects.Email.site_index_id == siteID,
-                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,
+        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.contact_index_id == contactID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.resource_info_index_id == resourceID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,#IGNORE:@UndefinedVariable
                                                                )).all()
                                                                
     def queryAgencyLocationEmail(self, agencyID=None, agencyLocationID=None, contactID=None, resourceID=None, siteID=None, personHistoricalID=None):
-        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,
-                                                               dbobjects.Email.contact_index_id == contactID,
-                                                               dbobjects.Email.resource_info_index_id == resourceID,
-                                                               dbobjects.Email.site_index_id == siteID,
-                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,
-                                                               dbobjects.Email.agency_location_index_id == agencyLocationID
+        return self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.contact_index_id == contactID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.resource_info_index_id == resourceID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.person_historical_index_id == personHistoricalID,#IGNORE:@UndefinedVariable
+                                                               dbobjects.Email.agency_location_index_id == agencyLocationID#IGNORE:@UndefinedVariable
                                                                )).all()
      
                                                                
@@ -1543,7 +1520,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #Column('site_index_id', Integer, ForeignKey(Site.c.id)), 
 #        print "Start of queryAgencyURL result"
 #        print "agencyID is", agencyID
-        filter_result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.site_index_id == siteID, dbobjects.Url.agency_location_index_id == None)).all()
+        filter_result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.site_index_id == siteID, dbobjects.Url.agency_location_index_id == None)).all()#IGNORE:@UndefinedVariable
 #        print "queryAgencyURL result is: ", filter_result
 #        print "End of queryAgencyURL result"
         return filter_result                                                     
@@ -1554,13 +1531,13 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
 #            print "Start of queryAgencyLocationURL result"
 #            print "agencyLocationID is", agencyLocationID
 #            print "agencyID is", agencyID
-            result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.agency_location_index_id == agencyLocationID, agencyLocationID != None)).all()
+            result = self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyID, dbobjects.Url.agency_location_index_id == agencyLocationID, agencyLocationID != None)).all()#IGNORE:@UndefinedVariable
 #            print "queryAgencyLocationURL result is: ", result
 #            print "End of queryAgencyLocationURL result"
             return result
         
     def queryAgencyLocation(self, agencyID=None):
-        return self.session.query(dbobjects.AgencyLocation).filter(and_(dbobjects.AgencyLocation.agency_index_id == agencyID,)).all()
+        return self.session.query(dbobjects.AgencyLocation).filter(and_(dbobjects.AgencyLocation.agency_index_id == agencyID,)).all()#IGNORE:@UndefinedVariable
         
     def queryPhone(self, agencyID=None, contactID=None, resourceID=None, siteID=None, siteServiceID=None, personHistoricalID=None, agencyLocationID=None):
         # Phone has these foreign keys, they must either be null or supplied by some value to query properly
@@ -1571,13 +1548,13 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #Column('site_service_index_id', Integer, ForeignKey(SiteService.c.id)), 
         #Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.c.id)),
         
-        return  self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyID,
-                                                                dbobjects.Phone.contact_index_id == contactID,
-                                                                dbobjects.Phone.resource_info_index_id == resourceID,
-                                                                dbobjects.Phone.site_index_id == siteID,
-                                                                dbobjects.Phone.site_service_index_id == siteServiceID,
-                                                                dbobjects.Phone.person_historical_index_id == personHistoricalID,
-                                                                dbobjects.Phone.agency_location_index_id == agencyLocationID
+        return  self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.contact_index_id == contactID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.resource_info_index_id == resourceID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.site_index_id == siteID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.site_service_index_id == siteServiceID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.person_historical_index_id == personHistoricalID,#IGNORE:@UndefinedVariable
+                                                                dbobjects.Phone.agency_location_index_id == agencyLocationID#IGNORE:@UndefinedVariable
                                                                 )).all()
         
     def customizeAgency(self, xml, agencyData, siteIndexID = None):
@@ -1628,7 +1605,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #AKARows = self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.agency_index_id == agencyData.id,dbobjects.Aka.site_index_id == siteIndexID)).all()
         
         for AKARow in AKARows:
-            akarow = self.customizeAgencyAKA(AKA, AKARow)
+            akarow = self.customizeAgencyAKA(AKA, AKARow)#IGNORE:@UnusedVariable
         
         # FIXME (Eric is working on writing this code need to uncomment when he's done            
         # Agency Location
@@ -1636,7 +1613,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         AgencyLocationData = self.queryAgencyLocation(agencyID = agencyData.id)
         
         for agencylocationRows in AgencyLocationData:
-            agencyLoc = self.customizeAgencyLocation(AgencyLocationElement, agencyData, agencylocationRows)
+            agencyLoc = self.customizeAgencyLocation(AgencyLocationElement, agencyData, agencylocationRows)#IGNORE:@UnusedVariable
         
         # Phone
         PhoneElement = theElements['Phone']
@@ -1646,7 +1623,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for phoneRow in AgencyPhoneData:
-            phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)
+            phoneSubElement = self.customizeAgencyPhone(PhoneElement, phoneRow)#IGNORE:@UnusedVariable
         
         # URL
         urlElement = theElements['URL']
@@ -1655,7 +1632,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in AgencyURLData:
-            urlSubElement = self.addURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)#IGNORE:@UnusedVariable
         
         # Email
         EmailElement = theElements['Email']
@@ -1664,7 +1641,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in AgencyEmailData:
-            urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)
+            urlSubElement = self.customizeAgencyEmail(EmailElement, emailRow)#IGNORE:@UnusedVariable
         
         
         # Contact        
@@ -1673,7 +1650,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         if AgencyContactData:
             ContactElement = ET.SubElement(xml, "airs:%s" % 'Contact')
             for contactRow in AgencyContactData:
-                contactSubElement = self.customizeAgencyContact(ContactElement, contactRow, agencyData)
+                contactSubElement = self.customizeAgencyContact(ContactElement, contactRow, agencyData)#IGNORE:@UnusedVariable
 
         # LicenseAccreditation
         AgencyLicenseAccreditationData = self.queryLicenseAccreditation(agencyID = agencyData.id)
@@ -1681,7 +1658,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         
         for accreditationRow in AgencyLicenseAccreditationData:
             LicenseAccreditationElement = ET.SubElement(xml, "airs:LicenseAccreditation")
-            licenseAcreditationSubElement = self.customizeAgencyLicenseAccreditation(LicenseAccreditationElement, accreditationRow)
+            licenseAcreditationSubElement = self.customizeAgencyLicenseAccreditation(LicenseAccreditationElement, accreditationRow)#IGNORE:@UnusedVariable
         
         # Part II of the Agency elements, we had to do some backflips to get the data formatted properly, so now process the remaining elements
         elements = [
@@ -1711,7 +1688,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for serviceGroupRow in AgencyServiceGroupData:
-            serviceGroupSubElement = self.customizeAgencyServiceGroup(ServiceGroupElement, serviceGroupRow)
+            serviceGroupSubElement = self.customizeAgencyServiceGroup(ServiceGroupElement, serviceGroupRow)#IGNORE:@UnusedVariable
         
         # Service
         #ServiceElement = theElements['Service']
@@ -1729,7 +1706,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteRow in AgencySiteData:
-            serviceGroupSubElement = self.customizeAgencySite(SiteElement, agencyData, siteRow)
+            serviceGroupSubElement = self.customizeAgencySite(SiteElement, agencyData, siteRow)#IGNORE:@UnusedVariable
         
         # ResourceInfo
         ResourceInfoElement = theElements['ResourceInfo']
@@ -1737,7 +1714,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for resourceInfoRow in resourceInfoData:
-            serviceGroupSubElement = self.customizeAgencyResourceInfo(ResourceInfoElement, resourceInfoRow)
+            serviceGroupSubElement = self.customizeAgencyResourceInfo(ResourceInfoElement, resourceInfoRow)#IGNORE:@UnusedVariable
         
         
         
@@ -1866,7 +1843,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         AKARows = self.queryAKA(agencyID=agencyData.id, agencyLocationID=agencyLocationData.id)
         
         for AKARow in AKARows:
-            akarow = self.customizeAgencyAKA(akaElement, AKARow)
+            akarow = self.customizeAgencyAKA(akaElement, AKARow)#IGNORE:@UnusedVariable
             
         # MailingAddress
         mailAddressElement = theElements['MailingAddress']
@@ -1878,7 +1855,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         OtherAddressData = self.queryOtherAddress(siteID=None, agencyLocationID=agencyLocationData.id)
         
         for otheraddressRow in OtherAddressData:
-            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)
+            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)#IGNORE:@UnusedVariable
         
          
         # CrossStreet
@@ -1896,7 +1873,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         sitePhoneData = self.queryPhone(agencyID=agencyData.id, contactID=None, resourceID=None, agencyLocationID=agencyLocationData.id)
         
         for phoneRow in sitePhoneData:
-            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)
+            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)#IGNORE:@UnusedVariable
                     
          
         # URL
@@ -1905,7 +1882,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
-            urlSubElement = self.addURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)#IGNORE:@UnusedVariable
         
         # Email
         emailElement = theElements['Email']
@@ -1913,7 +1890,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in SiteEmailData:
-            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
+            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        #IGNORE:@UnusedVariable
          
         # Contact
         contactElement = theElements['Contact']
@@ -1921,21 +1898,21 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
-            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)#IGNORE:@UnusedVariable
         
         # TimeOpen
         timeopenElement = theElements['TimeOpen']
         timeOpenData = self.queryTimeOpen(siteID=None, languageID=None, siteServiceID=None, agencyLocationID=agencyLocationData.id)
         
         for timeOpenRow in timeOpenData:
-            timeopenSubElement = self.customizeTimeOpen(timeopenElement, timeOpenRow)
+            timeopenSubElement = self.customizeTimeOpen(timeopenElement, timeOpenRow)#IGNORE:@UnusedVariable
          
         # Languages
         languagesElement = theElements['Languages']
         siteLanguageData = self.queryLanguages(agencyLocationID=agencyLocationData.id )
         
         for siteLanguageRow in siteLanguageData:
-            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)
+            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)#IGNORE:@UnusedVariable
          
         # DisabilitiesAccess
         theElements['DisabilitiesAccess'].text = agencyLocationData.disabilities_access
@@ -1953,14 +1930,14 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         siteServiceData = self.querySiteService(agencyLocationID=agencyLocationData.id)
         
         for siteServiceRow in siteServiceData:
-            siteServiceSubElement = self.customizeSiteService(siteServiceElement, siteServiceRow)
+            siteServiceSubElement = self.customizeSiteService2(siteServiceElement, siteServiceRow)#IGNORE:@UnusedVariable
          
         # SpatialLocation
         spatiallocationElement = theElements['SpatialLocation']
         siteSpatialLocationData = self.querySpatialLocation(agencyLocationID=agencyLocationData.id)
         
         for siteSpatialLocationRow in siteSpatialLocationData:
-            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)
+            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)#IGNORE:@UnusedVariable
         
     def customizeAgencyPhone(self, xml, phoneData):
         # next process the elements
@@ -2036,7 +2013,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #theElements['TimeOpen'].text = LanguagesData.title
         theElements['Notes'].text = LanguagesData.notes
         
-    def customizeSiteService(self, xml, siteServiceData):
+    def customizeSiteService2(self, xml, siteServiceData):
         if siteServiceData is None:
             return xml
         
@@ -2060,7 +2037,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
             # Taxonomy
             #taxonomyElement =ET.SubElement(xml, "airs:%s" % 'Taxonomy')
             
-            taxonomySubElement = self.customizeTaxonomy(xml, taxonomyData)
+            taxonomySubElement = self.customizeTaxonomy(xml, taxonomyData)#IGNORE:@UnusedVariable
         
     def customizeSpatialLocation(self, xml, spatialLocationData):
         elements = [
@@ -2108,7 +2085,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
             email = ET.SubElement(xml, "airs:%s" % 'Email')
             for emailRow in AgencyEmailData:
-                urlSubElement = self.customizeAgencyEmail(email, emailRow)
+                urlSubElement = self.customizeAgencyEmail(email, emailRow)#IGNORE:@UnusedVariable
         
         # now get the phone and email subelements of Contact
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
@@ -2118,7 +2095,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         if AgencyPhoneData:
             phone = ET.SubElement(xml, "airs:%s" % 'Phone')
             for phoneRow in AgencyPhoneData:
-                phoneSubElement = self.customizeAgencyPhone(phone, phoneRow)
+                phoneSubElement = self.customizeAgencyPhone(phone, phoneRow)#IGNORE:@UnusedVariable
     
     def customizeAgencyLicenseAccreditation(self, xml, AccreditationData):
         elements = [
@@ -2210,7 +2187,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
-            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)#IGNORE:@UnusedVariable
         
     def customizeAgencySite(self, xml, agencyData, siteData):
         
@@ -2259,7 +2236,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #AKARows = self.session.query(dbobjects.Aka).filter(and_(dbobjects.Aka.agency_index_id == agencyData.id,dbobjects.Aka.site_index_id == siteData.id)).all()
         
         for AKARow in AKARows:
-            akarow = self.customizeAgencyAKA(akaElement, AKARow)
+            akarow = self.customizeAgencyAKA(akaElement, AKARow)#IGNORE:@UnusedVariable
          
         # OtherAddress
         otheraddressElement = theElements['OtherAddress']
@@ -2268,7 +2245,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         
         for otheraddressRow in OtherAddressData:
-            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)
+            otherAddressSubElement = self.customizeSiteOtherAddress(otheraddressElement, otheraddressRow)#IGNORE:@UnusedVariable
         
          
         # CrossStreet
@@ -2286,7 +2263,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         sitePhoneData = self.queryPhone(agencyID=agencyData.id, contactID=None, resourceID=None, siteID=siteData.id)
         
         for phoneRow in sitePhoneData:
-            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)
+            phoneSubElement = self.customizeAgencyPhone(phoneElement, phoneRow)#IGNORE:@UnusedVariable
                     
          
         # URL
@@ -2296,7 +2273,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Url).filter(and_(dbobjects.Url.agency_index_id == agencyData.id,)).all()
         
         for urlRow in SiteURLData:
-            urlSubElement = self.addURL(urlElement, urlRow)
+            urlSubElement = self.addURL(urlElement, urlRow)#IGNORE:@UnusedVariable
         
         # Email
         emailElement = theElements['Email']
@@ -2304,7 +2281,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
         
         for emailRow in SiteEmailData:
-            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)        
+            emailSubElement = self.customizeAgencyEmail(emailElement, emailRow)#IGNORE:@UnusedVariable        
          
         # Contact
         contactElement = theElements['Contact']
@@ -2312,11 +2289,11 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         #self.session.query(dbobjects.Contact).filter(and_(dbobjects.Contact.agency_index_id == agencyData.id,)).all()
         
         for siteContactRow in siteContactData:
-            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)
+            contactSubElement = self.customizeAgencyContact(contactElement, siteContactRow, agencyData)#IGNORE:@UnusedVariable
         
         
         # TimeOpen
-        timeopenElement = theElements['TimeOpen']
+        timeopenElement = theElements['TimeOpen']#IGNORE:@UnusedVariable
         
          
         # Languages
@@ -2324,7 +2301,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         siteLanguageData = self.queryLanguages(siteID=siteData.id)
         
         for siteLanguageRow in siteLanguageData:
-            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)
+            languagesSubElement = self.customizeSiteLanguage(languagesElement, siteLanguageRow)#IGNORE:@UnusedVariable
          
         # DisabilitiesAccess
         theElements['DisabilitiesAccess'].text = siteData.disabilities_access
@@ -2343,7 +2320,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         siteSpatialLocationData = self.querySpatialLocation(siteID=siteData.id)
         
         for siteSpatialLocationRow in siteSpatialLocationData:
-            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)
+            languagesSubElement = self.customizeSpatialLocation(spatiallocationElement, siteSpatialLocationRow)#IGNORE:@UnusedVariable
         
         
         # Start plugging data in here...
@@ -2360,11 +2337,11 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         
         theElements = {}
         for element in elements:
-            theElements[element] = ET.SubElement(xml, "airs:%s" % element)
+            theElements[element] = ET.SubElement(self.xml, "airs:%s" % element)
         
-        theElements['Name'].text = AKAData.name
-        theElements['Confidential'].text = AKAData.confidential
-        theElements['Description'].text = AKAData.description
+        theElements['Name'].text = self.AKAData.name
+        theElements['Confidential'].text = self.AKAData.confidential
+        theElements['Description'].text = self.AKAData.description
         
     
     def processXML(self):
@@ -2388,11 +2365,11 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
             # This needs a parameter with datavalues passed in, right now it's structure only.
             source = self.customizeSource(source, sourceData)
             # pull the link
-            link = self.session.query(dbobjects.SourceExportLink).filter(dbobjects.SourceExportLink.source_index_id == sourceData.id).one()
+            link = self.session.query(dbobjects.SourceExportLink).filter(dbobjects.SourceExportLink.source_index_id == sourceData.id).one()#IGNORE:@UndefinedVariable
             export_rec_id = link.export_index_id
             
             # pull the export record
-            exportRecs = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == export_rec_id).all()            
+            exportRecs = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == export_rec_id).all()#IGNORE:@UndefinedVariable            
             for exportData in exportRecs:
                 export = self.createExport(source)
             
@@ -2404,7 +2381,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
                 agency = self.createAgency(export)
                 
                 # pull agency from the export data
-                agencyRecs = self.session.query(dbobjects.Agency).filter(dbobjects.Agency.export_index_id == export_rec_id).all()
+                agencyRecs = self.session.query(dbobjects.Agency).filter(dbobjects.Agency.export_index_id == export_rec_id).all()#IGNORE:@UndefinedVariable
                 for agencyData in agencyRecs:
                     agency = self.customizeAgency(agency, agencyData)
                 
@@ -2490,7 +2467,7 @@ if __name__ == "__main__":
             vld = HMISXMLWriter(".", options)
             vld.write()        
             
-        except clsexceptions.UndefinedXMLWriter:
+        except exceptions.UndefinedXMLWriter:#IGNORE:@UndefinedVariable
             print "Please specify a format for outputting your XML"
             raise
     

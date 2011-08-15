@@ -1,27 +1,27 @@
+"""
+The MIT License
 
-# The MIT License
-# 
-# Copyright (c) 2007 Suncoast Partnership 
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-# 
-#import sys
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 import os
 import glob
 import copy
@@ -29,7 +29,7 @@ import shutil
 import csv
 from time import sleep as ossleep
 import datetime
-from synthesis.conf import settings
+from conf import settings
       
 def sleep(sleepTime):
     print 'Sleeping for %s' % sleepTime
@@ -89,7 +89,6 @@ def unquoteList(parts=[], findChar='"'):
     return newList
     
 def unquoteField(field, findChar='"'):
-    newField = ''
     newField = field.replace(findChar, '')
     newField = newField.replace(findChar, '')
     x = copy.deepcopy(newField)
@@ -133,8 +132,7 @@ def cleanRecord(record, delimitter, findChar, replaceChar, startPos=0):
     
 def parseRecord(record, delimiter=","):
     #print "Ready to parse a record..."
-    #print record
-    recParts = []
+    #recParts = []
     # intakes file is delimited with "\r" and outcomes is del with "\r\n"
     findThis = "\r\n"
     if record.find(findThis) == -1:
@@ -162,7 +160,7 @@ def suckFile2(filename):
     return records
 
 def suckFile(filename):
-    records = []
+    #records = []
     print "Ready to suck file in %s" % filename
     try:
         file = open(filename, 'r')
@@ -238,7 +236,7 @@ def getTimeStampedFileName(unstamped_file_path):
     '''Simply extract the name of a file from a path string, timestamp the file name, and return a file name string with the modification.'''
     if settings.DEBUG:
         print "unstamped_file_path in getTimeStampedFileName is: ", unstamped_file_path
-    (old_file_path, old_file_name) = os.path.split(unstamped_file_path)
+    (old_file_path, old_file_name) = os.path.split(unstamped_file_path)#IGNORE:@UnusedVariable
     old_file_name_prefix = os.path.splitext(old_file_name)[0]
     old_file_name_suffix = os.path.splitext(unstamped_file_path)[1]
     new_file_name_prefix = old_file_name_prefix + str(datetime.datetime.now())
@@ -261,7 +259,8 @@ def getUniqueFileNameForMove(attempted_file_name, destination_directory):
     if os.path.isfile(stamped_file_path):
         print "The renamed file is also already there, please check this out."
     #stamped_pathname is a whole path, so just return the filename part without path
-    (file_path, unique_file_name) = os.path.split(stamped_file_path)
+    (file_path, unique_file_name) = os.path.split(stamped_file_path)#IGNORE:@UnusedVariable
+    
     #return just the filename
     return unique_file_name
 
@@ -270,7 +269,7 @@ def moveFile(source_file_path, destination_directory):
     try:
         if not os.path.exists(destination_directory):
             os.mkdir(destination_directory)
-        (source_file_path_prefix, source_file_name) = os.path.split(source_file_path) 
+        (source_file_path_prefix, source_file_name) = os.path.split(source_file_path)#IGNORE:@UnusedVariable
 
         #ECJ20100829 rename the file over in tmp, because I don't want to renamed file to trigger an inotify event for monitor() before it's moved to an unlistened dir
         temp_file_path = os.path.join(settings.BASE_PATH, 'tmp', source_file_name)

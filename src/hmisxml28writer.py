@@ -1,12 +1,10 @@
-import os.path
 from interpretpicklist import Interpretpicklist
 from datetime import timedelta, date, datetime
 from time import strptime, time
-import xmlutilities
 from xmlutilities import IDGeneration
 #from mx.DateTime import ISO
 # SBB20070920 Adding exceptions class
-#from clsexceptions import dataFormatError, ethnicityPickNotFound
+#from exceptions import dataFormatError, ethnicityPickNotFound
 
 # Alchemy Libraries
 from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
@@ -15,7 +13,6 @@ from sqlalchemy.types import DateTime, Date
 
 from sys import version
 from conf import settings
-import clsexceptions
 import dbobjects
 from writer import Writer
 from zope.interface import implements
@@ -154,37 +151,37 @@ class HMISXML28Writer(dbobjects.DatabaseObjects):
             self.sysID = self.person.id
     
             if not self.person == None and self.outcomes == None:
-            client = self.createClient(records)
-            self.customizeClient(client)
-            self.customizeClientPersonalIdentifiers(client, self.person)
-            dynamiccontent = self.createDynamic_content(client)
-            self.customizeDynamiccontent(dynamiccontent)
+                client = self.createClient(records)
+                self.customizeClient(client)
+                self.customizeClientPersonalIdentifiers(client, self.person)
+                dynamiccontent = self.createDynamic_content(client)
+                self.customizeDynamiccontent(dynamiccontent)
             
             continue    # FIXME (Remove when done)
         
             if not self.intakes == None and not self.outcomes == None:
-            for self.intake in self.intakes:
-                client = self.createClient(records)
-                self.customizeClientForEntryExit(client)
-                self.customizeClientPersonalIdentifiersForEntryExit(client,self.intake)
+                for self.intake in self.intakes:
+                    client = self.createClient(records)
+                    self.customizeClientForEntryExit(client)
+                    self.customizeClientPersonalIdentifiersForEntryExit(client,self.intake)
         
         # SBB20070627 we are only going to create needs/services records for daily census entries.  
         #If there aren't any, we'll skip this portion of the code
         if not self.daily_census == None:
             for self.dsRec in self.daily_census:
-            client = self.createClient(records)
-            self.customizeClient(client)
-            self.customizeClientPersonalIdentifiers(client,self.dsRec)
-            needs = self.createNeeds(client) 
-            need = self.createNeed(needs)
-            self.customizeNeed(need)
-            services = self.createServices(need)
-            service = self.createService(services)
-            self.customizeService(service)
+                client = self.createClient(records)
+                self.customizeClient(client)
+                self.customizeClientPersonalIdentifiers(client,self.dsRec)
+                needs = self.createNeeds(client) 
+                need = self.createNeed(needs)
+                self.customizeNeed(need)
+                services = self.createServices(need)
+                service = self.createService(services)
+                self.customizeService(service)
     
         if not self.outcomes == None and self.intakes == None:            
             for self.outcom in self.outcomes:
-            entry_exit = self.createEntryExit(records)
+                entry_exit = self.createEntryExit(records)
             
     #        Removed all household elements, since the csv data does not convey household data
     #        households = self.createHouseholds(records)

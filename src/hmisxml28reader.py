@@ -2,7 +2,7 @@
 storing them into a postgresql database.  This is a log database, so it holds 
 everything and doesn't worry about deduplication.  The only thing it enforces 
 are exportids, which must be unique.'''
-import sys, os
+import sys
 from reader import Reader
 from zope.interface import implements
 from lxml import etree
@@ -12,15 +12,14 @@ from lxml import etree
 from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
-from conf import settings
-import clsexceptions as clsexceptions
-import dbobjects as dbobjects
+import exceptions
+import dbobjects
 import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
 #class HMISXML28Reader(dbobjects.DatabaseObjects):
-class HMISXML28Reader(dbobjects.DatabaseObjects):
+class HMISXML28Reader:#(dbobjects.DatabaseObjects):
     '''Implements reader interface.'''
     implements (Reader) 
     
@@ -35,8 +34,7 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         #clear_mappers()
         
         # moved all mapping ORM logic to new module/class
-        dbo = dbobjects.DatabaseObjects()
-        self.session = dbo.Session()
+        self.session = dbobjects.Session()
         #self.export_map()
         #self.database_map()
         #self.person_map()
@@ -70,7 +68,7 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         except IntegrityError:
             fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise clsexceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
+            raise exceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 
@@ -157,8 +155,8 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         xpExportPeriodStartDatedateCollected = 'hmis:ExportPeriod/hmis:StartDate/@hmis:dateCollected'
         xpExportPeriodEndDate = 'hmis:ExportPeriod/hmis:EndDate'
         xpExportPeriodEndDatedateCollected = 'hmis:ExportPeriod/hmis:EndDate/@hmis:dateCollected'
-        xpExportSoftwareVendor = 'hmis:SoftwareVendor'
-        xpExportSoftwareVendordateCollected = 'hmis:SoftwareVendor/@hmis:dateCollected'
+        xpExportSoftwareVendor = 'hmis:SoftwareVendor'#IGNORE:@UnusedVariable
+        xpExportSoftwareVendordateCollected = 'hmis:SoftwareVendor/@hmis:dateCollected'#IGNORE:@UnusedVariable
         xpExportSoftwareVendor = 'hmis:SoftwareVendor'
         xpExportSoftwareVendordateCollected = 'hmis:SoftwareVendor/@hmis:dateCollected'
         xpExportSoftwareVersion = 'hmis:SoftwareVersion'
@@ -175,7 +173,7 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
                 if len(test) is 0:
                     test = item.xpath(xpExportIDIDStr, namespaces={'hmis': self.hmis_namespace})
                     self.export_id = test
-                    value = self.existence_test_and_add('export_id', test, 'text')
+                    self.existence_test_and_add('export_id', test, 'text')
                     self.existence_test_and_add('export_id_date_collected', item.xpath(xpIDStrdateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 else:
                     self.export_id = test
@@ -407,13 +405,10 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         ### EndDate
             xpAddressPeriodEndDate = 'hmis:AddressPeriod/hmis:EndDate'
             xpAddressPeriodEndDateDateCollected = 'hmis:AddressPeriod/hmis:EndDate/@hmis:dateCollected'
-        ### PreAddressLine
             xpPreAddressLine = 'hmis:PreAddressLine'
-            xpPreAddressLineDateCollected = 'hmis:PreAddressLine/@hmis:dateCollected'
-		### Line1
+            xpPreAddressLineDateCollected = 'hmis:PreAddressLine/@hmis:dateCollected'#IGNORE:@UnusedVariable
             xpLine1 = 'hmis:Line1'
             xpLine1DateCollected = 'hmis:Line1/@hmis:dateCollected'
-		### Line2
             xpLine2 = 'hmis:Line2'
             xpLine2DateCollected = 'hmis:Line2/@hmis:dateCollected'
             ### City
@@ -949,7 +944,7 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         it.  This code allows for multiple persons per file'''
         #Xpath query strings
         xpPerson = 'hmis:Person'
-        xpExportID = '../hmis:Export/hmis:ExportID/hmis:IDNum'
+        xpExportID = '../hmis:Export/hmis:ExportID/hmis:IDNum'#IGNORE:@UnusedVariable
         xpPersonIDHashed = 'hmis:PersonID/hmis:Hashed'
         xpPersonIDUnhashed = 'hmis:PersonID/hmis:Unhashed'
         #need to handle IDStr
@@ -1292,7 +1287,7 @@ class HMISXML28Reader(dbobjects.DatabaseObjects):
         xpNeedStatusDateCollected = 'hmis:NeedStatus/@hmis:dateCollected'
     ### Taxonomy
         xpTaxonomy = 'hmis:Taxonomy/airs:Code'
-        xpTaxonomyDateCollected = 'hmis:Taxonomy/airs:Code/@hmis:dateCollected'
+        xpTaxonomyDateCollected = 'hmis:Taxonomy/airs:Code/@hmis:dateCollected'#IGNORE:@UnusedVariable
 
     ### xpPath Parsing
         itemElements = element.xpath(xpNeed, namespaces={'hmis': self.hmis_namespace})

@@ -1,9 +1,34 @@
 '''Unit-tests various XML/CSV validation scenarios (called tests also) in 
 selector.py.'''
-from selector import Selector, HUDHMIS28XMLTest
+
+"""
+The MIT License
+
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
+from selector import Selector
 import unittest
 import os
-import testCase_settings
+import testcase_settings
 import postgresutils
 
 class SelectorTestCase(unittest.TestCase):
@@ -13,7 +38,7 @@ class SelectorTestCase(unittest.TestCase):
         self.Wipe_DB_clean()
         select = Selector()
         #instance_filename = '/home/eric/workspace/reposHUD/trunk/Coastal_HSXML_converter/test_xml/coastal_sheila.xml'#IGNORE:C0301
-        instance_filename = os.path.join("%s" % testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_VALID)
+        instance_filename = os.path.join("%s" % testcase_settings.INPUTFILES_PATH, testcase_settings.XML_FILE_VALID)
         #result = select.validate(HUDHMIS28XMLTest(), instance_filename)
         result = select.validate(instance_filename, False)
         print result
@@ -25,7 +50,7 @@ class SelectorTestCase(unittest.TestCase):
         self.Wipe_DB_clean()
         select = Selector()
         #instance_filename = '/home/eric/workspace/reposHUD/trunk/Coastal_HSXML_converter/test_xml/coastal_sheila_invalid.xml'#IGNORE:C0301
-        instance_filename = os.path.join("%s" % testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_INVALID)
+        instance_filename = os.path.join("%s" % testcase_settings.INPUTFILES_PATH, testcase_settings.XML_FILE_INVALID)
         #result = select.validate(HUDHMIS28XMLTest(), instance_filename)
         result = select.validate(instance_filename, False)
         print result
@@ -37,7 +62,7 @@ class SelectorTestCase(unittest.TestCase):
         self.Wipe_DB_clean()
         select = Selector()
         #instance_filename = '/home/eric/workspace/reposHUD/trunk/Coastal_HSXML_converter/test_xml/coastal_sheila_invalid.xml'#IGNORE:C0301
-        instance_filename = os.path.join("%s" % testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_VALID)
+        instance_filename = os.path.join("%s" % testcase_settings.INPUTFILES_PATH, testcase_settings.XML_FILE_VALID)
         #result = select.validate(HUDHMIS28XMLTest(), instance_filename)
         result = select.validate(instance_filename, True)
         print result
@@ -51,7 +76,7 @@ class SelectorTestCase(unittest.TestCase):
         '''
         self.Wipe_DB_clean()
         select = Selector()
-        instance_filename = os.path.join("%s" % testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_VALID)
+        instance_filename = os.path.join("%s" % testcase_settings.INPUTFILES_PATH, testcase_settings.XML_FILE_VALID)
         #result = select.validate(HUDHMIS28XMLTest(), instance_filename)
         result = select.validate(instance_filename, True)
         print result
@@ -64,7 +89,7 @@ class SelectorTestCase(unittest.TestCase):
         self.Wipe_DB_clean()
         select = Selector()
         #instance_filename = '/home/eric/workspace/reposHUD/trunk/Coastal_HSXML_converter/test_xml/coastal_sheila_malformed.xml'#IGNORE:C0301
-        instance_filename = os.path.join("%s" % testCase_settings.INPUTFILES_PATH, testCase_settings.XML_FILE_MALFORMED)
+        instance_filename = os.path.join("%s" % testcase_settings.INPUTFILES_PATH, testcase_settings.XML_FILE_MALFORMED)
         #result = select.validate(HUDHMIS28XMLTest(), instance_filename)
         result = select.validate(instance_filename, False)
         print result

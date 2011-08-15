@@ -3,7 +3,7 @@ import base64
 import os
 
 BLOCK_SIZE = 24
-PATH ="/home/eric/occws/occws/keys/occ.key"
+PATH ="/home/eric/keys/occ.key"
 if os.path.exists(PATH):
     os.remove(PATH)
 keyfile = open(PATH, 'w')

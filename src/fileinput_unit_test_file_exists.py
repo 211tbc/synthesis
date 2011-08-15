@@ -1,14 +1,38 @@
+"""
+The MIT License
+
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 from fileinputwatcher import FileInputWatcher
 from time import sleep
 import unittest, os, Queue
-import testCase_settings
+import testcase_settings
 
 class FileInputTestCase(unittest.TestCase):
     '''test if the threaded callback is working when file created'''
     def test_file_add(self):
         self.queue = Queue.Queue(0)
-        dir = testCase_settings.INPUTFILES_PATH
-        testFile = testCase_settings.TEST_FILE
+        dir = testcase_settings.INPUTFILES_PATH
+        testFile = testcase_settings.TEST_FILE
         file_input_watcher = FileInputWatcher(dir, self.queue)
         if os.path.isfile(os.path.join(dir, testFile)) is True:
             os.remove(os.path.join(dir, testFile))

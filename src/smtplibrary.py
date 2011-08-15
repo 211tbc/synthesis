@@ -5,10 +5,10 @@ from logger import Logger
 
 # Import the email modules we'll need
 from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
+#from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
-from email.Utils import COMMASPACE, formatdate
-from email import Encoders
+from email.Utils import formatdate#COMMASPACE
+#from email import Encoders
 
 def main():
     

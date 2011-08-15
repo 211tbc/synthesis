@@ -1,24 +1,16 @@
 #!/usr/bin/env python
 
 import os
-
-# Alchemy Libraries
-from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, \
-                       Boolean, MetaData, ForeignKey, Sequence
-from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
-from sqlalchemy.types import DateTime, Date
-from sqlalchemy import or_, and_, between
+from sqlalchemy import or_, and_
 from zope.interface import implements
-
 import csv
-
 from conf import settings
-import clsexceptions
+#import exceptions
 import dbobjects
 from writer import Writer
 
 
-class HmisCsv30Writer(dbobjects.DatabaseObjects):
+class HmisCSV30Writer():
 
     # Writer Interface
     implements (Writer)

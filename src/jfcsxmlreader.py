@@ -9,7 +9,7 @@ import dbobjects
 from conf import settings
 from datetime import datetime
 
-class JFCSXMLReader(dbobjects.DatabaseObjects):
+class JFCSXMLReader:#(dbobjects.DatabaseObjects):
     ''' Synthesis import plugin for JFCS XML 
         JFCS provides 2 simple XML files
         - 1 for service data
@@ -24,7 +24,7 @@ class JFCSXMLReader(dbobjects.DatabaseObjects):
     def __init__(self, xml_file):
         self.xml_file = xml_file
         ''' instantiate database object '''
-        self.dbo = dbobjects.DatabaseObjects()
+        #self.dbo = dbobjects.DatabaseObjects()
         self.session = self.dbo.Session()
     
     def read(self):

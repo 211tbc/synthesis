@@ -5,6 +5,13 @@
 
 Configuration = \
 {
+    '7777':#Project Synthesis Phase 3 for Orlando
+        {
+            'vendor': 'BIS',
+            'outputFormat': 'svcpoint5',#the new servicepoint format
+            'destinationURL': 'localhost',
+            'transportConfiguration': ''#we're just going to save this outputted XML file to a local drive
+        },
     '8888':
         {
             'vendor': 'System Operator',

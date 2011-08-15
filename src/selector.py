@@ -2,30 +2,6 @@
 or whatever we can use to test, so the appropriate reader correct \
 implementation can be used.'''
 
-"""
-The MIT License
-
-Copyright (c) 2011, Alexandria Consulting LLC
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-"""
-
 import os
 import fileutils
 import sys
@@ -45,6 +21,8 @@ from os import path
 import traceback
 import copy
 from synthesis.socketcomm import ServiceController
+import dbobjects
+
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -303,11 +281,14 @@ class Selector:
     '''Figures out which data format is being received.'''
     
     def __init__(self):
-        
+        self.db = dbobjects.DB()
+        self.db.Base.metadata.create_all()
+
         if settings.DEBUG:
             print "selector instantiated and figuring out what schema are available"
             for item in settings.SCHEMA_DOCS:
                 print 'schema to potentially load: ' + settings.SCHEMA_DOCS[item]
+
 
     def validate(self, instance_file_loc, shred=True): 
         '''Validates against the various available schema and csv records.\
@@ -330,7 +311,7 @@ class Selector:
             print 'skipping tests battery for debugging'
             print "just shredding with JFCSXMLReader service_event schema"
             JFCSXMLInputReader.data_type = 'service_event'
-            readers[JFCSXMLTest](instance_file_loc).shred()
+            readers[JFCSXMLTest](instance_file_loc, self.db).shred()
             return
         
         if settings.DEBUG:
@@ -366,7 +347,7 @@ class Selector:
                             if settings.DEBUG:
                                 print "readers[test] is: ", readers[test]
                                 print "instance_file_loc: ", instance_file_loc
-                            readers[test](instance_file_loc).shred()
+                            readers[test](instance_file_loc, self.db).shred()
                             
         if not results:
             print "results empty"                 
@@ -477,7 +458,10 @@ class OCCHUDHMIS30XMLTest:
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
-        schema = open(self.schema_filename,'r')
+        try:
+            schema = open(self.schema_filename,'r')
+        except:
+            print "couldn't open schema file", self.schema_filename
         schema_parsed = etree.parse(schema)
         schema_parsed_xsd = etree.XMLSchema(schema_parsed)
         # make a copy of the stream, validate against the copy not the real stream
@@ -508,7 +492,7 @@ class OCCHUDHMIS30XMLTest:
             print 'XML Syntax Error.  There appears to be malformed XML.  ', error
             pass
         
-class SVCPOINT20XMLTest:
+class SvcPoint20XMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
     def __init__(self):
         self.name = 'Svcpt 2.0 XML'
@@ -549,7 +533,7 @@ class SVCPOINT20XMLTest:
             , error
             raise 
 
-class SVCPOINT406XMLTest:
+class SvcPoint406XMLTest:
     '''Load in the SVCPoint Schema, version 4.06'''
     def __init__(self):
         self.name = 'Svc406 XML'
@@ -590,7 +574,48 @@ class SVCPOINT406XMLTest:
             print 'XML Syntax Error.  There appears to be malformed XML.  '\
             , error
             raise
+
+class SvcPoint5XMLTest:
+    '''Load in the SVCPoint Schema, version 5.00'''
+    def __init__(self):
+        self.name = 'Svc5 XML'
+        print 'running the Svcpt 5.00 XML test'
+        self.schema_filename = settings.SCHEMA_DOCS['svcpoint_5_xml']
     
+    def validate(self, instance_stream):
+        '''This specific data format's validation process.'''
+        schema = open(self.schema_filename,'r')
+        
+        schema_parsed = etree.parse(schema)
+        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        # make a copy of the stream, validate against the copy not the real stream
+        #copy_instance_stream = copy.copy(instance_stream)
+        
+        try:
+            instance_parsed = etree.parse(instance_stream)
+            results = schema_parsed_xsd.validate(instance_parsed)
+            if results == True:
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
+                return results
+            if results == False:
+                print 'The xml did not successfully validate against %s' % self.name
+                try:
+                    detailed_results = schema_parsed_xsd.assertValid\
+                    (instance_parsed)
+                    print detailed_results
+                    return results
+                except etree.DocumentInvalid, error:
+                    print 'Document Invalid Exception.  Here is the detail:'
+                    print error
+                    return results
+            if results == None:
+                print "The validator erred and couldn't determine if the xml \
+                    was either valid or invalid."
+                return results
+        except etree.XMLSyntaxError, error:
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            raise
+
 class JFCSXMLTest:
     ''' Tests for JFCS data 
         * There are 2 possible data source types ('service_event' or 'client')
@@ -800,8 +825,8 @@ class PARXMLTest:
 #            raise        
     
 class HUDHMIS28XMLInputReader(HMISXML28Reader):
-    def __init__(self, instance_filename):
-        self.reader = HMISXML28Reader(instance_filename)
+    def __init__(self, instance_filename, db):
+        self.reader = HMISXML28Reader(instance_filename, db)
         
     def shred(self):
         tree = self.reader.read()
@@ -811,8 +836,8 @@ class HUDHMIS28XMLInputReader(HMISXML28Reader):
             raise
 
 class HUDHMIS30XMLInputReader(HMISXML30Reader):
-    def __init__(self, instance_filename):
-        self.reader = HMISXML30Reader(instance_filename)
+    def __init__(self, instance_filename, db):
+        self.reader = HMISXML30Reader(instance_filename, db)
         
     def shred(self):
         tree = self.reader.read()
@@ -822,10 +847,10 @@ class HUDHMIS30XMLInputReader(HMISXML30Reader):
             raise
         
 class OCCHUDHMIS30XMLInputReader(OCCHUDHMISXML30Reader):
-    def __init__(self, instance_filename):
+    def __init__(self, instance_filename, db):
         #if settings.DEBUG:
             #print "does ", instance_filename, "exist?", os.path.exists(instance_filename)
-        self.reader = OCCHUDHMISXML30Reader(instance_filename)
+        self.reader = OCCHUDHMISXML30Reader(instance_filename, db)
         if settings.DEBUG:    
             print "self.reader to be read is: ", self.reader
     def shred(self):
@@ -867,3 +892,26 @@ class VendorXMLInputReader():
         print '\nThe', self.name, 'test not implemented.'
         print '...but intended to shred the XML Document: %s' % self.instance_filename
         return False
+
+
+#The MIT License
+#
+#Copyright (c) 2011, Alexandria Consulting LLC
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in
+#all copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#THE SOFTWARE.

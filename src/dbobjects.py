@@ -1,2942 +1,1787 @@
-#!/usr/bin/env python
-
-from sqlalchemy import create_engine, Table, Column, Integer, String, Boolean, MetaData, ForeignKey
-from sqlalchemy.orm import sessionmaker, mapper, relation, clear_mappers
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, MetaData, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.types import DateTime, Date
-from sqlalchemy import exceptions as sqlalchemyexceptions
-import sys
 from conf import settings
-from logger import Logger
+from logging import Logger
 
-from synthesis import fileutils
+print "loaded dbobjects module"
 
-class DatabaseObjects:
-
-    #postgresql[+driver]://<user>:<pass>@<host>/<dbname>    #, server_side_cursors=True)    
+class DB:
+    #print "loaded DB Class" 
     database_string = 'postgresql+psycopg2://' + settings.DB_USER + ':' + settings.DB_PASSWD + '@' + settings.DB_HOST + ':' + str(settings.DB_PORT) + '/' + settings.DB_DATABASE
-    #print database_string
     pg_db_engine = create_engine(database_string, echo=settings.DEBUG_ALCHEMY)
-
-    # this is needed to do real work.'
-    #This Session is a class which you contruct as needed in reader classes
-    Session = sessionmaker(bind=pg_db_engine)
-    #print "session is: ", Session
+    mymetadata = MetaData(bind=pg_db_engine)
+    Base = declarative_base(metadata=mymetadata)
+    
     def __init__(self):
-        try:
-            
-            # SBB20100210 Change the logging level based on configuration file.
-            if settings.DEBUG_ALCHEMY:
-                loglevel = 'info'
-            else:
-                loglevel = 'error'
-            
-            loglevel = 'debug'    
-            log = Logger(settings.LOGGING_INI,loglevel=loglevel)
-            log.getLogger('sqlalchemy.orm.unitofwork').setLevel(log.logger.debug)
-            
-            # map the ORM
-            clear_mappers()
-            self.createMappings()
-            
-        except sqlalchemyexceptions.OperationalError:
-            msg = "Database [%s] does not exist." % settings.DB_DATABASE
+        #postgresql[+driver]://<user>:<pass>@<host>/<dbname>    #, server_side_cursors=True)    
+        self.Session = sessionmaker()
+        loglevel = 'DEBUG' 
+        self.log = Logger(settings.LOGGING_INI, loglevel)
+
+class MapBase():
+        def __init__(self, field_dict):
+            if settings.DEBUG:
+                print "Base Class created: %s" % self.__class__.__name__
+        #def __init__(self, field_dict):
+            if settings.DEBUG:
+                print field_dict
+            for x, y in field_dict.iteritems():
+                self.__setattr__(x,y)
            
-            fileutils.makeBlock(msg)
-            rc = raw_input('Would you like to create the database now? (y/N/C)')
-            if rc == 'y':
-                from synthesis import postgresutils
-                UTILS = postgresutils.Utils()
-                UTILS.create_database(settings.DB_DATABASE)
+        def __repr__(self):
+            field_dict = vars(self)
+            out = ''
+            if len(field_dict) > 0:
+                for x, y in field_dict.iteritems():
+                    if x[0] != "_":
+                        out = out + "%s = %s, " % (x,y)
+                       
+                return "<%s(%s)>" % (self.__class__.__name__, out)
             else:
-                msg = "Please create Database [%s] and restart process." % settings.DB_DATABASE
-                fileutils.makeBlock(msg)
-                
-    def queryDB(self, object):
-        #session = self.session()
-        return self.session().query(object)
-        
-    def createMappings(self):
-        self.export_map()
-        self.report_map()
-        self.source_map()
-        self.person_map()        
-        self.service_map()
-        self.source_export_link_map()
-        self.household_map()
-        self.region_map()
-        self.agency_map()
-        self.agency_child_map()
-        self.service_group_map()
-        self.license_accreditation_map()
-        self.agency_service_map()
-        self.agency_location_map()
-        self.site_map()
-        self.url_map()
-        self.spatial_location_map()
-        self.other_address_map()
-        self.cross_street_map()
-        self.aka_map()
-        self.site_service_map()
-        self.seasonal_map()
-        self.residency_requirements_map()
-        self.pit_count_set_map()
-        self.pit_counts_map()
-        self.other_requirements_map()
-        self.languages_map()
-        self.time_open_map()
-        self.time_open_days_map()
-        self.inventory_map()
-        self.income_requirements_map()
-        self.hmis_asset_map()
-        self.assignment_map()
-        self.assignment_period_map()
-        self.geographic_area_served_map()
-        self.documents_required_map()
-        self.aid_requirements_map()
-        self.age_requirements_map()
-        self.site_service_participation_map()
-        self.reasons_for_leaving_map()
-        self.application_process_map()
-        self.need_map()
-        self.taxonomy_map()
-        self.service_event_map()
-        self.service_event_notes_map()
-        self.family_requirements_map()
-        self.person_historical_map()
-        self.housing_status_map()
-        self.veteran_military_branches_map()
-        self.veteran_military_service_duration_map()
-        self.veteran_served_in_war_zone_map()
-        self.veteran_service_era_map()
-        self.veteran_veteran_status_map()
-        self.veteran_warzones_served_map()
-        self.vocational_training_map()
-        self.foster_child_ever_map()
-        self.substance_abuse_problem_map()
-        self.pregnancy_map()
-        self.prior_residence_map()
-        self.physical_disability_map()
-        self.non_cash_benefits_map()
-        self.non_cash_benefits_last_30_days_map()
-        self.mental_health_problem_map()
-        self.length_of_stay_at_prior_residence_map()
-        self.income_total_monthly_map()
-        self.hud_chronic_homeless_map()
-        self.income_last_30_days_map()
-        self.highest_school_level_map()
-        self.hiv_aids_status_map()
-        self.health_status_map()
-        self.engaged_date_map()
-        self.employment_map()
-        self.domestic_violence_map()
-        self.disabling_condition_map()
-        self.developmental_disability_map()
-        self.destinations_map()
-        self.degree_map()
-        self.degree_code_map()      
-        self.currently_in_school_map()
-        self.contact_made_map()
-        self.child_enrollment_status_map()
-        self.child_enrollment_status_barrier_map()
-        self.chronic_health_condition_map()
-        self.release_of_information_map()
-        self.income_and_sources_map()
-        self.veteran_map()
-        self.drug_history_map()
-        self.emergency_contact_map()
-        self.hud_homeless_episodes_map()
-        self.person_address_map()
-        self.other_names_map()
-        self.races_map()
-        self.member_map()       
-        self.funding_source_map()
-        self.resource_info_map()
-        self.contact_map()
-        self.email_map()
-        self.phone_map()
-        
-        # SBB20100303 Adding objects to deduplicate the DB Entries
-        #self.dedup_link_map()
-        # SBB20100327 adding object to maintain odbid's for each site.  Svcpoint requires these for valid xml uploads
-        self.system_configuration_map()
-        
-    def system_configuration_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        system_configuration_table = Table(
-        'sender_system_configuration', 
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('vendor_name', String(50)),
-        Column('processing_mode', String(4)),                   # TEST or PROD
-        Column('source_id', String(50)),
-        Column('odbid', Integer),
-        Column('providerid', Integer),
-        Column('userid', Integer),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(SystemConfiguration, system_configuration_table) 
-        return
-        
-#    def dedup_link_map(self):
-#        table_metadata = MetaData(bind=self.pg_db_engine)
-#        #table_metadata = MetaData(bind=self.sqlite_db)
-#        dedup_link_table = Table(
-#        'dedup_link', 
-#        table_metadata,
-#        #Column('id', Integer, primary_key=True),
-#        Column('source_rec_id', Integer, ForeignKey(Person.id), primary_key=True),
-#        Column('destination_rec_id', Integer, ForeignKey(Person.id), primary_key=True),
-#        Column('weight_factor', Integer),
-#        useexisting = True
-#        )
-#        table_metadata.create_all()
-#        mapper(DeduplicationLink, dedup_link_table, properties={'fk_source_person': relation(Person, primaryjoin=Person.id==dedup_link_table.source_rec_id),
-#                                                                'fk_dest_person': relation(Person, primaryjoin=Person.id==dedup_link_table.destination_rec_id)})
-#        #mapper(Export, export_table, properties={'children': relation(Person), 'children': relation(Database)})
-#        return
+                return ''
+
+class SiteServiceParticipation(DB.Base, MapBase):
+    __tablename__ = 'site_service_participation'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    household_index_id = Column(Integer, ForeignKey('household.id'))
+    site_service_participation_idid_num = Column(String(32))
+    site_service_participation_idid_num_date_collected = Column(DateTime(timezone=False))
+    site_service_participation_idid_str = Column(String(32))
+    site_service_participation_idid_str_date_collected = Column(DateTime(timezone=False))
+    destination = Column(String(32))
+    destination_date_collected = Column(DateTime(timezone=False))
+    destination_other = Column(String(32))
+    destination_other_date_collected = Column(DateTime(timezone=False))
+    destination_tenure = Column(String(32))
+    destination_tenure_date_collected = Column(DateTime(timezone=False))
+    disabling_condition = Column(String(32))
+    disabling_condition_date_collected = Column(DateTime(timezone=False))
+    participation_dates_start_date = Column(DateTime(timezone=False))
+    participation_dates_start_date_date_collected = Column(DateTime(timezone=False))
+    participation_dates_end_date = Column(DateTime(timezone=False))
+    participation_dates_end_date_date_collected = Column(DateTime(timezone=False))
+    veteran_status = Column(String(32))
+    veteran_status_date_collected = Column(DateTime(timezone=False))
+    #adding a reported column.  Hopefully this will append the column to the table def.
+    reported = Column(Boolean)
+    site_service_participation_id_delete = Column(String(32))
+    site_service_participation_id_delete_occurred_date = Column(DateTime(timezone=False))
+    site_service_participation_id_delete_effective_date = Column(DateTime(timezone=False))
+    fk_participation_to_need = relationship('Need', backref='fk_need_to_participation')
+    fk_participation_to_serviceevent = relationship('ServiceEvent')
+    fk_participation_to_personhistorical = relationship('PersonHistorical')
+    fk_participation_to_person = Column(Integer, ForeignKey('person.id'))
+    useexisting = True
     
-    def service_event_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        service_event_table = Table(
-        'service_event',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('household_index_id',  Integer, ForeignKey(Household.id)),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('need_index_id', Integer, ForeignKey(Need.id)),
-        Column('site_service_participation_index_id', Integer, ForeignKey(SiteServiceParticipation.id)),
-        Column('service_event_idid_num', String(32)),
-        Column('service_event_idid_num_date_collected', DateTime(timezone=False)),
-        Column('service_event_idid_str', String(32)),
-        Column('service_event_idid_str_date_collected', DateTime(timezone=False)),
-        Column('household_idid_num', String(32)),
-        Column('is_referral', String(32)),
-        Column('is_referral_date_collected', DateTime(timezone=False)),
-        Column('quantity_of_service', String(32)),
-        Column('quantity_of_service_date_collected', DateTime(timezone=False)),
-        Column('quantity_of_service_measure', String(32)),
-        Column('quantity_of_service_measure_date_collected', DateTime(timezone=False)),
-        Column('service_airs_code', String(32)),
-        Column('service_airs_code_date_collected', DateTime(timezone=False)),
-        Column('service_period_start_date', DateTime(timezone=False)),
-        Column('service_period_start_date_date_collected', DateTime(timezone=False)),
-        Column('service_period_end_date', DateTime(timezone=False)),
-        Column('service_period_end_date_date_collected', DateTime(timezone=False)),
-        Column('service_unit', String(32)),
-        Column('service_unit_date_collected', DateTime(timezone=False)),
-        Column('type_of_service', String(32)),
-        Column('type_of_service_date_collected', DateTime(timezone=False)),
-        Column('type_of_service_other', String(32)),
-        Column('type_of_service_other_date_collected', DateTime(timezone=False)),
-        Column('type_of_service_par', Integer(2)),
-        #adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        Column('service_event_id_delete', String(32)),
-        Column('service_event_ind_fam', Integer),
-        Column('site_service_id', String(50)),
-        Column('hmis_service_event_code_type_of_service', String(50)),
-        Column('hmis_service_event_code_type_of_service_other', String(50)),
-        Column('hprp_financial_assistance_service_event_code', String(50)),
-        Column('hprp_relocation_stabilization_service_event_code', String(50)),
-        Column('service_event_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('service_event_id_delete_effective_date', DateTime(timezone=False)),
-        Column('service_event_provision_date', DateTime(timezone=False)),
-        Column('service_event_recorded_date', DateTime(timezone=False)),
-        useexisting = True)
-        table_metadata.create_all()
-        mapper(ServiceEvent, service_event_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
-        return
-
-    def need_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        need_table = Table(
-        'need',
-        table_metadata,
-        
-        Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('need_idid_num', String(32)),
-        Column('need_idid_num_date_collected', DateTime(timezone=False)),
-        Column('need_idid_str', String(32)),
-        Column('need_idid_str_date_collected', DateTime(timezone=False)),
-        Column('site_service_idid_num', String(32)),
-        Column('site_service_idid_num_date_collected', DateTime(timezone=False)),
-        Column('site_service_idid_str', String(32)),
-        Column('site_service_idid_str_date_collected', DateTime(timezone=False)),
-        Column('service_event_idid_num', String(32)),
-        Column('service_event_idid_num_date_collected', DateTime(timezone=False)),
-        Column('service_event_idid_str', String(32)),
-        Column('service_event_idid_str_date_collected', DateTime(timezone=False)),
-        Column('need_status', String(32)),
-        Column('need_status_date_collected', DateTime(timezone=False)),
-        Column('taxonomy', String(32)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        ## HUD 3.0
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('need_id_delete', String(32)),
-        Column('need_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('need_id_delete_delete_effective_date', DateTime(timezone=False)),
-        Column('need_effective_period_start_date', DateTime(timezone=False)),
-        Column('need_effective_period_end_date', DateTime(timezone=False)),
-        Column('need_recorded_date', DateTime(timezone=False)),
-
-        useexisting = True)
-        table_metadata.create_all()
-    
-        mapper(Need, need_table)#, properties={'children': relation(#tablename#), 'children': relation(#tablename#), 'children': relation(#tablename#)})
-        return
-
-    def site_service_participation_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        site_service_participation_table = Table(
-        'site_service_participation',
-        table_metadata,
-    
-        Column('id', Integer, primary_key=True),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('household_index_id', Integer, ForeignKey(Household.id)),
-        Column('site_service_participation_idid_num', String(32)),
-        Column('site_service_participation_idid_num_date_collected', DateTime(timezone=False)),
-        Column('site_service_participation_idid_str', String(32)),
-        Column('site_service_participation_idid_str_date_collected', DateTime(timezone=False)),
-        Column('destination', String(32)),
-        Column('destination_date_collected', DateTime(timezone=False)),
-        Column('destination_other', String(32)),
-        Column('destination_other_date_collected', DateTime(timezone=False)),
-        Column('destination_tenure', String(32)),
-        Column('destination_tenure_date_collected', DateTime(timezone=False)),
-        Column('disabling_condition', String(32)),
-        Column('disabling_condition_date_collected', DateTime(timezone=False)),
-        Column('participation_dates_start_date', DateTime(timezone=False)),
-        Column('participation_dates_start_date_date_collected', DateTime(timezone=False)),
-        Column('participation_dates_end_date', DateTime(timezone=False)),
-        Column('participation_dates_end_date_date_collected', DateTime(timezone=False)),
-        Column('veteran_status', String(32)),
-        Column('veteran_status_date_collected', DateTime(timezone=False)),
-        #adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        Column('site_service_participation_id_delete', String(32)),
-        Column('site_service_participation_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('site_service_participation_id_delete_effective_date', DateTime(timezone=False)),
-    # dbCol: discharge_type (Operations PARS)
-    #    Column('discharge_type', Integer(2)),
-    #    Column('discharge_type_date_collected', DateTime(timezone=False)),
-    #
-    ## dbCol: health_status_at_discharge (Operations PARS)
-    #    Column('health_status_at_discharge', Integer(2)),
-    #    Column('health_status_at_discharge_date_collected', DateTime(timezone=False)),
-    #
-    ## dbCol: va_eligibility (Operations PARS)
-    #    Column('va_eligibility', Integer(2)),
-    #    Column('va_eligibility_date_collected', DateTime(timezone=False)),
-        useexisting = True)
-        table_metadata.create_all()
-        
-        mapper(SiteServiceParticipation, site_service_participation_table, properties={'fk_participation_to_need': relation(Need, backref='fk_need_to_participation'),
-                                                                                       'fk_participation_to_serviceevent' : relation(ServiceEvent),
-                                                                                       'fk_participation_to_personhistorical' : relation(PersonHistorical),
-                                                                                       'fk_participation_to_person' : relation(Person)
-                                                                                       }
-               )#, 'children': relation(#tablename#), 'children': relation(#tablename#)})
-        return
-        
-    def races_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
-        races_table = Table(
-        'races', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('race_unhashed', Integer(2)),
-        Column('race_hashed', String(32)),
-        Column('race_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        ## HUD 3.0
-        Column('race_data_collection_stage', String(32)),
-        Column('race_date_effective', DateTime(timezone=False)),
-                
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Races, races_table)
-        return            
-        
-    def export_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        export_table = Table(
-        'export', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('export_id', String(50), primary_key=False, unique=False), 
-        Column('export_id_date_collected', DateTime(timezone=False)),
-        Column('export_date', DateTime(timezone=False)),
-        Column('export_date_date_collected', DateTime(timezone=False)),
-        Column('export_period_start_date', DateTime(timezone=False)),
-        Column('export_period_start_date_date_collected', DateTime(timezone=False)),
-        Column('export_period_end_date', DateTime(timezone=False)),
-        Column('export_period_end_date_date_collected', DateTime(timezone=False)),
-        Column('export_software_vendor', String(50)),
-        Column('export_software_vendor_date_collected', DateTime(timezone=False)),
-        Column('export_software_version', String(10)),
-        Column('export_software_version_date_collected', DateTime(timezone=False)),
-
-        ## HUD 3.0
-        Column('export_id_id_id_num', String(50)),
-        Column('export_id_id_id_str', String(50)),
-        Column('export_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('export_id_delete_effective_date', DateTime(timezone=False)),        
-        Column('export_id_delete', String(32)),        
-        useexisting = True
-        )
-        
-        table_metadata.create_all()
-        #mapper(Export, export_table, properties={'children': [relation(Person), relation(Database)]})
-        mapper(Export, export_table, properties={
-            'fk_export_to_person': relation(Person, backref='fk_person_to_export')
-            ,'fk_export_to_household': relation(Household, backref='fk_household_to_export')
-#            ,'fk_export_to_database': relation(Source, backref='fk_database_to_export')
-            })
-        #for debugging if the wrong sqlalchemy version is being used (>0.4.7)
-        #if settings.DEBUG:
-            #import pdb; pdb.set_trace()
-            #print 'Export.c is', Export.c
-            #import sqlalchemy
-            #print 'sqlalchemy version is ', sqlalchemy.__version__, 'maybe it should be 0.4.7 and your os environment is contributing a higher version'
-        return
-
-    def report_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        report_table = Table(
-        'report', 
-        table_metadata, 
-        Column('report_id', String(50), primary_key=True, unique=True), 
-        Column('report_id_date_collected', DateTime(timezone=False)),
-        Column('report_date', DateTime(timezone=False)),
-        Column('report_date_date_collected', DateTime(timezone=False)),
-        Column('report_period_start_date', DateTime(timezone=False)),
-        Column('report_period_start_date_date_collected', DateTime(timezone=False)),
-        Column('report_period_end_date', DateTime(timezone=False)),
-        Column('report_period_end_date_date_collected', DateTime(timezone=False)),
-        Column('report_software_vendor', String(50)),
-        Column('report_software_vendor_date_collected', DateTime(timezone=False)),
-        Column('report_software_version', String(10)),
-        Column('report_software_version_date_collected', DateTime(timezone=False)),
-
-        ## HUD 3.0
-        Column('report_id_id_id_num', String(50)),
-        Column('report_id_id_id_str', String(50)),
-        Column('report_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('report_id_id_delete_effective_date', DateTime(timezone=False)),        
-        Column('report_id_id_delete', String(32)), 
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Report, report_table, properties={
-            'fk_report_to_person': relation(Person, backref='fk_person_to_report')
-            ,'fk_report_to_household': relation(Household, backref='fk_household_to_report')
-            ,'fk_report_to_database': relation(Source, backref='fk_database_to_report')
-            })
-        return
-
-    
-    def other_names_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
-        other_names_table = Table(
-        'other_names', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('person_index_id', Integer, ForeignKey(Person.id)), 
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('other_first_name_unhashed', String(50)),
-        Column('other_first_name_hashed', String(50)),
-        Column('other_first_name_date_collected', DateTime(timezone=False)),
-        Column('other_first_name_date_effective', DateTime(timezone=False)),
-        Column('other_first_name_data_collection_stage', String(32)),
-        Column('other_middle_name_unhashed', String(50)),
-        Column('other_middle_name_hashed', String(50)),
-        Column('other_middle_name_date_collected', DateTime(timezone=False)),
-        Column('other_middle_name_date_effective', DateTime(timezone=False)),
-        Column('other_middle_name_data_collection_stage', String(32)),
-        Column('other_last_name_unhashed', String(50)),
-        Column('other_last_name_hashed', String(50)),
-        Column('other_last_name_date_collected', DateTime(timezone=False)),
-        Column('other_last_name_date_effective', DateTime(timezone=False)),
-        Column('other_last_name_data_collection_stage', String(32)),
-        Column('other_suffix_unhashed', String(50)),
-        Column('other_suffix_hashed', String(50)),
-        Column('other_suffix_date_collected', DateTime(timezone=False)),
-        Column('other_suffix_date_effective', DateTime(timezone=False)),
-        Column('other_suffix_data_collection_stage', String(32)),
-
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(OtherNames, other_names_table)
-        return
-    
-    
-    def hud_homeless_episodes_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        hud_homeless_episodes_table = Table(
-        'hud_homeless_episodes',
-        table_metadata,
-        
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),        
-        Column('start_date', String(32)),
-        Column('start_date_date_collected', DateTime(timezone=False)),
-        Column('end_date', String(32)),
-        Column('end_date_date_collected', DateTime(timezone=False)),
-        useexisting = True)
-        table_metadata.create_all()
-    
-        mapper(HUDHomelessEpisodes, hud_homeless_episodes_table)
-            
-        return
-    
-    def veteran_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        veteran_table = Table(
-        'veteran', 
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('service_era', Integer),
-        Column('service_era_date_collected', DateTime(timezone=False)),
-        Column('military_service_duration', Integer),
-        Column('military_service_duration_date_collected', DateTime(timezone=False)),
-        Column('served_in_war_zone', Integer),
-        Column('served_in_war_zone_date_collected', DateTime(timezone=False)),
-        Column('war_zone', Integer),
-        Column('war_zone_date_collected', DateTime(timezone=False)),
-        Column('war_zone_other', String(50)),
-        Column('war_zone_other_date_collected', DateTime(timezone=False)),
-        Column('months_in_war_zone', Integer),
-        Column('months_in_war_zone_date_collected', DateTime(timezone=False)),
-        Column('received_fire', Integer),
-        Column('received_fire_date_collected', DateTime(timezone=False)),
-        Column('military_branch', Integer),
-        Column('military_branch_date_collected', DateTime(timezone=False)),
-        Column('military_branch_other', String(50)),
-        Column('military_branch_other_date_collected', DateTime(timezone=False)),
-        Column('discharge_status', Integer),
-        Column('discharge_status_date_collected', DateTime(timezone=False)),
-        Column('discharge_status_other', String(50)),
-        Column('discharge_status_other_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Veteran, veteran_table)
-        return
-
-    def drug_history_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        drug_history_table = Table(
-        'drug_history',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('drug_history_id', String(32)),
-        Column('drug_history_id_date_collected', DateTime(timezone=False)),
-        Column('drug_code', Integer(2)),
-        Column('drug_code_date_collected', DateTime(timezone=False)),    
-        Column('drug_use_frequency', Integer(2)),
-        Column('drug_use_frequency_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DrugHistory, drug_history_table)
-        return
-
-    def emergency_contact_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        emergency_contact_table = Table(
-        'emergency_contact',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('emergency_contact_id', String(32)),
-        Column('emergency_contact_id_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_name', String(32)),
-        Column('emergency_contact_name_date_collected', DateTime(timezone=False)),    
-        Column('emergency_contact_phone_number_0', String(32)),
-        Column('emergency_contact_phone_number_date_collected_0', DateTime(timezone=False)),
-        Column('emergency_contact_phone_number_type_0', String(32)),
-        Column('emergency_contact_phone_number_1', String(32)),
-        Column('emergency_contact_phone_number_date_collected_1', DateTime(timezone=False)),
-        Column('emergency_contact_phone_number_type_1', String(32)),
-        Column('emergency_contact_address_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_start_date', DateTime(timezone=False)),
-        Column('emergency_contact_address_start_date_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_end_date', DateTime(timezone=False)),
-        Column('emergency_contact_address_end_date_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_line1', String(32)),
-        Column('emergency_contact_address_line1_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_line2', String(32)),
-        Column('emergency_contact_address_line2_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_city', String(32)),
-        Column('emergency_contact_address_city_date_collected', DateTime(timezone=False)),
-        Column('emergency_contact_address_state', String(32)),
-        Column('emergency_contact_address_state_date_collected', DateTime(timezone=False)),    
-        Column('emergency_contact_relation_to_client', String(32)),
-        Column('emergency_contact_relation_to_client_date_collected', DateTime(timezone=False)),
-    # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(EmergencyContact, emergency_contact_table)
-        return
-                
-    def person_address_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        person_address_table = Table(
-        'person_address', 
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('address_period_start_date',DateTime(timezone=False)),
-        Column('address_period_start_date_date_collected',DateTime(timezone=False)),
-        Column('address_period_end_date',DateTime(timezone=False)),
-        Column('address_period_end_date_date_collected',DateTime(timezone=False)),
-        Column('pre_address_line', String(100)),
-        Column('pre_address_line_date_collected',DateTime(timezone=False)),
-        Column('pre_address_line_date_effective', DateTime(timezone=False)),
-        Column('pre_address_line_data_collection_stage', String(32)),
-        Column('line1', String(100)),
-        Column('line1_date_collected',DateTime(timezone=False)),
-        Column('line1_date_effective', DateTime(timezone=False)),
-        Column('line1_data_collection_stage', String(32)),
-        Column('line2', String(100)),
-        Column('line2_date_collected',DateTime(timezone=False)),
-        Column('line2_date_effective', DateTime(timezone=False)),
-        Column('line2_data_collection_stage', String(32)),
-        Column('city', String(100)),
-        Column('city_date_collected',DateTime(timezone=False)),
-        Column('city_date_effective', DateTime(timezone=False)),
-        Column('city_data_collection_stage', String(32)),
-        Column('county', String(32)),
-        Column('county_date_collected',DateTime(timezone=False)),
-        Column('county_date_effective', DateTime(timezone=False)),
-        Column('county_data_collection_stage', String(32)),
-        Column('state', String(32)),
-        Column('state_date_collected',DateTime(timezone=False)),
-        Column('state_date_effective', DateTime(timezone=False)),
-        Column('state_data_collection_stage', String(32)),
-        Column('zipcode', String(10)),
-        Column('zipcode_date_collected',DateTime(timezone=False)),
-        Column('zipcode_date_effective', DateTime(timezone=False)),
-        Column('zipcode_data_collection_stage', String(32)),
-        Column('country', String(32)),
-        Column('country_date_collected',DateTime(timezone=False)),
-        Column('country_date_effective', DateTime(timezone=False)),
-        Column('country_data_collection_stage', String(32)),
-        Column('is_last_permanent_zip', Integer),
-        Column('is_last_permanent_zip_date_collected', DateTime(timezone=False)),
-        Column('is_last_permanent_zip_date_effective', DateTime(timezone=False)),
-        Column('is_last_permanent_zip_data_collection_stage', String(32)),
-        Column('zip_quality_code', Integer),
-        Column('zip_quality_code_date_collected', DateTime(timezone=False)),
-        Column('zip_quality_code_date_effective', DateTime(timezone=False)),
-        Column('zip_quality_code_data_collection_stage', String(32)),
-        
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        ## HUD 3.0
-        Column('person_address_delete', String(32)),
-        Column('person_address_delete_occurred_date', DateTime(timezone=False)),
-        Column('person_address_delete_effective_date', DateTime(timezone=False)),        
-        
-        useexisting = True)
-        table_metadata.create_all()
-        mapper(PersonAddress, person_address_table)
-    
-        
-    def person_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        person_table = Table(
-        'person', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_id', String(50), ForeignKey(Report.report_id)), 
-        Column('person_id_hashed', String(32)),
-        Column('person_id_unhashed', String(50)),
-        Column('person_id_date_collected', DateTime(timezone=False)),
-        Column('person_date_of_birth_hashed', String(32)),
-        Column('person_date_of_birth_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_date_of_birth_unhashed', Date(timezone=False)),
-        Column('person_date_of_birth_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_ethnicity_hashed', String(32)),
-        Column('person_ethnicity_unhashed', Integer(2)),
-        Column('person_ethnicity_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_ethnicity_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_gender_hashed', String(32)),
-        Column('person_gender_unhashed', Integer(2)),
-        Column('person_gender_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_gender_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_gender_unhashed_date_effective', DateTime(timezone=False)),
-        Column('person_gender_hashed_date_effective', DateTime(timezone=False)),
-        Column('person_legal_first_name_hashed', String(32)),   
-        Column('person_legal_first_name_unhashed', String(50)),
-        Column('person_legal_first_name_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_legal_first_name_unhashed_date_collected', DateTime(timezone=False)),        
-        Column('person_legal_last_name_hashed', String(32)),
-        Column('person_legal_last_name_unhashed', String(50)),
-        Column('person_legal_last_name_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_legal_last_name_hashed_date_collected', DateTime(timezone=False)),        
-        Column('person_legal_middle_name_hashed', String(32)),
-        Column('person_legal_middle_name_unhashed', String(50)),
-        Column('person_legal_middle_name_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_legal_middle_name_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_legal_suffix_hashed', String(32)),
-        Column('person_legal_suffix_unhashed', String(50)),
-        Column('person_legal_suffix_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_legal_suffix_hashed_date_collected', DateTime(timezone=False)),
-        #OtherNames is in its own table as there can be multiple OtherNames
-        #Race is in its own table as there can be multiple races
-        Column('person_social_security_number_hashed', String(32)),
-        Column('person_social_security_number_unhashed', String(9)),
-        Column('person_social_security_number_unhashed_date_collected', DateTime(timezone=False)),
-        Column('person_social_security_number_hashed_date_effective', DateTime(timezone=False)),
-        Column('person_social_security_number_unhashed_date_effective', DateTime(timezone=False)),
-        Column('person_social_security_number_hashed_date_collected', DateTime(timezone=False)),
-        Column('person_social_security_number_quality_code', String(2)),
-        Column('person_social_security_number_quality_code_date_collected', DateTime(timezone=False)),
-        Column('person_social_security_number_quality_code_date_effective', DateTime(timezone=False)),
-
-        #PersonHistorical has its own table
-        #SiteServiceParticipation has its own table
-        #ReleaseOfInformation has its own table
-        
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        
-        ## HUD 3.0
-        Column('person_id_id_num', String(50)),
-        Column('person_id_id_str', String(50)),
-        Column('person_id_delete', String(32)),
-        Column('person_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('person_id_delete_effective_date', DateTime(timezone=False)),
-        Column('person_date_of_birth_type', Integer(2)),
-        Column('person_date_of_birth_type_date_collected', DateTime(timezone=False)),
-        useexisting = True)
-        table_metadata.create_all()
-        
-        mapper(Person, person_table, properties={
-            'fk_person_to_other_names': relation(OtherNames, backref='fk_other_names_to_person')
-            ,'fk_person_to_site_svc_part': relation(SiteServiceParticipation, backref='fk_site_svc_part_to_person')
-            ,'fk_person_to_person_historical': relation(PersonHistorical, backref='fk_person_historical_to_person')
-            ,'fk_person_to_release_of_information': relation(ReleaseOfInformation, backref='fk_release_of_information_to_person')
-            ,'fk_person_to_races': relation(Races, backref='fk_races_to_person')})
-        #
-        
-        return
-    
-    def person_historical_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
-        person_historical_table = Table(
-        'person_historical', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteServiceParticipation.id)),
-        Column('person_historical_id_id_num', String(32)),
-        Column('person_historical_id_id_str', String(32)),
-        Column('person_historical_id_delete_effective_date', DateTime(timezone=False)),
-        Column('person_historical_id_delete', Integer),
-        Column('person_historical_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('barrier_code', String(32)),
-        Column('barrier_code_date_collected', DateTime(timezone=False)),
-        Column('barrier_other', String(32)),
-        Column('barrier_other_date_collected', DateTime(timezone=False)),
-        Column('child_currently_enrolled_in_school', String(32)),
-        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=False)),
-        Column('currently_employed', String(32)),
-        Column('currently_employed_date_collected', DateTime(timezone=False)),
-        Column('currently_in_school', String(32)),
-        Column('currently_in_school_date_collected', DateTime(timezone=False)),
-        Column('degree_code', String(32)),
-        Column('degree_code_date_collected', DateTime(timezone=False)),
-        Column('degree_other', String(32)),
-        Column('degree_other_date_collected', DateTime(timezone=False)),
-        Column('developmental_disability', String(32)),
-        Column('developmental_disability_date_collected', DateTime(timezone=False)),
-        Column('domestic_violence', String(32)),
-        Column('domestic_violence_date_collected', DateTime(timezone=False)),
-        Column('domestic_violence_how_long', String(32)),
-        Column('domestic_violence_how_long_date_collected', DateTime(timezone=False)),
-        Column('due_date', String(32)),
-        Column('due_date_date_collected', DateTime(timezone=False)),
-        Column('employment_tenure', String(32)),
-        Column('employment_tenure_date_collected', DateTime(timezone=False)),
-        Column('health_status', String(32)),
-        Column('health_status_date_collected', DateTime(timezone=False)),
-        Column('highest_school_level', String(32)),
-        Column('highest_school_level_date_collected', DateTime(timezone=False)),
-        Column('hivaids_status', String(32)),
-        Column('hivaids_status_date_collected', DateTime(timezone=False)),
-        Column('hours_worked_last_week', String(32)),
-        Column('hours_worked_last_week_date_collected', DateTime(timezone=False)),
-        Column('hud_chronic_homeless', String(32)),
-        Column('hud_chronic_homeless_date_collected', DateTime(timezone=False)),
-        Column('hud_homeless', String(32)),
-        Column('hud_homeless_date_collected', DateTime(timezone=False)),
-        ###HUDHomelessEpisodes (subtable)
-        ###IncomeAndSources (subtable)
-        Column('length_of_stay_at_prior_residence', String(32)),
-        Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=False)),
-        Column('looking_for_work', String(32)),
-        Column('looking_for_work_date_collected', DateTime(timezone=False)),
-        Column('mental_health_indefinite', String(32)),
-        Column('mental_health_indefinite_date_collected', DateTime(timezone=False)),
-        Column('mental_health_problem', String(32)),
-        Column('mental_health_problem_date_collected', DateTime(timezone=False)),
-        Column('non_cash_source_code', String(32)),
-        Column('non_cash_source_code_date_collected', DateTime(timezone=False)),
-        Column('non_cash_source_other', String(32)),
-        Column('non_cash_source_other_date_collected', DateTime(timezone=False)),
-        ###PersonAddress (subtable)
-        Column('person_email', String(32)),
-        Column('person_email_date_collected', DateTime(timezone=False)),
-        Column('person_phone_number', String(32)),
-        Column('person_phone_number_date_collected', DateTime(timezone=False)),
-        Column('physical_disability', String(32)),
-        Column('physical_disability_date_collected', DateTime(timezone=False)),
-        Column('pregnancy_status', String(32)),
-        Column('pregnancy_status_date_collected', DateTime(timezone=False)),
-        Column('prior_residence', String(32)),
-        Column('prior_residence_date_collected', DateTime(timezone=False)),
-        Column('prior_residence_other', String(32)),
-        Column('prior_residence_other_date_collected', DateTime(timezone=False)),
-        Column('reason_for_leaving', String(32)),
-        Column('reason_for_leaving_date_collected', DateTime(timezone=False)),
-        Column('reason_for_leaving_other', String(32)),
-        Column('reason_for_leaving_other_date_collected', DateTime(timezone=False)),
-        Column('school_last_enrolled_date', String(32)),
-        Column('school_last_enrolled_date_date_collected', DateTime(timezone=False)),
-        Column('school_name', String(32)),
-        Column('school_name_date_collected', DateTime(timezone=False)),
-        Column('school_type', String(32)),
-        Column('school_type_date_collected', DateTime(timezone=False)),
-        Column('subsidy_other', String(32)),
-        Column('subsidy_other_date_collected', DateTime(timezone=False)),
-        Column('subsidy_type', String(32)),
-        Column('subsidy_type_date_collected', DateTime(timezone=False)),
-        Column('substance_abuse_indefinite', String(32)),
-        Column('substance_abuse_indefinite_date_collected', DateTime(timezone=False)),
-        Column('substance_abuse_problem', String(32)),
-        Column('substance_abuse_problem_date_collected', DateTime(timezone=False)),
-        Column('total_income', String(32)),
-        Column('total_income_date_collected', DateTime(timezone=False)),
-        ###Veteran (subtable)
-        Column('vocational_training', String(32)),
-        Column('vocational_training_date_collected', DateTime(timezone=False)),
-        
-    # dbCol: annual_personal_income
-        #Column('annual_personal_income', Integer(2)),
-        #Column('annual_personal_income_date_collected', DateTime(timezone=False)),
-        
-    # dbCol: employment_status
-        #Column('employment_status', Integer(2)),
-        #Column('employment_status_date_collected', DateTime(timezone=False)),
-        
-    # dbCol: family_size
-        #Column('family_size', Integer(2)),
-        #Column('family_size_date_collected', DateTime(timezone=False)),
-
-    # dbCol: hearing_impaired
-        #Column('hearing_impaired', Integer(2)),
-        #Column('hearing_impaired_date_collected', DateTime(timezone=False)),            
-
-    # dbCol: marital_status
-        #Column('marital_status', Integer(2)),
-        #Column('marital_status_date_collected', DateTime(timezone=False)),
-
-    # dbCol: non_ambulatory
-    #    Column('non_ambulatory', Integer(2)),
-    #    Column('non_ambulatory_date_collected', DateTime(timezone=False)),
-    #
-    ## dbCol: residential_status
-    #    Column('residential_status', Integer(2)),
-    #    Column('residential_status_date_collected', DateTime(timezone=False)),
-    #
-    ## dbCol: visually_impaired
-    #    Column('visually_impaired', Integer(2)),
-    #    Column('visually_impaired_date_collected', DateTime(timezone=False)),
-        
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(PersonHistorical, person_historical_table,
-               properties={'fk_person_historical_to_income_and_sources': relation(IncomeAndSources, backref='fk_income_and_sources_to_person_historical')
-                           ,'fk_person_historical_to_veteran': relation(Veteran, backref='fk_veteran_to_person_historical')
-                           ,'fk_person_historical_to_hud_homeless_episodes': relation(HUDHomelessEpisodes, backref='fk_hud_homeless_episodes_to_person_historical')
-                           ,'fk_person_historical_to_person_address': relation(PersonAddress, backref='fk_person_address_to_person_historical')
-                           })
-        return
-    
-    def income_and_sources_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db)
-        income_and_sources_table = Table(
-        'income_and_sources', 
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('amount', Integer),
-        Column('amount_date_collected', DateTime(timezone=False)),
-        Column('income_source_code', Integer),
-        Column('income_source_code_date_collected', DateTime(timezone=False)),
-        Column('income_source_other', String(32)),
-        Column('income_source_other_date_collected', DateTime(timezone=False)),
-
-        ## HUD 3.0
-        Column('income_and_source_id_id_id_num', String(32)),
-        Column('income_and_source_id_id_id_str', String(32)),
-        Column('income_and_source_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('income_and_source_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('income_source_code_date_effective', DateTime(timezone=False)),
-        Column('income_source_other_date_effective', DateTime(timezone=False)),
-        Column('receiving_income_source_date_collected', DateTime(timezone=False)),
-        Column('receiving_income_source_date_effective', DateTime(timezone=False)),
-        Column('income_source_amount_date_effective', DateTime(timezone=False)),
-        Column('income_and_source_id_id_delete', Integer),
-        Column('income_source_code_data_collection_stage', String(32)),
-        Column('income_source_other_data_collection_stage', String(32)),
-        Column('receiving_income_source', Integer),
-        Column('receiving_income_source_data_collection_stage', String(32)),
-        Column('income_source_amount_data_collection_stage', String(32)),
-
-        useexisting = True)
-        table_metadata.create_all()
-        mapper(IncomeAndSources, income_and_sources_table)
-        
-        return
-    
-    def member_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        member_table = Table(
-        'members',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('household_index_id', Integer, ForeignKey(Household.id)),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('relationship_to_head_of_household', String(32)),
-        Column('relationship_to_head_of_household_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        useexisting = True)
-        table_metadata.create_all()
-        mapper(Members, member_table)
-        return
-    
-    def household_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        household_table = Table(
-        'household',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_id', String(50), ForeignKey(Report.report_id)),
-        Column('household_id_num', String(32)),
-        Column('household_id_num_date_collected', DateTime(timezone=False)),
-        Column('household_id_str', String(32)),
-        Column('household_id_str_date_collected', DateTime(timezone=False)),
-        Column('head_of_household_id_unhashed', String(32)),
-        Column('head_of_household_id_unhashed_date_collected', DateTime(timezone=False)),
-        Column('head_of_household_id_hashed', String(32)),
-        Column('head_of_household_id_hashed_date_collected', DateTime(timezone=False)),
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-        useexisting = True)
-        table_metadata.create_all()
-    
-        mapper(Household, household_table, properties=
-               {'fk_household_to_members': relation(Members, backref='fk_members_to_household'),
-                }
-               )
-        return
-    
-    def release_of_information_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        release_of_information_table = Table(
-        'release_of_information',
-        table_metadata,
-        
-        Column('id', Integer, primary_key=True),
-        Column('person_index_id', Integer, ForeignKey(Person.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-    # dbCol: release_of_information_idid_num
-        Column('release_of_information_idid_num', String(32)),
-        Column('release_of_information_idid_num_date_collected', DateTime(timezone=False)),
-
-    # dbCol: release_of_information_idid_str
-        Column('release_of_information_idid_str', String(32)),
-        Column('release_of_information_idid_str_date_collected', DateTime(timezone=False)),
-
-    # dbCol: site_service_idid_num
-        Column('site_service_idid_num', String(32)),
-        Column('site_service_idid_num_date_collected', DateTime(timezone=False)),
-
-    # dbCol: site_service_idid_str
-        Column('site_service_idid_str', String(32)),
-        Column('site_service_idid_str_date_collected', DateTime(timezone=False)),
-
-    # dbCol: documentation
-        Column('documentation', String(32)),
-        Column('documentation_date_collected', DateTime(timezone=False)),
-
-    ###EffectivePeriod (subtable)
-    # dbCol: start_date
-        Column('start_date', String(32)),
-        Column('start_date_date_collected', DateTime(timezone=False)),
-    
-    # dbCol: end_date
-        Column('end_date', String(32)),
-        Column('end_date_date_collected', DateTime(timezone=False)),
-
-    # dbCol: release_granted
-        Column('release_granted', String(32)),
-        Column('release_granted_date_collected', DateTime(timezone=False)),
-        
-        # SBB2009119 adding a reported column.  Hopefully this will append the column to the table def.
-        Column('reported', Boolean),
-
-        ## HUD 3.0
-        Column('release_of_information_id_data_collection_stage', String(32)),
-        Column('release_of_information_id_date_effective', DateTime(timezone=False)),
-        Column('documentation_data_collection_stage', String(32)),
-        Column('documentation_date_effective', DateTime(timezone=False)),
-        Column('release_granted_data_collection_stage', String(32)),
-        Column('release_granted_date_effective', DateTime(timezone=False)),
-        
-    useexisting = True)
-
-        table_metadata.create_all()
-        
-        mapper(ReleaseOfInformation, release_of_information_table)
-        return
-
-    def source_map(self):
-        '''Set up mapping'''
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        #table_metadata = MetaData(bind=self.sqlite_db, reflect=False)
-        self.source_table = Table(
-        'source', 
-        table_metadata, 
-        Column('id', Integer, primary_key=True),
-        Column('report_id', String(50), ForeignKey(Report.report_id)), 
-        Column('source_id', String(50)), 
-        Column('source_id_date_collected', DateTime(timezone=False)),
-        Column('source_email', String(255)),
-        Column('source_email_date_collected', DateTime(timezone=False)),
-        Column('source_contact_extension', String(10)),
-        Column('source_contact_extension_date_collected', DateTime(timezone=False)),
-        Column('source_contact_first', String(20)),
-        Column('source_contact_first_date_collected', DateTime(timezone=False)),
-        Column('source_contact_last', String(20)),
-        Column('source_contact_last_date_collected', DateTime(timezone=False)),
-        Column('source_contact_phone', String(20)),
-        Column('source_contact_phone_date_collected', DateTime(timezone=False)),
-        Column('source_name', String(50)),
-        Column('source_name_date_collected', DateTime(timezone=False)), 
-
-        ## HUD 3.0
-        Column('schema_version', String(50)),
-        Column('source_id_id_num', String(50)),
-        Column('source_id_id_str', String(50)),
-        Column('source_id_delete', Integer),
-        Column('source_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('source_id_delete_effective_date', DateTime(timezone=False)),
-        Column('software_vendor', String(50)),
-        Column('software_version', String(50)),
-        Column('source_contact_email', String(255)),
-
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Source, self.source_table, 
-#               properties={ 
-#                           'fk_source_to_export': relation(Export, backref='fk_export_to_source'), 
-#                           } 
-                           )
-        
-#        assign_mapper(Database, database_table, properties=dict(
-#designs=relation(Design, private=True, backref="type")
-#))
-        return
-        
-        
-        ## HUD 3.0 NEW TABLES
-
-    def source_export_link_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-#        print "Source object is: ", Source
-        source_export_link_table = Table(
-        'source_export_link',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('source_index_id', Integer, ForeignKey(Source.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(SourceExportLink, source_export_link_table)
-        return    
-                
-    def region_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        region_table = Table(
-        'region',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)), 
-        Column('region_id_id_num', String(50)),
-        Column('region_id_id_str', String(32)),
-        Column('site_service_id', String(50)),
-        Column('region_type', String(50)),
-        Column('region_type_date_collected', DateTime(timezone=False)),
-        Column('region_type_date_effective', DateTime(timezone=False)),
-        Column('region_type_data_collection_stage', String(32)),
-        Column('region_description', String(30)),
-        Column('region_description_date_collected', DateTime(timezone=False)),
-        Column('region_description_date_effective', DateTime(timezone=False)),
-        Column('region_description_data_collection_stage', String(32)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Region, region_table)
-        return
  
-    def agency_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        agency_table = Table(
-        'agency',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)),
-        Column('agency_delete', Integer),
-        Column('agency_delete_occurred_date', DateTime(timezone=False)),
-        Column('agency_delete_effective_date', DateTime(timezone=False)),
-        Column('airs_key', String(50)),
-        Column('airs_name', String(50)),
-        Column('agency_description', String(50)),
-        Column('irs_status', String(50)),
-        Column('source_of_funds', String(50)),
-        Column('record_owner', String(50)),
-        Column('fein', String(50)),
-        Column('year_inc', String(50)),
-        Column('annual_budget_total', String(50)),
-        Column('legal_status', String(50)),
-        Column('exclude_from_website', String(50)),
-        Column('exclude_from_directory', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Agency, agency_table)
-        return       
-
-    def agency_child_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        agency_child_table = Table(
-        'agency_child',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AgencyChild, agency_child_table)
-        return       
-
-    def service_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        service_table = Table(
-        'service',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('service_id', String(50)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)), 
-        Column('service_delete', Integer),
-        Column('service_delete_occurred_date', DateTime(timezone=False)),
-        Column('service_delete_effective_date', DateTime(timezone=False)),
-        Column('airs_key', String(50)),
-        Column('airs_name', String(50)),
-        Column('coc_code', String(5)),
-        Column('configuration', String(50)),
-        Column('direct_service_code', String(50)),
-        Column('grantee_identifier', String(10)),
-        Column('individual_family_code', String(50)),
-        Column('residential_tracking_method', String(50)),
-        Column('service_type', String(50)),
-        Column('jfcs_service_type', String(50)),
-        Column('service_effective_period_start_date', DateTime(timezone=False)),
-        Column('service_effective_period_end_date', DateTime(timezone=False)),
-        Column('service_recorded_date', DateTime(timezone=False)),
-        Column('target_population_a', String(50)),
-        Column('target_population_b', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Service, service_table)
-        return
-
-    def site_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        site_table = Table(
-        'site',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)), 
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        #Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)), 
-        Column('site_delete', Integer),
-        Column('site_delete_occurred_date', DateTime(timezone=False)),
-        Column('site_delete_effective_date', DateTime(timezone=False)),
-        Column('airs_key', String(50)),
-        Column('airs_name', String(50)),
-        Column('site_description', String(50)),
-        Column('physical_address_pre_address_line', String(100)),
-        Column('physical_address_line_1', String(100)),
-        Column('physical_address_line_2', String(100)),
-        Column('physical_address_city', String(50)),
-        Column('physical_address_country', String(50)),
-        Column('physical_address_state', String(50)),
-        Column('physical_address_zip_code', String(50)),
-        Column('physical_address_country', String(50)),
-        Column('physical_address_reason_withheld', String(50)),
-        Column('physical_address_confidential', String(50)),
-        Column('physical_address_description', String(50)),
-        Column('mailing_address_pre_address_line', String(100)),
-        Column('mailing_address_line_1', String(100)),
-        Column('mailing_address_line_2', String(100)),
-        Column('mailing_address_city', String(50)),
-        Column('mailing_address_country', String(50)),
-        Column('mailing_address_state', String(50)),
-        Column('mailing_address_zip_code', String(50)),
-        Column('mailing_address_country', String(50)),
-        Column('mailing_address_reason_withheld', String(50)),
-        Column('mailing_address_confidential', String(50)),
-        Column('mailing_address_description', String(50)),
-        Column('no_physical_address_description', String(50)),
-        Column('no_physical_address_explanation', String(50)),
-        Column('disabilities_access', String(50)),
-        Column('physical_location_description', String(50)),
-        Column('bus_service_access', String(50)),
-        Column('public_access_to_transportation', String(50)),
-        Column('year_inc', String(50)),
-        Column('annual_budget_total', String(50)),
-        Column('legal_status', String(50)),
-        Column('exclude_from_website', String(50)),
-        Column('exclude_from_directory', String(50)),
-        Column('agency_key', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Site, site_table)
-        return
-
-    def site_service_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        site_service_table = Table(
-        'site_service',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('site_service_id', String(50)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('report_index_id', String(50), ForeignKey(Report.report_id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-        Column('service_index_id', Integer, ForeignKey(Service.id)),
-		# SBB20100916 Added Agency Location foreign key
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('site_service_delete', Integer),
-        Column('site_service_delete_occurred_date', DateTime(timezone=False)),
-        Column('site_service_delete_effective_date', DateTime(timezone=False)),
-        Column('name', String(50)),
-        Column('key', String(50)),
-        Column('description', String(50)),
-        Column('fee_structure', String(50)),
-        Column('gender_requirements', String(50)),
-        Column('area_flexibility', String(50)),
-        Column('service_not_always_available', String(50)),
-        Column('service_group_key', String(50)),
-        Column('site_id', String(50)),
-        Column('geographic_code', String(50)),
-        Column('geographic_code_date_collected', DateTime(timezone=False)),
-        Column('geographic_code_date_effective', DateTime(timezone=False)),        
-        Column('geographic_code_data_collection_stage', String(50)),
-        Column('housing_type', String(50)),
-        Column('housing_type_date_collected', DateTime(timezone=False)),
-        Column('housing_type_date_effective', DateTime(timezone=False)),
-        Column('housing_type_data_collection_stage', String(50)),
-        Column('principal', String(50)),
-        Column('site_service_effective_period_start_date', DateTime(timezone=False)),
-        Column('site_service_effective_period_end_date', DateTime(timezone=False)),
-        Column('site_service_recorded_date', DateTime(timezone=False)),
-        Column('site_service_type', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(SiteService, site_service_table)
-        return
-
-    def funding_source_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        funding_source_table = Table(
-        'funding_source',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('service_index_id', Integer, ForeignKey(Service.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.id)), 
-        Column('funding_source_id_id_num', String(50)),
-        Column('funding_source_id_id_str', String(32)),
-        Column('funding_source_id_delete', String(50)),
-        Column('funding_source_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('funding_source_id_delete_effective_date', DateTime(timezone=False)),
-        Column('federal_cfda_number', String(50)),
-        Column('receives_mckinney_funding', String(50)),
-        Column('advance_or_arrears', String(50)),
-        Column('financial_assistance_amount', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(FundingSource, funding_source_table)
-        return
-
-    def resource_info_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        resource_info_table = Table(
-        'resource_info',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('resource_specialist', String(50)),
-        Column('available_for_directory', String(50)),
-        Column('available_for_referral', String(50)),
-        Column('available_for_research', String(50)),
-        Column('date_added', DateTime(timezone=False)),
-        Column('date_last_verified', DateTime(timezone=False)),
-        Column('date_of_last_action', DateTime(timezone=False)),
-        Column('last_action_type', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ResourceInfo, resource_info_table)
-        return
-
-        
-    def inventory_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        inventory_table = Table(
-        'inventory',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('service_index_id', Integer, ForeignKey(Service.id)), 
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('inventory_delete', Integer),
-        Column('inventory_delete_occurred_date', DateTime(timezone=False)),
-        Column('inventory_delete_effective_delete', DateTime(timezone=False)),
-        Column('hmis_participation_period_start_date', DateTime(timezone=False)),
-        Column('hmis_participation_period_end_date', DateTime(timezone=False)),
-        Column('inventory_id_id_num', String(50)),
-        Column('inventory_id_id_str', String(32)),
-        Column('bed_inventory', String(50)),
-        Column('bed_availability', String(50)),
-        Column('bed_type', String(50)),
-        Column('bed_individual_family_type', String(50)),
-        Column('chronic_homeless_bed', String(50)),
-        Column('domestic_violence_shelter_bed', String(50)),
-        Column('household_type', String(50)),
-        Column('hmis_participating_beds', String(50)),        
-        Column('inventory_effective_period_start_date', DateTime(timezone=False)),
-        Column('inventory_effective_period_end_date', DateTime(timezone=False)),
-        Column('inventory_recorded_date', DateTime(timezone=False)),
-        Column('unit_inventory', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Inventory, inventory_table)
-        return
-
-    def age_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        age_requirements_table = Table(
-        'age_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('gender', String(50)),
-        Column('minimum_age', String(50)),
-        Column('maximum_age', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AgeRequirements, age_requirements_table)
-        return
-
-    def aid_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        aid_requirements_table = Table(
-        'aid_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('aid_requirements', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AidRequirements, aid_requirements_table)
-        return
-
-    def aka_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        aka_table = Table(
-        'aka',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-		# SBB20100914 Added Agency Location foreign key
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('name', String(50)),
-        Column('confidential', String(50)),
-        Column('description', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Aka, aka_table)
-        return
-
-    def application_process_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        application_process_table = Table(
-        'application_process',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('step', String(50)),
-        Column('description', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ApplicationProcess, application_process_table)
-        return
-
-    def assignment_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        assignment_table = Table(
-        'assignment',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('hmis_asset_index_id', Integer, ForeignKey(HmisAsset.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('assignment_id_id_num', String(50)),
-        Column('assignment_id_id_str', String(32)),
-        Column('assignment_id_delete', Integer),
-        Column('assignment_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('assignment_id_delete_effective_date', DateTime(timezone=False)),
-        Column('person_id_id_num', String(50)),
-        Column('person_id_id_str', String(32)),
-        Column('household_id_id_num', String(50)),
-        Column('household_id_id_str', String(32)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Assignment, assignment_table)
-        return
-
-
-    def assignment_period_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        assignment_period_table = Table(
-        'assignment_period',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('assignment_index_id', Integer, ForeignKey(Assignment.id)), 
-        Column('assignment_period_start_date', DateTime(timezone=False)),
-        Column('assignment_period_end_date', DateTime(timezone=False)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AssignmentPeriod, assignment_period_table)
-        return
-
-    def child_enrollment_status_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        child_enrollment_status_table = Table(
-        'child_enrollment_status',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('child_enrollment_status_id_id_num', String(50)),
-        Column('child_enrollment_status_id_id_str', String(32)),
-        Column('child_enrollment_status_id_delete', Integer),
-        Column('child_enrollment_status_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('child_enrollment_status_id_delete_effective_date', DateTime(timezone=False)),
-        Column('child_currently_enrolled_in_school', String(50)),
-        Column('child_currently_enrolled_in_school_date_effective', DateTime(timezone=False)),
-        Column('child_currently_enrolled_in_school_date_collected', DateTime(timezone=False)),        
-        Column('child_currently_enrolled_in_school_data_collection_stage', String(50)),
-        Column('child_school_name', String(50)),
-        Column('child_school_name_date_effective', DateTime(timezone=False)),
-        Column('child_school_name_date_collected', DateTime(timezone=False)),        
-        Column('child_school_name_data_collection_stage', String(50)),        
-        Column('child_mckinney_vento_liaison', String(50)),
-        Column('child_mckinney_vento_liaison_date_effective', DateTime(timezone=False)),
-        Column('child_mckinney_vento_liaison_date_collected', DateTime(timezone=False)),        
-        Column('child_mckinney_vento_liaison_data_collection_stage', String(50)),   
-        Column('child_school_type', String(50)),
-        Column('child_school_type_date_effective', DateTime(timezone=False)),
-        Column('child_school_type_date_collected', DateTime(timezone=False)),        
-        Column('child_school_type_data_collection_stage', String(50)),   
-        Column('child_school_last_enrolled_date', DateTime(timezone=False)),
-        Column('child_school_last_enrolled_date_date_collected', DateTime(timezone=False)),        
-        Column('child_school_last_enrolled_date_data_collection_stage', String(50)),           
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ChildEnrollmentStatus, child_enrollment_status_table)
-        return
-
-    def child_enrollment_status_barrier_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        child_enrollment_status_barrier_table = Table(
-        'child_enrollment_status_barrier',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('child_enrollment_status_index_id', Integer, ForeignKey(ChildEnrollmentStatus.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('barrier_id_id_num', String(50)),
-        Column('barrier_id_id_str', String(32)),
-        Column('barrier_id_delete', Integer),
-        Column('barrier_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('barrier_id_delete_effective_date', DateTime(timezone=False)),
-        Column('barrier_code', String(50)),
-        Column('barrier_code_date_collected', DateTime(timezone=False)),
-        Column('barrier_code_date_effective', DateTime(timezone=False)),        
-        Column('barrier_code_data_collection_stage', String(50)),
-        Column('barrier_other', String(50)),
-        Column('barrier_other_date_collected', DateTime(timezone=False)),
-        Column('barrier_other_date_effective', DateTime(timezone=False)),        
-        Column('barrier_other_data_collection_stage', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ChildEnrollmentStatusBarrier, child_enrollment_status_barrier_table)
-        return
-
-    def chronic_health_condition_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        chronic_health_condition_table = Table(
-        'chronic_health_condition',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('has_chronic_health_condition', String(50)),
-        Column('has_chronic_health_condition_date_collected', DateTime(timezone=False)),
-        Column('has_chronic_health_condition_date_effective', DateTime(timezone=False)),        
-        Column('has_chronic_health_condition_data_collection_stage', String(50)),
-        Column('receive_chronic_health_services', String(50)),
-        Column('receive_chronic_health_services_date_collected', DateTime(timezone=False)),
-        Column('receive_chronic_health_services_date_effective', DateTime(timezone=False)),        
-        Column('receive_chronic_health_services_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ChronicHealthCondition, chronic_health_condition_table)
-        return
-
-    def contact_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        contact_table = Table(
-        'contact',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('title', String(50)),
-        Column('name', String(50)),
-        Column('type', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Contact, contact_table)
-        return
-
-    def contact_made_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        contact_made_table = Table(
-        'contact_made',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('contact_id_id_num', String(50)),
-        Column('contact_id_id_str', String(32)),
-        Column('contact_id_delete', Integer),
-        Column('contact_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('contact_id_delete_effective_date', DateTime(timezone=False)),
-        Column('contact_date', DateTime(timezone=False)),
-        Column('contact_date_data_collection_stage', String(50)),
-        Column('contact_location', String(50)),
-        Column('contact_location_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ContactMade, contact_made_table)
-        return
-
-    def cross_street_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        cross_street_table = Table(
-        'cross_street',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('cross_street', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(CrossStreet, cross_street_table)
-        return
-
-    def currently_in_school_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        currently_in_school_table = Table(
-        'currently_in_school',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('currently_in_school', String(50)),
-        Column('currently_in_school_date_collected', DateTime(timezone=False)),
-        Column('currently_in_school_date_effective', DateTime(timezone=False)),        
-        Column('currently_in_school_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(CurrentlyInSchool, currently_in_school_table)
-        return
-
-    def license_accreditation_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        license_accreditation_table = Table(
-        'license_accreditation',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('license', String(50)),
-        Column('licensed_by', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(LicenseAccreditation, license_accreditation_table)
-        return
-
-    def mental_health_problem_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        mental_health_problem_table = Table(
-        'mental_health_problem',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('has_mental_health_problem', String(50)),
-        Column('has_mental_health_problem_date_collected', DateTime(timezone=False)),
-        Column('has_mental_health_problem_date_effective', DateTime(timezone=False)),        
-        Column('has_mental_health_problem_data_collection_stage', String(50)),
-        Column('mental_health_indefinite', String(50)),
-        Column('mental_health_indefinite_date_collected', DateTime(timezone=False)),
-        Column('mental_health_indefinite_date_effective', DateTime(timezone=False)),        
-        Column('mental_health_indefinite_data_collection_stage', String(50)),
-        Column('receive_mental_health_services', String(50)),
-        Column('receive_mental_health_services_date_collected', DateTime(timezone=False)),
-        Column('receive_mental_health_services_date_effective', DateTime(timezone=False)),        
-        Column('receive_mental_health_services_data_collection_stage', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(MentalHealthProblem, mental_health_problem_table)
-        return
-
-#    def age_requirements_map(self):
-#        table_metadata = MetaData(bind=self.pg_db_engine)
-#        age_requirements_table = Table(
-#        'age_requirements',
-#        table_metadata,
-#        Column('id', Integer, primary_key=True),
-#        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-#        Column('gender', String(50)),
-#        Column('minimum_age', String(50)),
-#        Column('maximum_age', String(50)),
-#        useexisting = True
-#        )
-#        table_metadata.create_all()
-#        mapper(AgeRequirements, age_requirements_table)
-#        return
-
-    def non_cash_benefits_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        non_cash_benefits_table = Table(
-        'non_cash_benefits',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('non_cash_benefit_id_id_id_num', String(50)),
-        Column('non_cash_benefit_id_id_id_str', String(32)),
-        Column('non_cash_benefit_id_id_delete', Integer),
-        Column('non_cash_benefit_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('non_cash_benefit_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('non_cash_source_code', String(50)),
-        Column('non_cash_source_code_date_collected', DateTime(timezone=False)),
-        Column('non_cash_source_code_date_effective', DateTime(timezone=False)),        
-        Column('non_cash_source_code_data_collection_stage', String(50)),
-        Column('non_cash_source_other', String(50)),
-        Column('non_cash_source_other_date_collected', DateTime(timezone=False)),
-        Column('non_cash_source_other_date_effective', DateTime(timezone=False)),        
-        Column('non_cash_source_other_data_collection_stage', String(50)),
-        Column('receiving_non_cash_source', String(50)),
-        Column('receiving_non_cash_source_date_collected', DateTime(timezone=False)),
-        Column('receiving_non_cash_source_date_effective', DateTime(timezone=False)),        
-        Column('receiving_non_cash_source_data_collection_stage', String(50)),     
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(NonCashBenefits, non_cash_benefits_table)
-        return
-        
-    def agency_location_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        agency_location_table = Table(
-        'agency_location',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('key', String(50)),
-        Column('name', String(50)),
-        Column('site_description', String(50)),
-        # address fields
-        Column('physical_address_pre_address_line', String(100)),
-        Column('physical_address_line_1', String(100)),
-        Column('physical_address_line_2', String(100)),
-        Column('physical_address_city', String(50)),
-        Column('physical_address_country', String(50)),
-        Column('physical_address_state', String(50)),
-        Column('physical_address_zip_code', String(50)),
-        Column('physical_address_county', String(50)),
-        Column('physical_address_reason_withheld', String(50)),
-        Column('physical_address_confidential', String(50)),
-        Column('physical_address_description', String(50)),
-        Column('mailing_address_pre_address_line', String(100)),
-        Column('mailing_address_line_1', String(100)),
-        Column('mailing_address_line_2', String(100)),
-        Column('mailing_address_city', String(50)),
-        Column('mailing_address_county', String(50)),
-        Column('mailing_address_state', String(50)),
-        Column('mailing_address_zip_code', String(50)),
-        Column('mailing_address_country', String(50)),
-        Column('mailing_address_reason_withheld', String(50)),
-        Column('mailing_address_confidential', String(50)),
-        Column('mailing_address_description', String(50)),
-        Column('no_physical_address_description', String(50)),
-        Column('no_physical_address_explanation', String(50)),
-        Column('disabilities_access', String(50)),
-        Column('physical_location_description', String(50)),
-        Column('bus_service_access', String(50)),
-        # Attributes
-        Column('public_access_to_transportation', String(50)),
-        Column('year_inc', String(50)),
-        Column('annual_budget_total', String(50)),
-        Column('legal_status', String(50)),
-        Column('exclude_from_website', String(50)),
-        Column('exclude_from_directory', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AgencyLocation, agency_location_table)
-        return
+class Need(DB.Base, MapBase):
+    __tablename__ = 'need'
+    id = Column(Integer, primary_key=True)
+    site_service_index_id = Column(Integer, ForeignKey('site_service_participation.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    need_idid_num = Column(String(32))
+    need_idid_num_date_collected = Column(DateTime(timezone=False))
+    need_idid_str = Column(String(32))
+    need_idid_str_date_collected = Column(DateTime(timezone=False))
+    site_service_idid_num = Column(String(32))
+    site_service_idid_num_date_collected = Column(DateTime(timezone=False))
+    site_service_idid_str = Column(String(32))
+    site_service_idid_str_date_collected = Column(DateTime(timezone=False))
+    service_event_idid_num = Column(String(32))
+    service_event_idid_num_date_collected = Column(DateTime(timezone=False))
+    service_event_idid_str = Column(String(32))
+    service_event_idid_str_date_collected = Column(DateTime(timezone=False))
+    need_status = Column(String(32))
+    need_status_date_collected = Column(DateTime(timezone=False))
+    taxonomy = Column(String(32))
+    reported = Column(Boolean)
+    ## HUD 3.0
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    need_id_delete = Column(String(32))
+    need_id_delete_occurred_date = Column(DateTime(timezone=False))
+    need_id_delete_delete_effective_date = Column(DateTime(timezone=False))
+    need_effective_period_start_date = Column(DateTime(timezone=False))
+    need_effective_period_end_date = Column(DateTime(timezone=False))
+    need_recorded_date = Column(DateTime(timezone=False))
+    useexisting = True
     
-    def agency_service_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        agency_service_table = Table(
-        'agency_service',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('key', String(50)),
-        Column('agency_key', String(50)),
-        Column('name', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(AgencyService, agency_service_table)
-        return
-
-    def non_cash_benefits_last_30_days_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        non_cash_benefits_last_30_days_table = Table(
-        'non_cash_benefits_last_30_days',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('income_last_30_days', String(50)),
-        Column('income_last_30_days_date_collected', DateTime(timezone=False)),
-        Column('income_last_30_days_date_effective', DateTime(timezone=False)),        
-        Column('income_last_30_days_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(NonCashBenefitsLast30Days, non_cash_benefits_last_30_days_table)
-        return
-
-#    def aid_requirements_map(self):
-#        table_metadata = MetaData(bind=self.pg_db_engine)
-#        aid_requirements_table = Table(
-#        'aid_requirements',
-#        table_metadata,
-#        Column('id', Integer, primary_key=True),
-#        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-#        Column('aid_requirements', String(50)),
-#        useexisting = True
-#        )
-#        table_metadata.create_all()
-#        mapper(AidRequirements, aid_requirements_table)
-#        return
-
-    def other_address_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        other_address_table = Table(
-        'other_address',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-		# SBB20100914 Adding foreign key to agency_location
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-		#
-        Column('pre_address_line', String(100)),
-        Column('line_1', String(100)),
-        Column('line_2', String(100)),
-        Column('city', String(50)),
-        Column('county', String(50)),
-        Column('state', String(50)),
-        Column('zip_code', String(50)),
-        Column('country', String(50)),
-        Column('reason_withheld', String(50)),
-        Column('confidential', String(50)),
-        Column('description', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(OtherAddress, other_address_table)
-        return
-
-    def other_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        other_requirements_table = Table(
-        'other_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('other_requirements', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(OtherRequirements, other_requirements_table)
-        return
-
-    def phone_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        phone_table = Table(
-        'phone',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)), 
-        Column('contact_index_id', Integer, ForeignKey(Contact.id)), 
-        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.id)), 
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('phone_number', String(50)),
-        Column('reason_withheld', String(50)),
-        Column('extension', String(50)),
-        Column('description', String(50)),
-        Column('type', String(50)),
-        Column('function', String(50)),
-        Column('toll_free', String(50)),
-        Column('confidential', String(50)),
-        Column('person_phone_number', String(50)),
-        Column('person_phone_number_date_collected', DateTime(timezone=False)),
-        Column('person_phone_number_date_effective', DateTime(timezone=False)),        
-        Column('person_phone_number_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Phone, phone_table)
-        return
-
-    def physical_disability_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        physical_disability_table = Table(
-        'physical_disability',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('has_physical_disability', String(50)),
-        Column('has_physical_disability_date_collected', DateTime(timezone=False)),
-        Column('has_physical_disability_date_effective', DateTime(timezone=False)),        
-        Column('has_physical_disability_data_collection_stage', String(50)),
-        Column('receive_physical_disability_services', String(50)),
-        Column('receive_physical_disability_services_date_collected', DateTime(timezone=False)),
-        Column('receive_physical_disability_services_date_effective', DateTime(timezone=False)),        
-        Column('receive_physical_disability_services_data_collection_stage', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(PhysicalDisability, physical_disability_table)
-        return
-
-    def pit_count_set_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        pit_count_set_table = Table(
-        'pit_count_set',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('pit_count_set_id_id_num', String(50)),
-        Column('pit_count_set_id_id_str', String(32)),
-        Column('pit_count_set_id_delete', Integer),
-        Column('pit_count_set_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('pit_count_set_id_delete_effective_date', DateTime(timezone=False)),
-        Column('hud_waiver_received', String(50)),
-        Column('hud_waiver_date', DateTime(timezone=False)),
-        Column('hud_waiver_effective_period_start_date', DateTime(timezone=False)),
-        Column('hud_waiver_effective_period_end_date', DateTime(timezone=False)),
-        Column('last_pit_sheltered_count_date', DateTime(timezone=False)),
-        Column('last_pit_unsheltered_count_date', DateTime(timezone=False)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(PitCountSet, pit_count_set_table)
-        return
-
-    def pit_counts_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        pit_counts_table = Table(
-        'pit_counts',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('pit_count_set_index_id', Integer, ForeignKey(PitCountSet.id)), 
-        Column('pit_count_value', String(50)),
-        Column('pit_count_effective_period_start_date', DateTime(timezone=False)),
-        Column('pit_count_effective_period_end_date', DateTime(timezone=False)),
-        Column('pit_count_recorded_date', DateTime(timezone=False)),
-        Column('pit_count_household_type', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(PitCounts, pit_counts_table)
-        return
-
-    def pregnancy_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        pregnancy_table = Table(
-        'pregnancy',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('pregnancy_id_id_id_num', String(50)),
-        Column('pregnancy_id_id_id_str', String(32)),
-        Column('pregnancy_id_id_delete', Integer),
-        Column('pregnancy_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('pregnancy_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('pregnancy_status', String(50)),
-        Column('pregnancy_status_date_collected', DateTime(timezone=False)),
-        Column('pregnancy_status_date_effective', DateTime(timezone=False)),        
-        Column('pregnancy_status_data_collection_stage', String(50)),
-        Column('due_date', DateTime(timezone=False)),
-        Column('due_date_date_collected', DateTime(timezone=False)),        
-        Column('due_date_data_collection_stage', String(50)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Pregnancy, pregnancy_table)
-        return
-
-    def degree_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        degree_table = Table(
-        'degree',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('degree_id_id_num', String(50)),
-        Column('degree_id_id_str', String(32)),
-        Column('degree_id_delete', Integer),
-        Column('degree_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('degree_id_delete_effective_date', DateTime(timezone=False)),
-        Column('degree_other', String(50)),
-        Column('degree_other_date_collected', DateTime(timezone=False)),
-        Column('degree_other_date_effective', DateTime(timezone=False)),        
-        Column('degree_other_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Degree, degree_table)
-        return
-
-    def prior_residence_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        prior_residence_table = Table(
-        'prior_residence',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('prior_residence_id_id_num', String(50)),
-        Column('prior_residence_id_id_str', String(32)),
-        Column('prior_residence_id_delete', Integer),
-        Column('prior_residence_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('prior_residence_id_delete_effective_date', DateTime(timezone=False)),
-        Column('prior_residence_code', String(50)),
-        Column('prior_residence_code_date_collected', DateTime(timezone=False)),
-        Column('prior_residence_code_date_effective', DateTime(timezone=False)),        
-        Column('prior_residence_code_data_collection_stage', String(50)),
-        Column('prior_residence_other', String(50)),
-        Column('prior_residence_other_date_collected', DateTime(timezone=False)),
-        Column('prior_residence_other_date_effective', DateTime(timezone=False)),        
-        Column('prior_residence_other_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(PriorResidence, prior_residence_table)
-        return
-
-    def degree_code_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        degree_code_table = Table(
-        'degree_code',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('degree_index_id', Integer, ForeignKey(Degree.id)), 
-        Column('degree_code', String(50)),
-        Column('degree_date_collected', DateTime(timezone=False)),
-        Column('degree_date_effective', DateTime(timezone=False)),        
-        Column('degree_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DegreeCode, degree_code_table)
-        return
-
-    def destinations_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        destinations_table = Table(
-        'destinations',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('destination_id_id_num', String(50)),
-        Column('destination_id_id_str', String(32)),
-        Column('destination_id_delete', Integer),
-        Column('destination_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('destination_id_delete_effective_date', DateTime(timezone=False)),
-        Column('destination_code', String(50)),
-        Column('destination_code_date_collected', DateTime(timezone=False)),
-        Column('destination_code_date_effective', DateTime(timezone=False)),        
-        Column('destination_code_data_collection_stage', String(50)),
-        Column('destination_other', String(50)),
-        Column('destination_other_date_collected', DateTime(timezone=False)),
-        Column('destination_other_date_effective', DateTime(timezone=False)),        
-        Column('destination_other_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Destinations, destinations_table)
-        return
-
-    def reasons_for_leaving_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        reasons_for_leaving_table = Table(
-        'reasons_for_leaving',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_participation_index_id', Integer, ForeignKey(SiteServiceParticipation.id)), 
-        Column('reason_for_leaving_id_id_num', String(50)),
-        Column('reason_for_leaving_id_id_str', String(32)),
-        Column('reason_for_leaving_id_delete', Integer),
-        Column('reason_for_leaving_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('reason_for_leaving_id_delete_effective_date', DateTime(timezone=False)),
-        Column('reason_for_leaving', String(50)),
-        Column('reason_for_leaving_date_collected', DateTime(timezone=False)),
-        Column('reason_for_leaving_date_effective', DateTime(timezone=False)),        
-        Column('reason_for_leaving_data_collection_stage', String(50)),
-        Column('reason_for_leaving_other', String(50)),
-        Column('reason_for_leaving_other_date_collected', DateTime(timezone=False)),
-        Column('reason_for_leaving_other_date_effective', DateTime(timezone=False)),        
-        Column('reason_for_leaving_other_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ReasonsForLeaving, reasons_for_leaving_table)
-        return
-
-    def developmental_disability_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        developmental_disability_table = Table(
-        'developmental_disability',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('has_developmental_disability', String(50)),
-        Column('has_developmental_disability_date_collected', DateTime(timezone=False)),
-        Column('has_developmental_disability_date_effective', DateTime(timezone=False)),        
-        Column('has_developmental_disability_data_collection_stage', String(50)),
-        Column('receive_developmental_disability', String(50)),
-        Column('receive_developmental_disability_date_collected', DateTime(timezone=False)),
-        Column('receive_developmental_disability_date_effective', DateTime(timezone=False)),        
-        Column('receive_developmental_disability_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DevelopmentalDisability, developmental_disability_table)
-        return
-
-    def disabling_condition_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        disabling_condition_table = Table(
-        'disabling_condition',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('disabling_condition', String(50)),
-        Column('disabling_condition_date_collected', DateTime(timezone=False)),
-        Column('disabling_condition_date_effective', DateTime(timezone=False)),        
-        Column('disabling_condition_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DisablingCondition, disabling_condition_table)
-        return
-
-    def documents_required_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        documents_required_table = Table(
-        'documents_required',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('documents_required', String(50)),
-        Column('description', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DocumentsRequired, documents_required_table)
-        return
-
-    def residency_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        residency_requirements_table = Table(
-        'residency_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('residency_requirements', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ResidencyRequirements, residency_requirements_table)
-        return
-
-    def domestic_violence_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        domestic_violence_table = Table(
-        'domestic_violence',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('domestic_violence_survivor', String(50)),
-        Column('domestic_violence_survivor_date_collected', DateTime(timezone=False)),
-        Column('domestic_violence_survivor_date_effective', DateTime(timezone=False)),        
-        Column('domestic_violence_survivor_data_collection_stage', String(50)),
-        Column('dv_occurred', String(50)),
-        Column('dv_occurred_date_collected', DateTime(timezone=False)),
-        Column('dv_occurred_date_effective', DateTime(timezone=False)),        
-        Column('dv_occurred_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(DomesticViolence, domestic_violence_table)
-        return
-
-    def email_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        email_table = Table(
-        'email',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('contact_index_id', Integer, ForeignKey(Contact.id)), 
-        Column('resource_info_index_id', Integer, ForeignKey(ResourceInfo.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.id)), 
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('address', String(100)),
-        Column('note', String(50)),
-        Column('person_email', String(50)),
-        Column('person_email_date_collected', DateTime(timezone=False)),
-        Column('person_email_date_effective', DateTime(timezone=False)),        
-        Column('person_email_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Email, email_table)
-        return
-
-    def seasonal_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        seasonal_table = Table(
-        'seasonal',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('description', String(50)),
-        Column('start_date', String(50)),
-        Column('end_date', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Seasonal, seasonal_table)
-        return
-
-    def employment_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        employment_table = Table(
-        'employment',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('employment_id_id_id_num', String(50)),
-        Column('employment_id_id_id_str', String(32)),
-        Column('employment_id_id_delete', Integer),
-        Column('employment_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('employment_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('currently_employed', String(50)),
-        Column('currently_employed_date_collected', DateTime(timezone=False)),
-        Column('currently_employed_date_effective', DateTime(timezone=False)),        
-        Column('currently_employed_data_collection_stage', String(50)),
-        Column('hours_worked_last_week', String(50)),
-        Column('hours_worked_last_week_date_collected', DateTime(timezone=False)),
-        Column('hours_worked_last_week_date_effective', DateTime(timezone=False)),        
-        Column('hours_worked_last_week_data_collection_stage', String(50)),
-        Column('employment_tenure', String(50)),
-        Column('employment_tenure_date_collected', DateTime(timezone=False)),
-        Column('employment_tenure_date_effective', DateTime(timezone=False)),        
-        Column('employment_tenure_data_collection_stage', String(50)),
-        Column('looking_for_work', String(50)),
-        Column('looking_for_work_date_collected', DateTime(timezone=False)),
-        Column('looking_for_work_date_effective', DateTime(timezone=False)),        
-        Column('looking_for_work_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Employment, employment_table)
-        return
-
-    def engaged_date_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        engaged_date_table = Table(
-        'engaged_date',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('engaged_date', DateTime(timezone=False)),
-        Column('engaged_date_date_collected', DateTime(timezone=False)),        
-        Column('engaged_date_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(EngagedDate, engaged_date_table)
-        return
-
-    def service_event_notes_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        service_event_notes_table = Table(
-        'service_event_notes',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('service_event_index_id', Integer, ForeignKey(ServiceEvent.id)), 
-        Column('note_id_id_num', String(50)),
-        Column('note_id_id_str', String(32)),
-        Column('note_delete', Integer),
-        Column('note_delete_occurred_date', DateTime(timezone=False)),
-        Column('note_delete_effective_date', DateTime(timezone=False)),
-        Column('note_text', String(255)),
-        Column('note_text_date_collected', DateTime(timezone=False)),
-        Column('note_text_date_effective', DateTime(timezone=False)),        
-        Column('note_text_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ServiceEventNotes, service_event_notes_table)
-        return
-
-    def family_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        family_requirements_table = Table(
-        'family_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('family_requirements', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(FamilyRequirements, family_requirements_table)
-        return
-
-    def service_group_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        service_group_table = Table(
-        'service_group',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('key', String(50)),
-        Column('name', String(50)),
-        Column('program_name', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(ServiceGroup, service_group_table)
-        return
-
-    def geographic_area_served_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        geographic_area_served_table = Table(
-        'geographic_area_served',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('zipcode', String(50)),
-        Column('census_track', String(50)),
-        Column('city', String(50)),
-        Column('county', String(50)),
-        Column('state', String(50)),
-        Column('country', String(50)),
-        Column('description', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(GeographicAreaServed, geographic_area_served_table)
-        return
-
-    def health_status_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        health_status_table = Table(
-        'health_status',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('health_status', String(50)),
-        Column('health_status_date_collected', DateTime(timezone=False)),
-        Column('health_status_date_effective', DateTime(timezone=False)),        
-        Column('health_status_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HealthStatus, health_status_table)
-        return
-
-    def highest_school_level_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        highest_school_level_table = Table(
-        'highest_school_level',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('highest_school_level', String(50)),
-        Column('highest_school_level_date_collected', DateTime(timezone=False)),
-        Column('highest_school_level_date_effective', DateTime(timezone=False)),        
-        Column('highest_school_level_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HighestSchoolLevel, highest_school_level_table)
-        return
-
-    def hiv_aids_status_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        hiv_aids_status_table = Table(
-        'hiv_aids_status',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('has_hiv_aids', String(50)),
-        Column('has_hiv_aids_date_collected', DateTime(timezone=False)),
-        Column('has_hiv_aids_date_effective', DateTime(timezone=False)),        
-        Column('has_hiv_aids_data_collection_stage', String(50)),
-        Column('receive_hiv_aids_services', String(50)),
-        Column('receive_hiv_aids_services_date_collected', DateTime(timezone=False)),
-        Column('receive_hiv_aids_services_date_effective', DateTime(timezone=False)),        
-        Column('receive_hiv_aids_services_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HivAidsStatus, hiv_aids_status_table)
-        return
-
-    def spatial_location_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        spatial_location_table = Table(
-        'spatial_location',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('description', String(50)),
-        Column('datum', String(50)),
-        Column('latitude', String(50)),
-        Column('longitude', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(SpatialLocation, spatial_location_table)
-        return
-
-    def hmis_asset_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        hmis_asset_table = Table(
-        'hmis_asset',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)), 
-        Column('asset_id_id_num', String(50)),
-        Column('asset_id_id_str', String(32)),
-        Column('asset_id_delete', Integer),
-        Column('asset_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('asset_id_delete_effective_date', DateTime(timezone=False)),
-        Column('asset_count', String(50)),
-        Column('asset_count_bed_availability', String(50)),
-        Column('asset_count_bed_type', String(50)),
-        Column('asset_count_bed_individual_family_type', String(50)),
-        Column('asset_count_chronic_homeless_bed', String(50)),
-        Column('asset_count_domestic_violence_shelter_bed', String(50)),
-        Column('asset_count_household_type', String(50)),
-        Column('asset_type', String(50)),
-        Column('asset_effective_period_start_date', DateTime(timezone=False)),
-        Column('asset_effective_period_end_date', DateTime(timezone=False)),
-        Column('asset_recorded_date', DateTime(timezone=False)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HmisAsset, hmis_asset_table)
-        return
-
-    def substance_abuse_problem_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        substance_abuse_problem_table = Table(
-        'substance_abuse_problem',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('has_substance_abuse_problem', String(50)),
-        Column('has_substance_abuse_problem_date_collected', DateTime(timezone=False)),
-        Column('has_substance_abuse_problem_date_effective', DateTime(timezone=False)),        
-        Column('has_substance_abuse_problem_data_collection_stage', String(50)),
-        Column('substance_abuse_indefinite', String(50)),
-        Column('substance_abuse_indefinite_date_collected', DateTime(timezone=False)),
-        Column('substance_abuse_indefinite_date_effective', DateTime(timezone=False)),        
-        Column('substance_abuse_indefinite_data_collection_stage', String(50)),
-        Column('receive_substance_abuse_services', String(50)),
-        Column('receive_substance_abuse_services_date_collected', DateTime(timezone=False)),
-        Column('receive_substance_abuse_services_date_effective', DateTime(timezone=False)),        
-        Column('receive_substance_abuse_services_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(SubstanceAbuseProblem, substance_abuse_problem_table)
-        return
-
-    def housing_status_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        housing_status_table = Table(
-        'housing_status',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('housing_status', String(50)),
-        Column('housing_status_date_collected', DateTime(timezone=False)),
-        Column('housing_status_date_effective', DateTime(timezone=False)),        
-        Column('housing_status_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HousingStatus, housing_status_table)
-        return
-
-    def taxonomy_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        taxonomy_table = Table(
-        'taxonomy',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('need_index_id', Integer, ForeignKey(Need.id)), 
-        Column('code', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Taxonomy, taxonomy_table)
-        return
-
-    def hud_chronic_homeless_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        hud_chronic_homeless_table = Table(
-        'hud_chronic_homeless',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('hud_chronic_homeless', String(50)),
-        Column('hud_chronic_homeless_date_collected', DateTime(timezone=False)),
-        Column('hud_chronic_homeless_date_effective', DateTime(timezone=False)),        
-        Column('hud_chronic_homeless_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(HudChronicHomeless, hud_chronic_homeless_table)
-        return
-
-    def time_open_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        time_open_table = Table(
-        'time_open',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)), 
-        Column('languages_index_id', Integer, ForeignKey(Languages.id)), 
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('notes', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(TimeOpen, time_open_table)
-        return
-
-    def time_open_days_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        time_open_days_table = Table(
-        'time_open_days',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('time_open_index_id', Integer, ForeignKey(TimeOpen.id)), 
-        Column('day_of_week', String(50)),
-        Column('from', String(50)),
-        Column('to', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(TimeOpenDays, time_open_days_table)
-        return
-
-    def url_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        url_table = Table(
-        'url',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('agency_index_id', Integer, ForeignKey(Agency.id)), 
-        Column('site_index_id', Integer, ForeignKey(Site.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('address', String(50)),
-        Column('note', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Url, url_table)
-        return
-
-    def veteran_military_branches_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_military_branches_table = Table(
-        'veteran_military_branches',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('military_branch_id_id_id_num', String(50)),
-        Column('military_branch_id_id_id_str', String(32)),
-        Column('military_branch_id_id_delete', Integer),
-        Column('military_branch_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('military_branch_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('discharge_status', String(50)),
-        Column('discharge_status_date_collected', DateTime(timezone=False)),
-        Column('discharge_status_date_effective', DateTime(timezone=False)),        
-        Column('discharge_status_data_collection_stage', String(50)),
-        Column('discharge_status_other', String(50)),
-        Column('discharge_status_other_date_collected', DateTime(timezone=False)),
-        Column('discharge_status_other_date_effective', DateTime(timezone=False)),        
-        Column('discharge_status_other_data_collection_stage', String(50)),
-        Column('military_branch', String(50)),
-        Column('military_branch_date_collected', DateTime(timezone=False)),
-        Column('military_branch_date_effective', DateTime(timezone=False)),        
-        Column('military_branch_data_collection_stage', String(50)),
-        Column('military_branch_other', String(50)),
-        Column('military_branch_other_date_collected', DateTime(timezone=False)),
-        Column('military_branch_other_date_effective', DateTime(timezone=False)),        
-        Column('military_branch_other_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranMilitaryBranches, veteran_military_branches_table)
-        return
-
-
-    def income_last_30_days_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        income_last_30_days_table = Table(
-        'income_last_30_days',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('income_last_30_days', String(50)),
-        Column('income_last_30_days_date_collected', DateTime(timezone=False)),
-        Column('income_last_30_days_date_effective', DateTime(timezone=False)),        
-        Column('income_last_30_days_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(IncomeLast30Days, income_last_30_days_table)
-        return
-
-    def veteran_military_service_duration_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_military_service_duration_table = Table(
-        'veteran_military_service_duration',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('military_service_duration', String(50)),
-        Column('military_service_duration_date_collected', DateTime(timezone=False)),
-        Column('military_service_duration_date_effective', DateTime(timezone=False)),        
-        Column('military_service_duration_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranMilitaryServiceDuration, veteran_military_service_duration_table)
-        return
-
-    def income_requirements_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        income_requirements_table = Table(
-        'income_requirements',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)), 
-        Column('income_requirements', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(IncomeRequirements, income_requirements_table)
-        return
-
-    def veteran_served_in_war_zone_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_served_in_war_zone_table = Table(
-        'veteran_served_in_war_zone',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('served_in_war_zone', String(50)),
-        Column('served_in_war_zone_date_collected', DateTime(timezone=False)),
-        Column('served_in_war_zone_date_effective', DateTime(timezone=False)),        
-        Column('served_in_war_zone_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranServedInWarZone, veteran_served_in_war_zone_table)
-        return
-
-    def income_total_monthly_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        income_total_monthly_table = Table(
-        'income_total_monthly',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('income_total_monthly', String(50)),
-        Column('income_total_monthly_date_collected', DateTime(timezone=False)),
-        Column('income_total_monthly_date_effective', DateTime(timezone=False)),        
-        Column('income_total_monthly_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(IncomeTotalMonthly, income_total_monthly_table)
-        return
-
-    def veteran_service_era_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_service_era_table = Table(
-        'veteran_service_era',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('service_era', String(50)),
-        Column('service_era_date_collected', DateTime(timezone=False)),
-        Column('service_era_date_effective', DateTime(timezone=False)),        
-        Column('service_era_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranServiceEra, veteran_service_era_table)
-        return
-
-    def veteran_veteran_status_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_veteran_status_table = Table(
-        'veteran_veteran_status',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('veteran_status', String(50)),
-        Column('veteran_status_date_collected', DateTime(timezone=False)),
-        Column('veteran_status_date_effective', DateTime(timezone=False)),        
-        Column('veteran_status_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranVeteranStatus, veteran_veteran_status_table)
-        return
-
-    def languages_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        languages_table = Table(
-        'languages',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('site_index_id', Integer, ForeignKey(Site.id)), 
-        Column('site_service_index_id', Integer, ForeignKey(SiteService.id)),
-		Column('agency_location_index_id', Integer, ForeignKey(AgencyLocation.id)),
-        Column('name', String(50)),
-        Column('notes', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(Languages, languages_table)
-        return
-
-    def veteran_warzones_served_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        veteran_warzones_served_table = Table(
-        'veteran_warzones_served',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('war_zone_id_id_id_num', String(50)),
-        Column('war_zone_id_id_id_str', String(32)),
-        Column('war_zone_id_id_delete', Integer),
-        Column('war_zone_id_id_delete_occurred_date', DateTime(timezone=False)),
-        Column('war_zone_id_id_delete_effective_date', DateTime(timezone=False)),
-        Column('months_in_war_zone', String(50)),
-        Column('months_in_war_zone_date_collected', DateTime(timezone=False)),
-        Column('months_in_war_zone_date_effective', DateTime(timezone=False)),        
-        Column('months_in_war_zone_data_collection_stage', String(50)),
-        Column('received_fire', String(50)),
-        Column('received_fire_date_collected', DateTime(timezone=False)),
-        Column('received_fire_date_effective', DateTime(timezone=False)),        
-        Column('received_fire_data_collection_stage', String(50)),
-        Column('war_zone', String(50)),
-        Column('war_zone_date_collected', DateTime(timezone=False)),
-        Column('war_zone_date_effective', DateTime(timezone=False)),        
-        Column('war_zone_data_collection_stage', String(50)),
-        Column('war_zone_other', String(50)),
-        Column('war_zone_other_date_collected', DateTime(timezone=False)),
-        Column('war_zone_other_date_effective', DateTime(timezone=False)),        
-        Column('war_zone_other_data_collection_stage', String(50)),                
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VeteranWarzonesServed, veteran_warzones_served_table)
-        return
-
-    def length_of_stay_at_prior_residence_map(self):
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        length_of_stay_at_prior_residence_table = Table(
-        'length_of_stay_at_prior_residence',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('length_of_stay_at_prior_residence', String(50)),
-        Column('length_of_stay_at_prior_residence_date_collected', DateTime(timezone=False)),
-        Column('length_of_stay_at_prior_residence_date_effective', DateTime(timezone=False)),        
-        Column('length_of_stay_at_prior_residence_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(LengthOfStayAtPriorResidence, length_of_stay_at_prior_residence_table)
-        return
-
-    def vocational_training_map(self):    
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        vocational_training_table = Table(
-        'vocational_training',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('vocational_training', String(50)),
-        Column('vocational_training_date_collected', DateTime(timezone=False)),
-        Column('vocational_training_date_effective', DateTime(timezone=False)),        
-        Column('vocational_training_data_collection_stage', String(50)),
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(VocationalTraining, vocational_training_table)
-        return
+ 
+class Races(DB.Base, MapBase):
+    __tablename__ = 'races' 
+    id = Column(Integer, primary_key=True)
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    race_unhashed = Column(Integer(2))
+    race_hashed = Column(String(32))
+    race_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    ## HUD 3.0
+    race_data_collection_stage = Column(String(32))
+    race_date_effective = Column(DateTime(timezone=False))
+    useexisting = True
     
-    def foster_child_ever_map(self):    
-        table_metadata = MetaData(bind=self.pg_db_engine)
-        foster_child_ever_table = Table(
-        'foster_child_ever',
-        table_metadata,
-        Column('id', Integer, primary_key=True),
-        Column('export_index_id', Integer, ForeignKey(Export.id)),
-        Column('person_historical_index_id', Integer, ForeignKey(PersonHistorical.id)), 
-        Column('foster_child_ever', Integer(2)),
-        Column('foster_child_ever_date_collected', DateTime(timezone=False)),
-        Column('foster_child_ever_date_effective', DateTime(timezone=False)),        
-        useexisting = True
-        )
-        table_metadata.create_all()
-        mapper(FosterChildEver, foster_child_ever_table)
-        return
-
-class BaseObject(object):
-    def __init__(self, field_dict):
-        if settings.DEBUG:
-            print "Base Class created: %s" % self.__class__.__name__
-    #def __init__(self, field_dict):
-        if settings.DEBUG:
-            print field_dict
-        for x, y in field_dict.iteritems():
-            self.__setattr__(x,y)
-        
+ 
+class OtherNames(DB.Base, MapBase):
+    __tablename__ = 'other_names'
+    id = Column(Integer, primary_key=True)
+    person_index_id = Column(Integer, ForeignKey('person.id')) 
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    other_first_name_unhashed = Column(String(50))
+    other_first_name_hashed = Column(String(50))
+    other_first_name_date_collected = Column(DateTime(timezone=False))
+    other_first_name_date_effective = Column(DateTime(timezone=False))
+    other_first_name_data_collection_stage = Column(String(32))
+    other_middle_name_unhashed = Column(String(50))
+    other_middle_name_hashed = Column(String(50))
+    other_middle_name_date_collected = Column(DateTime(timezone=False))
+    other_middle_name_date_effective = Column(DateTime(timezone=False))
+    other_middle_name_data_collection_stage = Column(String(32))
+    other_last_name_unhashed = Column(String(50))
+    other_last_name_hashed = Column(String(50))
+    other_last_name_date_collected = Column(DateTime(timezone=False))
+    other_last_name_date_effective = Column(DateTime(timezone=False))
+    other_last_name_data_collection_stage = Column(String(32))
+    other_suffix_unhashed = Column(String(50))
+    other_suffix_hashed = Column(String(50))
+    other_suffix_date_collected = Column(DateTime(timezone=False))
+    other_suffix_date_effective = Column(DateTime(timezone=False))
+    other_suffix_data_collection_stage = Column(String(32))
+    useexisting = True
+    
+ 
+class HUDHomelessEpisodes(DB.Base, MapBase):
+    __tablename__ = 'hud_homeless_episodes'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))        
+    start_date = Column(String(32))
+    start_date_date_collected = Column(DateTime(timezone=False))
+    end_date = Column(String(32))
+    end_date_date_collected = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class Veteran(DB.Base, MapBase):
+    __tablename__ = 'veteran'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    service_era = Column(Integer)
+    service_era_date_collected = Column(DateTime(timezone=False))
+    military_service_duration = Column(Integer)
+    military_service_duration_date_collected = Column(DateTime(timezone=False))
+    served_in_war_zone = Column(Integer)
+    served_in_war_zone_date_collected = Column(DateTime(timezone=False))
+    war_zone = Column(Integer)
+    war_zone_date_collected = Column(DateTime(timezone=False))
+    war_zone_other = Column(String(50))
+    war_zone_other_date_collected = Column(DateTime(timezone=False))
+    months_in_war_zone = Column(Integer)
+    months_in_war_zone_date_collected = Column(DateTime(timezone=False))
+    received_fire = Column(Integer)
+    received_fire_date_collected = Column(DateTime(timezone=False))
+    military_branch = Column(Integer)
+    military_branch_date_collected = Column(DateTime(timezone=False))
+    military_branch_other = Column(String(50))
+    military_branch_other_date_collected = Column(DateTime(timezone=False))
+    discharge_status = Column(Integer)
+    discharge_status_date_collected = Column(DateTime(timezone=False))
+    discharge_status_other = Column(String(50))
+    discharge_status_other_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean) 
+    useexisting = True
+    
+ 
+class DrugHistory(DB.Base, MapBase):
+    __tablename__ = 'drug_history'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    drug_history_id = Column(String(32))
+    drug_history_id_date_collected = Column(DateTime(timezone=False))
+    drug_code = Column(Integer(2))
+    drug_code_date_collected = Column(DateTime(timezone=False))    
+    drug_use_frequency = Column(Integer(2))
+    drug_use_frequency_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    useexisting = True
+    
+ 
+class EmergencyContact(DB.Base, MapBase):
+    __tablename__ = 'emergency_contact'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    emergency_contact_id = Column(String(32))
+    emergency_contact_id_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_name = Column(String(32))
+    emergency_contact_name_date_collected = Column(DateTime(timezone=False))    
+    emergency_contact_phone_number_0 = Column(String(32))
+    emergency_contact_phone_number_date_collected_0 = Column(DateTime(timezone=False))
+    emergency_contact_phone_number_type_0 = Column(String(32))
+    emergency_contact_phone_number_1 = Column(String(32))
+    emergency_contact_phone_number_date_collected_1 = Column(DateTime(timezone=False))
+    emergency_contact_phone_number_type_1 = Column(String(32))
+    emergency_contact_address_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_start_date = Column(DateTime(timezone=False))
+    emergency_contact_address_start_date_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_end_date = Column(DateTime(timezone=False))
+    emergency_contact_address_end_date_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_line1 = Column(String(32))
+    emergency_contact_address_line1_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_line2 = Column(String(32))
+    emergency_contact_address_line2_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_city = Column(String(32))
+    emergency_contact_address_city_date_collected = Column(DateTime(timezone=False))
+    emergency_contact_address_state = Column(String(32))
+    emergency_contact_address_state_date_collected = Column(DateTime(timezone=False))    
+    emergency_contact_relation_to_client = Column(String(32))
+    emergency_contact_relation_to_client_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    useexisting = True
+    
+   
+class PersonAddress(DB.Base, MapBase):
+    __tablename__ = 'person_address'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    address_period_start_dateColumn = (DateTime(timezone=False))
+    address_period_start_date_date_collected = Column(DateTime(timezone=False))
+    address_period_end_date = Column(DateTime(timezone=False))
+    address_period_end_date_date_collected = Column(DateTime(timezone=False))
+    pre_address_line = Column(String(100))
+    pre_address_line_date_collected = Column(DateTime(timezone=False))
+    pre_address_line_date_effective = Column(DateTime(timezone=False))
+    pre_address_line_data_collection_stage = Column(String(32))
+    line1 = Column(String(100))
+    line1_date_collected = Column(DateTime(timezone=False))
+    line1_date_effective = Column(DateTime(timezone=False))
+    line1_data_collection_stage = Column(String(32))
+    line2 = Column(String(100))
+    line2_date_collected = Column(DateTime(timezone=False))
+    line2_date_effective = Column(DateTime(timezone=False))
+    line2_data_collection_stage = Column(String(32))
+    city = Column(String(100))
+    city_date_collected = Column(DateTime(timezone=False))
+    city_date_effective = Column(DateTime(timezone=False))
+    city_data_collection_stage = Column(String(32))
+    county = Column(String(32))
+    county_date_collected = Column(DateTime(timezone=False))
+    county_date_effective = Column(DateTime(timezone=False))
+    county_data_collection_stage = Column(String(32))
+    state = Column(String(32))
+    state_date_collected = Column(DateTime(timezone=False))
+    state_date_effective = Column(DateTime(timezone=False))
+    state_data_collection_stage = Column(String(32))
+    zipcode = Column(String(10))
+    zipcode_date_collected = Column(DateTime(timezone=False))
+    zipcode_date_effective = Column(DateTime(timezone=False))
+    zipcode_data_collection_stage = Column(String(32))
+    country = Column(String(32))
+    country_date_collected = Column(DateTime(timezone=False))
+    country_date_effective = Column(DateTime(timezone=False))
+    country_data_collection_stage = Column(String(32))
+    is_last_permanent_zip = Column(Integer)
+    is_last_permanent_zip_date_collected = Column(DateTime(timezone=False))
+    is_last_permanent_zip_date_effective = Column(DateTime(timezone=False))
+    is_last_permanent_zip_data_collection_stage = Column(String(32))
+    zip_quality_code = Column(Integer)
+    zip_quality_code_date_collected = Column(DateTime(timezone=False))
+    zip_quality_code_date_effective = Column(DateTime(timezone=False))
+    zip_quality_code_data_collection_stage = Column(String(32))
+    reported = Column(Boolean)
+    ## HUD 3.0
+    person_address_delete = Column(String(32))
+    person_address_delete_occurred_date = Column(DateTime(timezone=False))
+    person_address_delete_effective_date = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class PersonHistorical(DB.Base, MapBase):
+    __tablename__ = 'person_historical'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service_participation.id'))
+    person_historical_id_id_num = Column(String(32))
+    person_historical_id_id_str = Column(String(32))
+    person_historical_id_delete_effective_date = Column(DateTime(timezone=False))
+    person_historical_id_delete = Column(Integer)
+    person_historical_id_delete_occurred_date = Column(DateTime(timezone=False))
+    barrier_code = Column(String(32))
+    barrier_code_date_collected = Column(DateTime(timezone=False))
+    barrier_other = Column(String(32))
+    barrier_other_date_collected = Column(DateTime(timezone=False))
+    child_currently_enrolled_in_school = Column(String(32))
+    child_currently_enrolled_in_school_date_collected = Column(DateTime(timezone=False))
+    currently_employed = Column(String(32))
+    currently_employed_date_collected = Column(DateTime(timezone=False))
+    currently_in_school = Column(String(32))
+    currently_in_school_date_collected = Column(DateTime(timezone=False))
+    degree_code = Column(String(32))
+    degree_code_date_collected = Column(DateTime(timezone=False))
+    degree_other = Column(String(32))
+    degree_other_date_collected = Column(DateTime(timezone=False))
+    developmental_disability = Column(String(32))
+    developmental_disability_date_collected = Column(DateTime(timezone=False))
+    domestic_violence = Column(String(32))
+    domestic_violence_date_collected = Column(DateTime(timezone=False))
+    domestic_violence_how_long = Column(String(32))
+    domestic_violence_how_long_date_collected = Column(DateTime(timezone=False))
+    due_date = Column(String(32))
+    due_date_date_collected = Column(DateTime(timezone=False))
+    employment_tenure = Column(String(32))
+    employment_tenure_date_collected = Column(DateTime(timezone=False))
+    health_status = Column(String(32))
+    health_status_date_collected = Column(DateTime(timezone=False))
+    highest_school_level = Column(String(32))
+    highest_school_level_date_collected = Column(DateTime(timezone=False))
+    hivaids_status = Column(String(32))
+    hivaids_status_date_collected = Column(DateTime(timezone=False))
+    hours_worked_last_week = Column(String(32))
+    hours_worked_last_week_date_collected = Column(DateTime(timezone=False))
+    hud_chronic_homeless = Column(String(32))
+    hud_chronic_homeless_date_collected = Column(DateTime(timezone=False))
+    hud_homeless = Column(String(32))
+    hud_homeless_date_collected = Column(DateTime(timezone=False))
+    site_service_id = Column(Integer)
+    ###HUDHomelessEpisodes (subtable)
+    ###IncomeAndSources (subtable)
+    length_of_stay_at_prior_residence = Column(String(32))
+    length_of_stay_at_prior_residence_date_collected = Column(DateTime(timezone=False))
+    looking_for_work = Column(String(32))
+    looking_for_work_date_collected = Column(DateTime(timezone=False))
+    mental_health_indefinite = Column(String(32))
+    mental_health_indefinite_date_collected = Column(DateTime(timezone=False))
+    mental_health_problem = Column(String(32))
+    mental_health_problem_date_collected = Column(DateTime(timezone=False))
+    non_cash_source_code = Column(String(32))
+    non_cash_source_code_date_collected = Column(DateTime(timezone=False))
+    non_cash_source_other = Column(String(32))
+    non_cash_source_other_date_collected = Column(DateTime(timezone=False))
+    ###PersonAddress (subtable)
+    person_email = Column(String(32))
+    person_email_date_collected = Column(DateTime(timezone=False))
+    person_phone_number = Column(String(32))
+    person_phone_number_date_collected = Column(DateTime(timezone=False))
+    physical_disability = Column(String(32))
+    physical_disability_date_collected = Column(DateTime(timezone=False))
+    pregnancy_status = Column(String(32))
+    pregnancy_status_date_collected = Column(DateTime(timezone=False))
+    prior_residence = Column(String(32))
+    prior_residence_date_collected = Column(DateTime(timezone=False))
+    prior_residence_other = Column(String(32))
+    prior_residence_other_date_collected = Column(DateTime(timezone=False))
+    reason_for_leaving = Column(String(32))
+    reason_for_leaving_date_collected = Column(DateTime(timezone=False))
+    reason_for_leaving_other = Column(String(32))
+    reason_for_leaving_other_date_collected = Column(DateTime(timezone=False))
+    school_last_enrolled_date = Column(String(32))
+    school_last_enrolled_date_date_collected = Column(DateTime(timezone=False))
+    school_name = Column(String(32))
+    school_name_date_collected = Column(DateTime(timezone=False))
+    school_type = Column(String(32))
+    school_type_date_collected = Column(DateTime(timezone=False))
+    subsidy_other = Column(String(32))
+    subsidy_other_date_collected = Column(DateTime(timezone=False))
+    subsidy_type = Column(String(32))
+    subsidy_type_date_collected = Column(DateTime(timezone=False))
+    substance_abuse_indefinite = Column(String(32))
+    substance_abuse_indefinite_date_collected = Column(DateTime(timezone=False))
+    substance_abuse_problem = Column(String(32))
+    substance_abuse_problem_date_collected = Column(DateTime(timezone=False))
+    total_income = Column(String(32))
+    total_income_date_collected = Column(DateTime(timezone=False))
+    ###Veteran (subtable)
+    vocational_training = Column(String(32))
+    vocational_training_date_collected = Column(DateTime(timezone=False))
+    annual_personal_income = Column(Integer(2))
+    annual_personal_income_date_collected = Column(DateTime(timezone=False))
+    employment_status = Column(Integer(2))
+    employment_status_date_collected = Column(DateTime(timezone=False))
+    family_size = Column(Integer(2))
+    family_size_date_collected = Column(DateTime(timezone=False))
+    hearing_impaired = Column(Integer(2))
+    hearing_impaired_date_collected = Column(DateTime(timezone=False))
+    marital_status = Column(Integer(2))
+    marital_status_date_collected = Column(DateTime(timezone=False))
+    non_ambulatory = Column(Integer(2))
+    non_ambulatory_date_collected = Column(DateTime(timezone=False))
+    residential_status = Column(Integer(2))
+    residential_status_date_collected = Column(DateTime(timezone=False))
+    visually_impaired = Column(Integer(2))
+    visually_impaired_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    fk_person_historical_to_income_and_sources = relationship('IncomeAndSources',
+        backref='fk_income_and_sources_to_person_historical')
+    fk_person_historical_to_veteran = relationship('Veteran', backref='fk_veteran_to_person_historical')
+    fk_person_historical_to_hud_homeless_episodes = relationship('HUDHomelessEpisodes',
+        backref='fk_hud_homeless_episodes_to_person_historical')
+    fk_person_historical_to_person_address = relationship('PersonAddress', backref='fk_person_address_to_person_historical')
+    useexisting = True
+    
+    
+class IncomeAndSources(DB.Base, MapBase):
+    __tablename__ = 'income_and_sources'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    amount = Column(Integer)
+    amount_date_collected = Column(DateTime(timezone=False))
+    income_source_code = Column(Integer)
+    income_source_code_date_collected = Column(DateTime(timezone=False))
+    income_source_other = Column(String(32))
+    income_source_other_date_collected = Column(DateTime(timezone=False))
+    ## HUD 3.0
+    income_and_source_id_id_num = Column(String(32))
+    income_and_source_id_id_str = Column(String(32))
+    income_and_source_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    income_and_source_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    income_source_code_date_effective = Column(DateTime(timezone=False))
+    income_source_other_date_effective = Column(DateTime(timezone=False))
+    receiving_income_source_date_collected = Column(DateTime(timezone=False))
+    receiving_income_source_date_effective = Column(DateTime(timezone=False))
+    income_source_amount_date_effective = Column(DateTime(timezone=False))
+    income_and_source_id_id_delete = Column(Integer)
+    income_source_code_data_collection_stage = Column(String(32))
+    income_source_other_data_collection_stage = Column(String(32))
+    receiving_income_source = Column(Integer)
+    receiving_income_source_data_collection_stage = Column(String(32))
+    income_source_amount_data_collection_stage = Column(String(32))
+    useexisting = True
+    
+ 
+class Members(DB.Base, MapBase):
+    __tablename__ = 'members'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    household_index_id = Column(Integer, ForeignKey('household.id'))
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    relationship_to_head_of_household = Column(String(32))
+    relationship_to_head_of_household_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    useexisting = True
+    
+ 
+class ReleaseOfInformation(DB.Base, MapBase):
+    __tablename__ = 'release_of_information'
+    id = Column(Integer, primary_key=True)
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    release_of_information_idid_num = Column(String(32))
+    release_of_information_idid_num_date_collected = Column(DateTime(timezone=False))
+    release_of_information_idid_str = Column(String(32))
+    release_of_information_idid_str_date_collected = Column(DateTime(timezone=False))
+    site_service_idid_num = Column(String(32))
+    site_service_idid_num_date_collected = Column(DateTime(timezone=False))
+    site_service_idid_str = Column(String(32))
+    site_service_idid_str_date_collected = Column(DateTime(timezone=False))
+    documentation = Column(String(32))
+    documentation_date_collected = Column(DateTime(timezone=False))
+    #EffectivePeriod (subtable)
+    start_date = Column(String(32))
+    start_date_date_collected = Column(DateTime(timezone=False))
+    end_date = Column(String(32))
+    end_date_date_collected = Column(DateTime(timezone=False))
+    release_granted = Column(String(32))
+    release_granted_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    ## HUD 3.0
+    release_of_information_id_data_collection_stage = Column(String(32))
+    release_of_information_id_date_effective = Column(DateTime(timezone=False))
+    documentation_data_collection_stage = Column(String(32))
+    documentation_date_effective = Column(DateTime(timezone=False))
+    release_granted_data_collection_stage = Column(String(32))
+    release_granted_date_effective = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class SourceExportLink(DB.Base, MapBase):
+    __tablename__ = 'source_export_link'
+    id = Column(Integer, primary_key=True)
+    source_index_id = Column(Integer, ForeignKey('source.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id'))
+    useexisting = True
+    
+            
+class Region(DB.Base, MapBase):
+    __tablename__ = 'region'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id')) 
+    region_id_id_num = Column(String(50))
+    region_id_id_str = Column(String(32))
+    site_service_id = Column(String(50))
+    region_type = Column(String(50))
+    region_type_date_collected = Column(DateTime(timezone=False))
+    region_type_date_effective = Column(DateTime(timezone=False))
+    region_type_data_collection_stage = Column(String(32))
+    region_description = Column(String(30))
+    region_description_date_collected = Column(DateTime(timezone=False))
+    region_description_date_effective = Column(DateTime(timezone=False))
+    region_description_data_collection_stage = Column(String(32))
+    useexisting = True
+    
+ 
+class Agency(DB.Base, MapBase):
+    __tablename__ = 'agency'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id'))
+    agency_delete = Column(Integer)
+    agency_delete_occurred_date = Column(DateTime(timezone=False))
+    agency_delete_effective_date = Column(DateTime(timezone=False))
+    airs_key = Column(String(50))
+    airs_name = Column(String(50))
+    agency_description = Column(String(50))
+    irs_status = Column(String(50))
+    source_of_funds = Column(String(50))
+    record_owner = Column(String(50))
+    fein = Column(String(50))
+    year_inc = Column(String(50))
+    annual_budget_total = Column(String(50))
+    legal_status = Column(String(50))
+    exclude_from_website = Column(String(50))
+    exclude_from_directory = Column(String(50))        
+    useexisting = True
+    
+ 
+class AgencyChild(DB.Base, MapBase):
+    __tablename__ = 'agency_child'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id'))
+    useexisting = True
+    
+ 
+class Service(DB.Base, MapBase):
+    __tablename__ = 'service'
+    id = Column(Integer, primary_key=True)
+    service_id = Column(String(50))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id')) 
+    service_delete = Column(Integer)
+    service_delete_occurred_date = Column(DateTime(timezone=False))
+    service_delete_effective_date = Column(DateTime(timezone=False))
+    airs_key = Column(String(50))
+    airs_name = Column(String(50))
+    coc_code = Column(String(5))
+    configuration = Column(String(50))
+    direct_service_code = Column(String(50))
+    grantee_identifier = Column(String(10))
+    individual_family_code = Column(String(50))
+    residential_tracking_method = Column(String(50))
+    service_type = Column(String(50))
+    jfcs_service_type = Column(String(50))
+    service_effective_period_start_date = Column(DateTime(timezone=False))
+    service_effective_period_end_date = Column(DateTime(timezone=False))
+    service_recorded_date = Column(DateTime(timezone=False))
+    target_population_a = Column(String(50))
+    target_population_b = Column(String(50))
+    useexisting = True
+    
+ 
+class Site(DB.Base, MapBase):
+    __tablename__ = 'site'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id')) 
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    #agency_location_index_id = Column(Integer, ForeignKey('agency_location.id')) 
+    site_delete = Column(Integer)
+    site_delete_occurred_date = Column(DateTime(timezone=False))
+    site_delete_effective_date = Column(DateTime(timezone=False))
+    airs_key = Column(String(50))
+    airs_name = Column(String(50))
+    site_description = Column(String(50))
+    physical_address_pre_address_line = Column(String(100))
+    physical_address_line_1 = Column(String(100))
+    physical_address_line_2 = Column(String(100))
+    physical_address_city = Column(String(50))
+    physical_address_country = Column(String(50))
+    physical_address_state = Column(String(50))
+    physical_address_zip_code = Column(String(50))
+    physical_address_country = Column(String(50))
+    physical_address_reason_withheld = Column(String(50))
+    physical_address_confidential = Column(String(50))
+    physical_address_description = Column(String(50))
+    mailing_address_pre_address_line = Column(String(100))
+    mailing_address_line_1 = Column(String(100))
+    mailing_address_line_2 = Column(String(100))
+    mailing_address_city = Column(String(50))
+    mailing_address_country = Column(String(50))
+    mailing_address_state = Column(String(50))
+    mailing_address_zip_code = Column(String(50))
+    mailing_address_country = Column(String(50))
+    mailing_address_reason_withheld = Column(String(50))
+    mailing_address_confidential = Column(String(50))
+    mailing_address_description = Column(String(50))
+    no_physical_address_description = Column(String(50))
+    no_physical_address_explanation = Column(String(50))
+    disabilities_access = Column(String(50))
+    physical_location_description = Column(String(50))
+    bus_service_access = Column(String(50))
+    public_access_to_transportation = Column(String(50))
+    year_inc = Column(String(50))
+    annual_budget_total = Column(String(50))
+    legal_status = Column(String(50))
+    exclude_from_website = Column(String(50))
+    exclude_from_directory = Column(String(50))
+    agency_key = Column(String(50))
+    useexisting = True
+    
+ 
+class SiteService(DB.Base, MapBase):
+    __tablename__ = 'site_service'
+    id = Column(Integer, primary_key=True)
+    site_service_id = Column(String(50))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_index_id = Column(String(50), ForeignKey('report.report_id')) 
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    service_index_id = Column(Integer, ForeignKey(Service.id))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    site_service_delete = Column(Integer)
+    site_service_delete_occurred_date = Column(DateTime(timezone=False))
+    site_service_delete_effective_date = Column(DateTime(timezone=False))
+    name = Column(String(50))
+    key = Column(String(50))
+    description = Column(String(50))
+    fee_structure = Column(String(50))
+    gender_requirements = Column(String(50))
+    area_flexibility = Column(String(50))
+    service_not_always_available = Column(String(50))
+    service_group_key = Column(String(50))
+    site_id = Column(String(50))
+    geographic_code = Column(String(50))
+    geographic_code_date_collected = Column(DateTime(timezone=False))
+    geographic_code_date_effective = Column(DateTime(timezone=False))        
+    geographic_code_data_collection_stage = Column(String(50))
+    housing_type = Column(String(50))
+    housing_type_date_collected = Column(DateTime(timezone=False))
+    housing_type_date_effective = Column(DateTime(timezone=False))
+    housing_type_data_collection_stage = Column(String(50))
+    principal = Column(String(50))
+    site_service_effective_period_start_date = Column(DateTime(timezone=False))
+    site_service_effective_period_end_date = Column(DateTime(timezone=False))
+    site_service_recorded_date = Column(DateTime(timezone=False))
+    site_service_type = Column(String(50))        
+    useexisting = True
+    
+ 
+class FundingSource(DB.Base, MapBase):
+    __tablename__ = 'funding_source'
+    id = Column(Integer, primary_key=True)
+    service_index_id = Column(Integer, ForeignKey('service.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    service_event_index_id = Column(Integer, ForeignKey('service_event.id')) 
+    funding_source_id_id_num = Column(String(50))
+    funding_source_id_id_str = Column(String(32))
+    funding_source_id_delete = Column(String(50))
+    funding_source_id_delete_occurred_date = Column(DateTime(timezone=False))
+    funding_source_id_delete_effective_date = Column(DateTime(timezone=False))
+    federal_cfda_number = Column(String(50))
+    receives_mckinney_funding = Column(String(50))
+    advance_or_arrears = Column(String(50))
+    financial_assistance_amount = Column(String(50))
+    useexisting = True
+    
+ 
+class ResourceInfo(DB.Base, MapBase):
+    __tablename__ = 'resource_info'
+    id = Column(Integer, primary_key=True)
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    resource_specialist = Column(String(50))
+    available_for_directory = Column(String(50))
+    available_for_referral = Column(String(50))
+    available_for_research = Column(String(50))
+    date_added = Column(DateTime(timezone=False))
+    date_last_verified = Column(DateTime(timezone=False))
+    date_of_last_action = Column(DateTime(timezone=False))
+    last_action_type = Column(String(50))
+    useexisting = True
+    
+ 
+class Inventory(DB.Base, MapBase):
+    __tablename__ = 'inventory'
+    id = Column(Integer, primary_key=True)
+    service_index_id = Column(Integer, ForeignKey(Service.id)) 
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    inventory_delete = Column(Integer)
+    inventory_delete_occurred_date = Column(DateTime(timezone=False))
+    inventory_delete_effective_delete = Column(DateTime(timezone=False))
+    hmis_participation_period_start_date = Column(DateTime(timezone=False))
+    hmis_participation_period_end_date = Column(DateTime(timezone=False))
+    inventory_id_id_num = Column(String(50))
+    inventory_id_id_str = Column(String(32))
+    bed_inventory = Column(String(50))
+    bed_availability = Column(String(50))
+    bed_type = Column(String(50))
+    bed_individual_family_type = Column(String(50))
+    chronic_homeless_bed = Column(String(50))
+    domestic_violence_shelter_bed = Column(String(50))
+    household_type = Column(String(50))
+    hmis_participating_beds = Column(String(50))        
+    inventory_effective_period_start_date = Column(DateTime(timezone=False))
+    inventory_effective_period_end_date = Column(DateTime(timezone=False))
+    inventory_recorded_date = Column(DateTime(timezone=False))
+    unit_inventory = Column(String(50))
+    useexisting = True
+    
+ 
+class AgeRequirements(DB.Base, MapBase):
+    __tablename__ = 'age_requirements'
+    id = Column(Integer, primary_key=True)
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    gender = Column(String(50))
+    minimum_age = Column(String(50))
+    maximum_age = Column(String(50))
+    useexisting = True
+    
+ 
+class AidRequirements(DB.Base, MapBase):
+    __tablename__ = 'aid_requirements'
+    id = Column(Integer, primary_key=True)
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    aid_requirements = Column(String(50))
+    useexisting = True
+    
+ 
+class Aka(DB.Base, MapBase):
+    __tablename__ = 'aka'
+    id = Column(Integer, primary_key=True)
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    # SBB20100914 Added Agency Location foreign key
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    name = Column(String(50))
+    confidential = Column(String(50))
+    description = Column(String(50))
+    useexisting = True
+    
+ 
+class ApplicationProcess(DB.Base, MapBase):
+    __tablename__ = 'application_process'
+    id = Column(Integer, primary_key=True)
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    step = Column(String(50))
+    description = Column(String(50))
+    useexisting = True
+    
+ 
+class Assignment(DB.Base, MapBase):
+    __tablename__ = 'assignment'
+    id = Column(Integer, primary_key=True)
+    hmis_asset_index_id = Column(Integer, ForeignKey('hmis_asset.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    assignment_id_id_num = Column(String(50))
+    assignment_id_id_str = Column(String(32))
+    assignment_id_delete = Column(Integer)
+    assignment_id_delete_occurred_date = Column(DateTime(timezone=False))
+    assignment_id_delete_effective_date = Column(DateTime(timezone=False))
+    person_id_id_num = Column(String(50))
+    person_id_id_str = Column(String(32))
+    household_id_id_num = Column(String(50))
+    household_id_id_str = Column(String(32))
+    useexisting = True
+    
+ 
+class AssignmentPeriod(DB.Base, MapBase):
+    __tablename__ = 'assignment_period'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    assignment_index_id = Column(Integer, ForeignKey(Assignment.id)) 
+    assignment_period_start_date = Column(DateTime(timezone=False))
+    assignment_period_end_date = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class ChildEnrollmentStatus(DB.Base, MapBase):
+    __tablename__ = 'child_enrollment_status'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    child_enrollment_status_id_id_num = Column(String(50))
+    child_enrollment_status_id_id_str = Column(String(32))
+    child_enrollment_status_id_delete = Column(Integer)
+    child_enrollment_status_id_delete_occurred_date = Column(DateTime(timezone=False))
+    child_enrollment_status_id_delete_effective_date = Column(DateTime(timezone=False))
+    child_currently_enrolled_in_school = Column(String(50))
+    child_currently_enrolled_in_school_date_effective = Column(DateTime(timezone=False))
+    child_currently_enrolled_in_school_date_collected = Column(DateTime(timezone=False))        
+    child_currently_enrolled_in_school_data_collection_stage = Column(String(50))
+    child_school_name = Column(String(50))
+    child_school_name_date_effective = Column(DateTime(timezone=False))
+    child_school_name_date_collected = Column(DateTime(timezone=False))        
+    child_school_name_data_collection_stage = Column(String(50))        
+    child_mckinney_vento_liaison = Column(String(50))
+    child_mckinney_vento_liaison_date_effective = Column(DateTime(timezone=False))
+    child_mckinney_vento_liaison_date_collected = Column(DateTime(timezone=False))        
+    child_mckinney_vento_liaison_data_collection_stage = Column(String(50))   
+    child_school_type = Column(String(50))
+    child_school_type_date_effective = Column(DateTime(timezone=False))
+    child_school_type_date_collected = Column(DateTime(timezone=False))        
+    child_school_type_data_collection_stage = Column(String(50))   
+    child_school_last_enrolled_date = Column(DateTime(timezone=False))
+    child_school_last_enrolled_date_date_collected = Column(DateTime(timezone=False))        
+    child_school_last_enrolled_date_data_collection_stage = Column(String(50))           
+    useexisting = True
+    
+ 
+class ChildEnrollmentStatusBarrier(DB.Base, MapBase):
+    __tablename__ = 'child_enrollment_status_barrier'
+    id = Column(Integer, primary_key=True)
+    child_enrollment_status_index_id = Column(Integer, ForeignKey(ChildEnrollmentStatus.id))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    barrier_id_id_num = Column(String(50))
+    barrier_id_id_str = Column(String(32))
+    barrier_id_delete = Column(Integer)
+    barrier_id_delete_occurred_date = Column(DateTime(timezone=False))
+    barrier_id_delete_effective_date = Column(DateTime(timezone=False))
+    barrier_code = Column(String(50))
+    barrier_code_date_collected = Column(DateTime(timezone=False))
+    barrier_code_date_effective = Column(DateTime(timezone=False))        
+    barrier_code_data_collection_stage = Column(String(50))
+    barrier_other = Column(String(50))
+    barrier_other_date_collected = Column(DateTime(timezone=False))
+    barrier_other_date_effective = Column(DateTime(timezone=False))        
+    barrier_other_data_collection_stage = Column(String(50))        
+    useexisting = True
+    
+ 
+class ChronicHealthCondition(DB.Base, MapBase):
+    __tablename__ = 'chronic_health_condition'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    has_chronic_health_condition = Column(String(50))
+    has_chronic_health_condition_date_collected = Column(DateTime(timezone=False))
+    has_chronic_health_condition_date_effective = Column(DateTime(timezone=False))        
+    has_chronic_health_condition_data_collection_stage = Column(String(50))
+    receive_chronic_health_services = Column(String(50))
+    receive_chronic_health_services_date_collected = Column(DateTime(timezone=False))
+    receive_chronic_health_services_date_effective = Column(DateTime(timezone=False))        
+    receive_chronic_health_services_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Contact(DB.Base, MapBase):
+    __tablename__ = 'contact'
+    id = Column(Integer, primary_key=True)
+    agency_index_id = Column(Integer, ForeignKey('agency.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    resource_info_index_id = Column(Integer, ForeignKey('resource_info.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    title = Column(String(50))
+    name = Column(String(50))
+    type = Column(String(50))
+    useexisting = True
+    
+ 
+class ContactMade(DB.Base, MapBase):
+    __tablename__ = 'contact_made'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    contact_id_id_num = Column(String(50))
+    contact_id_id_str = Column(String(32))
+    contact_id_delete = Column(Integer)
+    contact_id_delete_occurred_date = Column(DateTime(timezone=False))
+    contact_id_delete_effective_date = Column(DateTime(timezone=False))
+    contact_date = Column(DateTime(timezone=False))
+    contact_date_data_collection_stage = Column(String(50))
+    contact_location = Column(String(50))
+    contact_location_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class CrossStreet(DB.Base, MapBase):
+    __tablename__ = 'cross_street'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    cross_street = Column(String(50))
+    useexisting = True
+    
+ 
+class CurrentlyInSchool(DB.Base, MapBase):
+    __tablename__ = 'currently_in_school'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    currently_in_school = Column(String(50))
+    currently_in_school_date_collected = Column(DateTime(timezone=False))
+    currently_in_school_date_effective = Column(DateTime(timezone=False))        
+    currently_in_school_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class LicenseAccreditation(DB.Base, MapBase):
+    __tablename__ = 'license_accreditation'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    license = Column(String(50))
+    licensed_by = Column(String(50))
+    useexisting = True
+    
+ 
+class MentalHealthProblem(DB.Base, MapBase):
+    __tablename__ = 'mental_health_problem'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    has_mental_health_problem = Column(String(50))
+    has_mental_health_problem_date_collected = Column(DateTime(timezone=False))
+    has_mental_health_problem_date_effective = Column(DateTime(timezone=False))        
+    has_mental_health_problem_data_collection_stage = Column(String(50))
+    mental_health_indefinite = Column(String(50))
+    mental_health_indefinite_date_collected = Column(DateTime(timezone=False))
+    mental_health_indefinite_date_effective = Column(DateTime(timezone=False))        
+    mental_health_indefinite_data_collection_stage = Column(String(50))
+    receive_mental_health_services = Column(String(50))
+    receive_mental_health_services_date_collected = Column(DateTime(timezone=False))
+    receive_mental_health_services_date_effective = Column(DateTime(timezone=False))        
+    receive_mental_health_services_data_collection_stage = Column(String(50))        
+    useexisting = True
+    
+    
+class NonCashBenefits(DB.Base, MapBase):
+    __tablename__ = 'non_cash_benefits'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    non_cash_benefit_id_id_num = Column(String(50))
+    non_cash_benefit_id_id_str = Column(String(32))
+    non_cash_benefit_id_id_delete = Column(Integer)
+    non_cash_benefit_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    non_cash_benefit_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    non_cash_source_code = Column(String(50))
+    non_cash_source_code_date_collected = Column(DateTime(timezone=False))
+    non_cash_source_code_date_effective = Column(DateTime(timezone=False))        
+    non_cash_source_code_data_collection_stage = Column(String(50))
+    non_cash_source_other = Column(String(50))
+    non_cash_source_other_date_collected = Column(DateTime(timezone=False))
+    non_cash_source_other_date_effective = Column(DateTime(timezone=False))        
+    non_cash_source_other_data_collection_stage = Column(String(50))
+    receiving_non_cash_source = Column(String(50))
+    receiving_non_cash_source_date_collected = Column(DateTime(timezone=False))
+    receiving_non_cash_source_date_effective = Column(DateTime(timezone=False))        
+    receiving_non_cash_source_data_collection_stage = Column(String(50))     
+    useexisting = True
+    
+    
+class AgencyLocation(DB.Base, MapBase):
+    __tablename__ = 'agency_location'
+    id = Column(Integer, primary_key=True)
+    agency_index_id = Column(Integer, ForeignKey('agency.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    key = Column(String(50))
+    name = Column(String(50))
+    site_description = Column(String(50))
+    physical_address_pre_address_line = Column(String(100))
+    physical_address_line_1 = Column(String(100))
+    physical_address_line_2 = Column(String(100))
+    physical_address_city = Column(String(50))
+    physical_address_country = Column(String(50))
+    physical_address_state = Column(String(50))
+    physical_address_zip_code = Column(String(50))
+    physical_address_county = Column(String(50))
+    physical_address_reason_withheld = Column(String(50))
+    physical_address_confidential = Column(String(50))
+    physical_address_description = Column(String(50))
+    mailing_address_pre_address_line = Column(String(100))
+    mailing_address_line_1 = Column(String(100))
+    mailing_address_line_2 = Column(String(100))
+    mailing_address_city = Column(String(50))
+    mailing_address_county = Column(String(50))
+    mailing_address_state = Column(String(50))
+    mailing_address_zip_code = Column(String(50))
+    mailing_address_country = Column(String(50))
+    mailing_address_reason_withheld = Column(String(50))
+    mailing_address_confidential = Column(String(50))
+    mailing_address_description = Column(String(50))
+    no_physical_address_description = Column(String(50))
+    no_physical_address_explanation = Column(String(50))
+    disabilities_access = Column(String(50))
+    physical_location_description = Column(String(50))
+    bus_service_access = Column(String(50))
+    public_access_to_transportation = Column(String(50))
+    year_inc = Column(String(50))
+    annual_budget_total = Column(String(50))
+    legal_status = Column(String(50))
+    exclude_from_website = Column(String(50))
+    exclude_from_directory = Column(String(50))
+    useexisting = True
+    
+ 
+class AgencyService(DB.Base, MapBase):
+    __tablename__ = 'agency_service'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    key = Column(String(50))
+    agency_key = Column(String(50))
+    name = Column(String(50))
+    useexisting = True
+    
+ 
+class NonCashBenefitsLast30Days(DB.Base, MapBase):
+    __tablename__ = 'non_cash_benefits_last_30_days'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    income_last_30_days = Column(String(50))
+    income_last_30_days_date_collected = Column(DateTime(timezone=False))
+    income_last_30_days_date_effective = Column(DateTime(timezone=False))        
+    income_last_30_days_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class OtherAddress(DB.Base, MapBase):
+    __tablename__ = 'other_address'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    pre_address_line = Column(String(100))
+    line_1 = Column(String(100))
+    line_2 = Column(String(100))
+    city = Column(String(50))
+    county = Column(String(50))
+    state = Column(String(50))
+    zip_code = Column(String(50))
+    country = Column(String(50))
+    reason_withheld = Column(String(50))
+    confidential = Column(String(50))
+    description = Column(String(50))
+    useexisting = True
+    
+ 
+class OtherRequirements(DB.Base, MapBase):
+    __tablename__ = 'other_requirements'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    other_requirements = Column(String(50))
+    useexisting = True
+    
+ 
+class Phone(DB.Base, MapBase):
+    __tablename__ = 'phone'
+    id = Column(Integer, primary_key=True)
+    agency_index_id = Column(Integer, ForeignKey('agency.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id')) 
+    contact_index_id = Column(Integer, ForeignKey(Contact.id)) 
+    resource_info_index_id = Column(Integer, ForeignKey('resource_info.id')) 
+    site_index_id = Column(Integer, ForeignKey('site.id')) 
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    phone_number = Column(String(50))
+    reason_withheld = Column(String(50))
+    extension = Column(String(50))
+    description = Column(String(50))
+    type = Column(String(50))
+    function = Column(String(50))
+    toll_free = Column(String(50))
+    confidential = Column(String(50))
+    person_phone_number = Column(String(50))
+    person_phone_number_date_collected = Column(DateTime(timezone=False))
+    person_phone_number_date_effective = Column(DateTime(timezone=False))        
+    person_phone_number_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class PhysicalDisability(DB.Base, MapBase):
+    __tablename__ = 'physical_disability'
+    id = Column(Integer, primary_key=True)
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    has_physical_disability = Column(String(50))
+    has_physical_disability_date_collected = Column(DateTime(timezone=False))
+    has_physical_disability_date_effective = Column(DateTime(timezone=False))        
+    has_physical_disability_data_collection_stage = Column(String(50))
+    receive_physical_disability_services = Column(String(50))
+    receive_physical_disability_services_date_collected = Column(DateTime(timezone=False))
+    receive_physical_disability_services_date_effective = Column(DateTime(timezone=False))        
+    receive_physical_disability_services_data_collection_stage = Column(String(50))        
+    useexisting = True
+    
+ 
+class PitCountSet(DB.Base, MapBase):
+    __tablename__ = 'pit_count_set'
+    id = Column(Integer, primary_key=True)
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    pit_count_set_id_id_num = Column(String(50))
+    pit_count_set_id_id_str = Column(String(32))
+    pit_count_set_id_delete = Column(Integer)
+    pit_count_set_id_delete_occurred_date = Column(DateTime(timezone=False))
+    pit_count_set_id_delete_effective_date = Column(DateTime(timezone=False))
+    hud_waiver_received = Column(String(50))
+    hud_waiver_date = Column(DateTime(timezone=False))
+    hud_waiver_effective_period_start_date = Column(DateTime(timezone=False))
+    hud_waiver_effective_period_end_date = Column(DateTime(timezone=False))
+    last_pit_sheltered_count_date = Column(DateTime(timezone=False))
+    last_pit_unsheltered_count_date = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class PitCounts(DB.Base, MapBase):
+    __tablename__ = 'pit_counts'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    pit_count_set_index_id = Column(Integer, ForeignKey(PitCountSet.id)) 
+    pit_count_value = Column(String(50))
+    pit_count_effective_period_start_date = Column(DateTime(timezone=False))
+    pit_count_effective_period_end_date = Column(DateTime(timezone=False))
+    pit_count_recorded_date = Column(DateTime(timezone=False))
+    pit_count_household_type = Column(String(50))
+    useexisting = True
+    
+ 
+class Pregnancy(DB.Base, MapBase):
+    __tablename__ = 'pregnancy'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    pregnancy_id_id_num = Column(String(50))
+    pregnancy_id_id_str = Column(String(32))
+    pregnancy_id_id_delete = Column(Integer)
+    pregnancy_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    pregnancy_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    pregnancy_status = Column(String(50))
+    pregnancy_status_date_collected = Column(DateTime(timezone=False))
+    pregnancy_status_date_effective = Column(DateTime(timezone=False))        
+    pregnancy_status_data_collection_stage = Column(String(50))
+    due_date = Column(DateTime(timezone=False))
+    due_date_date_collected = Column(DateTime(timezone=False))        
+    due_date_data_collection_stage = Column(String(50))        
+    useexisting = True
+    
+ 
+class Degree(DB.Base, MapBase):
+    __tablename__ = 'degree'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    degree_id_id_num = Column(String(50))
+    degree_id_id_str = Column(String(32))
+    degree_id_delete = Column(Integer)
+    degree_id_delete_occurred_date = Column(DateTime(timezone=False))
+    degree_id_delete_effective_date = Column(DateTime(timezone=False))
+    degree_other = Column(String(50))
+    degree_other_date_collected = Column(DateTime(timezone=False))
+    degree_other_date_effective = Column(DateTime(timezone=False))        
+    degree_other_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class PriorResidence(DB.Base, MapBase):
+    __tablename__ = 'prior_residence'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    prior_residence_id_id_num = Column(String(50))
+    prior_residence_id_id_str = Column(String(32))
+    prior_residence_id_delete = Column(Integer)
+    prior_residence_id_delete_occurred_date = Column(DateTime(timezone=False))
+    prior_residence_id_delete_effective_date = Column(DateTime(timezone=False))
+    prior_residence_code = Column(String(50))
+    prior_residence_code_date_collected = Column(DateTime(timezone=False))
+    prior_residence_code_date_effective = Column(DateTime(timezone=False))        
+    prior_residence_code_data_collection_stage = Column(String(50))
+    prior_residence_other = Column(String(50))
+    prior_residence_other_date_collected = Column(DateTime(timezone=False))
+    prior_residence_other_date_effective = Column(DateTime(timezone=False))        
+    prior_residence_other_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class DegreeCode(DB.Base, MapBase):
+    __tablename__ = 'degree_code'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    degree_index_id = Column(Integer, ForeignKey(Degree.id)) 
+    degree_code = Column(String(50))
+    degree_date_collected = Column(DateTime(timezone=False))
+    degree_date_effective = Column(DateTime(timezone=False))        
+    degree_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Destinations(DB.Base, MapBase):
+    __tablename__ = 'destinations'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    destination_id_id_num = Column(String(50))
+    destination_id_id_str = Column(String(32))
+    destination_id_delete = Column(Integer)
+    destination_id_delete_occurred_date = Column(DateTime(timezone=False))
+    destination_id_delete_effective_date = Column(DateTime(timezone=False))
+    destination_code = Column(String(50))
+    destination_code_date_collected = Column(DateTime(timezone=False))
+    destination_code_date_effective = Column(DateTime(timezone=False))        
+    destination_code_data_collection_stage = Column(String(50))
+    destination_other = Column(String(50))
+    destination_other_date_collected = Column(DateTime(timezone=False))
+    destination_other_date_effective = Column(DateTime(timezone=False))        
+    destination_other_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class ReasonsForLeaving(DB.Base, MapBase):
+    __tablename__ = 'reasons_for_leaving'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_participation_index_id = Column(Integer, ForeignKey('site_service_participation.id')) 
+    reason_for_leaving_id_id_num = Column(String(50))
+    reason_for_leaving_id_id_str = Column(String(32))
+    reason_for_leaving_id_delete = Column(Integer)
+    reason_for_leaving_id_delete_occurred_date = Column(DateTime(timezone=False))
+    reason_for_leaving_id_delete_effective_date = Column(DateTime(timezone=False))
+    reason_for_leaving = Column(String(50))
+    reason_for_leaving_date_collected = Column(DateTime(timezone=False))
+    reason_for_leaving_date_effective = Column(DateTime(timezone=False))        
+    reason_for_leaving_data_collection_stage = Column(String(50))
+    reason_for_leaving_other = Column(String(50))
+    reason_for_leaving_other_date_collected = Column(DateTime(timezone=False))
+    reason_for_leaving_other_date_effective = Column(DateTime(timezone=False))        
+    reason_for_leaving_other_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class DevelopmentalDisability(DB.Base, MapBase):
+    __tablename__ = 'developmental_disability'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    has_developmental_disability = Column(String(50))
+    has_developmental_disability_date_collected = Column(DateTime(timezone=False))
+    has_developmental_disability_date_effective = Column(DateTime(timezone=False))        
+    has_developmental_disability_data_collection_stage = Column(String(50))
+    receive_developmental_disability = Column(String(50))
+    receive_developmental_disability_date_collected = Column(DateTime(timezone=False))
+    receive_developmental_disability_date_effective = Column(DateTime(timezone=False))        
+    receive_developmental_disability_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class DisablingCondition(DB.Base, MapBase):
+    __tablename__ = 'disabling_condition'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    disabling_condition = Column(String(50))
+    disabling_condition_date_collected = Column(DateTime(timezone=False))
+    disabling_condition_date_effective = Column(DateTime(timezone=False))        
+    disabling_condition_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class DocumentsRequired(DB.Base, MapBase):
+    __tablename__ = 'documents_required'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    documents_required = Column(String(50))
+    description = Column(String(50))
+    useexisting = True
+    
+ 
+class ResidencyRequirements(DB.Base, MapBase):
+    __tablename__ = 'residency_requirements'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    residency_requirements = Column(String(50))
+    useexisting = True
+    
+ 
+class DomesticViolence(DB.Base, MapBase):
+    __tablename__ = 'domestic_violence'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    domestic_violence_survivor = Column(String(50))
+    domestic_violence_survivor_date_collected = Column(DateTime(timezone=False))
+    domestic_violence_survivor_date_effective = Column(DateTime(timezone=False))        
+    domestic_violence_survivor_data_collection_stage = Column(String(50))
+    dv_occurred = Column(String(50))
+    dv_occurred_date_collected = Column(DateTime(timezone=False))
+    dv_occurred_date_effective = Column(DateTime(timezone=False))        
+    dv_occurred_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Email(DB.Base, MapBase):
+    __tablename__ = 'email'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    contact_index_id = Column(Integer, ForeignKey(Contact.id)) 
+    resource_info_index_id = Column(Integer, ForeignKey('resource_info.id')) 
+    site_index_id = Column(Integer, ForeignKey('site.id')) 
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    address = Column(String(100))
+    note = Column(String(50))
+    person_email = Column(String(50))
+    person_email_date_collected = Column(DateTime(timezone=False))
+    person_email_date_effective = Column(DateTime(timezone=False))        
+    person_email_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Seasonal(DB.Base, MapBase):
+    __tablename__ = 'seasonal'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    description = Column(String(50))
+    start_date = Column(String(50))
+    end_date = Column(String(50))
+    useexisting = True
+    
+ 
+class Employment(DB.Base, MapBase):
+    __tablename__ = 'employment'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    employment_id_id_num = Column(String(50))
+    employment_id_id_str = Column(String(32))
+    employment_id_id_delete = Column(Integer)
+    employment_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    employment_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    currently_employed = Column(String(50))
+    currently_employed_date_collected = Column(DateTime(timezone=False))
+    currently_employed_date_effective = Column(DateTime(timezone=False))        
+    currently_employed_data_collection_stage = Column(String(50))
+    hours_worked_last_week = Column(String(50))
+    hours_worked_last_week_date_collected = Column(DateTime(timezone=False))
+    hours_worked_last_week_date_effective = Column(DateTime(timezone=False))        
+    hours_worked_last_week_data_collection_stage = Column(String(50))
+    employment_tenure = Column(String(50))
+    employment_tenure_date_collected = Column(DateTime(timezone=False))
+    employment_tenure_date_effective = Column(DateTime(timezone=False))        
+    employment_tenure_data_collection_stage = Column(String(50))
+    looking_for_work = Column(String(50))
+    looking_for_work_date_collected = Column(DateTime(timezone=False))
+    looking_for_work_date_effective = Column(DateTime(timezone=False))        
+    looking_for_work_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class EngagedDate(DB.Base, MapBase):
+    __tablename__ = 'engaged_date'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    engaged_date = Column(DateTime(timezone=False))
+    engaged_date_date_collected = Column(DateTime(timezone=False))        
+    engaged_date_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class ServiceEventNotes(DB.Base, MapBase):
+    __tablename__ = 'service_event_notes'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    service_event_index_id = Column(Integer, ForeignKey('service_event.id')) 
+    note_id_id_num = Column(String(50))
+    note_id_id_str = Column(String(32))
+    note_delete = Column(Integer)
+    note_delete_occurred_date = Column(DateTime(timezone=False))
+    note_delete_effective_date = Column(DateTime(timezone=False))
+    note_text = Column(String(255))
+    note_text_date_collected = Column(DateTime(timezone=False))
+    note_text_date_effective = Column(DateTime(timezone=False))        
+    note_text_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class FamilyRequirements(DB.Base, MapBase):
+    __tablename__ = 'family_requirements'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    family_requirements = Column(String(50))
+    useexisting = True
+    
+ 
+class ServiceGroup(DB.Base, MapBase):
+    __tablename__ = 'service_group'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    key = Column(String(50))
+    name = Column(String(50))
+    program_name = Column(String(50))
+    useexisting = True
+    
+ 
+class GeographicAreaServed(DB.Base, MapBase):
+    __tablename__ = 'geographic_area_served'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    zipcode = Column(String(50))
+    census_track = Column(String(50))
+    city = Column(String(50))
+    county = Column(String(50))
+    state = Column(String(50))
+    country = Column(String(50))
+    description = Column(String(50))
+    useexisting = True
+    
+ 
+class HealthStatus(DB.Base, MapBase):
+    __tablename__ = 'health_status'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    health_status = Column(String(50))
+    health_status_date_collected = Column(DateTime(timezone=False))
+    health_status_date_effective = Column(DateTime(timezone=False))        
+    health_status_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class HighestSchoolLevel(DB.Base, MapBase):
+    __tablename__ = 'highest_school_level'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    highest_school_level = Column(String(50))
+    highest_school_level_date_collected = Column(DateTime(timezone=False))
+    highest_school_level_date_effective = Column(DateTime(timezone=False))        
+    highest_school_level_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class HivAidsStatus(DB.Base, MapBase):
+    __tablename__ = 'hiv_aids_status'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    has_hiv_aids = Column(String(50))
+    has_hiv_aids_date_collected = Column(DateTime(timezone=False))
+    has_hiv_aids_date_effective = Column(DateTime(timezone=False))        
+    has_hiv_aids_data_collection_stage = Column(String(50))
+    receive_hiv_aids_services = Column(String(50))
+    receive_hiv_aids_services_date_collected = Column(DateTime(timezone=False))
+    receive_hiv_aids_services_date_effective = Column(DateTime(timezone=False))        
+    receive_hiv_aids_services_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class SpatialLocation(DB.Base, MapBase):
+    __tablename__ = 'spatial_location'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    description = Column(String(50))
+    datum = Column(String(50))
+    latitude = Column(String(50))
+    longitude = Column(String(50))
+    useexisting = True
+    
+ 
+class HmisAsset(DB.Base, MapBase):
+    __tablename__ = 'hmis_asset'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id')) 
+    asset_id_id_num = Column(String(50))
+    asset_id_id_str = Column(String(32))
+    asset_id_delete = Column(Integer)
+    asset_id_delete_occurred_date = Column(DateTime(timezone=False))
+    asset_id_delete_effective_date = Column(DateTime(timezone=False))
+    asset_count = Column(String(50))
+    asset_count_bed_availability = Column(String(50))
+    asset_count_bed_type = Column(String(50))
+    asset_count_bed_individual_family_type = Column(String(50))
+    asset_count_chronic_homeless_bed = Column(String(50))
+    asset_count_domestic_violence_shelter_bed = Column(String(50))
+    asset_count_household_type = Column(String(50))
+    asset_type = Column(String(50))
+    asset_effective_period_start_date = Column(DateTime(timezone=False))
+    asset_effective_period_end_date = Column(DateTime(timezone=False))
+    asset_recorded_date = Column(DateTime(timezone=False))
+    useexisting = True
+    
+ 
+class SubstanceAbuseProblem(DB.Base, MapBase):
+    __tablename__ = 'substance_abuse_problem'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    has_substance_abuse_problem = Column(String(50))
+    has_substance_abuse_problem_date_collected = Column(DateTime(timezone=False))
+    has_substance_abuse_problem_date_effective = Column(DateTime(timezone=False))        
+    has_substance_abuse_problem_data_collection_stage = Column(String(50))
+    substance_abuse_indefinite = Column(String(50))
+    substance_abuse_indefinite_date_collected = Column(DateTime(timezone=False))
+    substance_abuse_indefinite_date_effective = Column(DateTime(timezone=False))        
+    substance_abuse_indefinite_data_collection_stage = Column(String(50))
+    receive_substance_abuse_services = Column(String(50))
+    receive_substance_abuse_services_date_collected = Column(DateTime(timezone=False))
+    receive_substance_abuse_services_date_effective = Column(DateTime(timezone=False))        
+    receive_substance_abuse_services_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class HousingStatus(DB.Base, MapBase):
+    __tablename__ = 'housing_status'        
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    housing_status = Column(String(50))
+    housing_status_date_collected = Column(DateTime(timezone=False))
+    housing_status_date_effective = Column(DateTime(timezone=False))        
+    housing_status_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Taxonomy(DB.Base, MapBase):
+    __tablename__ = 'taxonomy'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    need_index_id = Column(Integer, ForeignKey('need.id')) 
+    code = Column(String(50))
+    useexisting = True
+    
+ 
+class HudChronicHomeless(DB.Base, MapBase):
+    __tablename__ = 'hud_chronic_homeless'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    hud_chronic_homeless = Column(String(50))
+    hud_chronic_homeless_date_collected = Column(DateTime(timezone=False))
+    hud_chronic_homeless_date_effective = Column(DateTime(timezone=False))        
+    hud_chronic_homeless_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class TimeOpen(DB.Base, MapBase):
+    __tablename__ = 'time_open'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id')) 
+    languages_index_id = Column(Integer, ForeignKey('languages.id')) 
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    notes = Column(String(50))
+    useexisting = True
+    
+ 
+class TimeOpenDays(DB.Base, MapBase):
+    __tablename__ = 'time_open_days'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    time_open_index_id = Column(Integer, ForeignKey(TimeOpen.id)) 
+    day_of_week = Column(String(50))
+    from_time = Column(String(50))
+    to_time = Column(String(50))
+    useexisting = True
+    
+ 
+class Url(DB.Base, MapBase):
+    __tablename__ = 'url'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    agency_index_id = Column(Integer, ForeignKey('agency.id')) 
+    site_index_id = Column(Integer, ForeignKey('site.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    address = Column(String(50))
+    note = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranMilitaryBranches(DB.Base, MapBase):
+    __tablename__ = 'veteran_military_branches'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    military_branch_id_id_num = Column(String(50))
+    military_branch_id_id_str = Column(String(32))
+    military_branch_id_id_delete = Column(Integer)
+    military_branch_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    military_branch_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    discharge_status = Column(String(50))
+    discharge_status_date_collected = Column(DateTime(timezone=False))
+    discharge_status_date_effective = Column(DateTime(timezone=False))        
+    discharge_status_data_collection_stage = Column(String(50))
+    discharge_status_other = Column(String(50))
+    discharge_status_other_date_collected = Column(DateTime(timezone=False))
+    discharge_status_other_date_effective = Column(DateTime(timezone=False))        
+    discharge_status_other_data_collection_stage = Column(String(50))
+    military_branch = Column(String(50))
+    military_branch_date_collected = Column(DateTime(timezone=False))
+    military_branch_date_effective = Column(DateTime(timezone=False))        
+    military_branch_data_collection_stage = Column(String(50))
+    military_branch_other = Column(String(50))
+    military_branch_other_date_collected = Column(DateTime(timezone=False))
+    military_branch_other_date_effective = Column(DateTime(timezone=False))        
+    military_branch_other_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class IncomeLast30Days(DB.Base, MapBase):
+    __tablename__ = 'income_last_30_days'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    income_last_30_days = Column(String(50))
+    income_last_30_days_date_collected = Column(DateTime(timezone=False))
+    income_last_30_days_date_effective = Column(DateTime(timezone=False))        
+    income_last_30_days_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranMilitaryServiceDuration(DB.Base, MapBase):
+    __tablename__ = 'veteran_military_service_duration'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    military_service_duration = Column(String(50))
+    military_service_duration_date_collected = Column(DateTime(timezone=False))
+    military_service_duration_date_effective = Column(DateTime(timezone=False))        
+    military_service_duration_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class IncomeRequirements(DB.Base, MapBase):
+    __tablename__ = 'income_requirements'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
+    income_requirements = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranServedInWarZone(DB.Base, MapBase):
+    __tablename__ = 'veteran_served_in_war_zone'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    served_in_war_zone = Column(String(50))
+    served_in_war_zone_date_collected = Column(DateTime(timezone=False))
+    served_in_war_zone_date_effective = Column(DateTime(timezone=False))        
+    served_in_war_zone_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class IncomeTotalMonthly(DB.Base, MapBase):
+    __tablename__ = 'income_total_monthly'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    income_total_monthly = Column(String(50))
+    income_total_monthly_date_collected = Column(DateTime(timezone=False))
+    income_total_monthly_date_effective = Column(DateTime(timezone=False))        
+    income_total_monthly_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranServiceEra(DB.Base, MapBase):
+    __tablename__ = 'veteran_service_era'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    service_era = Column(String(50))
+    service_era_date_collected = Column(DateTime(timezone=False))
+    service_era_date_effective = Column(DateTime(timezone=False))        
+    service_era_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranVeteranStatus(DB.Base, MapBase):
+    __tablename__ = 'veteran_veteran_status'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    veteran_status = Column(String(50))
+    veteran_status_date_collected = Column(DateTime(timezone=False))
+    veteran_status_date_effective = Column(DateTime(timezone=False))        
+    veteran_status_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+ 
+class Languages(DB.Base, MapBase):
+    __tablename__ = 'languages'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_index_id = Column(Integer, ForeignKey('site.id')) 
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    agency_location_index_id = Column(Integer, ForeignKey('agency_location.id'))
+    name = Column(String(50))
+    notes = Column(String(50))
+    useexisting = True
+    
+ 
+class VeteranWarzonesServed(DB.Base, MapBase):
+    __tablename__ = 'veteran_warzones_served'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    war_zone_id_id_num = Column(String(50))
+    war_zone_id_id_str = Column(String(32))
+    war_zone_id_id_delete = Column(Integer)
+    war_zone_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    war_zone_id_id_delete_effective_date = Column(DateTime(timezone=False))
+    months_in_war_zone = Column(String(50))
+    months_in_war_zone_date_collected = Column(DateTime(timezone=False))
+    months_in_war_zone_date_effective = Column(DateTime(timezone=False))        
+    months_in_war_zone_data_collection_stage = Column(String(50))
+    received_fire = Column(String(50))
+    received_fire_date_collected = Column(DateTime(timezone=False))
+    received_fire_date_effective = Column(DateTime(timezone=False))        
+    received_fire_data_collection_stage = Column(String(50))
+    war_zone = Column(String(50))
+    war_zone_date_collected = Column(DateTime(timezone=False))
+    war_zone_date_effective = Column(DateTime(timezone=False))        
+    war_zone_data_collection_stage = Column(String(50))
+    war_zone_other = Column(String(50))
+    war_zone_other_date_collected = Column(DateTime(timezone=False))
+    war_zone_other_date_effective = Column(DateTime(timezone=False))        
+    war_zone_other_data_collection_stage = Column(String(50))                
+    useexisting = True
+    
+ 
+class LengthOfStayAtPriorResidence(DB.Base, MapBase):
+    __tablename__ = 'length_of_stay_at_prior_residence'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    length_of_stay_at_prior_residence = Column(String(50))
+    length_of_stay_at_prior_residence_date_collected = Column(DateTime(timezone=False))
+    length_of_stay_at_prior_residence_date_effective = Column(DateTime(timezone=False))        
+    length_of_stay_at_prior_residence_data_collection_stage = Column(String(50))
+    useexisting = True
+    
+   
     def __repr__(self):
         field_dict = vars(self)
         out = ''
@@ -2948,374 +1793,300 @@ class BaseObject(object):
             return "<%s(%s)>" % (self.__class__.__name__, out)
         else:
             return ''
-
-class Agency(BaseObject):
-    pass
-
-class AgencyChild(BaseObject):
-    pass
-
-# SBB20100914 Missing..
-class AgencyLocation(BaseObject):
-    pass
-
-class AgencyService(BaseObject):
-    pass
-
-class AgeRequirements(BaseObject):
-    pass
-
-class AidRequirements(BaseObject):
-    pass
-
-class Aka(BaseObject):
-    pass
-
-class ApplicationProcess(BaseObject):
-    pass
-
-class AssignmentPeriod(BaseObject):
-    pass
-
-class Assignment(BaseObject):
-    pass
-
-class ChildEnrollmentStatus(BaseObject):
-    pass
-
-class ChildEnrollmentStatusBarrier(BaseObject):
-    pass
-
-class ChronicHealthCondition(BaseObject):
-    pass
-
-class Contact(BaseObject):
-    pass
-
-class ContactMade(BaseObject):
-    pass
-
-class CrossStreet(BaseObject):
-    pass
-
-class CurrentlyInSchool(BaseObject):
-    pass
-
-class Degree(BaseObject):
-    pass
-
-class DegreeCode(BaseObject):
-    pass
-
-class Destinations(BaseObject):
-    pass
-
-class DevelopmentalDisability(BaseObject):
-    pass
-
-class DisablingCondition(BaseObject):
-    pass
-
-class DocumentsRequired(BaseObject):
-    pass
-
-class DomesticViolence(BaseObject):
-    pass
-
-class DrugHistory(BaseObject):
-    pass
-
-class Email(BaseObject):
-    pass
-
-class EmergencyContact(BaseObject):
-    pass
-
-class Employment(BaseObject):
-    pass
-
-class EngagedDate(BaseObject):
-    pass
-
-class Export(BaseObject):
-    pass
-
-class Report(BaseObject):
-    pass
-
-class FamilyRequirements(BaseObject):
-    pass
-
-class FosterChildEver(BaseObject):
-    pass
-
-class FundingSource(BaseObject):
-    pass
-
-class GeographicAreaServed(BaseObject):
-    pass
-
-class HealthStatus(BaseObject):
-    pass
-
-class HighestSchoolLevel(BaseObject):
-    pass
-
-class HivAidsStatus(BaseObject):
-    pass
-
-class HmisAsset(BaseObject):
-    pass
-
-class Household(BaseObject):
-    pass
-
-class HousingStatus(BaseObject):
-    pass
-
-class HUDHomelessEpisodes(BaseObject):
-    pass
-
-class HudChronicHomeless(BaseObject):
-    pass
-
-class IncomeAndSources(BaseObject):
-    pass
-
-class IncomeLast30Days(BaseObject):
-    pass
-
-class IncomeRequirements(BaseObject):
-    pass
-
-class IncomeTotalMonthly(BaseObject):
-    pass
-
-class Inventory(BaseObject):
-    pass
-
-class Languages(BaseObject):
-    pass
-
-class LengthOfStayAtPriorResidence(BaseObject):
-    pass
-
-class LicenseAccreditation(BaseObject):
-    pass
-
-class Members(BaseObject):
-    pass
-
-class MentalHealthProblem(BaseObject):
-    pass
-
-class Need(BaseObject):
-    pass
-
-class NonCashBenefits(BaseObject):
-    pass
-
-class NonCashBenefitsLast30Days(BaseObject):
-    pass
-
-class OtherNames(BaseObject):
-    pass
-
-class OtherAddress(BaseObject):
-    pass
-
-class OtherRequirements(BaseObject):
-    pass
-
-class Person(BaseObject):
-    pass
-
-class PersonAddress(BaseObject):
-    pass
-
-class PersonHistorical(BaseObject):
-    pass
-
-class Phone(BaseObject):
-    pass
-
-class PhysicalDisability(BaseObject):
-    pass
-
-class PitCounts(BaseObject):
-    pass
-
-class PitCountSet(BaseObject):
-    pass
-
-class Pregnancy(BaseObject):
-    pass
-
-class PriorResidence(BaseObject):
-    pass
-
-class Races(BaseObject):
-    pass
-
-class ReasonsForLeaving(BaseObject):
-    pass
-
-class Region(BaseObject):
-    pass
-
-class ReleaseOfInformation(BaseObject):
-    pass
-
-class ReleaseOfInfo(BaseObject):
-    pass
-
-class ResidencyRequirements(BaseObject):
-    pass
-
-# SBB20100524 Adding object to manage dedup linking.
-class DeduplicationLink(BaseObject):
-    pass
-
-class SourceExportLink(BaseObject):
-    pass
-
-class ResourceInfo(BaseObject):
-    pass
-
-class Seasonal(BaseObject):
-    pass
-
-class Service(BaseObject):
-    pass
-
-class ServiceEvent(BaseObject):
-    pass
-
-class ServiceEventNotes(BaseObject):
-    pass
-
-class ServiceGroup(BaseObject):
-    pass
-
-class Site(BaseObject):
-    pass
-
-class SiteService(BaseObject):
-    pass
-
-class SiteServiceParticipation(BaseObject):
-    pass
-
-class Source(BaseObject):
-    pass
-
-class SpatialLocation(BaseObject):
-    pass
-
-class SubstanceAbuseProblem(BaseObject):
-    pass
-
-class SystemConfiguration(BaseObject):
-    pass
-
-class Taxonomy(BaseObject):
-    pass
-
-class TimeOpen(BaseObject):
-    pass
-
-class TimeOpenDays(BaseObject):
-    pass
-
-class Url(BaseObject):
-    pass
-
-class Veteran(BaseObject):
-    pass
-
-class VeteranMilitaryBranches(BaseObject):
-    pass
-
-class VeteranMilitaryServiceDuration(BaseObject):
-    pass
-
-class VeteranServedInWarZone(BaseObject):
-    pass
-
-class VeteranServiceEra(BaseObject):
-    pass
-
-class VeteranVeteranStatus(BaseObject):
-    pass
-
-class VeteranWarzonesServed(BaseObject):
-    pass
-
-class VocationalTraining(BaseObject):    
-    pass
-  
-def main(argv=None):  
-    if argv is None:
-        argv = sys.argv
+ 
+class VocationalTraining(DB.Base, MapBase):
+    __tablename__ = 'vocational_training'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    vocational_training = Column(String(50))
+    vocational_training_date_collected = Column(DateTime(timezone=False))
+    vocational_training_date_effective = Column(DateTime(timezone=False))        
+    vocational_training_data_collection_stage = Column(String(50))
+    useexisting = True
     
-    if settings.DB_PASSWD == "":
-        settings.DB_PASSWD = raw_input("Please enter your password: ")
+ 
+class Export(DB.Base, MapBase):
+    __tablename__ = 'export'
+    id = Column(Integer, primary_key=True)
+    export_id = Column(String(50), primary_key=False, unique=False)
+    export_id_date_collected = Column(DateTime(timezone=False))
+    export_date = Column(DateTime(timezone=False))
+    export_date_date_collected = Column(DateTime(timezone=False))
+    export_period_start_date = Column(DateTime(timezone=False))
+    export_period_start_date_date_collected = Column(DateTime(timezone=False))
+    export_period_end_date = Column(DateTime(timezone=False))
+    export_period_end_date_date_collected = Column(DateTime(timezone=False))
+    export_software_vendor = Column(String(50))
+    export_software_vendor_date_collected = Column(DateTime(timezone=False))
+    export_software_version = Column(String(10))
+    export_software_version_date_collected = Column(DateTime(timezone=False))
+    #HUD 3.0
+    export_id_id_num = Column(String(50))
+    export_id_id_str = Column(String(50))
+    export_id_delete_occurred_date = Column(DateTime(timezone=False))
+    export_id_delete_effective_date = Column(DateTime(timezone=False))
+    export_id_delete = Column(String(32))
+    fk_export_to_person = relationship('Person', backref='fk_person_to_export')
+    #$fk_export_to_household = relationship('Household', backref='fk_household_to_export')
+    # 'fk_export_to_database': relation(Source, backref='fk_database_to_export')
+    useexisting = True
+    
+ 
+class Report(DB.Base, MapBase):
+    __tablename__ = 'report' 
+    report_id = Column(String(50), primary_key=True, unique=True) 
+    report_id_date_collected = Column(DateTime(timezone=False))
+    report_date = Column(DateTime(timezone=False))
+    report_date_date_collected = Column(DateTime(timezone=False))
+    report_period_start_date = Column(DateTime(timezone=False))
+    report_period_start_date_date_collected = Column(DateTime(timezone=False))
+    report_period_end_date = Column(DateTime(timezone=False))
+    report_period_end_date_date_collected = Column(DateTime(timezone=False))
+    report_software_vendor = Column(String(50))
+    report_software_vendor_date_collected = Column(DateTime(timezone=False))
+    report_software_version = Column(String(10))
+    report_software_version_date_collected = Column(DateTime(timezone=False))
+    #HUD 3.0
+    report_id_id_num = Column(String(50))
+    report_id_id_str = Column(String(50))
+    report_id_id_delete_occurred_date = Column(DateTime(timezone=False))
+    report_id_id_delete_effective_date = Column(DateTime(timezone=False))       
+    report_id_id_delete = Column(String(32)) 
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    #fk_report_to_person = relationship('Person', backref='fk_person_to_report')
+    #fk_report_to_household = relationship('Household', backref='fk_household_to_report')
+    #fk_report_to_database = relationship('Source', backref='fk_database_to_report')
+    
+    useexisting = True
+     
+class FosterChildEver(DB.Base, MapBase):
+    __tablename__ = 'foster_child_ever'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
+    foster_child_ever = Column(Integer(2))
+    foster_child_ever_date_collected = Column(DateTime(timezone=False))
+    foster_child_ever_date_effective = Column(DateTime(timezone=False))        
+    useexisting = True
+    
+ 
+class Household(DB.Base, MapBase):
+    __tablename__ = 'household'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_id = Column(String(50), ForeignKey('report.report_id'))
+    household_id_num = Column(String(32))
+    household_id_num_date_collected = Column(DateTime(timezone=False))
+    household_id_str = Column(String(32))
+    household_id_str_date_collected = Column(DateTime(timezone=False))
+    head_of_household_id_unhashed = Column(String(32))
+    head_of_household_id_unhashed_date_collected = Column(DateTime(timezone=False))
+    head_of_household_id_hashed = Column(String(32))
+    head_of_household_id_hashed_date_collected = Column(DateTime(timezone=False))
+    reported = Column(Boolean)
+    useexisting = True
+    fk_household_to_members = relationship('Members', backref='fk_members_to_household')
+    
+ 
+class Person(DB.Base, MapBase):
+    __tablename__ = 'person' 
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    report_id = Column(String(50), ForeignKey('report.report_id'))
+    person_id_hashed = Column(String(32))
+    person_id_unhashed = Column(String(50))
+    person_id_date_collected = Column(DateTime(timezone=False))
+    person_date_of_birth_hashed = Column(String(32))
+    person_date_of_birth_hashed_date_collected = Column(DateTime(timezone=False))
+    person_date_of_birth_unhashed = Column(Date(timezone=False))
+    person_date_of_birth_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_ethnicity_hashed = Column(String(32))
+    person_ethnicity_unhashed = Column(Integer(2))
+    person_ethnicity_hashed_date_collected = Column(DateTime(timezone=False))
+    person_ethnicity_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_gender_hashed = Column(String(32))
+    person_gender_unhashed = Column(Integer(2))
+    person_gender_hashed_date_collected = Column(DateTime(timezone=False))
+    person_gender_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_gender_unhashed_date_effective = Column(DateTime(timezone=False))
+    person_gender_hashed_date_effective = Column(DateTime(timezone=False))
+    person_legal_first_name_hashed = Column(String(32))
+    person_legal_first_name_unhashed = Column(String(50))
+    person_legal_first_name_hashed_date_collected = Column(DateTime(timezone=False))
+    person_legal_first_name_hashed_date_effective = Column(DateTime(timezone=False))
+    person_legal_first_name_unhashed_date_collected = Column(DateTime(timezone=False))        
+    person_legal_last_name_hashed = Column(String(32))
+    person_legal_last_name_unhashed = Column(String(50))
+    person_legal_last_name_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_legal_last_name_unhashed_date_effective = Column(DateTime(timezone=False))
+    person_legal_last_name_hashed_date_collected = Column(DateTime(timezone=False))        
+    person_legal_middle_name_hashed = Column(String(32))
+    person_legal_middle_name_unhashed = Column(String(50))
+    person_legal_middle_name_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_legal_middle_name_hashed_date_collected = Column(DateTime(timezone=False))
+    person_legal_suffix_hashed = Column(String(32))
+    person_legal_suffix_unhashed = Column(String(50))
+    person_legal_suffix_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_legal_suffix_hashed_date_collected = Column(DateTime(timezone=False))
+    #OtherNames is in its own table as there can be multiple OtherNames
+    #Race is in its own table as there can be multiple races
+    person_social_security_number_hashed = Column(String(32))
+    person_social_security_number_unhashed = Column(String(9))
+    person_social_security_number_unhashed_date_collected = Column(DateTime(timezone=False))
+    person_social_security_number_hashed_date_effective = Column(DateTime(timezone=False))
+    person_social_security_number_unhashed_date_effective = Column(DateTime(timezone=False))
+    person_social_security_number_hashed_date_collected = Column(DateTime(timezone=False))
+    person_social_security_number_quality_code = Column(String(2))
+    person_social_security_number_quality_code_date_collected = Column(DateTime(timezone=False))
+    person_social_security_number_quality_code_date_effective = Column(DateTime(timezone=False))  
+    #PersonHistorical has its own table
+    #SiteServiceParticipation has its own table
+    #ReleaseOfInformation has its own table
+    reported = Column(Boolean)
+    # HUD 3.0
+    person_id_id_num = Column(String(50))
+    person_id_id_str = Column(String(50))
+    person_id_delete = Column(String(32))
+    person_id_delete_occurred_date = Column(DateTime(timezone=False))
+    person_id_delete_effective_date = Column(DateTime(timezone=False))
+    person_date_of_birth_type = Column(Integer(2))
+    person_date_of_birth_type_date_collected = Column(DateTime(timezone=False))
+    fk_person_to_other_names = relationship('OtherNames', backref='fk_other_names_to_person')
+    site_service_participations = relationship("SiteServiceParticipation", backref="person")
+    fk_person_to_person_historical = relationship('PersonHistorical', backref='fk_person_historical_to_person')
+    fk_person_to_release_of_information = relationship('ReleaseOfInformation', backref='fk_release_of_information_to_person')
+    fk_person_to_races = relationship('Races', backref='fk_races_to_person')
+    useexisting = True
+    
+#class DeduplicationLink(DB.Base, MapBase):
+    
+ 
+class ServiceEvent(DB.Base, MapBase):
+    __tablename__ = 'service_event'
+    id = Column(Integer, primary_key=True)
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))
+    household_index_id = Column(Integer, ForeignKey('household.id'))
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    need_index_id = Column(Integer, ForeignKey('need.id'))
+    site_service_participation_index_id = Column(Integer, ForeignKey('site_service_participation.id'))
+    service_event_idid_num = Column(String(32))
+    service_event_idid_num_date_collected = Column(DateTime(timezone=False))
+    service_event_idid_str = Column(String(32))
+    service_event_idid_str_date_collected = Column(DateTime(timezone=False))
+    household_idid_num = Column(String(32))
+    is_referral = Column(String(32))
+    is_referral_date_collected = Column(DateTime(timezone=False))
+    quantity_of_service = Column(String(32))
+    quantity_of_service_date_collected = Column(DateTime(timezone=False))
+    quantity_of_service_measure = Column(String(32))
+    quantity_of_service_measure_date_collected = Column(DateTime(timezone=False))
+    service_airs_code = Column(String(32))
+    service_airs_code_date_collected = Column(DateTime(timezone=False))
+    service_period_start_date = Column(DateTime(timezone=False))
+    service_period_start_date_date_collected = Column(DateTime(timezone=False))
+    service_period_end_date = Column(DateTime(timezone=False))
+    service_period_end_date_date_collected = Column(DateTime(timezone=False))
+    service_unit = Column(String(32))
+    service_unit_date_collected = Column(DateTime(timezone=False))
+    type_of_service = Column(String(32))
+    type_of_service_date_collected = Column(DateTime(timezone=False))
+    type_of_service_other = Column(String(32))
+    type_of_service_other_date_collected = Column(DateTime(timezone=False))
+    type_of_service_par = Column(Integer(2))
+    #adding a reported column.  Hopefully this will append the column to the table def.
+    reported = Column(Boolean)
+    service_event_id_delete = Column(String(32))
+    service_event_ind_fam = Column(Integer)
+    site_service_id = Column(String(50))
+    hmis_service_event_code_type_of_service = Column(String(50))
+    hmis_service_event_code_type_of_service_other = Column(String(50))
+    hprp_financial_assistance_service_event_code = Column(String(50))
+    hprp_relocation_stabilization_service_event_code = Column(String(50))
+    service_event_id_delete_occurred_date = Column(DateTime(timezone=False))
+    service_event_id_delete_effective_date = Column(DateTime(timezone=False))
+    service_event_provision_date = Column(DateTime(timezone=False))
+    service_event_recorded_date = Column(DateTime(timezone=False))
+    useexisting = True
+    
+class Source(DB.Base, MapBase):
+    __tablename__ = 'source'
+    id = Column(Integer, primary_key=True)
+    report_id = Column(String(50), ForeignKey('report.report_id')) 
+    source_id = Column(String(50)) 
+    source_id_date_collected = Column(DateTime(timezone=False))
+    source_email = Column(String(255))
+    source_email_date_collected = Column(DateTime(timezone=False))
+    source_contact_extension = Column(String(10))
+    source_contact_extension_date_collected = Column(DateTime(timezone=False))
+    source_contact_first = Column(String(20))
+    source_contact_first_date_collected = Column(DateTime(timezone=False))
+    source_contact_last = Column(String(20))
+    source_contact_last_date_collected = Column(DateTime(timezone=False))
+    source_contact_phone = Column(String(20))
+    source_contact_phone_date_collected = Column(DateTime(timezone=False))
+    source_name = Column(String(50))
+    source_name_date_collected = Column(DateTime(timezone=False)) 
+    #HUD 3.0
+    schema_version = Column(String(50))
+    source_id_id_num = Column(String(50))
+    source_id_id_str = Column(String(50))
+    source_id_delete = Column(Integer)
+    source_id_delete_occurred_date = Column(DateTime(timezone=False))
+    source_id_delete_effective_date = Column(DateTime(timezone=False))
+    software_vendor = Column(String(50))
+    software_version = Column(String(50))
+    source_contact_email = Column(String(255))
+    useexisting = True
+    #properties={'fk_source_to_export': relation(Export, backref='fk_export_to_source')})
         
-    #pg_db_engine = create_engine('postgres://%s:%s@localhost:5432/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-    
-    mappedObjects = DatabaseObjects()
-    
-    # Query Exports for Data
-    print 'Export'
-    for export in mappedObjects.queryDB(Export):
-        print export.export_software_vendor
-        dbo = export.fk_export_to_database
-        dir(dbo)
-    
-    # Person records
-    print 'All Persons'
-    print '-----------------------------------'
-    for field in mappedObjects.queryDB(Person):
-        print "New Person"
-        print '------'
-        print field.person_date_of_birth_unhashed
-        print field.person_legal_first_name_unhashed
-        print field.person_legal_last_name_unhashed
-        print '------'
-        
-    print 'Person: George Washington'
-    print '-----------------------------------'
-    for person in mappedObjects.queryDB(Person).filter(Person.person_legal_first_name_unhashed=='George'):
-        print person.person_legal_first_name_unhashed
-    print '-----------------------------------'
-        
-    # All Persons
-    query = mappedObjects.queryDB(Person).filter("export_index_id='1'")
-    print query.count()
-    query = mappedObjects.queryDB(Person).filter("export_index_id='1'").first()
-    print query
-    
-    # get their PersonHistorical records
-    print 'Person: George Washington'
-    print '-----------------------------------'
-    for person in mappedObjects.queryDB(Person).filter(Person.person_legal_first_name_unhashed=='George'):
-        print person.person_legal_first_name_unhashed
-        person.reported = True
-        person.person_legal_first_name_unhashed = "user"
-        mappedObjects.session().commit()
-        print 'Person: George Washington (user)'
-        print '-----------------------------------'
-        print person
-        #print person.person_historical
-        for ph in person.fk_person_to_person_historical:
-            print '-------'
-            print ph.employment_tenure
-            print '-------'
-            for ias in ph.fk_person_historical_to_income_and_sources:
-                print "IAS:Amount: %s" % ias.amount
-    print '-----------------------------------'
+class SystemConfiguration(DB.Base, MapBase):
+    __tablename__ = 'system_configuration_table'
+    id = Column(Integer, primary_key=True)
+    vendor_name = Column(String(50))
+    processing_mode = Column(String(4)) # TEST or PROD
+    source_id = Column(String(50))
+    odbid = Column(Integer)
+    providerid = Column(Integer)
+    userid = Column(Integer)
+    useexisting = True
+
+def test():  
+    import postgresutils
+    utils = postgresutils.Utils()
+    utils.blank_database()  
+    print "instantiating db"
+    db = DB()
+    session = db.Session()
+    db.Base.metadata.create_all(db.pg_db_engine)
+    new = Source(source_id_id_num = 1, source_name='Orange County Corrections')
+    session.add(new)
+    session.commit()
+    print "done"
 
 if __name__ == "__main__":
-    sys.exit(main())             
-            
-            
+    import sys
+    sys.exit(test())    
+
+#The MIT License
+#
+#Copyright (c) 2011, Alexandria Consulting LLC
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in
+#all copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#THE SOFTWARE 

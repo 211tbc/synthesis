@@ -1,6 +1,32 @@
 '''Unit-tests various XML/CSV validation scenarios (called tests also) in 
 selector.py.'''
-from selector import *
+
+"""
+The MIT License
+
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
+from selector import Selector
+from mainprocessor import FileHandler
 import unittest, shutil, os, time
 from threading import Thread
 
@@ -10,11 +36,11 @@ file_to_dir_loc = '/home/eric/Alexandria_Consulting/Suncoast/JFCS/input_xml'
         
 class CreateFile(Thread):
     def __init__(self):
-       Thread.__init__(self)
-       print '\nHi, thread initting, cleaning up first'
-       if os.path.isfile(file_location) is True:
-           print '\ndeleting old version in thread'
-           os.remove(file_location)
+        Thread.__init__(self)
+        print '\nHi, thread initting, cleaning up first'
+        if os.path.isfile(file_location) is True:
+            print '\ndeleting old version in thread'
+            os.remove(file_location)
        
     def run(self):
         print 'hi, thread running'

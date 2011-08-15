@@ -12,7 +12,7 @@ from sqlalchemy.types import DateTime, Date
 
 from sys import version
 from conf import settings
-import clsexceptions
+import exceptions
 import dbobjects
 from writer import Writer
 

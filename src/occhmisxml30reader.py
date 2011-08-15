@@ -5,14 +5,14 @@
 '''
 
 import sys, os
-from synthesis.reader import Reader
+from reader import Reader
 from zope.interface import implements
 from lxml import etree
 from conf import settings
 import dbobjects
-from synthesis import hmisxml30reader
+import hmisxml30reader
 
-class OCCHUDHMISXML30Reader(dbobjects.DatabaseObjects): 
+class OCCHUDHMISXML30Reader: 
     ''' Implements reader interface '''
     implements (Reader) 
 
@@ -23,14 +23,13 @@ class OCCHUDHMISXML30Reader(dbobjects.DatabaseObjects):
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : occ_namespace}
 
 
-    def __init__(self, xml_file):
+    def __init__(self, xml_file, db):
         ''' Put XML file into local object '''
         self.xml_file = xml_file
         #if settings.DEBUG:
         #    print "does self.xml_file exist?", os.path.exists(self.xml_file)
         ''' Instantiate database object '''
-        dbo = dbobjects.DatabaseObjects()
-        self.session = dbo.Session()
+        self.session = db.Session()
 
     def read(self):
         ''' Takes an XML instance file and reads it into memory as a node tree '''
@@ -77,11 +76,11 @@ class OCCHUDHMISXML30Reader(dbobjects.DatabaseObjects):
                                
                 ''' Map elements to database columns '''
                 hmisxml30reader.existence_test_and_add(self, 'schema_version', item.xpath(xpSourceVersion, namespaces = self.nsmap), 'attribute_text')
-                hmisxml30reader.existence_test_and_add(self, 'source_id_id_id_num', item.xpath(xpSourceIDIDNum, namespaces = self.nsmap), 'text')
-                hmisxml30reader.existence_test_and_add(self, 'source_id_id_id_str', item.xpath(xpSourceIDIDStr, namespaces = self.nsmap), 'text')
-                hmisxml30reader.existence_test_and_add(self, 'source_id_id_delete', item.xpath(xpSourceDelete, namespaces = self.nsmap), 'attribute_text')
-                hmisxml30reader.existence_test_and_add(self, 'source_id_id_delete_occurred_date', item.xpath(xpSourceDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
-                hmisxml30reader.existence_test_and_add(self, 'source_id_id_delete_effective', item.xpath(xpSourceDeleteEffective, namespaces = self.nsmap), 'attribute_date')
+                hmisxml30reader.existence_test_and_add(self, 'source_id_id_num', item.xpath(xpSourceIDIDNum, namespaces = self.nsmap), 'text')
+                hmisxml30reader.existence_test_and_add(self, 'source_id_id_str', item.xpath(xpSourceIDIDStr, namespaces = self.nsmap), 'text')
+                hmisxml30reader.existence_test_and_add(self, 'source_id_delete', item.xpath(xpSourceDelete, namespaces = self.nsmap), 'attribute_text')
+                hmisxml30reader.existence_test_and_add(self, 'source_id_delete_occurred_date', item.xpath(xpSourceDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
+                hmisxml30reader.existence_test_and_add(self, 'source_id_delete_effective', item.xpath(xpSourceDeleteEffective, namespaces = self.nsmap), 'attribute_date')
                 hmisxml30reader.existence_test_and_add(self, 'software_vendor', item.xpath(xpSourceSoftwareVendor, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'software_version', item.xpath(xpSourceSoftwareVersion, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'source_contact_email', item.xpath(xpSourceContactEmail, namespaces = self.nsmap), 'text')
@@ -316,8 +315,8 @@ class OCCHUDHMISXML30Reader(dbobjects.DatabaseObjects):
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
-                hmisxml30reader.existence_test_and_add(self, 'person_historical_id_id_num', item.xpath(xpPersonHistoricalIDIDNum, namespaces = self.nsmap), 'text')
-                hmisxml30reader.existence_test_and_add(self, 'person_historical_id_id_str', item.xpath(xpPersonHistoricalIDIDStr, namespaces = self.nsmap), 'text')
+                hmisxml30reader.existence_test_and_add(self, 'person_historical_id_num', item.xpath(xpPersonHistoricalIDIDNum, namespaces = self.nsmap), 'text')
+                hmisxml30reader.existence_test_and_add(self, 'person_historical_id_str', item.xpath(xpPersonHistoricalIDIDStr, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'person_historical_id_delete', item.xpath(xpPersonHistoricalIDDelete, namespaces = self.nsmap), 'attribute_text')
                 hmisxml30reader.existence_test_and_add(self, 'person_historical_id_delete_effective', item.xpath(xpPersonHistoricalIDDeleteEffective, namespaces = self.nsmap), 'attribute_date')
                 hmisxml30reader.existence_test_and_add(self, 'person_historical_id_delete_occurred_date', item.xpath(xpPersonHistoricalIDDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
@@ -423,12 +422,12 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    from synthesis import postgresutils
+    import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "HUD_HMIS_3_0_Instance.xml")
-    inputFile = "/mnt/mariah/HUD_HMIS_XML/HUD_HMIS_Instance-modified-3.0.xml"
+    inputFile = "/mnt/location/HUD_HMIS_XML/HUD_HMIS_Instance-modified-3.0.xml"
     
     if settings.DB_PASSWD == "":
         settings.DB_PASSWD = raw_input("Please enter your password: ")

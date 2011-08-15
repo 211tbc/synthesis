@@ -1,16 +1,18 @@
+'''This module takes a given table in the database and creates a new table based off it.  \
+The new table's records simply link back to multiple records in the original table which are similar.\
+This is a way of unduplicating the original tables which are essentially just log records of all\
+ received data.  We also need a utility which removes duplicate records.'''
+
+class MyClass(object):
+    '''
+    classdocs
+    '''
 
 
-class Borg:
-	''' pseudo singleton
-		Use this as a base class to make a singleton type object.
-		In your __init__ method, do this:
-		Borg.__init__(self)
-	'''
-	_shred_state = {}
-
-	def __init__(self):
-		self.__dict__ = self._shred_state
-		
+    def __init__(self, selfparams):
+        '''
+        Constructor
+        '''
 
 #The MIT License
 #
@@ -33,6 +35,8 @@ class Borg:
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
-
-
-
+#"""
+#'''
+#Created on Jan 31, 2011
+#
+#@author: Eric Jahn

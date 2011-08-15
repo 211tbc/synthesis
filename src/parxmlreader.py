@@ -1,3 +1,27 @@
+"""
+The MIT License
+
+Copyright (c) 2011, Alexandria Consulting LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 '''reads an Operation PARS Extented HMIS XML Document into memory and parses its contents
 storing them into a postgresql database.  This is a log database, so it holds 
 everything and doesn't worry about deduplication.  The only thing it enforces 
@@ -60,7 +84,7 @@ from sqlalchemy.exceptions import IntegrityError
 import dateutil.parser
 #import logging
 from conf import settings
-import clsexceptions
+import exceptions
 import dbobjects as dbobjects
 import fileutils
 from errcatalog import catalog
@@ -79,9 +103,9 @@ class PARXMLReader(dbobjects.DatabaseObjects):
         
         # Validate that we have a valid username & password to access the database
         #if settings.DB_USER == "":
-        #    raise clsexceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
+        #    raise exceptions.DatabaseAuthenticationError(1001, "Invalid user to access database", self.__init__)
         #if settings.DB_PASSWD == "":
-        #    raise clsexceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
+        #    raise exceptions.DatabaseAuthenticationError(1002, "Invalid password to access database", self.__init__)
         #    
         #self.pg_db = create_engine('postgres://%s:%s@localhost:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
         ##self.sqlite_db = create_engine('sqlite:///:memory:', echo=True)
@@ -136,7 +160,7 @@ class PARXMLReader(dbobjects.DatabaseObjects):
         except IntegrityError:
             fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise clsexceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
+            raise exceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 

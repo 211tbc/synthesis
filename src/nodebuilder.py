@@ -1,21 +1,18 @@
-#!/usr/bin/env python
-
 from conf import settings
-import clsexceptions as clsexceptions
-import dbobjects as dbobjects
+import exceptions as exceptions
+import dbobjects
 
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
-from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SVCPOINT406XMLTest, SVCPOINT20XMLTest
+from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest, SvcPoint5XMLTest
 from errcatalog import catalog
 import os
 from queryobject import QueryObject
 from conf import outputConfiguration
-import clspostprocessing
+import postprocessing
 import fileutils
 from emailprocessor import XMLProcessorNotifier
-from datetime import datetime
 import iniutils
 from hmisxml30writer import HMISXMLWriter
 from hmisxml28writer import HMISXML28Writer
@@ -35,12 +32,12 @@ svcptxml20writer_loaded = False
 svcptxml406writer_loaded = False
 jfcsxmlwriter_loaded = False
 
-class NodeBuilder(dbobjects.DatabaseObjects):
+class NodeBuilder():
 
     def __init__(self, queryOptions):
         print "initializing nodebuilder"
         # initialize dbobjects
-        dbobjects.DatabaseObjects()
+    
         
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
         # this should then pull the correct module below and run the process.
@@ -49,35 +46,48 @@ class NodeBuilder(dbobjects.DatabaseObjects):
         
         self.queryOptions = queryOptions
         
-        if generateOutputformat == 'svcpoint406':
-            #from svcpointxml20writer import SVCPOINTXML20Writer
+        if generateOutputformat == 'svcpoint5':
+            #from svcPointXML20writer import SvcPointXML20Writer
             # pick the plug-in to import
             try:
-                from svcpointxml_406_writer import SVCPOINTXMLWriter 
+                from synthesis.svcpointxml5writer import SvcPointXMLWriter
+                svcptxml5writer_loaded = True
+                print "import of Svcpt XML Writer, version 5 was successful"
+            except:
+                print "import of Svcpt XML Writer, version 5 failed"
+                svcptxml5writer_loaded = False
+            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
+            self.validator = SvcPoint5XMLTest()
+        
+        if generateOutputformat == 'svcpoint406':
+            #from svcPointXML20writer import SvcPointXML20Writer
+            # pick the plug-in to import
+            try:
+                from synthesis.svcpointxml406writer import SvcPointXMLWriter
                 svcptxml406writer_loaded = True
                 print "import of Svcpt XML Writer, version 4.06 was successful"
             except:
                 print "import of Svcpt XML Writer, version 4.06 failed"
                 svcptxml406writer_loaded = False
-            self.writer = SVCPOINTXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
-            self.validator = SVCPOINT406XMLTest()
+            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
+            self.validator = SvcPoint406XMLTest()
             
 #        elif generateOutputformat == 'svcpoint20':
-#            #from svcpointxml20writer import SVCPOINTXML20Writer
+#            #from svcPointXML20writer import SvcPointXML20Writer
 #            # pick the plug-in to import
 #            try:
-#                from svcpointxml20writer import SVCPOINTXMLWriter 
+#                from svcPointXML20writer import SvcPointXMLWriter 
 #                svcptxml20writer_loaded = True
 #                print "import of Svcpt XML Writer, version 2.0 was successful"
 #            except:
 #                print "import of Svcpt XML Writer, version 2.0 failed"
 #                svcptxml20writer_loaded = False
-#            self.writer = SVCPOINTXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
+#            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
 #            self.validator = SVCPOINT20XMLTest()
                 
         elif generateOutputformat == 'hmisxml28':
             try:
-                from hmisxml28writer import HMISXML28Writer
+                from hmisxml28writer import HMISXML28Writer#IGNORE:@ImportRedefinition
                 hmisxml28writer_loaded = True
             except:
                 print "import of HMISXMLWriter, version 2.8, failed"
@@ -89,7 +99,7 @@ class NodeBuilder(dbobjects.DatabaseObjects):
             
         elif generateOutputformat == 'hmisxml30':
             try:
-                from hmisxml30writer import HMISXMLWriter
+                from hmisxml30writer import HMISXMLWriter#IGNORE:@ImportRedefinition
                 print "import of HMISXMLWriter, version 3.0 occurred successfully"
                 hmisxml30writer_loaded = True
             except Exception as e:
@@ -115,14 +125,14 @@ class NodeBuilder(dbobjects.DatabaseObjects):
         else:
             # new error cataloging scheme, pull the error from the catalog, then raise the exception (centralize error catalog management)
             err = catalog.errorCatalog[1001]
-            raise clsexceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + generateOutputformat)
+            raise exceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + generateOutputformat)
             
         #fileStream = open(new_file,'r')
         # validate the file prior to uploading it
         #if self.validator.validate(fileStream):
         
         #setup the postprocessing module    
-        self.pprocess = clspostprocessing.ClsPostProcessing(queryOptions.configID)
+        self.pprocess = postprocessing.PostProcessing(queryOptions.configID)
         
     def run(self):
         '''This is the main method controlling this entire program.'''
@@ -187,38 +197,21 @@ class NodeBuilder(dbobjects.DatabaseObjects):
                 #return results
         
     def formatMsgBody(self):
-        msgBody = "Your report was requested on %s. /r/n" \
-                  'The report criteria is: \r\n' \
-                  '\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)
+        msgBody = "Your report was requested on %s. /r/n The report criteria is: \r\n\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)"#IGNORE:@UnusedVariable
 
-    
     def selectNodes(self, start_date, end_date, nodename):
         pass
     
     def flagNodes(self):
         pass
 
-#if svcptxml20writer_loaded is True:
-#    if settings.DEBUG:
-#        print "svcptxmlwriter not loaded"
-#    class SvcPointXMLwriter(SVCPOINTXMLWriter):
-#        
-#        def __init__(self):
-#            self.xML = SVCPOINTXMLWriter((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
-#    
-#        def write(self):
-#            self.xML.processXML()
-#            self.xML.writeOutXML()
-#else: 
-#    pass
-
 #if svcptxml406writer_loaded is True:
 #    if settings.DEBUG:
 #        print "svcptxmlwriter not loaded"
-#    class SvcPointXMLwriter(SVCPOINTXMLWriter):
+#    class SvcPointXMLwriter(SvcPointXMLWriter):
 #        
 #        def __init__(self):
-#            self.xML = SVCPOINTXMLWriter((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
+#            self.xML = SvcPointXMLWriter((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
 #    
 #        def write(self):
 #            self.xML.processXML()
@@ -269,7 +262,29 @@ if __name__ == '__main__':
             NODEBUILDER = NodeBuilder(options)
             RESULTS = NODEBUILDER.run()
             
-        except clsexceptions.UndefinedXMLWriter:
+        except exceptions.UndefinedXMLWriter:
             print "Please specify a format for outputting your XML"
             raise
-    
+
+
+#The MIT License
+#
+#Copyright (c) 2011, Alexandria Consulting LLC
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in
+#all copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#THE SOFTWARE.

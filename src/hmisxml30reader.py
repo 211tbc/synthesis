@@ -3,15 +3,20 @@
     This is a log database, so it holds everything and doesn't worry about deduplication.
 '''
 
-import sys, os
-from synthesis.reader import Reader
+import os, sys
+from reader import Reader
 from zope.interface import implements
 from lxml import etree
 import dateutil.parser
-from conf import settings
 import dbobjects
+from dbobjects import *
 
-class HMISXML30Reader(dbobjects.DatabaseObjects): 
+class HMISXML30Reader: 
+    
+#    print "Base.metadata before create in hmisxmlreader3: ", Base.metadata
+#    Base.metadata.create_all(pg_db_engine)
+#    print "Base.metadata after create in hmisxmlreader3: ", Base.metadata
+
     ''' Implements reader interface '''
     implements (Reader) 
 
@@ -21,14 +26,14 @@ class HMISXML30Reader(dbobjects.DatabaseObjects):
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
 
 
-    def __init__(self, xml_file):
+    def __init__(self, xml_file, db):
         ''' Put XML file into local object '''
-        self.xml_file = xml_file
+        #self.xml_file = xml_file
         #if settings.DEBUG:
         #    print "does self.xml_file exist?", os.path.exists(self.xml_file)
         ''' Instantiate database object '''
-        dbo = dbobjects.DatabaseObjects()
-        self.session = dbo.Session()
+        #dbo = DatabaseObjects()
+        self.session = db.Session()
 
     def read(self):
         ''' Takes an XML instance file and reads it into memory as a node tree '''
@@ -100,15 +105,15 @@ def parse_source(self, root_element):
                 existence_test_and_add(self, 'source_id', source_id_num, 'text')
 
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Source)
+            shred(self, self.parse_dict, Source)
             
             
             
             #print "self.source_index_id is: ", self.source_index_id
             
 
-            ''' Parse all exports for this specific source '''
-            parse_export(self, item)
+#            ''' Parse all exports for this specific source '''
+#            parse_export(self, item)
     return                
 
 def parse_export(self, element):
@@ -149,7 +154,7 @@ def parse_export(self, element):
             existence_test_and_add(self, 'export_period_end_date', item.xpath(xpExportPeriodEndDate, namespaces = self.nsmap), 'element_date')
 
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Export)
+            shred(self, self.parse_dict, Export)
             
             ''' Create source to export link '''
             record_source_export_link(self)
@@ -187,7 +192,7 @@ def parse_household(self, element):
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Household)
+            shred(self, self.parse_dict, Household)
 
             ''' Parse sub-tables '''
             parse_members(self, item)
@@ -216,7 +221,7 @@ def parse_members(self, element):
                 existence_test_and_add(self, 'household_index_id', self.household_index_id, 'no_handling')
                 existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
                 ''' Shred to database '''
-                shred(self, self.parse_dict, dbobjects.Members)
+                shred(self, self.parse_dict, Members)
 
 def parse_region(self, element):
     ''' Element paths '''
@@ -255,7 +260,7 @@ def parse_region(self, element):
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Region)
+            shred(self, self.parse_dict, Region)
 
 def parse_agency(self, element):
     ''' Element paths '''
@@ -304,7 +309,7 @@ def parse_agency(self, element):
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
                             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Agency)
+            shred(self, self.parse_dict, Agency)
 
             ''' Parse sub-tables '''
             parse_agency_service(self, item)
@@ -461,7 +466,7 @@ def parse_person(self, element):
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Person)
+            shred(self, self.parse_dict, Person)
 
             ''' Parse sub-tables '''
             parse_site_service_participation(self, item)
@@ -523,7 +528,7 @@ def parse_service(self, element):
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Service)
+            shred(self, self.parse_dict, Service)
 
             ''' Parse sub-tables '''
             parse_funding_source(self, item)
@@ -542,7 +547,7 @@ def parse_site(self, element):
     xpPhysicalAddressLine1 = 'airs:PhysicalAddress/airs:Line1'
     xpPhysicalAddressLine2 = 'airs:PhysicalAddress/airs:Line2'
     xpPhysicalAddressCity = 'airs:PhysicalAddress/airs:City'
-    xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'
+    xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'#IGNORE:@UnusedVariable
     xpPhysicalAddressState = 'airs:PhysicalAddress/airs:State'
     xpPhysicalAddressZipCode = 'airs:PhysicalAddress/airs:ZipCode'
     xpPhysicalAddressCountry = 'airs:PhysicalAddress/airs:Country'
@@ -553,7 +558,7 @@ def parse_site(self, element):
     xpMailingAddressLine1 = 'airs:MailingAddress/airs:Line1'
     xpMailingAddressLine2 = 'airs:MailingAddress/airs:Line2'
     xpMailingAddressCity = 'airs:MailingAddress/airs:City'
-    xpMailingAddressCounty = 'airs:MailingAddress/airs:County'
+    xpMailingAddressCounty = 'airs:MailingAddress/airs:County'#IGNORE:@UnusedVariable
     xpMailingAddressState = 'airs:MailingAddress/airs:State'
     xpMailingAddressZipCode = 'airs:MailingAddress/airs:ZipCode'
     xpMailingAddressCountry = 'airs:MailingAddress/airs:Country'
@@ -625,7 +630,7 @@ def parse_site(self, element):
             except: pass
                 
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Site)
+            shred(self, self.parse_dict, Site)
 
             ''' Parse sub-tables '''
             parse_url(self, item)
@@ -721,7 +726,7 @@ def parse_site_service(self, element, namespace='hmis'):
             except: pass
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.SiteService)
+            shred(self, self.parse_dict, SiteService)
 
             ''' Parse sub-tables '''
             parse_seasonal(self, item)
@@ -763,7 +768,7 @@ def parse_service_group(self, element):
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ServiceGroup)
+            shred(self, self.parse_dict, ServiceGroup)
 
             ''' Parse sub-tables '''
 
@@ -786,7 +791,7 @@ def parse_license_accreditation(self, element):
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.LicenseAccreditation)
+            shred(self, self.parse_dict, LicenseAccreditation)
 
             ''' Parse sub-tables '''
                         
@@ -812,7 +817,7 @@ def parse_agency_service(self, element):
             existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.AgencyService)
+            shred(self, self.parse_dict, AgencyService)
 
             ''' Parse sub-tables '''
                         
@@ -842,7 +847,7 @@ def parse_url(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Url)
+            shred(self, self.parse_dict, Url)
 
             ''' Parse sub-tables '''
                         
@@ -874,7 +879,7 @@ def parse_spatial_location(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.SpatialLocation)
+            shred(self, self.parse_dict, SpatialLocation)
 
             ''' Parse sub-tables '''
                         
@@ -920,7 +925,7 @@ def parse_other_address(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.OtherAddress)
+            shred(self, self.parse_dict, OtherAddress)
 
             ''' Parse sub-tables '''
                         
@@ -945,7 +950,7 @@ def parse_cross_street(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.CrossStreet)
+            shred(self, self.parse_dict, CrossStreet)
 
             ''' Parse sub-tables '''
                         
@@ -956,13 +961,13 @@ def parse_agency_location(self, element):
     # base tag
     xpAgencyLocation = 'airs:AgencyLocation'
     xpKey = 'airs:Key'
-    xpName = 'airs:Name'
+    xpName = 'airs:Name'#IGNORE:@UnusedVariable
     xpSiteDescription = 'airs:SiteDescription'
     xpPhysicalAddressPreAddressLine = 'airs:PhysicalAddress/airs:PreAddressLine'
     xpPhysicalAddressLine1 = 'airs:PhysicalAddress/airs:Line1'
     xpPhysicalAddressLine2 = 'airs:PhysicalAddress/airs:Line2'
     xpPhysicalAddressCity = 'airs:PhysicalAddress/airs:City'
-    xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'
+    xpPhysicalAddressCounty = 'airs:PhysicalAddress/airs:County'#IGNORE:@UnusedVariable
     xpPhysicalAddressState = 'airs:PhysicalAddress/airs:State'
     xpPhysicalAddressZipCode = 'airs:PhysicalAddress/airs:ZipCode'
     xpPhysicalAddressCountry = 'airs:PhysicalAddress/airs:Country'
@@ -973,7 +978,7 @@ def parse_agency_location(self, element):
     xpMailingAddressLine1 = 'airs:MailingAddress/airs:Line1'
     xpMailingAddressLine2 = 'airs:MailingAddress/airs:Line2'
     xpMailingAddressCity = 'airs:MailingAddress/airs:City'
-    xpMailingAddressCounty = 'airs:MailingAddress/airs:County'
+    xpMailingAddressCounty = 'airs:MailingAddress/airs:County'#IGNORE:@UnusedVariable
     xpMailingAddressState = 'airs:MailingAddress/airs:State'
     xpMailingAddressZipCode = 'airs:MailingAddress/airs:ZipCode'
     xpMailingAddressCountry = 'airs:MailingAddress/airs:Country'
@@ -997,8 +1002,8 @@ def parse_agency_location(self, element):
     xpExcludeFromDirectory = "../%s/@%s" % (xpAgencyLocation, 'ExcludeFromDirectory')
     
     xpName = 'airs:Name'
-    xpConfidential = 'airs:Confidential'
-    xpDescription = 'airs:Description'
+    xpConfidential = 'airs:Confidential'#IGNORE:@UnusedVariable
+    xpDescription = 'airs:Description'#IGNORE:@UnusedVariable
 
     itemElements = element.xpath(xpAgencyLocation, namespaces = self.nsmap)
     if itemElements is not None:
@@ -1049,7 +1054,7 @@ def parse_agency_location(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.AgencyLocation)
+            shred(self, self.parse_dict, AgencyLocation)
 
             ''' Parse sub-tables '''
             parse_aka(self, item)
@@ -1103,7 +1108,7 @@ def parse_aka(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Aka)
+            shred(self, self.parse_dict, Aka)
 
             ''' Parse sub-tables '''
                         
@@ -1130,7 +1135,7 @@ def parse_seasonal(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Seasonal)
+            shred(self, self.parse_dict, Seasonal)
 
             ''' Parse sub-tables '''
                         
@@ -1152,7 +1157,7 @@ def parse_residency_requirements(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ResidencyRequirements)
+            shred(self, self.parse_dict, ResidencyRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -1195,7 +1200,7 @@ def parse_pit_count_set(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PitCountSet)
+            shred(self, self.parse_dict, PitCountSet)
 
             ''' Parse sub-tables '''
             parse_pit_counts(self, item)            
@@ -1225,7 +1230,7 @@ def parse_pit_counts(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PitCounts)
+            shred(self, self.parse_dict, PitCounts)
 
             ''' Parse sub-tables '''
                         
@@ -1247,7 +1252,7 @@ def parse_other_requirements(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.OtherRequirements)
+            shred(self, self.parse_dict, OtherRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -1287,7 +1292,7 @@ def parse_languages(self, element):
                 try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
                 except: pass                
                 ''' Shred to database '''
-                shred(self, self.parse_dict, dbobjects.Languages)
+                shred(self, self.parse_dict, Languages)
     
                 ''' Parse sub-tables '''
                 parse_time_open(self, item)            
@@ -1318,7 +1323,7 @@ def parse_time_open(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.TimeOpen)
+            shred(self, self.parse_dict, TimeOpen)
 
             ''' parse each specific day of week '''
             weekDays = ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
@@ -1348,7 +1353,7 @@ def parse_time_open_day(self, element, day):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.TimeOpenDays)
+            shred(self, self.parse_dict, TimeOpenDays)
 
 def parse_inventory(self, element):
     ''' Element paths '''
@@ -1408,7 +1413,7 @@ def parse_inventory(self, element):
             except: pass
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Inventory)
+            shred(self, self.parse_dict, Inventory)
 
             ''' Parse sub-tables '''
                         
@@ -1430,7 +1435,7 @@ def parse_income_requirements(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.IncomeRequirements)
+            shred(self, self.parse_dict, IncomeRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -1483,7 +1488,7 @@ def parse_hmis_asset(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HmisAsset)
+            shred(self, self.parse_dict, HmisAsset)
 
             ''' Parse sub-tables '''
             parse_assignment(self, item)            
@@ -1522,7 +1527,7 @@ def parse_assignment(self, element):
             existence_test_and_add(self, 'hmis_asset_index_id', self.hmis_asset_index_id, 'no_handling')
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Assignment)
+            shred(self, self.parse_dict, Assignment)
 
             ''' Parse sub-tables '''
             parse_assignment_period(self, item)            
@@ -1546,7 +1551,7 @@ def parse_assignment_period(self, element):
             existence_test_and_add(self, 'assignment_index_id', self.assignment_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')        
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.AssignmentPeriod)
+            shred(self, self.parse_dict, AssignmentPeriod)
 
             ''' Parse sub-tables '''
                         
@@ -1580,7 +1585,7 @@ def parse_geographic_area_served(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.GeographicAreaServed)
+            shred(self, self.parse_dict, GeographicAreaServed)
 
             ''' Parse sub-tables '''
                         
@@ -1603,7 +1608,7 @@ def parse_documents_required(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.DocumentsRequired)
+            shred(self, self.parse_dict, DocumentsRequired)
 
             ''' Parse sub-tables '''
                         
@@ -1624,7 +1629,7 @@ def parse_aid_requirements(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.AidRequirements)
+            shred(self, self.parse_dict, AidRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -1650,7 +1655,7 @@ def parse_age_requirements(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.AgeRequirements)
+            shred(self, self.parse_dict, AgeRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -1690,7 +1695,7 @@ def parse_site_service_participation(self, element):
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.SiteServiceParticipation)
+            shred(self, self.parse_dict, SiteServiceParticipation)
 
             ''' Parse sub-tables '''
             parse_reasons_for_leaving(self, item)  
@@ -1700,7 +1705,7 @@ def parse_site_service_participation(self, element):
 
 def parse_reasons_for_leaving(self, element):
     ''' Element paths '''
-    xpReasonsForLeaving = 'hmis:ReasonsForLeaving'
+    xpReasonsForLeaving = 'hmis:ReasonsForLeaving'#IGNORE:@UnusedVariable
     xpReasonsForLeavingIDIDNum = 'hmis:ReasonsForLeavingID/hmis:IDNum'
     xpReasonsForLeavingIDIDStr = 'hmis:ReasonsForLeavingID/hmis:IDStr'
     xpReasonsForLeavingIDDelete = 'hmis:ReasonsForLeavingID/@hmis:delete'
@@ -1739,7 +1744,7 @@ def parse_reasons_for_leaving(self, element):
             existence_test_and_add(self, 'site_service_participation_index_id', self.site_service_participation_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ReasonsForLeaving)
+            shred(self, self.parse_dict, ReasonsForLeaving)
 
             ''' Parse sub-tables '''
                         
@@ -1763,7 +1768,7 @@ def parse_application_process(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ApplicationProcess)
+            shred(self, self.parse_dict, ApplicationProcess)
 
             ''' Parse sub-tables '''
                         
@@ -1808,7 +1813,7 @@ def parse_need(self, element):
             except: pass
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Need)
+            shred(self, self.parse_dict, Need)
 
             ''' Parse sub-tables '''
             parse_taxonomy(self, item)
@@ -1843,7 +1848,7 @@ def parse_taxonomy(self, element):
                 try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
                 except: pass            
                 ''' Shred to database '''
-                shred(self, self.parse_dict, dbobjects.Taxonomy)
+                shred(self, self.parse_dict, Taxonomy)
 
                 ''' Parse sub-tables '''
                         
@@ -1912,7 +1917,7 @@ def parse_service_event(self, element):
             except: pass
             
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ServiceEvent)
+            shred(self, self.parse_dict, ServiceEvent)
 
             ''' Parse sub-tables '''
             parse_service_event_notes(self, item)     
@@ -1951,7 +1956,7 @@ def parse_service_event_notes(self, element):
             existence_test_and_add(self, 'service_event_index_id', self.service_event_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ServiceEventNotes)
+            shred(self, self.parse_dict, ServiceEventNotes)
 
             ''' Parse sub-tables '''
                         
@@ -1972,7 +1977,7 @@ def parse_family_requirements(self, element):
             existence_test_and_add(self, 'site_service_index_id', self.site_service_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.FamilyRequirements)
+            shred(self, self.parse_dict, FamilyRequirements)
 
             ''' Parse sub-tables '''
                         
@@ -2008,7 +2013,7 @@ def parse_person_historical(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PersonHistorical)
+            shred(self, self.parse_dict, PersonHistorical)
 
             ''' Parse sub-tables '''
             parse_housing_status(self, item)   
@@ -2067,7 +2072,7 @@ def parse_housing_status(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HousingStatus)
+            shred(self, self.parse_dict, HousingStatus)
 
             ''' Parse sub-tables '''
 
@@ -2144,7 +2149,7 @@ def parse_veteran_military_branches(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranMilitaryBranches)
+            shred(self, self.parse_dict, VeteranMilitaryBranches)
 
             ''' Parse sub-tables '''
                         
@@ -2171,7 +2176,7 @@ def parse_veteran_military_service_duration(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranMilitaryServiceDuration)
+            shred(self, self.parse_dict, VeteranMilitaryServiceDuration)
 
             ''' Parse sub-tables '''
                         
@@ -2198,7 +2203,7 @@ def parse_veteran_served_in_war_zone(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranServedInWarZone)
+            shred(self, self.parse_dict, VeteranServedInWarZone)
 
             ''' Parse sub-tables '''
                         
@@ -2225,7 +2230,7 @@ def parse_veteran_service_era(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranServiceEra)
+            shred(self, self.parse_dict, VeteranServiceEra)
 
             ''' Parse sub-tables '''
                         
@@ -2252,7 +2257,7 @@ def parse_veteran_veteran_status(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranVeteranStatus)
+            shred(self, self.parse_dict, VeteranVeteranStatus)
 
             ''' Parse sub-tables '''
                         
@@ -2314,7 +2319,7 @@ def parse_veteran_warzones_served(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VeteranWarzonesServed)
+            shred(self, self.parse_dict, VeteranWarzonesServed)
 
             ''' Parse sub-tables '''
                         
@@ -2341,7 +2346,7 @@ def parse_vocational_training(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.VocationalTraining)
+            shred(self, self.parse_dict, VocationalTraining)
 
             ''' Parse sub-tables '''
                  
@@ -2384,7 +2389,7 @@ def parse_substance_abuse_problem(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.SubstanceAbuseProblem)
+            shred(self, self.parse_dict, SubstanceAbuseProblem)
 
             ''' Parse sub-tables '''
                         
@@ -2403,7 +2408,7 @@ def parse_pregnancy(self, element):
     xpPregnancyStatusDataCollectionStage = 'hmis:PregnancyStatus/@hmis:dataCollectionStage'
     xpDueDate = 'hmis:DueDate'
     xpDueDateDateCollected = 'hmis:DueDate/@hmis:dateCollected'
-    xpDueDateDateEffective = 'hmis:DueDate/@hmis:dateEffective'
+    xpDueDateDateEffective = 'hmis:DueDate/@hmis:dateEffective'#IGNORE:@UnusedVariable
     xpDueDateDataCollectionStage = 'hmis:DueDate/@hmis:dataCollectionStage'
 
     itemElements = element.xpath(xpPregnancy, namespaces = self.nsmap)
@@ -2429,7 +2434,7 @@ def parse_pregnancy(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Pregnancy)
+            shred(self, self.parse_dict, Pregnancy)
 
             ''' Parse sub-tables '''
                         
@@ -2475,7 +2480,7 @@ def parse_prior_residence(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PriorResidence)
+            shred(self, self.parse_dict, PriorResidence)
 
             ''' Parse sub-tables '''
                         
@@ -2511,7 +2516,7 @@ def parse_physical_disability(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PhysicalDisability)
+            shred(self, self.parse_dict, PhysicalDisability)
 
             ''' Parse sub-tables '''
                         
@@ -2565,7 +2570,7 @@ def parse_non_cash_benefits(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.NonCashBenefits)
+            shred(self, self.parse_dict, NonCashBenefits)
 
             ''' Parse sub-tables '''
 
@@ -2591,7 +2596,7 @@ def parse_non_cash_benefits_last_30_days(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.NonCashBenefitsLast30Days)
+            shred(self, self.parse_dict, NonCashBenefitsLast30Days)
 
             ''' Parse sub-tables '''
                         
@@ -2635,7 +2640,7 @@ def parse_mental_health_problem(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.MentalHealthProblem)
+            shred(self, self.parse_dict, MentalHealthProblem)
 
             ''' Parse sub-tables '''
                         
@@ -2662,7 +2667,7 @@ def parse_length_of_stay_at_prior_residence(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.LengthOfStayAtPriorResidence)
+            shred(self, self.parse_dict, LengthOfStayAtPriorResidence)
 
             ''' Parse sub-tables '''
                         
@@ -2689,7 +2694,7 @@ def parse_income_total_monthly(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.IncomeTotalMonthly)
+            shred(self, self.parse_dict, IncomeTotalMonthly)
 
             ''' Parse sub-tables '''
                         
@@ -2716,7 +2721,7 @@ def parse_hud_chronic_homeless(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HudChronicHomeless)
+            shred(self, self.parse_dict, HudChronicHomeless)
 
             ''' Parse sub-tables '''
                         
@@ -2743,7 +2748,7 @@ def parse_income_last_30_days(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.IncomeLast30Days)
+            shred(self, self.parse_dict, IncomeLast30Days)
 
             ''' Parse sub-tables '''
                         
@@ -2770,7 +2775,7 @@ def parse_highest_school_level(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HighestSchoolLevel)
+            shred(self, self.parse_dict, HighestSchoolLevel)
 
             ''' Parse sub-tables '''
                         
@@ -2806,7 +2811,7 @@ def parse_hiv_aids_status(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HivAidsStatus)
+            shred(self, self.parse_dict, HivAidsStatus)
 
             ''' Parse sub-tables '''
                         
@@ -2833,7 +2838,7 @@ def parse_health_status(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HealthStatus)
+            shred(self, self.parse_dict, HealthStatus)
 
             ''' Parse sub-tables '''
                         
@@ -2842,7 +2847,7 @@ def parse_engaged_date(self, element):
     ''' Element paths '''
     xpEngagedDate = 'hmis:EngagedDate'
     xpEngagedDateDateCollected = 'hmis:EngagedDate/@hmis:dateCollected'
-    xpEngagedDateDateEffective = 'hmis:EngagedDate/@hmis:dateEffective'
+    xpEngagedDateDateEffective = 'hmis:EngagedDate/@hmis:dateEffective'#IGNORE:@UnusedVariable
     xpEngagedDateDataCollectionStage = 'hmis:EngagedDate/@hmis:dataCollectionStage'  
 
     itemElements = element.xpath(xpEngagedDate, namespaces = self.nsmap)
@@ -2859,7 +2864,7 @@ def parse_engaged_date(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.EngagedDate)
+            shred(self, self.parse_dict, EngagedDate)
 
             ''' Parse sub-tables '''
                         
@@ -2921,7 +2926,7 @@ def parse_employment(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Employment)
+            shred(self, self.parse_dict, Employment)
 
             ''' Parse sub-tables '''
                         
@@ -2957,7 +2962,7 @@ def parse_domestic_violence(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.DomesticViolence)
+            shred(self, self.parse_dict, DomesticViolence)
 
             ''' Parse sub-tables '''
                         
@@ -2984,7 +2989,7 @@ def parse_disabling_condition(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.DisablingCondition)
+            shred(self, self.parse_dict, DisablingCondition)
 
             ''' Parse sub-tables '''
                         
@@ -3020,7 +3025,7 @@ def parse_developmental_disability(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.DevelopmentalDisability)
+            shred(self, self.parse_dict, DevelopmentalDisability)
 
             ''' Parse sub-tables '''
                         
@@ -3066,7 +3071,7 @@ def parse_destinations(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Destinations)
+            shred(self, self.parse_dict, Destinations)
 
             ''' Parse sub-tables '''
                         
@@ -3104,7 +3109,7 @@ def parse_degree(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Degree)
+            shred(self, self.parse_dict, Degree)
 
             ''' Parse sub-tables '''
             parse_degree_code(self, item)            
@@ -3131,7 +3136,7 @@ def parse_degree_code(self, element):
             existence_test_and_add(self, 'degree_index_id', self.degree_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.DegreeCode)
+            shred(self, self.parse_dict, DegreeCode)
 
             ''' Parse sub-tables '''
                         
@@ -3158,7 +3163,7 @@ def parse_currently_in_school(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.CurrentlyInSchool)
+            shred(self, self.parse_dict, CurrentlyInSchool)
 
             ''' Parse sub-tables '''
                         
@@ -3196,7 +3201,7 @@ def parse_contact_made(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ContactMade)
+            shred(self, self.parse_dict, ContactMade)
 
             ''' Parse sub-tables '''
                         
@@ -3227,7 +3232,7 @@ def parse_child_enrollment_status(self, element):
     xpChildSchoolTypeDataCollectionStage = 'hmis:ChildSchoolType/@hmis:dataCollectionStage'
     xpChildSchoolLastEnrolledDate = 'hmis:ChildSchoolLastEnrolledDate'
     xpChildSchoolLastEnrolledDateDateCollected = 'hmis:ChildSchoolLastEnrolledDate/@hmis:dateCollected'
-    xpChildSchoolLastEnrolledDateDateEffective = 'hmis:ChildSchoolLastEnrolledDate/@hmis:dateEffective'
+    xpChildSchoolLastEnrolledDateDateEffective = 'hmis:ChildSchoolLastEnrolledDate/@hmis:dateEffective'#IGNORE:@UnusedVariable
     xpChildSchoolLastEnrolledDateDataCollectionStage = 'hmis:ChildSchoolLastEnrolledDate/@hmis:dataCollectionStage'
 
     itemElements = element.xpath(xpChildEnrollmentStatus, namespaces = self.nsmap)
@@ -3265,7 +3270,7 @@ def parse_child_enrollment_status(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ChildEnrollmentStatus)
+            shred(self, self.parse_dict, ChildEnrollmentStatus)
 
             ''' Parse sub-tables '''
             parse_child_enrollment_status_barrier(self, item)            
@@ -3311,7 +3316,7 @@ def parse_child_enrollment_status_barrier(self, element):
             existence_test_and_add(self, 'child_enrollment_status_index_id', self.child_enrollment_status_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ChildEnrollmentStatusBarrier)
+            shred(self, self.parse_dict, ChildEnrollmentStatusBarrier)
 
             ''' Parse sub-tables '''
                         
@@ -3347,7 +3352,7 @@ def parse_chronic_health_condition(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ChronicHealthCondition)
+            shred(self, self.parse_dict, ChronicHealthCondition)
 
             ''' Parse sub-tables '''
                         
@@ -3399,7 +3404,7 @@ def parse_release_of_information(self, element):
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ReleaseOfInformation)
+            shred(self, self.parse_dict, ReleaseOfInformation)
 
             ''' Parse sub-tables '''
                         
@@ -3435,8 +3440,8 @@ def parse_income_and_sources(self, element):
             self.parse_dict = {}
             
             ''' Map elements to database columns '''
-            existence_test_and_add(self, 'income_and_source_id_id_id_num', item.xpath(xpIncomeAndSourceIDIDNum, namespaces = self.nsmap), 'text')
-            existence_test_and_add(self, 'income_and_source_id_id_id_str', item.xpath(xpIncomeAndSourceIDIDStr, namespaces = self.nsmap), 'text')
+            existence_test_and_add(self, 'income_and_source_id_id_num', item.xpath(xpIncomeAndSourceIDIDNum, namespaces = self.nsmap), 'text')
+            existence_test_and_add(self, 'income_and_source_id_id_str', item.xpath(xpIncomeAndSourceIDIDStr, namespaces = self.nsmap), 'text')
             existence_test_and_add(self, 'income_and_source_id_id_delete_occurred_date', item.xpath(xpIncomeAndSourceIDDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'income_and_source_id_id_delete_effective_date', item.xpath(xpIncomeAndSourceIDDeleteEffective, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'income_and_source_id_id_delete', item.xpath(xpIncomeAndSourceIDDelete, namespaces = self.nsmap), 'attribute_text')
@@ -3461,7 +3466,7 @@ def parse_income_and_sources(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.IncomeAndSources)
+            shred(self, self.parse_dict, IncomeAndSources)
 
             ''' Parse sub-tables '''
                         
@@ -3486,16 +3491,16 @@ def parse_hud_homeless_episodes(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.HUDHomelessEpisodes)
+            shred(self, self.parse_dict, HUDHomelessEpisodes)
 
             ''' Parse sub-tables '''
                         
 def parse_person_address(self, element):
     ''' Element paths '''
     xpPersonAddress = 'hmis:PersonAddress'
-    xpPersonAddressDateCollected = 'hmis:PersonAddress/@hmis:dateCollected'
-    xpPersonAddressDateEffective = 'hmis:PersonAddress/@hmis:dateEffective'
-    xpPersonAddressDataCollectionStage = 'hmis:PersonAddress/@hmis:dataCollectionStage'          
+    xpPersonAddressDateCollected = 'hmis:PersonAddress/@hmis:dateCollected'#IGNORE:@UnusedVariable
+    xpPersonAddressDateEffective = 'hmis:PersonAddress/@hmis:dateEffective'#IGNORE:@UnusedVariable
+    xpPersonAddressDataCollectionStage = 'hmis:PersonAddress/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable          
     xpAddressPeriodStartDate = 'hmis:AddressPeriod/hmis:StartDate'
     xpAddressPeriodEndDate = 'hmis:AddressPeriod/hmis:EndDate'
     xpPreAddressLine = 'hmis:PreAddressLine'
@@ -3592,7 +3597,7 @@ def parse_person_address(self, element):
             existence_test_and_add(self, 'person_historical_index_id', self.person_historical_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.PersonAddress)
+            shred(self, self.parse_dict, PersonAddress)
 
             ''' Parse sub-tables '''
                         
@@ -3600,33 +3605,33 @@ def parse_other_names(self, element):
     ''' Element paths '''
     xpOtherNames = 'hmis:OtherNames'
     xpOtherFirstNameUnhashed = 'hmis:OtherFirstName/hmis:Unhashed'
-    xpOtherFirstNameUnhashedDateCollected = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dateCollected'
-    xpOtherFirstNameUnhashedDateEffective = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dateEffective'
-    xpOtherFirstNameUnhashedDataCollectionStage = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dataCollectionStage'
+    xpOtherFirstNameUnhashedDateCollected = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dateCollected'#IGNORE:@UnusedVariable
+    xpOtherFirstNameUnhashedDateEffective = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dateEffective'#IGNORE:@UnusedVariable
+    xpOtherFirstNameUnhashedDataCollectionStage = 'hmis:OtherFirstName/hmis:Unhashed/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
     xpOtherFirstNameHashed = 'hmis:OtherFirstName/hmis:Hashed'
     xpOtherFirstNameHashedDateCollected = 'hmis:OtherFirstName/hmis:Hashed/@hmis:dateCollected'
     xpOtherFirstNameHashedDateEffective = 'hmis:OtherFirstName/hmis:Hashed/@hmis:dateEffective'
     xpOtherFirstNameHashedDataCollectionStage = 'hmis:OtherFirstName/hmis:Hashed/@hmis:dataCollectionStage'
     xpOtherLastNameUnhashed = 'hmis:OtherLastName/hmis:Unhashed'
-    xpOtherLastNameUnhashedDateCollected = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dateCollected'
-    xpOtherLastNameUnhashedDateEffective = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dateEffective'
-    xpOtherLastNameUnhashedDataCollectionStage = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dataCollectionStage'
+    xpOtherLastNameUnhashedDateCollected = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dateCollected'#IGNORE:@UnusedVariable
+    xpOtherLastNameUnhashedDateEffective = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dateEffective'#IGNORE:@UnusedVariable
+    xpOtherLastNameUnhashedDataCollectionStage = 'hmis:OtherLastName/hmis:Unhashed/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
     xpOtherLastNameHashed = 'hmis:OtherLastName/hmis:Hashed'
     xpOtherLastNameHashedDateCollected = 'hmis:OtherLastName/hmis:Hashed/@hmis:dateCollected'
     xpOtherLastNameHashedDateEffective = 'hmis:OtherLastName/hmis:Hashed/@hmis:dateEffective'
     xpOtherLastNameHashedDataCollectionStage = 'hmis:OtherLastName/hmis:Hashed/@hmis:dataCollectionStage'
     xpOtherMiddleNameUnhashed = 'hmis:OtherMiddleName/hmis:Unhashed'
-    xpOtherMiddleNameUnhashedDateCollected = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dateCollected'
-    xpOtherMiddleNameUnhashedDateEffective = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dateEffective'
-    xpOtherMiddleNameUnhashedDataCollectionStage = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dataCollectionStage'
+    xpOtherMiddleNameUnhashedDateCollected = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dateCollected'#IGNORE:@UnusedVariable
+    xpOtherMiddleNameUnhashedDateEffective = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dateEffective'#IGNORE:@UnusedVariable
+    xpOtherMiddleNameUnhashedDataCollectionStage = 'hmis:OtherMiddleName/hmis:Unhashed/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
     xpOtherMiddleNameHashed = 'hmis:OtherMiddleName/hmis:Hashed'
     xpOtherMiddleNameHashedDateCollected = 'hmis:OtherMiddleName/hmis:Hashed/@hmis:dateCollected'
     xpOtherMiddleNameHashedDateEffective = 'hmis:OtherMiddleName/hmis:Hashed/@hmis:dateEffective'
     xpOtherMiddleNameHashedDataCollectionStage = 'hmis:OtherMiddleName/hmis:Hashed/@hmis:dataCollectionStage'
     xpOtherSuffixUnhashed = 'hmis:OtherSuffix/hmis:Unhashed'
-    xpOtherSuffixUnhashedDateCollected = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dateCollected'
-    xpOtherSuffixUnhashedDateEffective = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dateEffective'
-    xpOtherSuffixUnhashedDataCollectionStage = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dataCollectionStage'
+    xpOtherSuffixUnhashedDateCollected = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dateCollected'#IGNORE:@UnusedVariable
+    xpOtherSuffixUnhashedDateEffective = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dateEffective'#IGNORE:@UnusedVariable
+    xpOtherSuffixUnhashedDataCollectionStage = 'hmis:OtherSuffix/hmis:Unhashed/@hmis:dataCollectionStage'#IGNORE:@UnusedVariable
     xpOtherSuffixHashed = 'hmis:OtherSuffix/hmis:Hashed'
     xpOtherSuffixHashedDateCollected = 'hmis:OtherSuffix/hmis:Hashed/@hmis:dateCollected'
     xpOtherSuffixHashedDateEffective = 'hmis:OtherSuffix/hmis:Hashed/@hmis:dateEffective'
@@ -3663,7 +3668,7 @@ def parse_other_names(self, element):
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.OtherNames)
+            shred(self, self.parse_dict, OtherNames)
 
             ''' Parse sub-tables '''
                         
@@ -3690,7 +3695,7 @@ def parse_races(self, element):
             existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Races)
+            shred(self, self.parse_dict, Races)
 
             ''' Parse sub-tables '''
     
@@ -3731,7 +3736,7 @@ def parse_funding_source(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.FundingSource)
+            shred(self, self.parse_dict, FundingSource)
 
             ''' Parse sub-tables '''
                         
@@ -3771,7 +3776,7 @@ def parse_resource_info(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.ResourceInfo)
+            shred(self, self.parse_dict, ResourceInfo)
 
             ''' Parse sub-tables '''
             parse_contact(self, item)            
@@ -3809,7 +3814,7 @@ def parse_contact(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Contact)
+            shred(self, self.parse_dict, Contact)
 
             ''' Parse sub-tables '''
             parse_email(self, item)      
@@ -3854,7 +3859,7 @@ def parse_email(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Email)
+            shred(self, self.parse_dict, Email)
 
             ''' Parse sub-tables '''
                         
@@ -3904,7 +3909,7 @@ def parse_phone(self, element):
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass                            
             ''' Shred to database '''
-            shred(self, self.parse_dict, dbobjects.Phone)
+            shred(self, self.parse_dict, Phone)
 
             ''' Parse sub-tables '''
                         
@@ -3915,14 +3920,14 @@ def record_source_export_link(self):
     ''' record the link between source and export '''
     existence_test_and_add(self, 'source_index_id', self.source_index_id, 'no_handling')
     existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
-    shred(self, self.parse_dict, dbobjects.SourceExportLink)
+    shred(self, self.parse_dict, SourceExportLink)
     return            
 
 def record_agency_child_link(self):
     ''' record the link between agency and any children '''
     existence_test_and_add(self, 'agency_index_id', self.agency_index_id, 'no_handling')
     existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
-    shred(self, self.parse_dict, dbobjects.AgencyChild)
+    shred(self, self.parse_dict, AgencyChild)
     return            
 
 ''' Utility methods '''
@@ -3984,103 +3989,111 @@ def persist(self, db_column, query_string):
     self.parse_dict.__setitem__(db_column, query_string)
     return
     
-def shred(self, parse_dict, mapping):
+def shred(self, records_dict, map_class):
     ''' commits the record set to the database '''
-    mapped = mapping(parse_dict)
+    print 'map_class: ', map_class
+    print 'data: ', records_dict
+    print 'self is:', self 
+
+    #{'source_name': 'Orange County Corrections', 'software_version': '0.1', 'software_vendor': 'Orange County Corrections', 'source_contact_email': 'i@occ.gov', 'source_id_id_id_str': '003', 'source_id': '003'}
+    mapped = map_class(**records_dict)
+
     self.session.add(mapped)
+    print "done adding"
+    #self.session.add(mapped)
     self.session.commit()
     
     ''' store foreign keys '''
-    if mapping.__name__ == "Source":
+    if map_class.__name__ == "Source":
+        
         self.source_index_id = mapped.id
-        print "Source: ", self.source_index_id
+        print "Source: ", map_class.source_id
 
-    if mapping.__name__ == "Export":
+    if map_class.__name__ == "Export":
         self.export_index_id = mapped.id
         print "Export: ", self.export_index_id
         
-    if mapping.__name__ == "Household":
+    if map_class.__name__ == "Household":
         self.household_index_id = mapped.id
         print "Household: ", self.household_index_id
 
-    if mapping.__name__ == "Agency":
+    if map_class.__name__ == "Agency":
         self.agency_index_id = mapped.id
         print "Agency: ", self.agency_index_id
         
-    if mapping.__name__ == "AgencyLocation":
+    if map_class.__name__ == "AgencyLocation":
         self.agency_location_index_id = mapped.id
         print "Agency Location: ", self.agency_location_index_id
 
-    if mapping.__name__ == "Site":
+    if map_class.__name__ == "Site":
         self.site_index_id = mapped.id
         print "Site: ", self.site_index_id
 
-    if mapping.__name__ == "SiteService":
+    if map_class.__name__ == "SiteService":
         self.site_service_index_id = mapped.id
         print "SiteService: ", self.site_service_index_id
 
-    if mapping.__name__ == "PitCountSet":
+    if map_class.__name__ == "PitCountSet":
         self.pit_count_set_index_id = mapped.id
         print "PitCountSet: ", self.pit_count_set_index_id
 
-    if mapping.__name__ == "Languages":
+    if map_class.__name__ == "Languages":
         self.languages_index_id = mapped.id
         print "Languages:",self.languages_index_id
 
-    if mapping.__name__ == "Service":
+    if map_class.__name__ == "Service":
         self.service_index_id = mapped.id
         print "Service:",self.service_index_id
 
-    if mapping.__name__ == "HmisAsset":
+    if map_class.__name__ == "HmisAsset":
         self.hmis_asset_index_id = mapped.id
         print "HmisAsset:",self.hmis_asset_index_id
 
-    if mapping.__name__ == "Assignment":
+    if map_class.__name__ == "Assignment":
         self.assignment_index_id = mapped.id
         print "Assignment:",self.assignment_index_id
 
-    if mapping.__name__ == "Person":
+    if map_class.__name__ == "Person":
         self.person_index_id = mapped.id
         print "Person:",self.person_index_id
 
-    if mapping.__name__ == "SiteServiceParticipation":
+    if map_class.__name__ == "SiteServiceParticipation":
         self.site_service_participation_index_id = mapped.id
         print "SiteServiceParticipation:",self.site_service_participation_index_id
 
-    if mapping.__name__ == "Need":
+    if map_class.__name__ == "Need":
         self.need_index_id = mapped.id
         print "Need:",self.need_index_id
 
-    if mapping.__name__ == "ServiceEvent":
+    if map_class.__name__ == "ServiceEvent":
         self.service_event_index_id = mapped.id
         print "ServiceEvent:",self.service_event_index_id            
         
-    if mapping.__name__ == "PersonHistorical":
+    if map_class.__name__ == "PersonHistorical":
         self.person_historical_index_id = mapped.id
         print "PersonHistorical:",self.person_historical_index_id                              
         
-    if mapping.__name__ == "Degree":
+    if map_class.__name__ == "Degree":
         self.degree_index_id = mapped.id
         print "Degree:",self.degree_index_id                
         
-    if mapping.__name__ == "ChildEnrollmentStatus":
+    if map_class.__name__ == "ChildEnrollmentStatus":
         self.child_enrollment_status_index_id = mapped.id
         print "ChildEnrollmentStatus:",self.child_enrollment_status_index_id     
         
-    if mapping.__name__ == "ResourceInfo":
+    if map_class.__name__ == "ResourceInfo":
         self.resource_info_index_id = mapped.id
         print "ResourceInfo:",self.resource_info_index_id               
 
-    if mapping.__name__ == "Contact":
+    if map_class.__name__ == "Contact":
         self.contact_index_id = mapped.id
         print "Contact:",self.contact_index_id                                   
         
-    if mapping.__name__ == "TimeOpen":
+    if map_class.__name__ == "TimeOpen":
         self.time_open_index_id = mapped.id
-        print "TimeOpen:",self.time_open_index_id   
+        print "TimeOpen:",self.time_open_index_id 
+    self.parse_dict ={}  
     return
-        
-
         
 def main(argv=None):  
     ''' Manually test this Reader class '''
@@ -4088,7 +4101,7 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    from synthesis import postgresutils
+    import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 

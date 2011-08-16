@@ -16,9 +16,9 @@ SKIP_VALIDATION_TEST = False
 #However, the gui is cross-platform, so the GUI setting should be actually independent of the platform
 GUI = False  
 # DB settings:
-DB_DATABASE = "password_here"
-DB_USER = "username_here"
-DB_PASSWD = "password"
+DB_DATABASE = "your_database_name_here(synthesis perhaps)"
+DB_USER = "your_database_user_name_here"
+DB_PASSWD = "your_password_here"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
@@ -28,7 +28,7 @@ SVCPT_VERSION = '406'                    # this is 4.06
 #SOURCE_PATH = 'synthesis/synthesis'
 #SOURCE_PATH = 'synthesis'
 #BASE_PATH = os.path.join(os.getcwd(), SOURCE_PATH)
-BASE_PATH = "/home/username_here/synthesis_install_location/synthesis/synthesis"
+BASE_PATH = "/home/username/myrestservice/synthesis/synthesis"
 print "BASE_PATH is: ", BASE_PATH
 #import pydevd; pydevd.settrace()
 #ABS_SOURCE_PATH = os.path.abspath(os.getcwd() + SOURCE_PATH)
@@ -67,7 +67,7 @@ if not os.path.exists(FAILEDFILES_PATH):
     os.mkdir(FAILEDFILES_PATH)
 
 #logging settings file location setup
-logging_ini_file_name = 'logging.ini'
+logging_ini_file_name = 'conf/logging.ini'
 relative_logging_ini_filepath = os.path.join(BASE_PATH, logging_ini_file_name)
 logging_ini_filepath = os.path.abspath(relative_logging_ini_filepath)
 print 'logging.ini filepath is at: ', logging_ini_filepath
@@ -107,7 +107,7 @@ SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS =	{
-     "/home/username_here/synthesis_install_location/synthesis/synthesis/input_files":
+     "/home/username/myrestservice/synthesis/synthesis/input_files":
 		{
         'VENDOR_NAME': 'SomeVendor',
 		'SMTPTOADDRESS': ['someone@somedomain.com',],
@@ -116,16 +116,16 @@ SMTPRECIPIENTS =	{
 		'FINGERPRINT':'',
 		'USES_ENCRYPTION':False
 		}
-	,"~/workspace/synthesis/installer/build/InputFiles2":
+	,"~/myrestservice/synthesis/installer/build/InputFiles2":
 		{
         'VENDOR_NAME': 'SomeVendor2',
 		'SMTPTOADDRESS': ['admin@superhost.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
-		'USES_ENCRYPTION':True
+		'USES_ENCRYPTION':False
 		}
-	,"~/workspace/synthesis/installer/build/InputFiles3":
+	,"~/myrestservice/synthesis/installer/build/InputFiles3":
 		{
 		'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['sammy.davis@jr.com',],
@@ -135,7 +135,7 @@ SMTPRECIPIENTS =	{
 		'USES_ENCRYPTION':False
 		}
 # output processing
-    ,"~/workspace/synthesis/installer/build/OutputFiles":
+    ,"~/myrestservice/synthesis/installer/build/OutputFiles":
 		{
 		'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['user@host.com',],
@@ -144,14 +144,14 @@ SMTPRECIPIENTS =	{
 		'FINGERPRINT':'',
 		'USES_ENCRYPTION':False
 		}
-    ,"~/workspace/synthesis/installer/build/OutputFiles2":
+    ,"~/myrestservice/synthesis/installer/build/OutputFiles2":
 		{
 		'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['admin@somehost.com',],
 		'SMTPTOADDRESSCC': [],
 		'SMTPTOADDRESSBCC': [],
 		'FINGERPRINT':'',
-		'USES_ENCRYPTION':True
+		'USES_ENCRYPTION':False
 		}
 	}
 

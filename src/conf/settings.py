@@ -106,55 +106,54 @@ SMTPSENDER = 'me@localhost'
 SMTPSENDERPWD = 'mysecret'
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
-SMTPRECIPIENTS =	{
-     "/home/username/myrestservice/synthesis/synthesis/input_files":
-		{
+SMTPRECIPIENTS = {    
+        "~/myrestservice/synthesis/synthesis/input_files":
+        {
         'VENDOR_NAME': 'SomeVendor',
-		'SMTPTOADDRESS': ['someone@somedomain.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-	,"~/myrestservice/synthesis/installer/build/InputFiles2":
-		{
+        'SMTPTOADDRESS': ['someone@somedomain.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    ,"~/myrestservice/synthesis/synthesis/input_files2":
+        {
         'VENDOR_NAME': 'SomeVendor2',
-		'SMTPTOADDRESS': ['admin@superhost.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-	,"~/myrestservice/synthesis/installer/build/InputFiles3":
-		{
-		'VENDOR_NAME': '',
+        'SMTPTOADDRESS': ['admin@superhost.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    ,"~/myrestservice/synthesis/synthesis/input_files3":
+        {
+        'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['sammy.davis@jr.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
 # output processing
-    ,"~/myrestservice/synthesis/installer/build/OutputFiles":
-		{
-		'VENDOR_NAME': '',
+    ,"~/myrestservice/synthesis/synthesis/output_files":
+        {
+        'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['user@host.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-    ,"~/myrestservice/synthesis/installer/build/OutputFiles2":
-		{
-		'VENDOR_NAME': '',
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    ,"~/myrestservice/synthesis/synthesis/output_files2":
+        {
+        'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['admin@somehost.com',],
-		'SMTPTOADDRESSCC': [],
-		'SMTPTOADDRESSBCC': [],
-		'FINGERPRINT':'',
-		'USES_ENCRYPTION':False
-		}
-	}
-
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    }
 try:
     from local_settings import *
 except ImportError:

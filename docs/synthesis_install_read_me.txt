@@ -34,7 +34,7 @@
 
 ~/myrestservice$ ./bin/buildout
 
--This will take a while.
+-This will take a while.  Ignore the "Couldn't develop '~/myrestservice/synthesis' (not found)" error.  We'll add that in later.
 
 -You now have two new binaries in the bin/ directory:
 
@@ -60,25 +60,13 @@ $ ./bin/paster create -t pylons synthesis
 ~/myrestservice$ cd synthesis/synthesis
 
 ~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
--Now, tell buildout.cfg about your development egg, by uncommenting two lines:
-
-[buildout]
-...
-#uncomment this line after initial buildout install, if you want to start to develop, then re-run buildout 
-#develop = synthesis
-...
-[synthesis]
-eggs=
-...
-#uncomment this to develop
-#   synthesis
 
 -run buildout again: 
 ~/myrestservice$ ./bin/buildout
 
 -edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc.
 
--set the mode to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode. 
+-ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
 ~/myrestservice$ cd synthesis

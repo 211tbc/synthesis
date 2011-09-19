@@ -64,7 +64,8 @@ $ ./bin/paster create -t pylons synthesis
 -run buildout again: 
 ~/myrestservice$ ./bin/buildout
 
--edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc.
+-edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc..  
+-3DES file decryption by the web service is turned off by default.  If you want that on, edit ~/myrestservice/synthesis/synthesis/controllers/docs.py to #use_encryption = True
 
 -ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
 

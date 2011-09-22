@@ -1,5 +1,5 @@
-use_encryption = False
 #use_encryption = True
+use_encryption = False
 
 import os
 import logging
@@ -42,7 +42,9 @@ class DocsController(BaseController):
         #print "request.environ['CONTENT_LENGTH'] is" , request.environ['CONTENT_LENGTH']
         print "FULL RAW POST Data:"
         #this CONTENT_LENGTH wasn't getting populated in the environment on remote installations using encryption
-        print request.environ['wsgi.input'].read(int(request.environ['CONTENT_LENGTH']))
+        #print request.environ['wsgi.input'].read(int(request.environ['CONTENT_LENGTH']))
+        print request.environ['wsgi.input'].read(req.content_length)
+
         print "FULL request.POST Data:"
         print request.POST
         

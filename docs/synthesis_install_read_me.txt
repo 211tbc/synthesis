@@ -82,8 +82,18 @@ as another entry in the sys.path[0:0] =  section.
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files automatically, so not a problem.
 
--Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested. 
+-Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested.
  
--next, read the testing readme at: docs/synthesis_testing_read_me.txt
+-To generate XML output after you have shredded some test XML.  
 
+First, set up the database, so the IDs to be configured are present.  This doc explains that:
 
+http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/output_configurations.readme
+
+Then, read about how to run nodebuilder here, to create the XML output in a new format.
+
+http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/generating_output_manually.readme
+
+There's currently no automated way to generate output (other than cron jobs), which is something we have to add.
+
+You can also test the pylons web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.

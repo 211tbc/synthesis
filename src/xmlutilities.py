@@ -154,6 +154,7 @@ def writeOutXML(writer_instance):
     #figure out what to call the new filename.  can't overwrite an existing page.xml
     attempted_filename = 'page.xml'
     unique_filename = fileutils.getUniqueFileNameForMove(attempted_filename, writer_instance.outDirectory)
+    #print '==== tree._root:', ET.tostring(writer_instance.root_element.getchildren()[0]) #_root.getchildren()[0].text  # getchildren() = clients, entry_exits
     tree.write(os.path.join(writer_instance.outDirectory, unique_filename))
             
 #if __name__ == "__main__":

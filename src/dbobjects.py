@@ -16,7 +16,8 @@ class DB:
     
     def __init__(self):
         #postgresql[+driver]://<user>:<pass>@<host>/<dbname>    #, server_side_cursors=True)    
-        self.Session = sessionmaker()
+        self.Session = sessionmaker()	# Was
+        #self.Session = sessionmaker(bind=self.pg_db_engine)	# JCS
         loglevel = 'DEBUG' 
         self.log = Logger(settings.LOGGING_INI, loglevel)
 
@@ -1916,6 +1917,7 @@ class Person(DB.Base, MapBase):
     person_legal_first_name_hashed_date_collected = Column(DateTime(timezone=False))
     person_legal_first_name_hashed_date_effective = Column(DateTime(timezone=False))
     person_legal_first_name_unhashed_date_collected = Column(DateTime(timezone=False))        
+    person_legal_first_name_unhashed_date_effective = Column(DateTime(timezone=False)) # JCS Added
     person_legal_last_name_hashed = Column(String(32))
     person_legal_last_name_unhashed = Column(String(50))
     person_legal_last_name_unhashed_date_collected = Column(DateTime(timezone=False))
@@ -2041,7 +2043,8 @@ class Source(DB.Base, MapBase):
     useexisting = True
     #properties={'fk_source_to_export': relation(Export, backref='fk_export_to_source')})
         
-class SystemConfiguration(DB.Base, MapBase):
+class SystemConfiguration(DB.Base, MapBase):	# Was
+#class SystemConfiguration(MapBase, DB.Base):	# JCS 10/1/11
     __tablename__ = 'system_configuration_table'
     id = Column(Integer, primary_key=True)
     vendor_name = Column(String(50))

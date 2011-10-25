@@ -17,6 +17,8 @@ Options:
                         end date of reporting
   -r Reported, --reported=True or False
                         if the data has been reported before
+  -a AllDates, --alldates
+                        report all dates
                         
 '''
 
@@ -34,6 +36,9 @@ class QueryObject:
         parser.add_option("-e", "--enddate", dest="endDate", type="string",
                           help="end date of reporting", metavar="EndDate")
         
+        parser.add_option("-a", "--alldates", action="store_true", dest="alldates",
+                          help="Select all dates", metavar="AllDates")
+
         #parser.add_option("-r", "--reported", dest="reported",
         #                  help="1=True or 0=False use the reported boolean indicator in the tables for data selection", metavar="Reported")
         parser.add_option("-r", "--reported", action="store_true", dest="reported",
@@ -48,7 +53,8 @@ class QueryObject:
         #print "arg:", arg
         
         #print 'options.vendorID=%s' % options.vendorID
-        if self.options.configID == None or self.options.startDate == None or self.options.endDate == None:
+        if self.options.configID == None or (self.options.alldates == None and \
+			(self.options.startDate == None or self.options.endDate == None)):
             parser.print_help()
             self.options = None
             return
@@ -59,8 +65,10 @@ class QueryObject:
             self.options.startDate = datetime.strptime(self.options.startDate, '%Y-%m-%d')
             self.options.endDate = datetime.strptime(self.options.endDate, '%Y-%m-%d')
         except:
-            parser.print_help()
-            raise
+	    #print '==== parse dates error (because there are none)'
+	    if self.options.alldates == None:	# JCS
+                parser.print_help()
+                raise
         
     def getOptions(self):
         return self.options

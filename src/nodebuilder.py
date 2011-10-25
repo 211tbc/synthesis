@@ -14,8 +14,8 @@ import postprocessing
 import fileutils
 from emailprocessor import XMLProcessorNotifier
 import iniutils
-from hmisxml30writer import HMISXMLWriter
-from hmisxml28writer import HMISXML28Writer
+# from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
+# from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded
 global hmisxml28writer_loaded
 global hmisxml30writer_loaded
@@ -45,21 +45,24 @@ class NodeBuilder():
         self.transport = outputConfiguration.Configuration[queryOptions.configID]['transportConfiguration']
         
         self.queryOptions = queryOptions
-        
+        print '==== Output Format', generateOutputformat		# JCS
         if generateOutputformat == 'svcpoint5':
             #from svcPointXML20writer import SvcPointXML20Writer
             # pick the plug-in to import
             try:
-                from synthesis.svcpointxml5writer import SvcPointXMLWriter
+                from synthesis.svcpointxml5writer import SvcPointXML5Writer
                 svcptxml5writer_loaded = True
                 print "import of Svcpt XML Writer, version 5 was successful"
-            except:
-                print "import of Svcpt XML Writer, version 5 failed"
+            except Exception as e:							# JCS
+                print "import of Svcpt XML Writer, version 5 failed", e	# JCS
                 svcptxml5writer_loaded = False
-            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
+            self.writer = SvcPointXML5Writer(settings.OUTPUTFILES_PATH, queryOptions)
+            print '==== self.writer:', self.writer
             self.validator = SvcPoint5XMLTest()
+            print '==== self.validator:', self.validator
         
-        if generateOutputformat == 'svcpoint406':
+        #if generateOutputformat == 'svcpoint406':	# Was
+        elif generateOutputformat == 'svcpoint406':	# JCS
             #from svcPointXML20writer import SvcPointXML20Writer
             # pick the plug-in to import
             try:
@@ -133,6 +136,7 @@ class NodeBuilder():
         
         #setup the postprocessing module    
         self.pprocess = postprocessing.PostProcessing(queryOptions.configID)
+        #print '==== self.pprocess:', self.pprocess	# JCS - empty??
         
     def run(self):
         '''This is the main method controlling this entire program.'''

@@ -65,7 +65,8 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
             self.debug = False
         
         iniFile = 'logging.ini'
-        self.debugMessages = Logger(iniFile)
+        #self.debugMessages = Logger(iniFile)	# Was
+        self.debugMessages = Logger(settings.LOGGING_INI)	# JCS
         
         # pull the vendor output parameters (this is a Dictionary)
         self.outputConfig = outputConfiguration.Configuration[vendorID]

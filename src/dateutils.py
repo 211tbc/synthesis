@@ -25,7 +25,9 @@ THE SOFTWARE.
 from datetime import datetime, date, time, timedelta
 from time import strptime
 
-def fixDate(self, inputDate):
+#def fixDate(self, inputDate):
+def  fixDate(inputDate):		# JCS
+    isIsoTimeFormat = '%Y-%m-%dT%H:%M:%S'
     #dateParts = strptime(s, "%m/%d/%Y")[0:3]
     #newDate = datetime(*strptime(inputDate, "%d-%b-%y")[0:3]).isoformat()
     # test the inputDate length, it might be 08/08/2007 or 08/08/07
@@ -35,7 +37,7 @@ def fixDate(self, inputDate):
         #return inputDate.isoformat()
             #ECJ20100909: the datetime strftime() methods require year >= 1900
             try:
-                return inputDate.strftime(self.isIsoTimeFormat)
+                return inputDate.strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
             except ValueError:
                 print "bad date string passed to fixDate: ", inputDate, " so sending back blank date"
                 #We should return None instead of a blank date, because this might cause validation issues (empty string dates)
@@ -44,11 +46,11 @@ def fixDate(self, inputDate):
     # SBB20100225 Replaceing isoformat() with less precision, same format just dropping the Microseconds.
     if inputDate == "" or inputDate == None:
     #return datetime.now().isoformat()
-            return datetime.now().strftime(self.isIsoTimeFormat)
+            return datetime.now().strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
 
     else:
     #newDate = self.getDateTimeObj(inputDate).isoformat()
-        newDate = self.getDateTimeObj(inputDate).strftime(self.isIsoTimeFormat)
+        newDate = self.getDateTimeObj(inputDate).strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
         if self.debug == True:
             self.debugMessages.log("FUNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
             return newDate

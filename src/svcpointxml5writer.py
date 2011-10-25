@@ -42,8 +42,7 @@ def buildWorkhistoryAttributes(element):
 	element.attrib['date_added'] = datetime.now().isoformat()
 	element.attrib['date_effective'] = datetime.now().isoformat()
 
-class SvcPointXMLWriter():
-	
+class SvcPointXML5Writer():
 	# Writer Interface
 	implements (Writer)
 	
@@ -59,7 +58,8 @@ class SvcPointXMLWriter():
 		if settings.DEBUG:
 			print "XML File to be dumped to: %s" % poutDirectory
 			
-			self.log = logger.Logger(configFile='logging.ini', loglevel=40)
+			#self.log = logger.Logger(configFile='logging.ini', loglevel=40)# Was
+			self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)	# JCS 10/3/11
 			
 		self.outDirectory = poutDirectory
 		self.pickList = Interpretpicklist()
@@ -69,7 +69,13 @@ class SvcPointXMLWriter():
 		# SBB20070628 adding a buffer for errors to be displayed at the end of the process.
 		self.errorMsgs = []
 		self.iDG = xmlutilities.IDGeneration()
-		#self.mappedObjects = dbobjects.DatabaseObjects()
+		#self.mappedObjects = dbobjects.DatabaseObjects()	# Old commented out
+
+		# # JCS 10/05/11
+		self.db = dbobjects.DB()
+		# mappedObjects = dbobjects.DB()	# JCS 10/05/11
+ 		self.db.Base.metadata.create_all()
+	#	self.session = self.db.Session()
 		
 		#import logging
 		#logging.basicConfig()
@@ -80,7 +86,8 @@ class SvcPointXMLWriter():
 		self.startTransaction()
 		self.processXML()
 		self.prettify()
-		xmlutilities.writeOutXML()
+		print '==== Self:', self
+		xmlutilities.writeOutXML(self)	# JCS
 		#self.commitTransaction()
 		return True
 
@@ -121,46 +128,57 @@ class SvcPointXMLWriter():
 	#pass
 	
 	def startTransaction(self):
+	    #pass
 		# instantiate DB Object layer
 		# Create the transaction
 		# get a handle to our session object
-		self.session = self.mappedObjects.session(echo_uow=True)
+	#	self.session = self.mappedObjects.session(echo_uow=True)	# JCS - done above???
+	    self.session = self.db.Session()
 		#self.transaction = self.session.create_transaction()
 		#pass
 		
 		# SBB20100402 Querying for configuration information
 	def pullConfiguration(self, pExportID):
 	# need to use both ExportID and Processing Mode (Test or Prod)
-		source = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == pExportID).one()
+	       #source = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == pExportID).one() ?name
+		export = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == pExportID).one()
 		#ECJ20100908 Adding some debugging
-		#if settings.DEBUG:
-			#print "trying to do pullConfiguration"
-			#print "source is:", source
-			#print "pExportID is", pExportID
-			#print "source.source_id is: ", source.source_id
+		if settings.DEBUG:
+			print "trying to do pullConfiguration"
+			#print "export is:", export, "pExportID is", pExportID
+			#print "export.export_id is: ", export.export_id
 			#print "dbobjects.SystemConfiguration.source_id is ", dbobjects.SystemConfiguration.source_id
 			#print "test dbobjects.SystemConfiguration.source_id == source.source_id yields ", assert dbobjects.SystemConfiguration.source_id == source.source_id
-			#print "dbobjects.Source.export_id is", dbobjects.Source.export_id
+			#print "dbobjects.Source.export_id is", dbobjects.Source.export_id	# No such field
 			#print "self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID) is: ", self.session.query(dbobjects.Source).filter(dbobjects.Source.export_id == pExportID)
 			#print "self.session.query().one() is", self.session.query().one()
+
+
+		selink = self.session.query(dbobjects.SourceExportLink).filter(dbobjects.SourceExportLink.export_index_id == export.id).one()
+		#print '==== Selink.id:', selink.id
+		source = self.session.query(dbobjects.Source).filter(dbobjects.Source.id == selink.source_index_id).one()
+		#print '==== Source.id:', source.id
 		self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
+		#print '==== sys config.id', self.configurationRec.id
 	
 	def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
 		if settings.DEBUG:
-			print "Appending XML to Base Record"
+			print "processXML: Appending XML to Base Record"
 		
 		# generate the SystemID Number based on the Current Users Data, You must pass in the word 'system' in order to create the current users key.
 		self.SystemID = self.iDG.generateSystemID('system')
-	
+		#print '==== SystemID:', self.SystemID
 		# start the clients
 		
 		self.root_element = self.createDoc() #makes root element with XML header attributes
-		
-		clients = self.createClients(self.root_element)
-		
+		#print '==== root created'
+		#return	# JCS
+		#test_only_content = ET.SubElement(self.root_element, "somethingNotInXSD")	# JCS
+		clients = self.createClients(self.root_element) # JCS - clients tag is 'clientRecords'
+		# Only node allowed under clients is <Client>
+		print '==== clients created'
 		# Clear the session
 		#session.clear()
-		
 		# first get the export object then get it's related objects
 		
 		if self.options.reported == True:
@@ -171,29 +189,34 @@ class SvcPointXMLWriter():
 			Persons = self.session.query(dbobjects.Person)
 		else:
 			pass
-		
+		#print '==== persons:', Persons	# Big list of ???: SELECT person.id AS person_id, etc.
+		#print '==== person:', Persons.person.id   # AttributeError: 'Query' object has no attribute 'person'
 		# try to append the filter object to the predefined result set
 		# this works, it now applies the dates to the result set.
-		Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
-		
-		#or_(User.name == 'ed', User.name == 'wendy')
+                if self.options.alldates == None:
+                    Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
+		#print '==== # Persons:', Persons.count()   # 
 		#Persons = self.session.query(dbobjects.Person)
-		#Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == None) (works)
 		
-		
+		pulledConfigID = 0	# JCS Only pull it if it has changed
 		for self.person in Persons:
 			#print "person is: ", self.person
-			# SBB20100402 Need to load the configuration based on related source table record (via the export record that is related to person)
+			# SBB20100402 Need to load the configuration based on related source table record 
+			#			(via the export record that is related to person)
 			export = self.person.fk_person_to_export
-			self.pullConfiguration(export.export_id)
+			#print "==== export before pullconfig:", export.id, export  # JCS
+			if pulledConfigID != export.id:
+    			    self.pullConfiguration(export.export_id)
+			    pulledConfigID = export.id
 			
 			# update the reported flag for person (This needs to be applied to all objects that we are getting data from)
 			self.updateReported(self.person)
-			
-			self.ph = self.person.fk_person_to_person_historical
+			self.ph = self.person.fk_person_to_person_historical	# JCS This is a list of records
 			self.race = self.person.fk_person_to_races
-			self.site_service_part = self.person.fk_person_to_site_svc_part
-			information_releases = self.person.fk_person_to_release_of_information
+			#self.site_service_part = self.person.fk_person_to_site_svc_part	# JCS
+			self.site_service_part = self.person.site_service_participations	# JCS
+
+			information_releases = self.person.fk_person_to_release_of_information	# JCS a set
 			#self.service_event = self.person.fk_person_to_service_event
 			
 			# Instead of generating a number (above), use the client number that is already provided in the legacy system
@@ -204,11 +227,16 @@ class SvcPointXMLWriter():
 				#print "self.person is:", self.person 
 			#if not self.person == None and self.outcomes == None:
 			if self.person:# and not self.person.person_legal_first_name_unhashed == None and not self.person.person_legal_last_name_unhashed == None :
-				self.client = self.createClient(clients)
-				self.customizeClient(self.client)
+				self.client = self.createClient(clients) # JCS - no clients in svc5? yes as clientRecords
+				# Sub this can be: active, anonymous, firstName, suffix, unnamedClient, alias,
+				# middleName, childEntryExit, childReleaseOfInfo, childGoal
+				self.customizeClient(self.client)	
 				self.customizeClientPersonalIdentifiers(self.client, self.person)
-				dynamic_content = self.createDynamicContent(self.client)
-				self.customizeDynamicContent(dynamic_content)
+			        self.child_entry_exits = self.createChildEntryExit(self.client)
+			     	self.assessment_data = self.createAssessmentData(self.client) # JCS New - self?
+				self.customizeAssessmentData(self.assessment_data)
+			    #	dynamic_content = self.createDynamicContent(self.client) # JCS Not under Client svp5
+			    #	self.customizeDynamicContent(dynamic_content)
 			# EntryExits
 			# SBB20100311 These need to be at Document Level not client level
 			#entry_exits = self.createEntryExits(self.client)
@@ -216,6 +244,9 @@ class SvcPointXMLWriter():
 			
 			#ECJ20100912 Unlike in SP406 XML, needs can only exist within SiteServiceParticipations (aka Entry-exits) in HMIS XML 2.8
 			#ECJ20100912 So, we have to pull Needs out of SiteServiceParticipations/EEs and put them separately right under Client in SP406
+
+			#continue	# JCS JCS
+		
 			for ssp in self.site_service_part:
 				#self.createEntryExit(entry_exits, ssp)
 				#needData = None
@@ -340,21 +371,25 @@ class SvcPointXMLWriter():
 	def createDoc(self):
 		root_element = ET.Element("records")
 		root_element.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-		root_element.attrib["xsi:noNamespaceSchemaLocation"] = "sp.xsd" 
-		root_element.attrib["schema_revision"] = "300_108"
+		root_element.attrib["xsi:noNamespaceSchemaLocation"] = "sp5.xsd" 
+		#root_element.attrib["schema_revision"] = "300_108"	# JCS Not in Schema
 		root_element.text = "\n"
 		return root_element
 
 	def createClients(self, root_element):
-		clients = ET.SubElement(root_element, "clients")
+		clients = ET.SubElement(root_element, "clientRecords")
 		return clients
 	
 	def createClient(self, clients):
-		client = ET.SubElement(clients, "client")
+		client = ET.SubElement(clients, "Client")	#  Cap 'C' in svc5
 		return client
-	
+
+	def createChildEntryExit(self,client):
+		child_entry_exit = ET.SubElement(client, "childEntryExit") # JCS new - sub-client
+		return child_entry_exit
+
 	def createEntryExits(self,root_element):
-		entry_exits = ET.SubElement(root_element, "entry_exits")
+		entry_exits = ET.SubElement(root_element, "entryExitRecords") # JCS entry_exits")
 		return entry_exits
 		
 	def customizeClient(self, client):
@@ -364,14 +399,19 @@ class SvcPointXMLWriter():
 		self.iDG.generateSysID2(keyval, self.sysID)	
 		recID = self.iDG.generateRecID(keyval)
 	
-			
+		print "==== Customize Client:", recID, self.configurationRec.odbid, self.person.person_id_unhashed
 		client.attrib["record_id"] = recID 
+		# JCS Example then has: external_id="4NcCmaR9" and system_id="IxwhS7TB", no 'odbid'
+
 		#client.attrib["odbid"] = "5"
-		client.attrib["odbid"] = "%s" % self.configurationRec.odbid
+		#client.attrib["odbid"] = "%s" % self.configurationRec.odbid	# illegal per xsd
+		client.attrib["system_id"] = "%s" % self.configurationRec.odbid	# JCS just a guess ????
 		
 		# SBB20100511 Changing this to be the actual Client ID value
 		#client.attrib["system_id"] = sysID
-		client.attrib["system_id"] = self.person.person_id_unhashed
+
+		# This is None JCS
+		#client.attrib["system_id"] = self.person.person_id_unhashed
 		
 		client.attrib["date_added"] = datetime.now().isoformat()
 		client.attrib["date_updated"] = datetime.now().isoformat()
@@ -395,11 +435,11 @@ class SvcPointXMLWriter():
 	def customizeClientPersonalIdentifiers(self,client,recordset):
 	
 		if recordset.person_legal_first_name_unhashed <> "" and recordset.person_legal_first_name_unhashed <> None:
-			first_name = ET.SubElement(client, "first_name")
+			first_name = ET.SubElement(client, "firstName")
 			first_name.text = recordset.person_legal_first_name_unhashed
 		
 		if recordset.person_legal_last_name_unhashed <> "" and recordset.person_legal_last_name_unhashed <> None:
-			last_name = ET.SubElement(client, "last_name")
+			last_name = ET.SubElement(client, "lastName")
 			last_name.text = recordset.person_legal_last_name_unhashed
 		
 		#we don't have the following elements for daily_census only clients, but SvcPt requires them:
@@ -409,14 +449,14 @@ class SvcPointXMLWriter():
 			mi_initial.text = self.fixMiddleInitial(recordset.person_legal_middle_name_unhashed)
 			
 		# SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
-		fixedSSN = self.fixSSN(recordset.person_SSN_unhashed)
+		fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed) # JCS  .person_SSN_unhashed)
 		#ECJ20071111 Omit SSN if it's blank			
 		if fixedSSN <> "" and fixedSSN <> None:	
-			soc_sec_no = ET.SubElement(client, "soc_sec_no")
+			soc_sec_no = ET.SubElement(client, "socSecNoDashed")
 			soc_sec_no.text = fixedSSN
 			
 			#ECJ20071203 We could make the code more complex to determine if partial ssn, but don't know/refused would have to be collected by shelter.
-			ssn_data_quality = ET.SubElement(client, "ssn_data_quality")
+			ssn_data_quality = ET.SubElement(client, "ssnDataQualityValue")
 			ssn_data_quality.text = "full ssn reported (hud)"
 		
 
@@ -550,6 +590,7 @@ class SvcPointXMLWriter():
 			if needData.need_status == "1":
 				#if settings.DEBUG:
 					#print "1 converted to identified"
+
 				converted_status = "identified"
 			elif needData.need_status == "2":
 				#if settings.DEBUG:
@@ -886,6 +927,28 @@ class SvcPointXMLWriter():
 		witness = ET.SubElement(info_release, "witness")
 		witness.text = "tok50Type"
 			
+	def createAssessmentData(self, client):
+		# dynamic content type
+		assessment_data = ET.SubElement(client, "assessmentData")
+		return assessment_data
+
+	def customizeAssessmentData(self, assessment_data):
+    	    for ph in self.ph:
+	        print '==== ph:', ph #, ph.__dict__
+
+	        hs = self.session.query(dbobjects.HousingStatus).filter(dbobjects.HousingStatus.person_historical_index_id == ph.id).one()
+                hsText = self.pickList.getValue("HOUSINGSTATUSPickOption",hs.housing_status)
+	        print '==== hs:', hsText
+	        if hsText <> None:
+	            housingStatus = ET.SubElement(assessment_data, "svp_hud_housingstatus")	# JCS
+	            housingStatus.attrib["date_added"] = dateutils.fixDate(hs.housing_status_date_collected)
+	            housingStatus.attrib["date_effective"] = dateutils.fixDate(hs.housing_status_date_effective)
+                    housingStatus.text = hsText
+		    # if ph.hud_homeless == '1':
+		    # 	  isclienthomeless.text = 'true'
+		    # if ph.hud_homeless == '' or ph.hud_homeless == None:
+	   	    #     isclienthomeless.text = 'false'		# JCS Need Dates??
+
 	def createDynamicContent(self, client):
 		# dynamic content section (installation-specific fields)
 		dynamic_content = ET.SubElement(client, "dynamic_content")
@@ -902,14 +965,15 @@ class SvcPointXMLWriter():
 			dbo_veteran = ph.fk_person_historical_to_veteran
 			
 			# Is client homeless?
+			#isclienthomeless = ET.SubElement(dynamiccontent, "isclienthomeless")	# JCS
 			if ph.hud_homeless <> "" and ph.hud_homeless <> None:
-				isclienthomeless = ET.SubElement(dynamiccontent, "isclienthomeless")
+			#	isclienthomeless = ET.SubElement(dynamiccontent, "isclienthomeless")
 				isclienthomeless.attrib["date_added"] = datetime.now().isoformat()
 				isclienthomeless.attrib["date_effective"] = dateutils.fixDate(ph.hud_homeless_date_collected)
 			if ph.hud_homeless == '1':
 				isclienthomeless.text = 'true'
 			if ph.hud_homeless == '' or ph.hud_homeless == None:
-				isclienthomeless.text = 'false'
+				isclienthomeless.text = 'false'		# JCS Need Dates??
 		
 			if ph.physical_disability <> "" and ph.physical_disability <> None:
 				hud_disablingcondition = ET.SubElement(dynamiccontent, "hud_disablingcondition")
@@ -1066,10 +1130,10 @@ class SvcPointXMLWriter():
 			#if self.intakes['ResidentialCity'] <> "" and self.intakes['ResidentialState'] <> "":
 					address_1 = self.createAddress_1(dynamiccontent)
 					self.customizeAddress_1(address_1, dbo_address[0])
-				
-			if str(dbo_address[0].zipcode) <> "" and not dbo_address[0].zipcode == None:
-				address_1 = self.createAddress_1(dynamiccontent)
-				self.customizeAddress_1(address_1, dbo_address[0])	
+				# JCS Was an 'if' and shifted left - failed when no addr
+				elif str(dbo_address[0].zipcode) <> "" and not dbo_address[0].zipcode == None:
+					address_1 = self.createAddress_1(dynamiccontent)
+					self.customizeAddress_1(address_1, dbo_address[0])	
 		
 		#	if self.intakes['Emergency Address'] <> "":
 		#	emergencycontacts = self.createEmergencyContacts(dynamiccontent)
@@ -1103,7 +1167,10 @@ class SvcPointXMLWriter():
 		if self.person.person_gender_unhashed <> "" and self.person.person_gender_unhashed <> None:
 			svpprofgender = ET.SubElement(dynamiccontent, "svpprofgender")			
 			svpprofgender.attrib["date_added"] = datetime.now().isoformat()
-			svpprofgender.attrib["date_effective"] = dateutils.fixDate(self.person.person_gender_date_collected)
+			#print '==== gender collected:', self.person.person_gender_unhashed_date_collected
+			#print '==== dateutils', dateutils
+			#print '==== dateutils.fixDate', dateutils.fixDate
+			svpprofgender.attrib["date_effective"] = dateutils.fixDate(self.person.person_gender_unhashed_date_collected)
 			svpprofgender.text = self.pickList.getValue("SexPick",self.person.person_gender_unhashed)
 	
 		# dob (Date of Birth)		
@@ -1111,7 +1178,7 @@ class SvcPointXMLWriter():
 			svpprofdob = ET.SubElement(dynamiccontent, "svpprofdob")
 			svpprofdob.attrib["date_added"] = datetime.now().isoformat()
 			#print "self.person.person_date_of_birth_date_collected", self.person.person_date_of_birth_date_collected
-			svpprofdob.attrib["date_effective"] = dateutils.fixDate(self.person.person_date_of_birth_date_collected)
+			svpprofdob.attrib["date_effective"] = dateutils.fixDate(self.person.person_date_of_birth_unhashed_date_collected)
 			svpprofdob.text = dateutils.fixDate(self.person.person_date_of_birth_unhashed)
 
 		if len(self.race) > 0:
@@ -1132,7 +1199,7 @@ class SvcPointXMLWriter():
 		if ethnicity <> "" and ethnicity <> None:
 			svpprofeth = ET.SubElement(dynamiccontent, "svpprofeth")
 			svpprofeth.attrib["date_added"] = datetime.now().isoformat()
-			svpprofeth.attrib["date_effective"] = dateutils.fixDate(self.person.person_ethnicity_date_collected)
+			svpprofeth.attrib["date_effective"] = dateutils.fixDate(self.person.person_ethnicity_unhashed_date_collected)
 			svpprofeth.text = self.pickList.getValue("EthnicityPick", str(ethnicity))
 
 		#Prior Living Situation Handling
@@ -1427,7 +1494,8 @@ class SvcPointXMLWriter():
 				
 		# If we are here, we can simply reformat the string into dashes
 		if settings.DEBUG:
-			self.debugMessages.log("incoming SSN is INcorrectly formatted: %s.  Reformatting to: %s\n" % (incomingSSN, '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])))
+		        pass	# JCS
+		#	self.debugMessages.log("incoming SSN is INcorrectly formatted: %s.  Reformatting to: %s\n" % (incomingSSN, '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])))
 		return '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])
 				
 #if __name__ == "__main__":

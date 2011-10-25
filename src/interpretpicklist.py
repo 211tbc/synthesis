@@ -48,7 +48,17 @@ class Interpretpicklist:
 			"17":"unknown",
 			"2":"wife"
 			}
-		    
+		    ,"HOUSINGSTATUSPickOption":
+			{
+			"1":"don't know (hud)",
+			"2":"imminently losing their housing (hud)",
+			"3":"literally homeless (hud)",
+			"4":"refused (hud)",
+			"5":"stably housed (hud)",
+			"6":"unstably housed and at-risk of losing their housing (hud)",
+			"7":None,
+			"8":None
+			}
 		    ,"ROIDocumentationPickOption":
 			{
 			"4":"none",

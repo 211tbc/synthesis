@@ -70,7 +70,7 @@ $ ./bin/paster create -t pylons synthesis
 -ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
 
 edit ~/myrestservice/bin/python to add the path:
-'/home/synthesis/myrestservice/synthesis/synthesis',
+'/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis',
 as another entry in the sys.path[0:0] =  section.
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
@@ -78,7 +78,7 @@ as another entry in the sys.path[0:0] =  section.
 ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
 
 -or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
--stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster --pid-file=./paster.pid serve ./development.ini stop
+-stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files automatically, so not a problem.
 

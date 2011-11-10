@@ -77,6 +77,9 @@ as another entry in the sys.path[0:0] =  section.
 ~/myrestservice$ cd synthesis
 ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
 
+*Note: synthesis, since it is built using buildout, which generates a proxy python interpreter, *always* must be run from this generated python interpreter.
+If you try to run it from your system's built-in python interpreter (as with virtualenv), synthesis will not find its dependencies.
+ 
 -or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
 -stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
 

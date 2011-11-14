@@ -43,14 +43,14 @@ def  fixDate(inputDate):		# JCS
                 #We should return None instead of a blank date, because this might cause validation issues (empty string dates)
                 inputDate = None
                 return inputDate    
-    # SBB20100225 Replaceing isoformat() with less precision, same format just dropping the Microseconds.
+    # SBB20100225 Replacing isoformat() with less precision, same format just dropping the Microseconds.
     if inputDate == "" or inputDate == None:
     #return datetime.now().isoformat()
             return datetime.now().strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
 
     else:
     #newDate = self.getDateTimeObj(inputDate).isoformat()
-        newDate = self.getDateTimeObj(inputDate).strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
+        newDate = getDateTimeObj(inputDate).strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
         if self.debug == True:
             self.debugMessages.log("FUNCTION: fixDate() incoming date is: %s and clean date is: %s\n" % (inputDate, newDate))
             return newDate
@@ -116,7 +116,7 @@ def convertIntegerToDateTime(self, intDate):
         print 'Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime)
     return isodatetime
 
-def getDateTimeObj(self, inputDate):
+def getDateTimeObj(inputDate): 	#:self, 
         dateParts = inputDate.split('/')
         if len(dateParts[2]) == 4:
             inputDateFmt = "%m/%d/%Y"

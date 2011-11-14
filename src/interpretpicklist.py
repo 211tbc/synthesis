@@ -48,6 +48,85 @@ class Interpretpicklist:
 			"17":"unknown",
 			"2":"wife"
 			}
+ 		    ,"LENGTHOFTHESTAYPickOption":
+			{
+	                "1":"don't know (hud)",
+        	        "2":"more than one week, but less than one month (hud)",
+        	        "3":"more than three months, but less than one year (hud)",
+        	        "4":"one to three months (hud)",
+        	        "5":"one week or less (hud)",
+        	        "6":"one year or longer (hud)",
+        	        "7":"other",
+        	        "8":"refused (hud)"
+			}
+
+			# New picklist, straight out of the schema - Are numbers correct?
+                    ,"LIVINGSITTYPESPickOption":
+                        {
+                        "1":"don't know (hud)",
+                        "2":"emergency shelter, including hotel or motel paid for with emergency shelter voucher(hud)",
+                        "3":"foster care home or foster care group home (hud)",
+                        "4":"hospital (non-psychiatric) (hud)",
+                        "5":"hotel or motel paid for without emergency shelter voucher (hud)",
+                        "6":"jail, prison or juvenile detention facility (hud)",
+                        "7":"other (hud)",
+                        "8":"owned by client, no housing subsidy (hud)",
+                        "9":"owned by client, with housing subsidy (hud)",
+                        "10":"permanent housing for formerly homeless persons(such as shp, s+c, or sro mod rehab)(hud)",
+                        "11":"place not meant for habitation inclusive of 'non-housing service site(outreach programs only)'(hud)",
+                        "12":"psychiatric hospital or other psychiatric facility (hud)",
+                        "13":"refused (hud)",
+                        "14":"rental by client, no housing subsidy (hud)",
+                        "15":"rental by client, with other (non-vash) housing subsidy (hud)",
+                        "16":"rental by client, with vash housing subsidy (hud)",
+                        "17":"safe haven (hud)",
+                        "18":"staying or living in a family member's room, apartment or house (hud)",
+                        "19":"staying or living in a friend's room, apartment or house (hud)",
+                        "20":"subsidized housing",
+                        "21":"substance abuse treatment facility or detox center (hud)",
+                        "22":"transitional housing for homeless persons (including homeless youth) (hud)"
+                        }
+		# This is the old picklist - xml doesn't validate if use this
+#		,"LIVINGSITTYPESPickOption":{
+#			"Domestic Violence":"domestic violence situation",
+#			"?":"don't know (hud)",
+#			"Emergency Shelter/TH":"emergency shelter (hud)",
+#			"Foster Care":"foster care/group home (hud)",
+#			"Hospital":"hospital (hud)",
+#			"Hotel/Motel":"hotel/motel without emergency shelter(hud)",
+#			"Jail/Prison":"jail, prison or juvenile facility  (hud)",
+#			"Living With Family":"living with family (hud)",
+#			"Living with Friend":"living with friends (hud)",
+#			"Living With Friend":"living with friends (hud)",
+#			"Own Home":"own house/apartment (hud)",
+#			"Halfway House":"permanent housing for formerly homeless (hud)",
+#			"Street":"place not meant for habitation (hud)",
+#			"Psychiatric Facility":"psychiatric hospital or facility (hud)",
+#			"Refused":"refused (hud)",
+#			"Rented":"rental house/apartment (hud)",
+#			"Housing Subsized":"subsidized housing",
+#			"Treatment Center":"substance abuse treatment center (hud)",
+#			"Transitional Housing":"transitional housing for homeless(hud)",
+#			"1":"emergency shelter (hud)",
+#			"2":"transitional housing for homeless(hud)",
+#			"3":"permanent housing for formerly homeless (hud)",
+#			"4":"psychiatric hospital or facility (hud)",
+#			"5":"substance abuse treatment center (hud)",
+#			"6":"hospital (hud)",
+#			"7":"jail, prison or juvenile facility  (hud)",
+#			"8":"don't know (hud)",
+#			"9":"refused (hud)",
+#			"10":"rental house/apartment (hud)",
+#			"11":"own house/apartment (hud)",
+#			"12":"living with family (hud)",
+#			"13":"living with friends (hud)",
+#			"14":"hotel/motel without emergency shelter(hud)",
+#			"15":"foster care/group home (hud)",
+#			"16":"place not meant for habitation (hud)",
+#			"17":"other (hud)"
+#                        }
+
+
 		    ,"HOUSINGSTATUSPickOption":
 			{
 			"1":"don't know (hud)",
@@ -114,7 +193,7 @@ class Interpretpicklist:
 			"Veteran's Health Care":"veteran&apos;s administration (va) medical services (hud)",
 			"Veteran's Benefits":"veteran&apos;s pension (hud)",
 			"":"worker&apos;s compensation (hud)"
-		}
+	         	}
 #		2.8 Picklists <xsd:simpleType name="residenceBase">
 #        <xsd:annotation>
 #            <xsd:documentation xml:lang="en">    
@@ -138,45 +217,6 @@ class Interpretpicklist:
 #                17 = Other
 #            </xsd:documentation>
 #            
-		
-		,"LIVINGSITTYPESPickOption":{
-			"Domestic Violence":"domestic violence situation",
-			"?":"don't know (hud)",
-			"Emergency Shelter/TH":"emergency shelter (hud)",
-			"Foster Care":"foster care/group home (hud)",
-			"Hospital":"hospital (hud)",
-			"Hotel/Motel":"hotel/motel without emergency shelter(hud)",
-			"Jail/Prison":"jail, prison or juvenile facility  (hud)",
-			"Living With Family":"living with family (hud)",
-			"Living with Friend":"living with friends (hud)",
-			"Living With Friend":"living with friends (hud)",
-			"Own Home":"own house/apartment (hud)",
-			"Halfway House":"permanent housing for formerly homeless (hud)",
-			"Street":"place not meant for habitation (hud)",
-			"Psychiatric Facility":"psychiatric hospital or facility (hud)",
-			"Refused":"refused (hud)",
-			"Rented":"rental house/apartment (hud)",
-			"Housing Subsized":"subsidized housing",
-			"Treatment Center":"substance abuse treatment center (hud)",
-			"Transitional Housing":"transitional housing for homeless(hud)",
-			"1":"emergency shelter (hud)",
-			"2":"transitional housing for homeless(hud)",
-			"3":"permanent housing for formerly homeless (hud)",
-			"4":"psychiatric hospital or facility (hud)",
-			"5":"substance abuse treatment center (hud)",
-			"6":"hospital (hud)",
-			"7":"jail, prison or juvenile facility  (hud)",
-			"8":"don't know (hud)",
-			"9":"refused (hud)",
-			"10":"rental house/apartment (hud)",
-			"11":"own house/apartment (hud)",
-			"12":"living with family (hud)",
-			"13":"living with friends (hud)",
-			"14":"hotel/motel without emergency shelter(hud)",
-			"15":"foster care/group home (hud)",
-			"16":"place not meant for habitation (hud)",
-			"17":"other (hud)"
-		}
 		,"ENHANCEDYESNOPickOption":{
 			"dontknow":"don&apos;t know (hud)",
 			"8":"don&apos;t know (hud)",

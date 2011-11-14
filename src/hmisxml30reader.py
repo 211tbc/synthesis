@@ -1660,9 +1660,9 @@ def parse_age_requirements(self, element):
             ''' Parse sub-tables '''
                         
 
-def parse_site_service_participation(self, element):
+def parse_site_service_participation(self, element, pf='hmis'):
     ''' Element paths '''
-    xpSiteServiceParticipation = 'hmis:SiteServiceParticipation'
+    xpSiteServiceParticipation = pf+':SiteServiceParticipation'	# SVP5 has pf='ext'
     xpSiteServiceParticipationIDIDNum = 'hmis:SiteServiceParticipationID/hmis:IDNum'
     xpSiteServiceParticipationIDIDStr = 'hmis:SiteServiceParticipationID/hmis:IDStr'
     xpSiteServiceParticipationIDDeleteOccurredDate = 'hmis:SiteServiceParticipationID/@hmis:deleteOccurredDate'
@@ -1685,14 +1685,20 @@ def parse_site_service_participation(self, element):
             existence_test_and_add(self, 'site_service_participation_id_delete_occurred_date', item.xpath(xpSiteServiceParticipationIDDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'site_service_participation_id_delete_effective_date', item.xpath(xpSiteServiceParticipationIDDeleteEffective, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'site_service_participation_id_delete', item.xpath(xpSiteServiceParticipationIDDelete, namespaces = self.nsmap), 'attribute_text')           
+
             existence_test_and_add(self, 'site_service_idid_num', item.xpath(xpSiteServiceID, namespaces = self.nsmap), 'text')
+
             existence_test_and_add(self, 'household_idid_num', item.xpath(xpHouseholdIDIDNum, namespaces = self.nsmap), 'text')
             existence_test_and_add(self, 'household_idid_str', item.xpath(xpHouseholdIDIDStr, namespaces = self.nsmap), 'text')
             existence_test_and_add(self, 'participation_dates_start_date', item.xpath(xpStartDate, namespaces = self.nsmap), 'element_date')
             existence_test_and_add(self, 'participation_dates_end_date', item.xpath(xpEndDate, namespaces = self.nsmap), 'element_date')
 
             ''' Foreign Keys '''
-            existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
+	    if pf=='hmis':
+                existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
+            else:
+                existence_test_and_add(self, 'fk_participation_to_person', self.person_index_id, 'no_handling')
+
             existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             ''' Shred to database '''
             shred(self, self.parse_dict, SiteServiceParticipation)
@@ -1701,7 +1707,8 @@ def parse_site_service_participation(self, element):
             parse_reasons_for_leaving(self, item)  
             parse_need(self, item)          
             parse_service_event(self, item)
-            parse_person_historical(self, item)
+	    if pf=='hmis':
+                parse_person_historical(self, item)	# OCC reader has a different copy, parsed earlier
 
 def parse_reasons_for_leaving(self, element):
     ''' Element paths '''
@@ -3937,25 +3944,30 @@ def existence_test_and_add(self, db_column, query_string, handling):
     ''' Checks that the query actually has a result and adds to dictionary '''
     if handling == 'no_handling':
             persist(self, db_column, query_string = query_string)
-            #print query_string
+            #print 'Query string:', query_string
             return True
     elif len(query_string) is not 0 or None:
         if handling == 'attribute_text':
             persist(self, db_column, query_string = str(query_string[0]))
-            #print query_string
+            #print 'Query string:', query_string
             return True
         if handling == 'text':
             persist(self, db_column, query_string = query_string[0].text)
-            #print query_string
+            #print 'Query string:', query_string
             return True
         elif handling == 'attribute_date':
+            print "Column = ", db_column
             #print "dateutil.parser.parse(query_string[0]) is: ", dateutil.parser.parse(query_string[0])
+            print "==== query_string[0] = ", query_string[0]
             persist(self, db_column, query_string = dateutil.parser.parse(query_string[0]))
-            #print query_string
+            print 'Query string:', query_string
             return True
         elif handling == 'element_date':
-            persist(self, db_column, query_string = dateutil.parser.parse(query_string[0].text))
-            #print query_string
+            print "==== Column = ", db_column
+            print "==== query_string[0].text = ", query_string[0].text
+            #print "dateutil.parser.parse(query_string[0].text) is:", dateutil.parser.parse(query_string[0].text), ":"
+            persist(self, db_column, query_string = dateutil.parser.parse(query_string[0].text))  # JCS - added unicode
+            print 'Query string:', query_string
             return True
         else:
             print "Need to specify the handling"

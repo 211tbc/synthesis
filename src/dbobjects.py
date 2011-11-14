@@ -53,6 +53,8 @@ class SiteServiceParticipation(DB.Base, MapBase):
     site_service_participation_idid_num_date_collected = Column(DateTime(timezone=False))
     site_service_participation_idid_str = Column(String(32))
     site_service_participation_idid_str_date_collected = Column(DateTime(timezone=False))
+    site_service_idid_num = Column(String(32))					# JCS
+   #site_service_idid_num_date_collected = Column(DateTime(timezone=False))	# JCS
     destination = Column(String(32))
     destination_date_collected = Column(DateTime(timezone=False))
     destination_other = Column(String(32))
@@ -82,7 +84,8 @@ class SiteServiceParticipation(DB.Base, MapBase):
 class Need(DB.Base, MapBase):
     __tablename__ = 'need'
     id = Column(Integer, primary_key=True)
-    site_service_index_id = Column(Integer, ForeignKey('site_service_participation.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))	# JCS
+    site_service_participation_index_id = Column(Integer, ForeignKey('site_service_participation.id'))	# JCS
     export_index_id = Column(Integer, ForeignKey('export.id'))
     need_idid_num = Column(String(32))
     need_idid_num_date_collected = Column(DateTime(timezone=False))
@@ -308,7 +311,8 @@ class PersonHistorical(DB.Base, MapBase):
     id = Column(Integer, primary_key=True)
     export_index_id = Column(Integer, ForeignKey('export.id'))
     person_index_id = Column(Integer, ForeignKey('person.id'))
-    site_service_index_id = Column(Integer, ForeignKey('site_service_participation.id'))
+    site_service_index_id = Column(Integer, ForeignKey('site_service.id'))	# JCS
+    site_service_participation_index_id = Column(Integer, ForeignKey('site_service_participation.id'))	# JCS
     person_historical_id_id_num = Column(String(32))
     person_historical_id_id_str = Column(String(32))
     person_historical_id_delete_effective_date = Column(DateTime(timezone=False))

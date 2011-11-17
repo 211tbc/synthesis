@@ -60,12 +60,11 @@ class MainProcessor:
                 print "Logs Directory exists:", settings.LOGS
         
         # command argument set's log level or Settings.py
-        if len(sys.argv) > 1:
-            level = sys.argv[1]
-        else:
-            level = 0
+        # ECJ20111117: removed command argument option and now only uses conf/settings.py
+        #if len(sys.argv) > 1:
+        #    level = sys.argv[1]
         
-        debugMessages = Logger(settings.LOGGING_INI, level)
+        debugMessages = Logger(settings.LOGGING_INI, settings.logging_level)
         if settings.DEBUG:
             debugMessages.log("Logging System Online", 0)
             

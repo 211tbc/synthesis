@@ -67,6 +67,7 @@ if not os.path.exists(FAILEDFILES_PATH):
     os.mkdir(FAILEDFILES_PATH)
 
 #logging settings file location setup
+logging_level = 0
 logging_ini_file_name = 'conf/logging.ini'
 relative_logging_ini_filepath = os.path.join(BASE_PATH, logging_ini_file_name)
 logging_ini_filepath = os.path.abspath(relative_logging_ini_filepath)

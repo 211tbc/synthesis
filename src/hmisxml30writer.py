@@ -327,7 +327,7 @@ else:
     raise SoftwareCompatibilityError, theError
 
 # SBB20100810 Making this generic so it can be configured from the settings file
-class HMISXMLWriter(dbobjects.DatabaseObjects):
+class HMISXMLWriter(dbobjects.DB):
     
     
     hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
@@ -343,7 +343,7 @@ class HMISXMLWriter(dbobjects.DatabaseObjects):
         # adding a debug switch that is managed in the INI
         self.debug = debug
         self.outDirectory = poutDirectory
-        self.mappedObjects = dbobjects.DatabaseObjects()
+        self.mappedObjects = dbobjects.DB()
         self.options = processingOptions
         
     def write(self):    

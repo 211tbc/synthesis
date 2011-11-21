@@ -340,11 +340,15 @@ class HMISXMLWriter(dbobjects.DB):
     def __init__(self, poutDirectory, processingOptions, debug=False): #, debugMessages=None):
         self.errorMsgs = []
         self.iDG = xmlutilities.IDGeneration()
-        # adding a debug switch that is managed in the INI
-        self.debug = debug
         self.outDirectory = poutDirectory
-        self.mappedObjects = dbobjects.DB()
+        if settings.DEBUG:
+            print "XML File to be dumped to: %s" % poutDirectory
+            #self.log = logger.Logger(configFile='logging.ini', loglevel=40)# Was
+            self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)
         self.options = processingOptions
+        #self.mappedObjects = dbobjects.DB() 
+        self.db = dbobjects.DB()
+        self.db.Base.metadata.create_all()
         
     def write(self):    
         self.startTransaction()
@@ -362,11 +366,10 @@ class HMISXMLWriter(dbobjects.DB):
     def startTransaction(self):
         # fixme (when in VirtualEnv)
         #self.session = self.mappedObjects.session(echo_uow=True)
-        self.session = self.mappedObjects.session(echo_uow=True)
-        #pass
-    # instantiate DB Object layer
-    # Create the transaction
-    # get a handle to our session object
+        # instantiate DB Object layer
+        # Create the transaction
+        # get a handle to our session object
+        self.session = self.db.Session()
     
     def createDoc(self):
         root_element = ET.Element("hmis:Sources")

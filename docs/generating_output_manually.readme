@@ -8,4 +8,36 @@ to manually generate one of the available output formats:
 
 *tested with HMIS 2.8 converting to SvcPt 4.06 XML
 
+JCS Nov 2011
+
+To run nodebuilder by itself, copy the '~/myrestservice/bin/paster' script to a '~/myrestservice/bin/nodebuild' script,
+then modify the bottom of the file to be:
+#######################################
+if __name__ == '__main__':
+    from synthesis.nodebuilder import NodeBuilder
+    from synthesis.queryobject import QueryObject
+    optParse = QueryObject()
+    options = optParse.getOptions()
+    print "==== options:", options
+    if options != None:
+        NODEBUILDER = NodeBuilder(options)
+        RESULTS = NODEBUILDER.run()
+#########################################
+
+First, import data into the database.
+Then, if you imported in TEST mode, run loadConfiguration.py to reload the system_configuration_table.
+Then run nodebuilder by being in your synthesis dir and entering:   
+
+~/myrestservice/synthesis$ ../bin/nodebuild -i '7777' -a
+
+The '-a' is a new option that processes all dates. It is mutually exclusive with the start and end dates options.
+
+This has been tested after loading data from:
+-received_data_deidentified_2011-08-29.xml (which has been changed to: received_data_deidentified_fixed.xml)
+-HUD_HMIS_3_0_Instance.xml
+-HUD_HMIS_OCC_maximal.xml
+The output xml generated is SvcPt 5.00
+
+
 -todo: document automated configuration, where loadConfiguration and nodebuilder does not need to be manually called
+

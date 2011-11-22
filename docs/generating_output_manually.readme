@@ -1,12 +1,6 @@
-to manually generate one of the available output formats:
--first follow the instructions at /docs/linux_synthesis_install.readme and shred some xml (one_record_test_hmis_xml_2_8.xml is a quick one)
--set up outputConfigurations.py documented at docs/output_configurations.readme
--configure src/loadConfiguration.py with correct system ids for your installation (defaults in that file work for one_record_test_hmis_xml_2_8.xml)
--run loadConfiguration.py to import these configurations into your database
--generate the output by running user@localhost:~/workspace/synthesis/installer/build$ ./python ./nodebuilder.py -i 8888 -s 2005-01-01 -e 2010-08-10 -u
--look at output in your configured output files location (see conf/settings.py)
-
-*tested with HMIS 2.8 converting to SvcPt 4.06 XML
+to manually generate output using one of the available output formats:
+-first follow the instructions at /docs/linux_synthesis_install.readme and shred some xml 
+-then perform the following steps:
 
 JCS Nov 2011
 
@@ -39,5 +33,6 @@ This has been tested after loading data from:
 The output xml generated is SvcPt 5.00
 
 
--todo: document automated configuration, where loadConfiguration and nodebuilder does not need to be manually called
+-todo: document an automated configuration, where loadConfiguration and nodebuilder does not need to be manually called.
+ 		   This functionality does not exist yet.
 

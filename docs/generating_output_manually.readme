@@ -33,6 +33,5 @@ This has been tested after loading data from:
 The output xml generated is SvcPt 5.00
 
 
--todo: document an automated configuration, where loadConfiguration and nodebuilder does not need to be manually called.
- 		   This functionality does not exist yet.
+-todo: document an automated configuration, where loadConfiguration and nodebuilder does not need to be manually called.  This functionality does not exist yet.
 

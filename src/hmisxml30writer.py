@@ -1,5 +1,6 @@
 from exceptions import SoftwareCompatibilityError
-import dbobjects as dbobjects
+import dbobjects
+import logger
 import xmlutilities
 from sys import version
 from conf import settings
@@ -1352,10 +1353,10 @@ class HMISXMLWriter(dbobjects.DB):
         
         IDStr = ET.SubElement(sourceID, "hmis:IDStr")
         
-        if sourceData.source_id_id_id_num == "" or sourceData.source_id_id_id_num is None:
-            IDStr.text = sourceData.source_id_id_id_str
+        if sourceData.source_id_id_num == "" or sourceData.source_id_id_num is None:
+            IDStr.text = sourceData.source_id_id_str
         else:
-            IDStr.text = sourceData.source_id_id_id_num
+            IDStr.text = sourceData.source_id_id_num
         
         fields = [
         'SoftwareVendor',

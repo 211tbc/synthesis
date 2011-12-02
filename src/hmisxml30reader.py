@@ -96,11 +96,11 @@ def parse_source(self, root_element):
             source_id_str = item.xpath(xpSourceIDIDStr, namespaces = self.nsmap)
             source_id_num = item.xpath(xpSourceIDIDNum, namespaces = self.nsmap)
 
-            if source_id_str is not None:
+            if source_id_str:
                 #source_id = source_id_str[0].text 
                 existence_test_and_add(self, 'source_id', source_id_str, 'text')
 
-            elif source_id_num is not None:
+            elif source_id_num:
                 #source_id = source_id_num[0].text 
                 existence_test_and_add(self, 'source_id', source_id_num, 'text')
 

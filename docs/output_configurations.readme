@@ -24,6 +24,43 @@ REST Web Service for Corrections Data
 Planned Output Modules:
 REST/SOAP Web Service for SvcPt 5 XML
 
+Configuration Setup:
+
+Inside outputConfiguration.py you will find a dictionary composed of keys representing SOURCE IDs. The value of each dictionary key is in itself a dictionary which contains the following properties to set:
+
+vendor:
+    
+    A string representing the name of the vendor
+
+outputFormat:
+
+    A string specifying the type of xml output to generate.
+    Supported output formats include: "svcpoint5"
+
+transportConfiguration:
+
+    A string describing the means to transport the generated output.
+    Possible values include: "save" (to directory), "soap", "rest", "ftps", "sftp"
+    Currently, only "save" is supported
+
+destinationURL:
+    
+    If transportConfiguration is not set to "save", set destination to a URL that reflects the transport type.
+
+destination': 
+
+    If transportConfiguration is set to "save", set destination to the absolute path of the save directory
+
+encryption': 
+
+    Encryption can be set to "none", "openpgp", "3des".
+    Currently, only "none" is supported.
+
+frequency: 
+
+    Frequency controls how often nodebuilder runs and should be set to "asap"
+
+
 Note: Some input configurations and versions are not compatible yet with other input configurations.  As of 8/21/2010, all the JFCS, Operation PAR, HMIS CSV 2.7, and Svcpt output plugins are compatible only with the HMIS 2.8 input plugin, not the HMIS 3.0 input plugin.  Traversal modules which extract HMIS 2010 Data Standard information from HMIS 2004 Data Standard tables are not yet built, but they would allow this type of down-versioning.  
   
 --Overview of Sections--

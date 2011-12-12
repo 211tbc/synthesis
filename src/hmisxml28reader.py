@@ -65,6 +65,8 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
         root_element = tree.getroot()
         try:
             self.parse_export(root_element)
+            source_ids = parse_source(self, root_element)
+            return source_ids
         except IntegrityError:
             fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
@@ -77,6 +79,7 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
 
     def parse_source(self, root_element):
         '''Look for a DatabaseID and related fields in the XML and persists it.'''      
+        source_ids = []
         #Now populate the mapping
         #Xpath query strings
         xpSourceID = '/hmis:SourceDatabase/hmis:DatabaseID'
@@ -134,11 +137,13 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
                 self.existence_test_and_add('source_contact_phone_date_collected', item.xpath(xpSourceContactPhonedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
                 self.existence_test_and_add('source_name', item.xpath(xpSourceName, namespaces={'hmis': self.hmis_namespace}), 'text')
                 self.existence_test_and_add('source_name_date_collected', item.xpath(xpSourceNamedateCollected, namespaces={'hmis': self.hmis_namespace}), 'attribute_date')
-                self.shred(self.parse_dict, dbobjects.Source)
+                source_id = self.shred(self.parse_dict, dbobjects.Source)
+                if source_id != None:
+                    source_ids.append(source_id)
                 #had to hard code this to just use root element, since we're not allowing multiple database_ids per XML file
                 self.parse_person(root_element)
                 self.parse_household(root_element)
-            return
+            return source_ids
     
     def parse_export(self, root_element):
         '''Looks for an ExportID and related fields in the XML and persists it.'''      
@@ -1616,7 +1621,10 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
         if mapping.__name__ == "SiteServiceParticipation":
             self.site_service_index_id = mapped.id
         self.session.commit()
-        return
+        if records_dict.has_key("source_id"):
+            return records_dict["source_id"]
+        else:
+            return None
     
     def existence_test_and_add(self, db_column, query_string, handling):
         '''checks that the query actually has a result and adds to dict'''

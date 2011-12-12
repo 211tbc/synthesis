@@ -39,6 +39,10 @@ JFCS_SOURCE_ID = 734
 JFCS_AGENCY_ID = 711
 JFCS_SERVICE_ID = 705
 
+# If you wish to use spawned processes, set this flag to True
+USE_SPAWNED_PROCESSES = False
+# Maximum number of processes to maintain
+NUMBER_OF_PROCESSES = 1 
 
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  

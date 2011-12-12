@@ -44,7 +44,8 @@ class JFCSXMLReader:#(dbobjects.DatabaseObjects):
         ''' call parser based on incoming data type (client or service) '''
         if self.data_type == 'service_event': self.parse_service_event_xml(tree)
         elif self.data_type == 'client':  self.parse_client_xml(tree)
-        return
+        # return source id discovered as a list
+        return [self.source_id, ]
     
     def parse_service_event_xml(self, tree):
         ''' iterate through JFCS service simple xml calling appropriate parsers '''

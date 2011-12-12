@@ -12,6 +12,10 @@ def loadData():
 
     #### JCS New 28 sep 11
     db = dbobjects.DB()
+    
+    #### FBY 8 dec 11: since the loadconfiguration|nodebuilder step is now automated, drop the system_configuration_table before adding it again.
+    db.Base.metadata.tables['system_configuration_table'].drop(checkfirst=True)
+
     db.Base.metadata.create_all()
     session = db.Session()
 
@@ -105,6 +109,41 @@ def loadData():
     session.add(new)					# JCS
     session.commit
 
+    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name',
+					processing_mode='PROD',
+					source_id='iH9HiPbW40JbS5m_',
+					odbid='999',
+					providerid='4105',
+					userid='913' )	# JCS
+    session.add(new)					# JCS
+    session.commit
+    
+    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name',
+					processing_mode='TEST',
+					source_id='iH9HiPbW40JbS5m_',
+					odbid='999',
+					providerid='4105',
+					userid='913' )	# JCS
+    session.add(new)					# JCS
+    session.commit
+
+    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name2',
+					processing_mode='PROD',
+					source_id='334380997',
+					odbid='1999',
+					providerid='14105',
+					userid='1913' )	# JCS
+    session.add(new)					# JCS
+    session.commit
+    
+    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name2',
+					processing_mode='TEST',
+					source_id='334380997',
+					odbid='1999',
+					providerid='14105',
+					userid='1913' )	# JCS
+    session.add(new)					# JCS
+    session.commit
 
     session.flush()
     session.commit()

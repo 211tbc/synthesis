@@ -46,10 +46,10 @@ class HMISXML30Reader:
         return tree
 
     def process_data(self, tree):
-        ''' Shreds the XML document into the database '''
+        ''' Shreds the XML document into the database and return the source ids '''
         root_element = tree.getroot()
-        parse_source(self, root_element)
-        return
+        source_ids = parse_source(self, root_element)
+        return source_ids
         
 ''' Parse each table (other readers use these, so they're stand-alone methods)'''
 def parse_source(self, root_element):
@@ -59,6 +59,7 @@ def parse_source(self, root_element):
     xpSources = '/hmis:Sources/hmis:Source'
     source_list = root_element.xpath(xpSources, namespaces = self.nsmap)
     if source_list is not None:
+        source_ids = []
         for item in source_list:
             self.parse_dict = {}
             ''' Element paths '''
@@ -105,7 +106,10 @@ def parse_source(self, root_element):
                 existence_test_and_add(self, 'source_id', source_id_num, 'text')
 
             ''' Shred to database '''
-            shred(self, self.parse_dict, Source)
+            # keep a list of source ids as they are discovered
+            source_id = shred(self, self.parse_dict, Source)
+            if source_id != None:
+                source_ids.append(source_id)
             
             
             
@@ -114,7 +118,7 @@ def parse_source(self, root_element):
 
 #            ''' Parse all exports for this specific source '''
 #            parse_export(self, item)
-    return                
+    return source_ids
 
 def parse_export(self, element):
     ''' loop through all exports and traverse the tree '''
@@ -4005,7 +4009,7 @@ def shred(self, records_dict, map_class):
     ''' commits the record set to the database '''
     print 'map_class: ', map_class
     print 'data: ', records_dict
-    print 'self is:', self 
+    #print 'self is:', self 
 
     #{'source_name': 'Orange County Corrections', 'software_version': '0.1', 'software_vendor': 'Orange County Corrections', 'source_contact_email': 'i@occ.gov', 'source_id_id_id_str': '003', 'source_id': '003'}
     mapped = map_class(**records_dict)
@@ -4104,8 +4108,11 @@ def shred(self, records_dict, map_class):
     if map_class.__name__ == "TimeOpen":
         self.time_open_index_id = mapped.id
         print "TimeOpen:",self.time_open_index_id 
-    self.parse_dict ={}  
-    return
+    self.parse_dict ={}
+    if records_dict.has_key("source_id"):
+        return records_dict["source_id"]
+    else:
+        return None
         
 def main(argv=None):  
     ''' Manually test this Reader class '''

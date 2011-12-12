@@ -22,12 +22,19 @@ import traceback
 import copy
 from synthesis.socketcomm import ServiceController
 import dbobjects
+from multiprocessing import Process, Array, Value
+import pid                        
 
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
     
-    def __init__(self):
+    def __init__(self, pids):
+        self.paster_ids = pids
+        # define process list in shared memory so each process can alter it
+        self.process_list = Array('i', [0 for i in range(0, settings.NUMBER_OF_PROCESSES)])
+        self.exception = Value('i', 0)
+
         #change this so that it gets the watch_dir from the .ini file
         dir_to_watch = settings.INPUTFILES_PATH 
         self.queue = Queue.Queue(0)
@@ -113,7 +120,7 @@ class FileHandler:
                     if settings.DEBUG:
                         print "moving to used_files", 
                     self.Router.moveUsed(new_file_loc)
-    #                break
+#                    break
                     return True
             
         if valid == False:
@@ -146,6 +153,11 @@ class FileHandler:
         ''' this function churns through the input path(s) and processes files that are already there.
         iNotify only fires events since program was started so existing files don't get processed
         '''
+        import loadconfiguration
+        if settings.DEBUG:
+            print "loading data from defined in the loadconfigation module"
+        loadconfiguration.loadData()
+
         # get a list of files in the input path
         listOfFiles = list()
         # Loop over list of file locations [list]
@@ -155,8 +167,33 @@ class FileHandler:
                     print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
+        source_ids = list(set(self.selector.source_ids))
+        if settings.DEBUG:
+            print "source ids: ", source_ids
+        # *******************************
+        # transfer control to nodebuilder
+        # *******************************
+        from nodebuilder import NodeBuilder
+        from synthesis.queryobject import QueryObject
+
+        # first, setup options for nodebuilder
+        optParse = QueryObject(suppress_usage_message=True)
+        source_ids = list(set(self.selector.source_ids))
+        if settings.DEBUG:
+            print "source ids: ", source_ids
+
+        for source_id in source_ids:
+            if settings.DEBUG:
+                print "nodebuilder generating output for source id:", source_id
+            # next call nodebuilder for each source id
+            # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
+            (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
+            NODEBUILDER = NodeBuilder(options)
+            RESULTS = NODEBUILDER.run()
+        # empty list of source ids
+        self.selector.source_ids = list()
     
-    def nonGUIPOSIXRun(self):
+    def nonGUIPOSIXRun(self, paster_ids):
         #First, see if there are any existing files and process them
         if settings.DEBUG:
             print "First, looking for preexisting files in input location."
@@ -165,7 +202,9 @@ class FileHandler:
         # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
         if settings.DEBUG:
             print 'monitoring starting ...'
-        new_files = self.monitor() 
+        # pass paster process ids to monitor method in order to make it possible to stop both (sleeping)
+        # paster servers
+        new_files = self.monitor(paster_ids) 
         
         if settings.DEBUG:
             print 'monitoring done ...'
@@ -200,7 +239,6 @@ class FileHandler:
                 
     def nonGUIRun(self): 
         '''looks for and handles files, if there is no gui controlling the daemon, as specified by the GUI option in settings.py.'''
-        
         #Figure out if we are running POSIX or UNIX non-gui
         if os.name == 'nt':
             if settings.DEBUG:
@@ -209,10 +247,10 @@ class FileHandler:
         else:
             if settings.DEBUG:
                 print "We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()"
-            self.nonGUIPOSIXRun()  
+            self.nonGUIPOSIXRun(self.paster_ids)  
             print "back to nonGUIRun, so returning" 
                     
-    def monitor(self):
+    def monitor(self, paster_ids):
         'function to start and stop the monitor' 
         try:
             self.file_input_watcher.monitor()
@@ -227,6 +265,33 @@ class FileHandler:
 #            if settings.DEBUG:    
 #                wait_counter = 0
             while 1:
+                # If some stops the paster server, stop all paster processes
+                if not pid.does_process_exist('paster', paster_ids):
+                    print "shutting down..."
+                    i = 0
+                    while i < len(self.process_list):
+                        self.process_list[i] = -1
+                        i += 1
+                    self.file_input_watcher.stop_monitoring()
+                    # uncomment the following lines if you want spawned processes to finish
+                    # processing files before exiting.
+                    #for process_state in self.process_list:
+                    #    if process_state == 1:
+                    #        continue
+                    return
+
+                # empty list of source ids if no spawned processes are active
+                if max(self.process_list) == 0 and min(self.process_list) == 0:
+                    self.selector.source_ids = list()
+
+                if settings.DEBUG and settings.USE_SPAWNED_PROCESSES:
+                    print "Process list status: ", self.process_list[:]
+                # if an exception was encountered within a spawned process, wait for all spawned
+                # processes to stop then exit
+                if self.exception.value == 1:
+                    while self.process_list[:].count(1) > 0:
+                        pass
+                    sys.exit(1)
                 #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
 #                if settings.DEBUG:
 #                    print "waiting for new files...", wait_counter
@@ -234,8 +299,6 @@ class FileHandler:
 #                time.sleep(3)
                 try:
                     file_found_path = self.queue.get(block='true', timeout=_QTO)                    
-                    if settings.DEBUG:
-                        print 'found a new file: %s' % file_found_path
                     _QTO = 5
                     
                     if file_found_path != None:
@@ -253,14 +316,50 @@ class FileHandler:
                         #if settings.DEBUG:
                             #print "Queue may be empty, but list of files is also empty, so let's keep monitoring"    
                         continue
-                    #reverse the list so pop handles them FIFO
-                    files.reverse() 
-                    while files:
+                    if settings.USE_SPAWNED_PROCESSES:
+                        # since this flag is True, spawn processes to process the files
+                        for i, process_state in enumerate(self.process_list):
+                            if process_state == 0:
+                                # signify that this process is running by setting its value in the process list to 1
+                                self.process_list[i] = 1
+                                if settings.DEBUG:
+                                    print "Process list status: ", self.process_list[:]
+                                self._spawn_worker_process(i, files)
+                                # clear out the queue in order to use it for the next process
+                                files = list()
+                                break
+                    else:
+                        #reverse the list so pop handles them FIFO
+                        files.reverse() 
+                        while files:
+                            if settings.DEBUG:
+                                print "Queue.Empty exception, but files list is not empty, so files to process are", files
+                            filepathitem = files.pop()
+                            print "processing ", filepathitem
+                            self.processFiles(filepathitem)
+                        
+                        # *******************************
+                        # transfer control to nodebuilder
+                        # *******************************
+                        from nodebuilder import NodeBuilder
+                        from synthesis.queryobject import QueryObject
+
+                        # first, setup options for nodebuilder
+                        optParse = QueryObject(suppress_usage_message=True)
+                        source_ids = list(set(self.selector.source_ids))
                         if settings.DEBUG:
-                            print "Queue.Empty exception, but files list is not empty, so files to process are", files
-                        filepathitem = files.pop()
-                        print "processing ", filepathitem
-                        self.processFiles(filepathitem)
+                            print "source ids: ", source_ids
+
+                        for source_id in source_ids:
+                            if settings.DEBUG:
+                                print "nodebuilder generating output for source id:", source_id
+                            # next call nodebuilder for each source id
+                            # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
+                            (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
+                            NODEBUILDER = NodeBuilder(options)
+                            RESULTS = NODEBUILDER.run()
+                        # empty list of source ids
+                        self.selector.source_ids = list()
                     #now go back to checking the Queue
                     continue
 
@@ -277,12 +376,99 @@ class FileHandler:
             self.file_input_watcher.stop_monitoring()
             raise
         
+    def _spawn_worker_process(self, id, files):
+        # spawn process to process files. don't wait for the spawned process to finish
+        p = Process(name="Process-%d" % (id + 1), target=self._worker_process, args=(id, files, ))
+        p.start()
+
+    def _worker_process(self, id, files):
+        #reverse the list so pop handles them FIFO
+        if settings.DEBUG:
+            print "entering worker process named: Process-%d" % (id + 1)
+        files.reverse() 
+        while files:
+            # if the process_list contains a -1, this means that someone stopped the
+            # paster server. exit this spawned process.
+            if settings.DEBUG:
+                print "self.process_list", self.process_list[:]
+            if min(self.process_list) == -1:
+                print "The paster server was stopped.....exiting Process-%d" % (id + 1)
+                return
+            # if an exception was encountered within a spawned process, raise it
+            if self.exception.value == 1:
+                self.process_list[id] = 0
+                sys.exit(1)
+            if settings.DEBUG:
+                print "Queue.Empty exception, but files list is not empty, so files to process are", files
+            filepathitem = files.pop()
+            if settings.DEBUG:
+                print "%s" % ("*" * 32)
+                print "Within Process-%d" % (id + 1)
+                print "%s" % ("*" * 32)
+            print "processing ", filepathitem
+            try:
+                self.processFiles(filepathitem)
+                source_ids = list(set(self.selector.source_ids))
+                if settings.DEBUG:
+                    print "source ids: ", source_ids
+            except KeyboardInterrupt:
+                self.process_list[id] = 0
+                print "KeyboardInterrupt caught in selector._worker_process()"
+                #self.file_input_watcher.stop_monitoring()
+                self.exception.value = 1
+            except:
+                self.process_list[id] = 0
+                print "General Exception"
+                #self.file_input_watcher.stop_monitoring()
+                self.exception.value = 1
+                raise
+        # *******************************
+        # transfer control to nodebuilder
+        # *******************************
+        try:
+            from nodebuilder import NodeBuilder
+            from synthesis.queryobject import QueryObject
+
+            # first, setup options for nodebuilder
+            optParse = QueryObject(suppress_usage_message=True)
+            source_ids = list(set(self.selector.source_ids))
+            if settings.DEBUG:
+                print "source ids: ", source_ids
+
+            for source_id in source_ids:
+                if settings.DEBUG:
+                    print "nodebuilder generating output for source id:", source_id
+                # next call nodebuilder for each source id
+                # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
+                (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
+                NODEBUILDER = NodeBuilder(options)
+                RESULTS = NODEBUILDER.run()
+        except KeyboardInterrupt:
+            self.process_list[id] = 0
+            print "KeyboardInterrupt caught in selector._worker_process()"
+            #self.file_input_watcher.stop_monitoring()
+            self.exception.value = 1
+        except:
+            self.process_list[id] = 0
+            print "General Exception"
+            #self.file_input_watcher.stop_monitoring()
+            self.exception.value = 1
+            raise
+        # signify that the process is no longer running
+        self.process_list[id] = 0
+        if settings.DEBUG:
+            print "Process list status: ", self.process_list[:]
+        if settings.DEBUG:
+            print "exiting worker process named: Process-%d" % (id + 1)
+
 class Selector:
     '''Figures out which data format is being received.'''
     
     def __init__(self):
         self.db = dbobjects.DB()
         self.db.Base.metadata.create_all()
+
+        self.source_ids = []
 
         if settings.DEBUG:
             print "selector instantiated and figuring out what schema are available"
@@ -347,7 +533,9 @@ class Selector:
                             if settings.DEBUG:
                                 print "readers[test] is: ", readers[test]
                                 print "instance_file_loc: ", instance_file_loc
-                            readers[test](instance_file_loc, self.db).shred()
+                            source_ids = readers[test](instance_file_loc, self.db).shred()
+                            if source_ids != None:
+                                self.source_ids += source_ids
                             
         if not results:
             print "results empty"                 
@@ -831,7 +1019,9 @@ class HUDHMIS28XMLInputReader(HMISXML28Reader):
     def shred(self):
         tree = self.reader.read()
         try:
-            self.reader.process_data(tree)
+            source_ids = self.reader.process_data(tree)
+            if source_ids != None:
+                return source_ids
         except:
             raise
 
@@ -842,7 +1032,9 @@ class HUDHMIS30XMLInputReader(HMISXML30Reader):
     def shred(self):
         tree = self.reader.read()
         try:
-            self.reader.process_data(tree)
+            source_ids = self.reader.process_data(tree)
+            if source_ids != None:
+                return source_ids
         except:
             raise
         
@@ -856,7 +1048,9 @@ class OCCHUDHMIS30XMLInputReader(OCCHUDHMISXML30Reader):
     def shred(self):
         tree = self.reader.read()
         try:
-            self.reader.process_data(tree)
+            source_ids = self.reader.process_data(tree)
+            if source_ids != None:
+                return source_ids
         except:
             raise        
 
@@ -867,7 +1061,9 @@ class JFCSXMLInputReader(JFCSXMLReader):
     def shred(self):
         tree = self.reader.read()
         try:
-            self.reader.process_data(tree, self.data_type)
+            source_ids = self.reader.process_data(tree, self.data_type)
+            if source_ids != None:
+                return source_ids
         except:
             raise
 

@@ -43,6 +43,7 @@ class NodeBuilder():
         # this should then pull the correct module below and run the process.
         generateOutputformat = outputConfiguration.Configuration[queryOptions.configID]['outputFormat']
         self.transport = outputConfiguration.Configuration[queryOptions.configID]['transportConfiguration']
+        outputFilesPath = outputConfiguration.Configuration[queryOptions.configID]['destination']
         
         self.queryOptions = queryOptions
         print '==== Output Format', generateOutputformat		# JCS
@@ -56,10 +57,11 @@ class NodeBuilder():
             except Exception as e:							# JCS
                 print "import of Svcpt XML Writer, version 5 failed", e	# JCS
                 svcptxml5writer_loaded = False
-            self.writer = SvcPointXML5Writer(settings.OUTPUTFILES_PATH, queryOptions)
-            print '==== self.writer:', self.writer
-            self.validator = SvcPoint5XMLTest()
-            print '==== self.validator:', self.validator
+            if self.transport == "save":
+                self.writer = SvcPointXML5Writer(outputFilesPath, queryOptions)
+                print '==== self.writer:', self.writer
+                self.validator = SvcPoint5XMLTest()
+                print '==== self.validator:', self.validator
         
         #if generateOutputformat == 'svcpoint406':	# Was
         elif generateOutputformat == 'svcpoint406':	# JCS
@@ -72,8 +74,9 @@ class NodeBuilder():
             except:
                 print "import of Svcpt XML Writer, version 4.06 failed"
                 svcptxml406writer_loaded = False
-            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
-            self.validator = SvcPoint406XMLTest()
+            if self.transport == "save":
+                self.writer = SvcPointXMLWriter(outputFilesPath, queryOptions)
+                self.validator = SvcPoint406XMLTest()
             
 #        elif generateOutputformat == 'svcpoint20':
 #            #from svcPointXML20writer import SvcPointXML20Writer
@@ -95,10 +98,11 @@ class NodeBuilder():
             except:
                 print "import of HMISXMLWriter, version 2.8, failed"
                 hmisxml28writer_loaded = False
-            if settings.DEBUG:
-                print "settings.OUTPUTFILES_PATH is ", settings.OUTPUTFILES_PATH
-            self.writer = HMISXML28Writer(settings.OUTPUTFILES_PATH, queryOptions)           
-            self.validator = HUDHMIS28XMLTest()
+            if self.transport == "save":
+                if settings.DEBUG:
+                    print "destination is ", outputFilesPath
+                self.writer = HMISXML28Writer(outputFilesPath, queryOptions)           
+                self.validator = HUDHMIS28XMLTest()
             
         elif generateOutputformat == 'hmisxml30':
             try:
@@ -108,10 +112,11 @@ class NodeBuilder():
             except Exception as e:
                 print "import of HMISXMLWriter, version 3.0, failed", e
                 hmisxml30writer_loaded = False
-            if settings.DEBUG:
-                print "settings.OUTPUTFILES_PATH is ", settings.OUTPUTFILES_PATH
-            self.writer = HMISXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)                    
-            self.validator = HUDHMIS30XMLTest() 
+            if self.transport == "save":
+                if settings.DEBUG:
+                    print "destination is ", outputFilesPath
+                self.writer = HMISXMLWriter(outputFilesPath, queryOptions)                    
+                self.validator = HUDHMIS30XMLTest() 
             
         elif generateOutputformat == 'hmiscsv30':
             try:
@@ -119,7 +124,8 @@ class NodeBuilder():
                 hmiscsv30writer_loaded = True
             except:
                 hmiscsv30writer_loaded = False
-            self.writer = HmisCsv30Writer(settings.OUTPUTFILES_PATH, queryOptions, debug=True)                    
+            if self.transport == "save":
+                self.writer = HmisCsv30Writer(outputFilesPath, queryOptions, debug=True)                    
             #self.validator = HmisCsv30Test()           
         elif generateOutputformat == 'jfcsxml':
             print "Need to hook up the JFCSWriter in Nodebuilder"
@@ -166,7 +172,7 @@ class NodeBuilder():
             
             # upload the valid files
             # how to transport the files (debugging)
-            if self.transport == '':
+            if self.transport == 'save':
                 print 'Output Complete...Please see output files: %s' % filesToTransfer
                 
             if self.transport == 'sys.stdout':

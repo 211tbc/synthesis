@@ -1,10 +1,45 @@
 '''see ./docs/output_configurations.readme for information on setting these configurations'''
 #!/usr/bin/env python
 
+
 # Adding a vendor.  Simply append a record by following the format below.
 
 Configuration = \
 {
+    '003':#For HUD files in test_files folder
+        {
+            'vendor': 'Orange County Corrections',
+            'outputFormat': 'svcpoint5',
+            'destinationURL': 'localhost',
+            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
+            'transportConfiguration': 'save',
+            # encryption type can be set to "none", "openpgp", "3des"
+            'encryption': 'none',
+            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
+            'destination': '',
+            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
+            'frequency': 'asap'
+        },
+    '334380997':#For HUD files in test_files folder
+        {
+            'vendor': 'Vendor Name',
+            'outputFormat': 'svcpoint5',
+            'destinationURL': 'localhost',
+            'transportConfiguration': 'save',
+            'encryption': 'none',
+            'destination': '',
+            'frequency': 'asap'
+        },
+    'iH9HiPbW40JbS5m_':#For HUD files in test_files folder
+        {
+            'vendor': 'Vendor Name',
+            'outputFormat': 'svcpoint5',
+            'destinationURL': 'localhost',
+            'transportConfiguration': 'save',
+            'encryption': 'none',
+            'destination': '',
+            'frequency': 'asap'
+        },
     '7777':#Project Synthesis Phase 3 for Orlando
         {
             'vendor': 'BIS',

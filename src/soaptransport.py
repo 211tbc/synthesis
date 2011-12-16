@@ -40,6 +40,10 @@ class SoapEnv():
         print response
 
 if __name__ == "__main__":
+    #####################################################################
+    # This test uses the SOAP apis found at http://www.webserviceX.NET  #
+    #####################################################################
+
     # create SOAP object
     soap = SoapEnv(url="http://www.webserviceX.NET/country.asmx", action="GetCountryByCountryCode")
     ccd_data = """<GetCountryByCountryCode xmlns="http://www.webserviceX.NET"><CountryCode>US</CountryCode></GetCountryByCountryCode>"""

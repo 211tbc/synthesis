@@ -14,6 +14,8 @@ import postprocessing
 import fileutils
 from emailprocessor import XMLProcessorNotifier
 import iniutils
+import resttransport
+import soaptransport
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded
@@ -154,57 +156,69 @@ class NodeBuilder():
         #for writer,validator in map(None, self.writer, self.validator):
             #result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
-        if self.writer.write():
-            filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
-            
-            # create a list of valid files to upload
-            validFiles = []
-            # Loop over each file and validate it.
-            for eachFile in filesToTransfer:
-                fs = open(eachFile, 'r')
-                if self.validator.validate(fs):
-                    validFiles.append(eachFile)
-                    print 'oK'
-                else:
-                    pass                # Fixme append invalid files to list and report this.
+        if self.transport == 'soap':
+            #ccd_data = #TODO: This data should come from the "Continuity of Care Document" adapter
+            #soup = soaptransport.SoapEnv(<REPLACE WITH SOAP URL>, <REPLACE WITH ACTION CALL>)
+            #soap.send_soap_envelope(ccd_data)
+            pass
+        elif self.transport == 'rest':
+            #ccd_data = #TODO: This data should come from the "Continuity of Care Document" adapter
+            #rest = resttransport.REST(<REPLACE WITH REST URL>)
+            #rest.post(ccd_data)
+            pass
+        else:
+            # the remaining transport require file IO
+            if self.writer.write():
+                filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
                 
-                fs.close()
-            
-            # upload the valid files
-            # how to transport the files (debugging)
-            if self.transport == 'save':
-                print 'Output Complete...Please see output files: %s' % filesToTransfer
-                
-            if self.transport == 'sys.stdout':
-                for eachFile in validFiles:
+                # create a list of valid files to upload
+                validFiles = []
+                # Loop over each file and validate it.
+                for eachFile in filesToTransfer:
                     fs = open(eachFile, 'r')
-                    # open the file and echo it to stdout
-                    lines = fs.readlines()
-                    fs.close()              # done with file close handle
-                    for line in lines:
-                        print line        
-                        
-            if self.transport == 'sftp':
-                self.pprocess.processFileSFTP(validFiles)
-            elif self.transport == 'email':
-                # Loop over the list and each file needs to be emailed separately (size)
-                for eachFile in validFiles:
-                    self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
-                    msgBody = self.formatMsgBody()
-                    self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
-            elif self.transport == 'vpnftp':
-                # SBB20100430 Only upload if we have a validated file(s)
-                if len(validFiles) > 0:
-                    pd = iniutils.LoadConfig('fileConverter.ini')
-                    self.pprocess.setINI(pd)
-                    self.pprocess.processFileVPN(validFiles)
-            elif self.transport == 'vpncp':
-                pass
+                    if self.validator.validate(fs):
+                        validFiles.append(eachFile)
+                        print 'oK'
+                    else:
+                        pass                # Fixme append invalid files to list and report this.
                     
-                #print results
-                #print 'This is the result before it goes back to the test_unit:', \
-                #results
-                #return results
+                    fs.close()
+                
+                # upload the valid files
+                # how to transport the files (debugging)
+                if self.transport == 'save':
+                    print 'Output Complete...Please see output files: %s' % filesToTransfer
+                    
+                if self.transport == 'sys.stdout':
+                    for eachFile in validFiles:
+                        fs = open(eachFile, 'r')
+                        # open the file and echo it to stdout
+                        lines = fs.readlines()
+                        fs.close()              # done with file close handle
+                        for line in lines:
+                            print line        
+                            
+                if self.transport == 'sftp':
+                    self.pprocess.processFileSFTP(validFiles)
+                elif self.transport == 'email':
+                    # Loop over the list and each file needs to be emailed separately (size)
+                    for eachFile in validFiles:
+                        self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
+                        msgBody = self.formatMsgBody()
+                        self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
+                elif self.transport == 'vpnftp':
+                    # SBB20100430 Only upload if we have a validated file(s)
+                    if len(validFiles) > 0:
+                        pd = iniutils.LoadConfig('fileConverter.ini')
+                        self.pprocess.setINI(pd)
+                        self.pprocess.processFileVPN(validFiles)
+                elif self.transport == 'vpncp':
+                    pass
+                        
+                    #print results
+                    #print 'This is the result before it goes back to the test_unit:', \
+                    #results
+                    #return results
         
     def formatMsgBody(self):
         msgBody = "Your report was requested on %s. /r/n The report criteria is: \r\n\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)"#IGNORE:@UnusedVariable

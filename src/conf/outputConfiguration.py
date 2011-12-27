@@ -45,7 +45,10 @@ Configuration = \
             'vendor': 'BIS',
             'outputFormat': 'svcpoint5',#the new servicepoint format
             'destinationURL': 'localhost',
-            'transportConfiguration': ''#we're just going to save this outputted XML file to a local drive
+            'transportConfiguration': '', #we're just going to save this outputted XML file to a local drive
+            'encryption': 'none', # should be 3DES for production for Orlando OCC
+            'destination': settings.OUTPUTFILES_PATH,    # (I get an error if I leave the value blank)
+            'frequency': 'asap'
         },
     '8888':
         {

@@ -1,6 +1,5 @@
 '''Figures out what type of data format we are dealing with, using validation \                                                                                                                             
-or whatever we can use to test, so the appropriate reader correct \
-implementation can be used.'''
+or whatever we can use to test, so the appropriate reader can be used.'''
 
 import os
 import fileutils

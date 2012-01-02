@@ -12,8 +12,11 @@ class REST():
         request.add_header("User-Agent", "synthesis")
         request.add_data(ccd_data)
         response = urllib2.urlopen(request).read()
-        # Do we care about the output? If so, the variable "response" is the likely candidate
-        return response
+        # check for some sign of success within the response
+        #if response.lower().find("success"):
+        #    return True
+        #else:
+        #    return False
 
 if __name__ == "__main__":
     import urllib

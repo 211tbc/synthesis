@@ -6,8 +6,15 @@ import urlparse
 import uuid
 #from conf inport settings
 
-# this constant will be moved to conf/settings.py
+# these constants will be moved to conf/settings.py
 SOAP_SERVER = "http://www.netsmart.com/recipientserver/ProvideAndRegisterDocumentSetRequest"
+AUTHOR_PERSON = "John Doe"
+AUTHOR_INSTITUTION = "ACME"
+AUTHOR_ROLE = "Wise Man"
+AUTHOR_SPECIALTY = "Mediation"
+NODE_REPRESENTATION = "Not Available"
+CODING_SCHEME = "LOINC"
+LOCALIZED_STRING = "Not Available"
 
 class SoapEnv():
 
@@ -21,8 +28,17 @@ class SoapEnv():
             "XMLUUID"                   : str(uuid.uuid4()).replace("-", "").upper(),
             "MESSAGEIDUUID"             : str(uuid.uuid4()).replace("-", "").upper(),
             "EXTRINSICOBJECTUUID"       : str(uuid.uuid4()),
+            "CLASSIFICATIONSCHEME1UUID" : str(uuid.uuid4()),
+            "CLASSIFICATIONSCHEME2UUID" : str(uuid.uuid4()),
             "ACTIONURI"                 : SOAP_SERVER,
             "ASSOCIATION_ID"            : "ID_00000000_0",
+            "AUTHORPERSON"              : AUTHOR_PERSON,
+            "AUTHORINSTITUTION"         : AUTHOR_INSTITUTION,
+            "AUTHORROLE"                : AUTHOR_ROLE,
+            "AUTHORSPECIALTY"           : AUTHOR_SPECIALTY,
+            "NODEREPRESENTATION"        : NODE_REPRESENTATION,
+            "CODINGSCHEME"              : CODING_SCHEME,
+            "LOCALIZEDSTRING"           : LOCALIZED_STRING
         }
         
         # define the soap envelope template
@@ -41,11 +57,6 @@ Content-ID: <0.urn:uuid:%(STARTUUID)s@apache.org>
         <xdsb:ProvideAndRegisterDocumentSetRequest xmlns:xdsb="urn:ihe:iti:xds-b:2007">
             <lcm:SubmitObjectsRequest xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
                 <rim:RegistryObjectList xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
-                    <rim:ExtrinsicObject id="Document01" mimeType="text/plain" objectType="urn:uuid:%(EXTRINSICOBJECTUUID)s">
-                    </rim:ExtrinsicObject>
-                    <rim:RegistryPackage id="SubmissionSet01"
-                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:RegistryPackage">
-                    </rim:RegistryPackage>
                     <rim:Association
                         associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
                         sourceObject="SubmissionSet01" targetObject="Document01" id="%(ASSOCIATION_ID)s"
@@ -56,6 +67,52 @@ Content-ID: <0.urn:uuid:%(STARTUUID)s@apache.org>
                             </rim:ValueList>
                         </rim:Slot>
                     </rim:Association>
+                    <rim:Classification
+                        classificationScheme="urn:uuid:%(CLASSIFICATIONSCHEME1UUID)s"
+                        classifiedObject="Document01" nodeRepresentation=""
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                        id="id_1">
+                        <rim:Slot name="authorPerson">
+                            <rim:ValueList>
+                                <rim:Value>%(AUTHORPERSON)s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Slot name="authorInstitution">
+                            <rim:ValueList>
+                                <rim:Value>%(AUTHORINSTITUTION)s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Slot name="authorRole">
+                            <rim:ValueList>
+                                <rim:Value>%(AUTHORROLE)s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Slot name="authorSpecialty">
+                            <rim:ValueList>
+                                <rim:Value>%(AUTHORSPECIALTY)s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                    </rim:Classification>
+                    <rim:Classification
+                        classificationScheme="urn:uuid:%(CLASSIFICATIONSCHEME2UUID)s"
+                        classifiedObject="Document01" nodeRepresentation="%(NODEREPRESENTATION)s"
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                        id="id_2">
+                        <rim:Slot name="codingScheme">
+                            <rim:ValueList>
+                                <rim:Value>%(CODINGSCHEME)s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Name>
+                            <rim:LocalizedString value="%(LOCALIZEDSTRING)s"/>
+                        </rim:Name>
+                    </rim:Classification>
+                    <rim:Description />
+                    <rim:ExtrinsicObject id="Document01" mimeType="text/plain" objectType="urn:uuid:%(EXTRINSICOBJECTUUID)s">
+                    </rim:ExtrinsicObject>
+                    <rim:RegistryPackage id="SubmissionSet01"
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:RegistryPackage">
+                    </rim:RegistryPackage>
                 </rim:RegistryObjectList>
             </lcm:SubmitObjectsRequest>
             <xdsb:Document id="Document01">
@@ -77,9 +134,9 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
         # construct the message and header
         self._transport_properties["CCD"] = ccd_data
         soap_env = self._ENVELOPE_TEMPLATE % self._transport_properties
-        #if len(soap_env) > 0: # delete this if block        
-        #    print soap_env
-        #    return
+        if len(soap_env) > 0: # delete this if block        
+            print soap_env
+            return
         ws = httplib.HTTP(self._host)
         ws.putrequest("POST", self._post)
         ws.putheader("Host", self._host)
@@ -97,12 +154,15 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
         # send the SOAP envelope
         ws.send(soap_env)
 
-        # do we care about the output? if so, the variables "status_code", "status_message" and "response" are likely candidates
+        # check for some sign of success within the response
         status_code, status_message, header = ws.getreply()
         print "Response: ", status_code, status_message
         print "headers: ", header
         response = ws.getfile().read()
-        print response
+        #if response.find("ResponseStatusType:Success"):
+        #    return True
+        #else:
+        #    return False
 
 if __name__ == "__main__":
     ccd_data = """<?xml version="1.0"?>

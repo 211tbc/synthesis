@@ -1,26 +1,18 @@
-#!/usr/bin/python
+#!/usr/bin/env/python
 # -*- coding: utf-8 -*-
-import httplib
+from conf import settings
+from conf import outputConfiguration
+import urllib2
 import sys
 import urlparse
 import uuid
-#from conf inport settings
-
-# these constants will be moved to conf/settings.py
-SOAP_SERVER = "http://www.netsmart.com/recipientserver/ProvideAndRegisterDocumentSetRequest"
-AUTHOR_PERSON = "John Doe"
-AUTHOR_INSTITUTION = "ACME"
-AUTHOR_ROLE = "Wise Man"
-AUTHOR_SPECIALTY = "Mediation"
-NODE_REPRESENTATION = "Not Available"
-CODING_SCHEME = "LOINC"
-LOCALIZED_STRING = "Not Available"
 
 class SoapEnv():
 
-    def __init__(self):
-        self._host = urlparse.urlparse(SOAP_SERVER).netloc
-        self._post = urlparse.urlparse(SOAP_SERVER).path
+    def __init__(self, source_id):
+        self._soap_server = outputConfiguration.Configuration[source_id]['destinationURL']
+        self._host = urlparse.urlparse(self._soap_server).netloc
+        #self._post = urlparse.urlparse(self._soap_server).path
         self._transport_properties = {
             "CCD"                       : "",
             "PAYLOADUUID"               : str(uuid.uuid4()).replace("-", "").upper(),
@@ -30,15 +22,15 @@ class SoapEnv():
             "EXTRINSICOBJECTUUID"       : str(uuid.uuid4()),
             "CLASSIFICATIONSCHEME1UUID" : str(uuid.uuid4()),
             "CLASSIFICATIONSCHEME2UUID" : str(uuid.uuid4()),
-            "ACTIONURI"                 : SOAP_SERVER,
-            "ASSOCIATION_ID"            : "ID_00000000_0",
-            "AUTHORPERSON"              : AUTHOR_PERSON,
-            "AUTHORINSTITUTION"         : AUTHOR_INSTITUTION,
-            "AUTHORROLE"                : AUTHOR_ROLE,
-            "AUTHORSPECIALTY"           : AUTHOR_SPECIALTY,
-            "NODEREPRESENTATION"        : NODE_REPRESENTATION,
-            "CODINGSCHEME"              : CODING_SCHEME,
-            "LOCALIZEDSTRING"           : LOCALIZED_STRING
+            "ACTIONURI"                 : self._host + "/ProvideAndRegisterDocumentSet-b",
+            "ASSOCIATION_ID"            : "ID_00000000_0", # <== Where does this value come from?
+            "AUTHORPERSON"              : settings.AUTHOR_PERSON,
+            "AUTHORINSTITUTION"         : settings.AUTHOR_INSTITUTION,
+            "AUTHORROLE"                : settings.AUTHOR_ROLE,
+            "AUTHORSPECIALTY"           : settings.AUTHOR_SPECIALTY,
+            "NODEREPRESENTATION"        : settings.NODE_REPRESENTATION,
+            "CODINGSCHEME"              : settings.CODING_SCHEME,
+            "LOCALIZEDSTRING"           : settings.LOCALIZED_STRING
         }
         
         # define the soap envelope template
@@ -134,31 +126,29 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
         # construct the message and header
         self._transport_properties["CCD"] = ccd_data
         soap_env = self._ENVELOPE_TEMPLATE % self._transport_properties
-        if len(soap_env) > 0: # delete this if block        
+        headers = {
+            "Host"              : self._host,
+            "User-Agent"        : "synthesis",
+            #"Content-type"      : "text/xml; charset=\"UTF-8\""
+            "Content-type"      : "multipart/related",
+            "boundary"          : "MIMEBoundaryurn_uuid_%(XMLUUID)s" % self._transport_properties,
+            "type"              : "application/xop+xml",
+            "start"             : "0.urn:uuid:%(STARTUUID)s@apache.org" % self._transport_properties,
+            "start-info"        : "application/soap+xml",
+            "Content-length"    : "%d" % len(soap_env),
+            #"SOAPAction"        : self._host + "/ProvideAndRegisterDocumentSet-b",
+            }
+
+        if len(soap_env) > 0: # delete this if block
+            import pprint as pp
+            pp.pprint(headers)
             print soap_env
             return
-        ws = httplib.HTTP(self._host)
-        ws.putrequest("POST", self._post)
-        ws.putheader("Host", self._host)
-        ws.putheader("User-Agent", "synthesis")
-        #ws.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
-        ws.putheader("Content-type", "multipart/related") # most likely not right
-        ws.putheader("boundary", "MIMEBoundaryurn_uuid_{XMLUUID}" % self._transport_properties)
-        ws.putheader("type", "application/xop+xml") #  <== don't know if this is needed
-        ws.putheader("start", "0.urn:uuid:{STARTUUID}@apache.org" % self._transport_properties) # <== don't know if this is needed and if so then its most likely not right
-        ws.putheader("start-info", "application/soap+xml") # <== don't know if this is needed
-        ws.putheader("Content-length", "%d" % len(soap_env))
-        ws.putheader("SOAPAction", self._host + "/ProvideAndRegisterDocumentSet-b")
-        ws.endheaders()
 
         # send the SOAP envelope
-        ws.send(soap_env)
-
-        # check for some sign of success within the response
-        status_code, status_message, header = ws.getreply()
-        print "Response: ", status_code, status_message
-        print "headers: ", header
-        response = ws.getfile().read()
+        request = urllib2.Request(self._soap_server, soap_msg, headers)
+        res = urllib2.urlopen(request)
+        response = res.read()
         #if response.find("ResponseStatusType:Success"):
         #    return True
         #else:
@@ -333,5 +323,5 @@ Purpose section
     </component>
 </ClinicalDocument>"""
 
-    soap = SoapEnv()
+    soap = SoapEnv('iH9HiPbW40JbS5m_')
     soap.send_soap_envelope(ccd_data)

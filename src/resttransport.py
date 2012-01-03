@@ -1,9 +1,12 @@
+#!/usr/bin/env/python
+# -*- coding: utf-8 -*-
+from conf import outputConfiguration
 import urllib2
 
 class REST():
 
-    def __init__(self, url):
-        self._url = url
+    def __init__(self, source_id):
+        self._url = outputConfiguration.Configuration[source_id]['destinationURL']
 
     def post(self, ccd_data, test=False):
         request = urllib2.Request(self._url)

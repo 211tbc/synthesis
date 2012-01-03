@@ -44,6 +44,15 @@ USE_SPAWNED_PROCESSES = False
 # Maximum number of processes to maintain
 NUMBER_OF_PROCESSES = 1 
 
+# <rim:Classification /> properties
+AUTHOR_PERSON = "John Doe"
+AUTHOR_INSTITUTION = "ACME"
+AUTHOR_ROLE = "Wise Man"
+AUTHOR_SPECIALTY = "Mediation"
+NODE_REPRESENTATION = "Not Available"
+CODING_SCHEME = "LOINC"
+LOCALIZED_STRING = "Not Available"
+
 # Input files Processing path
 # New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
 INPUTFILES_PATH = [

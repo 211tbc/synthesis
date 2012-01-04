@@ -159,11 +159,11 @@ class NodeBuilder():
         if self.transport == 'soap':
             ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
             soup = soaptransport.SoapEnv(self.queryOptions.configID)
-            soap.send_soap_envelope(ccd_data)
+            assert (soap.send_soap_envelope(ccd_data) == True), "Sending CCD via SOAP transport failed!"
         elif self.transport == 'rest':
             ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
             rest = resttransport.REST(self.queryOptions.configID)
-            rest.post(ccd_data)
+            assert (rest.post(ccd_data) == True), "Sending CCD via REST transport failed!"
         else:
             # the remaining transport require file IO
             if self.writer.write():

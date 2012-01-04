@@ -122,7 +122,7 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
 %(CCD)s
 --MIMEBoundaryurn_uuid_%(XMLUUID)s""".replace("\t","")
 
-    def send_soap_envelope(self, ccd_data):
+    def send_soap_envelope(self, ccd_data, test=False):
         # construct the message and header
         self._transport_properties["CCD"] = ccd_data
         soap_env = self._ENVELOPE_TEMPLATE % self._transport_properties
@@ -139,7 +139,7 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
             #"SOAPAction"        : self._host + "/ProvideAndRegisterDocumentSet-b",
             }
 
-        if len(soap_env) > 0: # delete this if block
+        if test: # delete this if block
             import pprint as pp
             pp.pprint(headers)
             print soap_env
@@ -149,10 +149,10 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
         request = urllib2.Request(self._soap_server, soap_msg, headers)
         res = urllib2.urlopen(request)
         response = res.read()
-        #if response.find("ResponseStatusType:Success"):
-        #    return True
-        #else:
-        #    return False
+        if response.find("ResponseStatusType:Success") != -1:
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
     ccd_data = """<?xml version="1.0"?>

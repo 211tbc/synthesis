@@ -35,8 +35,8 @@ Configuration = \
         {
             'vendor': 'Vendor Name',
             'outputFormat': 'svcpoint5',
-            'destinationURL': 'http://search.twitter.com/search.json',
-            'transportConfiguration': 'rest',
+            'destinationURL': 'localhost',
+            'transportConfiguration': 'save',
             'encryption': 'none',
             'destination': '',
             'frequency': 'asap'

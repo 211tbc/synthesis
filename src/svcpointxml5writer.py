@@ -312,7 +312,7 @@ class SvcPointXML5Writer():
     def customizeAssessmentData(self, assessment_data):
 
         if self.person.person_gender_unhashed <> "" and self.person.person_gender_unhashed <> None:
-            persGender = ET.SubElement(assessment_data, "gender")
+            persGender = ET.SubElement(assessment_data, "svpprofgender" ) #"gender")
             persGender.attrib["date_added"] = dateutils.fixDate(self.person.person_gender_unhashed_date_collected)
             persGender.attrib["date_effective"] = dateutils.fixDate(self.person.person_gender_unhashed_date_effective)
             persGender.text = str(self.person.person_gender_unhashed)
@@ -326,10 +326,12 @@ class SvcPointXML5Writer():
 
         # Ethnicity   		lots of:SVPPROFETH	a few:Ethnicity	 uses:ETHNICITYPickOption
         if self.person.person_ethnicity_unhashed <> "" and self.person.person_ethnicity_unhashed <> None:
-            dob = ET.SubElement(assessment_data, "svpprofeth")
-            dob.attrib["date_added"] = dateutils.fixDate(self.person.person_ethnicity_unhashed_date_collected)
-            dob.attrib["date_effective"] = dateutils.fixDate(datetime.now())	# No date effect. in Person
-            dob.text = str(self.person.person_ethnicity_unhashed)
+            # Our Interpretpicklist basically has 2 options. The schema has 23
+            ethText = self.pickList.getValue("EthnicityPick",str(self.person.person_ethnicity_unhashed))
+            eth = ET.SubElement(assessment_data, "svpprofeth")
+            eth.attrib["date_added"] = dateutils.fixDate(self.person.person_ethnicity_unhashed_date_collected)
+            eth.attrib["date_effective"] = dateutils.fixDate(datetime.now())	# No date effect. in Person
+            eth.text = ethText  # str(self.person.person_ethnicity_unhashed)
 	
         # Race    more than one?? JCS
         for race in self.race:
@@ -337,7 +339,7 @@ class SvcPointXML5Writer():
             raceText = self.pickList.getValue("RacePick",str(race.race_unhashed))
             # print '==== race:', race.race_unhashed, raceText
             if raceText <> None:
-                raceNode = ET.SubElement(assessment_data, "primaryrace")	# JCS "primaryrace" or "svpprofrace"?
+                raceNode = ET.SubElement(assessment_data, "svpprofrace")	# JCS "primaryrace" or "svpprofrace"?
                 raceNode.attrib["date_added"] = dateutils.fixDate(race.race_date_collected)
                 raceNode.attrib["date_effective"] = dateutils.fixDate(race.race_date_effective)
                 raceNode.text = raceText
@@ -352,6 +354,14 @@ class SvcPointXML5Writer():
                 housingStatus.attrib["date_added"] = dateutils.fixDate(hs.housing_status_date_collected)
                 housingStatus.attrib["date_effective"] = dateutils.fixDate(hs.housing_status_date_effective)
                 housingStatus.text = hsText
+
+            foster = self.session.query(dbobjects.FosterChildEver).filter(dbobjects.FosterChildEver.person_historical_index_id == ph.id).one()
+            fosterText = self.pickList.getValue("ENHANCEDYESNOPickOption",str(foster.foster_child_ever))
+            if fosterText <> None:
+                fosterEver = ET.SubElement(assessment_data, "x20wereyoueverafoster")	# JCS
+                fosterEver.attrib["date_added"] = dateutils.fixDate(foster.foster_child_ever_date_collected)
+                fosterEver.attrib["date_effective"] = dateutils.fixDate(foster.foster_child_ever_date_effective)
+                fosterEver.text = fosterText
 
         # length of stay at prior residence
         losapr = self.session.query(dbobjects.LengthOfStayAtPriorResidence).filter(dbobjects.LengthOfStayAtPriorResidence.person_historical_index_id == ph.id).one()

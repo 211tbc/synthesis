@@ -16,9 +16,9 @@ SKIP_VALIDATION_TEST = False
 #However, the gui is cross-platform, so the GUI setting should be actually independent of the platform
 GUI = False  
 # DB settings:
-DB_DATABASE = "your_database_name_here(synthesis perhaps)"
-DB_USER = "your_database_user_name_here"
-DB_PASSWD = "your_password_here"
+DB_DATABASE = "synthesis"
+DB_USER = "synthesis"
+DB_PASSWD = "synthesis"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
@@ -28,7 +28,7 @@ SVCPT_VERSION = '406'                    # this is 4.06
 #SOURCE_PATH = 'synthesis/synthesis'
 #SOURCE_PATH = 'synthesis'
 #BASE_PATH = os.path.join(os.getcwd(), SOURCE_PATH)
-BASE_PATH = "/home/username/myrestservice/synthesis/synthesis"
+BASE_PATH = "/home/fby/myrestservice/synthesis/synthesis"
 print "BASE_PATH is: ", BASE_PATH
 #import pydevd; pydevd.settrace()
 #ABS_SOURCE_PATH = os.path.abspath(os.getcwd() + SOURCE_PATH)

@@ -32,6 +32,15 @@ class SoapEnv():
             "CODINGSCHEME"              : settings.CODING_SCHEME,
             "LOCALIZEDSTRING"           : settings.LOCALIZED_STRING
         }
+
+        print '==== Defined the following UUIDs' # FBY
+        print "PAYLOADUUID", self._transport_properties["PAYLOADUUID"]
+        print "STARTUUID", self._transport_properties["STARTUUID"]
+        print "XMLUUID", self._transport_properties["XMLUUID"]
+        print "MESSAGEIDUUID", self._transport_properties["MESSAGEIDUUID"]
+        print "EXTRINSICOBJECTUUID", self._transport_properties["EXTRINSICOBJECTUUID"]
+        print "CLASSIFICATIONSCHEME1UUID", self._transport_properties["CLASSIFICATIONSCHEME1UUID"]
+        print "CLASSIFICATIONSCHEME2UUID", self._transport_properties["CLASSIFICATIONSCHEME2UUID"]
         
         # define the soap envelope template
 
@@ -143,16 +152,19 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
             import pprint as pp
             pp.pprint(headers)
             print soap_env
-            return
+            return (True, "True")
 
         # send the SOAP envelope
-        request = urllib2.Request(self._soap_server, soap_msg, headers)
-        res = urllib2.urlopen(request)
-        response = res.read()
-        if response.find("ResponseStatusType:Success") != -1:
-            return True
-        else:
-            return False
+        try:
+            request = urllib2.Request(self._soap_server, soap_msg, headers)
+            res = urllib2.urlopen(request)
+            response = res.read()
+            if response.find("ResponseStatusType:Success") != -1:
+                return (True, response)
+            else:
+                return (False, response)
+        except:
+            return (False, "An error occurred while sending the SOAP request or receiving the SOAP response")
 
 if __name__ == "__main__":
     ccd_data = """<?xml version="1.0"?>

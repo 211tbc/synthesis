@@ -183,15 +183,18 @@ class GPG(PublicKey):
         PublicKey.__init__(self)
 		
         if settings.PGPHOMEDIR is not None:
-        	self.enc_object = gnupg.GPG(gnupghome=settings.PGPHOMEDIR)
+            self.enc_object = gnupg.GPG(gnupghome=settings.PGPHOMEDIR)
         else:
-        	self.enc_object = gnupg.GPG()
+            self.enc_object = gnupg.GPG()
         
         self.pass_phrase = self.fingerprint = ''
         
         if settings.PASSPHRASE is not None:
             self.pass_phrase = settings.PASSPHRASE
         
+        if settings.FINGERPRINT is not None:
+            self.fingerprint = settings.FINGERPRINT
+
         if pass_phrase: self.pass_phrase = pass_phrase
         if fingerprint: self.fingerprint = fingerprint
         
@@ -292,32 +295,28 @@ def main():
     
     """
     #test code for development.. will change often
+
+    """
+    Example of my settings.py:
+
+    PATH_TO_GPG = '/usr/bin/gpg'
+    PGPHOMEDIR = '/home/synthesis/.gnupg'
+    PASSPHRASE = 'mypassword'
+    FINGERPRINT = '8FF0FFF8'
+    """
     
-    gpg = GPG()
-    
-    keys = gpg.listKeys()
-    findkeys = gpg.findKeys("Tim")
-    print "found {0} matching keys..".format(len(findkeys))
-    for i in findkeys:
-        for (key, value) in i.iteritems():
-            print "{0:{2}} -> {1}".format(key, str(value), len(max(i.keys(), key=len)))
-        print
-        
     msg = "This will be encrypted"
-    pw = "password"
-    gpg.setKey(findkeys[0]['fingerprint'])
+    gpg = GPG()
+    encrypted_data = gpg.encrypt(msg)
+    decrypted_data = str(gpg.decrypt(encrypted_data))
     
-    encrypted_data = gpg.encrypt(msg, pass_phrase=pw)
-    decrypted_data = str(gpg.decrypt(encrypted_data, pass_phrase=pw))
-    
-    print "Original = {0}".format(msg)
-    print "Now printing the encrypted version..\n{0}".format(encrypted_data)
+    print "Encrypted = {0}".format(encrypted_data)
     print "Decrypted = {0}".format(decrypted_data)
-    
-    if msg == decrypted_data:
-        print "Test passed"
+ 
+    if decrypted_data == msg:
+        print "Test Passed"
     else:
-        print "Test failed"
-        
+        print "Test Failed"
+
 if __name__ == '__main__':
     main()

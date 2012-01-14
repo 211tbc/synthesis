@@ -157,7 +157,6 @@ class AES(Cipher):
 
         self.enc_object = baseAES.new(self.pad(self.key))
         self.result = self.enc_object.decrypt(self.pad(self.data))
-        #print "DEBUG:", self.data, self.key
         return self.result
 
 
@@ -197,8 +196,6 @@ class GPG(PublicKey):
 
         if pass_phrase: self.pass_phrase = pass_phrase
         if fingerprint: self.fingerprint = fingerprint
-        
-        #self.enc_object = gnupg.GPG()
 
     def encrypt(self, data, fingerprint='', pass_phrase='', sign=True):
         if fingerprint: self.fingerprint = fingerprint
@@ -210,16 +207,65 @@ class GPG(PublicKey):
         else:
             self.result = str(self.enc_object.encrypt(self.data, self.fingerprint, passphrase=self.pass_phrase))
             
-        return self.result
+        return str(self.result)
+
+    def encryptFile(self, file_in, file_out=None, fingerprint='', pass_phrase='', sign=True):
+        """
+        Can be called 2 different ways, eg.
+
+        gpg = GPG()
+        gpg.encryptFile('/tmp/file', '/tmp/file.gpg') # write to file
+
+        gpg = GPG()
+        encrypted_data = gpg.encryptFile('/tmp/file') # put encrypted file in memory
+        """
+
+        if fingerprint: self.fingerprint = fingerprint
+        if pass_phrase: self.pass_phrase = pass_phrase
         
+        with open(file_in, 'r') as f_in:
+            if sign is True:
+                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.fingerprint, passphrase=self.pass_phrase)).rstrip('\r\n')
+            else:
+                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.fingerprint)).rstrip('\r\n')
+
+        if file_out is not None:
+            with open(file_out, 'w') as f_out:
+                f_out.write(encrypted_data)
+            return encrypted_data
+        else:
+            return encrypted_data
 
     def decrypt(self, data, pass_phrase=''):
         if pass_phrase: self.pass_phrase = pass_phrase
         self.data = data
         
         self.result = self.enc_object.decrypt(self.data, passphrase=self.pass_phrase)
-        return self.result
-        
+        return str(self.result)
+    
+    def decryptFile(self, file_in, file_out=None, pass_phrase=''):
+        """
+        Can be called 2 different ways, eg.
+
+        gpg = GPG()
+        gpg.decryptFile('/tmp/file.gpg', '/tmp/file') # write to file
+
+        gpg = GPG()
+        decrypted_data = gpg.decryptFile('/tmp/file.gpg') # put decrypted file in memory
+        """
+
+        if pass_phrase: self.pass_phrase = pass_phrase
+
+        with open(file_in, 'r') as f_in:
+            decrypted_data = str(self.enc_object.decrypt_file(f_in, passphrase=self.pass_phrase)).rstrip('\r\n')
+
+        if file_out is not None:
+            with open(file_out, 'w') as f_out:
+                f_out.write(decrypted_data)
+            return decrypted_data
+        else:
+            return decrypted_data
+
     def sign(self):
         pass
         
@@ -243,37 +289,43 @@ class GPG(PublicKey):
     def importKey(self, data):
         return self.enc_object.import_keys(data)
     
-    def exportKeys(self, fingerprint='', public_file='', private_file=''):
+    def exportKey(self, file_name, fingerprint='', public_file='', private_file=''):
         if fingerprint: self.fingerprint = fingerprint
         
         if public_file:
             public_key = self.enc_object.export_keys(self.fingerprint)
-            #TODO: output to public_file
+            with open(file_name, 'w') as f:
+                f.write(f, public_key)
             
         if private_file:
              private_key = self.enc_object.export_keys(self.fingerprint, True)
-             #TODO: output to private_file
+             with open(file_name, 'w') as f:
+                f.write(f, private_key)
     
     def deleteKeys(self, fingerprint=''):
         if fingerprint: self.fingerprint = fingerprint
         self.enc_object.delete_keys(self.fingerprint, True)
         self.enc_object.delete_keys(self.fingerprint)
         
-    def receiveKey(self, fingerprint='', server='keys.gnupg.net'):
+    def receiveKeys(self, fingerprint='', server='keys.gnupg.net'):
         return self.enc_object.recv_keys(server, fingerprint)
     
     def importKeyFromServer(self, fingerprint='', server='keys.gnupg.net'):
         pass
     
+
+
+
 def main():
     
     """
     Example of simple usage...
     
     gpg = GPG()
+    #gpg.setKey() isn't needed if settings.py is properly filled out
     gpg.setKey("XXXXXXXXXXXXXXXXXXXX") # fingerprint, full name, email, etc.
     encrypted_data = gpg.encrypt("msg")
-    decrypted_data = str(gpg.decrypt(encrypted_data)) # str() required
+    decrypted_data = gpg.decrypt(encrypted_data)
     
     unsigned_encrypted_data = gpg.encrypt("msg", sign=False)
     unsigned_decrypted_data = gpg.decrypt(unsigned_encrypted_data)
@@ -292,31 +344,63 @@ def main():
     If you are using a virtual OS, you may run into entropy problems during key creation..
     When prompted to "do things to gain entropy", just run "ls -alR /" in another terminal
     If that isn't enough, just play around with dd... "dd if=/dev/urandom of=temp.bin bs=1M count=1000;rm -rf temp.bin" etc..
-    
-    """
-    #test code for development.. will change often
 
-    """
     Example of my settings.py:
 
     PATH_TO_GPG = '/usr/bin/gpg'
     PGPHOMEDIR = '/home/synthesis/.gnupg'
     PASSPHRASE = 'mypassword'
     FINGERPRINT = '8FF0FFF8'
+    
     """
-    
-    msg = "This will be encrypted"
-    gpg = GPG()
-    encrypted_data = gpg.encrypt(msg)
-    decrypted_data = str(gpg.decrypt(encrypted_data))
-    
-    print "Encrypted = {0}".format(encrypted_data)
-    print "Decrypted = {0}".format(decrypted_data)
- 
-    if decrypted_data == msg:
-        print "Test Passed"
-    else:
-        print "Test Failed"
+
+    #test code for development.. will change often
+    debug = False
+    test_cases = True
+
+    if test_cases is True:
+        #gpg.encrypt() and gpg.decrypt()
+        msg = "This will be encrypted"
+        gpg = GPG()
+        encrypted_data = gpg.encrypt(msg)
+        decrypted_data = gpg.decrypt(encrypted_data)
+        
+        if debug is True: print "Encrypted = {0}".format(encrypted_data)
+        if debug is True: print "Decrypted = {0}".format(decrypted_data)
+     
+        if decrypted_data == msg:
+            print "gpg.encrypt() -> Test Passed"
+            print "gpg.decrypt() -> Test Passed"
+        else:
+            print "!! gpg.encrypt() -> Test Failed !!"
+            print "!! gpg.decrypt() -> Test Failed !!"
+        encrypted_data = decrypted_data = gpg = msg = None
+
+        #gpg.encryptFile() and gpg.decryptFile()
+        from os import remove
+        
+        gpg = GPG()
+        msg = "Testing GPG"
+        
+        with open('/tmp/testcase.txt', 'w') as f: 
+            f.write(msg)
+        
+        encrypted_data = gpg.encryptFile('/tmp/testcase.txt', '/tmp/testcase.txt.gpg')
+        remove('/tmp/testcase.txt')
+        
+        decrypted_data = gpg.decryptFile('/tmp/testcase.txt.gpg', '/tmp/testcase.txt')
+        remove('/tmp/testcase.txt.gpg')
+
+        if debug is True: print "Encrypted = {0}".format(encrypted_data)
+        if debug is True: print "Decrypted = {0}".format(decrypted_data)
+
+        if decrypted_data == msg:
+            print "gpg.encryptFile() -> Test Passed"
+            print "gpg.decryptFile() -> Test Passed"
+        else:
+            print "!! gpg.encryptFile() -> Test Failed !!"
+            print "!! gpg.decryptFile() -> Test Failed !!"
+        encrypted_data = decrypted_data = gpg = msg = None
 
 if __name__ == '__main__':
     main()

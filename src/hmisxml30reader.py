@@ -475,7 +475,7 @@ def parse_person(self, element):
             ''' Parse sub-tables '''
             parse_site_service_participation(self, item)
             parse_need(self, item)          
-            parse_service_event(self, item)
+            parse_service_event(self, item, namespace='hmis:')
             parse_person_historical(self, item)
             parse_release_of_information(self, item)
             parse_other_names(self, item)
@@ -1698,7 +1698,7 @@ def parse_site_service_participation(self, element, pf='hmis'):
             existence_test_and_add(self, 'participation_dates_end_date', item.xpath(xpEndDate, namespaces = self.nsmap), 'element_date')
 
             ''' Foreign Keys '''
-	    if pf=='hmis':
+            if pf=='hmis':
                 existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
             else:
                 existence_test_and_add(self, 'fk_participation_to_person', self.person_index_id, 'no_handling')
@@ -1710,8 +1710,8 @@ def parse_site_service_participation(self, element, pf='hmis'):
             ''' Parse sub-tables '''
             parse_reasons_for_leaving(self, item)  
             parse_need(self, item)          
-            parse_service_event(self, item)
-	    if pf=='hmis':
+            parse_service_event(self, item, namespace = pf + ':')
+            if pf=='hmis':
                 parse_person_historical(self, item)	# OCC reader has a different copy, parsed earlier
 
 def parse_reasons_for_leaving(self, element):
@@ -1784,14 +1784,16 @@ def parse_application_process(self, element):
             ''' Parse sub-tables '''
                         
 
-def parse_need(self, element):
+def parse_need(self, element, pf = 'hmis:'):
     ''' Element paths '''
-    xpNeed = 'hmis:Need'
+    xpNeed = pf + 'Need'
     xpNeedIDIDNum = 'hmis:NeedID/hmis:IDNum'
     xpNeedIDIDStr = 'hmis:NeedID/hmis:IDStr'
+
     xpNeedIDDeleteOccurredDate = 'hmis:NeedID/@hmis:deleteOccurredDate'
     xpNeedIDDeleteEffective = 'hmis:NeedID/@hmis:deleteEffective'
     xpNeedIDDelete = 'hmis:NeedID/@hmis:delete'
+
     xpSiteServiceID = 'hmis:SiteServiceID'
     xpNeedEffectivePeriodStartDate = 'hmis:NeedEffectivePeriod/hmis:StartDate'
     xpNeedEffectivePeriodEndDate = 'hmis:NeedEffectivePeriod/hmis:EndDate'
@@ -1827,12 +1829,15 @@ def parse_need(self, element):
             shred(self, self.parse_dict, Need)
 
             ''' Parse sub-tables '''
-            parse_taxonomy(self, item)
-            parse_service_event(self, item)
+            if pf == 'ext:':    # This was done for TBC, which uses ext:Person/ext:Need/hmis:Taxonomy/airs:Code
+                parse_taxonomy(self, item, 'hmis:')
+            else:               # Others are hmis:Person/hmis:Need/airs:Taxonomy/airs:Code
+                parse_taxonomy(self, item, 'airs:')
+            parse_service_event(self, item, namespace='hmis:')
 
-def parse_taxonomy(self, element):
+def parse_taxonomy(self, element, pf = 'airs:'):
     ''' Element paths '''
-    xpTaxonomy = 'airs:Taxonomy'
+    xpTaxonomy = pf + 'Taxonomy'
     xpCode = 'airs:Code'
 
     itemElements = element.xpath(xpTaxonomy, namespaces = self.nsmap)
@@ -1864,30 +1869,30 @@ def parse_taxonomy(self, element):
                 ''' Parse sub-tables '''
                         
 
-def parse_service_event(self, element):
+def parse_service_event(self, element, namespace='hmis:'):
     ''' Element paths '''
-    xpServiceEvent = 'hmis:ServiceEvent'
-    xpServiceEventIDIDNum = 'hmis:ServiceEventID/hmis:IDNum'
-    xpServiceEventIDIDStr = 'hmis:ServiceEventID/hmis:IDStr'
-    xpServiceEventIDDeleteOccurredDate = 'hmis:ServiceEventID/@hmis:deleteOccurredDate'
-    xpServiceEventIDDeleteEffective = 'hmis:ServiceEventID/@hmis:deleteEffective'
-    xpServiceEventIDDelete = 'hmis:ServiceEventID/@hmis:delete'        
-    xpSiteServiceID = 'hmis:SiteServiceID'
-    xpHouseholdIDIDNum = 'hmis:HouseholdID/hmis:IDNum'
-    xpHouseholdIDIDStr = 'hmis:HouseholdID/hmis:IDStr'
-    xpIsReferral = 'hmis:IsReferral'
-    xpQuantityOfServiceEvent = 'hmis:QuantityOfServiceEvent'
-    xpQuantityOfServiceEventUnit = 'hmis:QuantityOfServiceEventUnit'
-    xpServiceEventAIRSCode = 'hmis:ServiceEventAIRSCode'
-    xpServiceEventEffectivePeriodStartDate = 'hmis:ServiceEventEffectivePeriod/hmis:StartDate'
-    xpServiceEventEffectivePeriodEndDate = 'hmis:ServiceEventEffectivePeriod/hmis:EndDate'
-    xpServiceEventProvisionDate = 'hmis:ServiceEventProvisionDate'
-    xpServiceEventRecordedDate = 'hmis:ServiceEventRecordedDate'
-    xpServiceEventIndFam = 'hmis:ServiceEventIndFam'
-    xpHMISServiceEventCodeTypeOfService = 'hmis:HMISServiceEventCode/hmis:TypeOfService'
-    xpHMISServiceEventCodeTypeOfServiceOther = 'hmis:HMISServiceEventCode/hmis:TypeOfServiceOther'
-    xpHPRPFinancialAssistanceServiceEventCode = 'hmis:HPRPFinancialAssistanceService'
-    xpHPRPRelocationStabilizationServiceEventCode = 'hmis:HPRPRelocationStabilizationServiceEventCode'
+    xpServiceEvent = namespace + 'ServiceEvent'
+    xpServiceEventIDIDNum = namespace + 'ServiceEventID/hmis:IDNum'
+    xpServiceEventIDIDStr = namespace + 'ServiceEventID/hmis:IDStr'
+    xpServiceEventIDDeleteOccurredDate = namespace + 'ServiceEventID/@hmis:deleteOccurredDate'
+    xpServiceEventIDDeleteEffective = namespace + 'ServiceEventID/@hmis:deleteEffective'
+    xpServiceEventIDDelete = namespace + 'ServiceEventID/@hmis:delete'        
+    xpSiteServiceID = namespace + 'SiteServiceID'
+    xpHouseholdIDIDNum = namespace + 'HouseholdID/hmis:IDNum'
+    xpHouseholdIDIDStr = namespace + 'HouseholdID/hmis:IDStr'
+    xpIsReferral = namespace + 'IsReferral'
+    xpQuantityOfServiceEvent = namespace + 'QuantityOfServiceEvent'
+    xpQuantityOfServiceEventUnit = namespace + 'QuantityOfServiceEventUnit'
+    xpServiceEventAIRSCode = namespace + 'ServiceEventAIRSCode'
+    xpServiceEventEffectivePeriodStartDate = namespace + 'ServiceEventEffectivePeriod/hmis:StartDate'
+    xpServiceEventEffectivePeriodEndDate = namespace + 'ServiceEventEffectivePeriod/hmis:EndDate'
+    xpServiceEventProvisionDate = namespace + 'ServiceEventProvisionDate'
+    xpServiceEventRecordedDate = namespace + 'ServiceEventRecordedDate'
+    xpServiceEventIndFam = namespace + 'ServiceEventIndFam'
+    xpHMISServiceEventCodeTypeOfService = namespace + 'HMISServiceEventCode/hmis:TypeOfService'
+    xpHMISServiceEventCodeTypeOfServiceOther = namespace + 'HMISServiceEventCode/hmis:TypeOfServiceOther'
+    xpHPRPFinancialAssistanceServiceEventCode = namespace + 'HPRPFinancialAssistanceService'
+    xpHPRPRelocationStabilizationServiceEventCode = namespace + 'HPRPRelocationStabilizationServiceEventCode'
     
     itemElements = element.xpath(xpServiceEvent, namespaces = self.nsmap)
     if itemElements is not None:
@@ -1931,12 +1936,12 @@ def parse_service_event(self, element):
             shred(self, self.parse_dict, ServiceEvent)
 
             ''' Parse sub-tables '''
-            parse_service_event_notes(self, item)     
-            parse_funding_source(self, item)       
+            parse_service_event_notes(self, item, namespace)     
+            parse_funding_source(self, item, namespace)       
 
-def parse_service_event_notes(self, element):
+def parse_service_event_notes(self, element, pf='hmis:'):    # Default so old code won't break
     ''' Element paths '''
-    xpServiceEventNotes = 'hmis:ServiceEventNotes/hmis:note'
+    xpServiceEventNotes = pf + 'ServiceEventNotes/hmis:note'
     xpNoteIDIDNum = 'hmis:NoteID/hmis:IDNum'
     xpNoteIDIDStr = 'hmis:NoteID/hmis:IDStr'
     xpNoteIDDeleteOccurredDate = 'hmis:NoteID/@hmis:deleteOccurredDate'
@@ -1993,15 +1998,18 @@ def parse_family_requirements(self, element):
             ''' Parse sub-tables '''
                         
 
-def parse_person_historical(self, element):
+def parse_person_historical(self, element, pf = 'hmis:'):
     ''' Element paths '''
-    xpPersonHistorical = 'hmis:PersonHistorical'        
+    xpPersonHistorical = pf + 'PersonHistorical'        
     xpPersonHistoricalIDIDNum = 'hmis:PersonHistoricalID/hmis:IDNum'
     xpPersonHistoricalIDIDStr = 'hmis:PersonHistoricalID/hmis:IDStr'
     xpPersonHistoricalIDDelete = 'hmis:PersonHistoricalID/@hmis:delete'
     xpPersonHistoricalIDDeleteEffective = 'hmis:PersonHistoricalID/@hmis:deleteEffective'
     xpPersonHistoricalIDDeleteOccurredDate = 'hmis:PersonHistoricalID/@hmis:deleteOccurredDate'
     xpSiteServiceID = 'hmis:SiteServiceID'
+#    xpPersonHistoricalPersonPhoneNumber = pf + 'PersonHistorical/hmis:PersonPhoneNumber' Not work????
+    xpPersonHistoricalPersonPhoneNumber = 'hmis:PersonPhoneNumber'
+    xpPersonHistoricalPersonPhoneNumberDateCollected = 'hmis:PersonPhoneNumber/@hmis:dateCollected'
 
     itemElements = element.xpath(xpPersonHistorical, namespaces = self.nsmap)
     if itemElements is not None:
@@ -2015,6 +2023,10 @@ def parse_person_historical(self, element):
             existence_test_and_add(self, 'person_historical_id_delete_effective_date', item.xpath(xpPersonHistoricalIDDeleteEffective, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'person_historical_id_delete_occurred_date', item.xpath(xpPersonHistoricalIDDeleteOccurredDate, namespaces = self.nsmap), 'attribute_date')
             existence_test_and_add(self, 'site_service_id', item.xpath(xpSiteServiceID, namespaces = self.nsmap), 'text')
+            # JCS New 2012-01-11
+            existence_test_and_add(self, 'person_phone_number', item.xpath(xpPersonHistoricalPersonPhoneNumber, namespaces = self.nsmap), 'text')   #'no_handling'??
+            existence_test_and_add(self, 'person_phone_number_date_collected', item.xpath(xpPersonHistoricalPersonPhoneNumberDateCollected, namespaces = self.nsmap), 'attribute_date')
+
 
             ''' Foreign Keys '''
             try: existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
@@ -3683,9 +3695,9 @@ def parse_other_names(self, element):
 
             ''' Parse sub-tables '''
                         
-def parse_races(self, element):
+def parse_races(self, element, pf = 'hmis:'):
     ''' Element paths '''
-    xpRaces = 'hmis:Race'
+    xpRaces = pf + 'Race'
     xpRaceUnhashed = 'hmis:Unhashed'
     xpRaceUnhashedDateCollected = 'hmis:Unhashed/@hmis:dateCollected'
     xpRaceUnhashedDataCollectionStage = 'hmis:Unhashed/@hmis:dataCollectionStage'
@@ -3960,18 +3972,18 @@ def existence_test_and_add(self, db_column, query_string, handling):
             #print 'Query string:', query_string
             return True
         elif handling == 'attribute_date':
-            print "Column = ", db_column
+            #print "Column = ", db_column
             #print "dateutil.parser.parse(query_string[0]) is: ", dateutil.parser.parse(query_string[0])
-            print "==== query_string[0] = ", query_string[0]
+            #print "==== query_string[0] = ", query_string[0]
             persist(self, db_column, query_string = dateutil.parser.parse(query_string[0]))
-            print 'Query string:', query_string
+            #print 'Query string:', query_string
             return True
         elif handling == 'element_date':
-            print "==== Column = ", db_column
-            print "==== query_string[0].text = ", query_string[0].text
+            #print "==== Column = ", db_column
+            #print "==== query_string[0].text = ", query_string[0].text
             #print "dateutil.parser.parse(query_string[0].text) is:", dateutil.parser.parse(query_string[0].text), ":"
-            persist(self, db_column, query_string = dateutil.parser.parse(query_string[0].text))  # JCS - added unicode
-            print 'Query string:', query_string
+            persist(self, db_column, query_string = dateutil.parser.parse(query_string[0].text))
+            #print '==== Query string:', query_string
             return True
         else:
             print "Need to specify the handling"
@@ -4080,6 +4092,10 @@ def shred(self, records_dict, map_class):
     if map_class.__name__ == "Need":
         self.need_index_id = mapped.id
         print "Need:",self.need_index_id
+
+    if map_class.__name__ == "Referral":
+        self.referral_index_id = mapped.id
+        print "Referral:",self.referral_index_id
 
     if map_class.__name__ == "ServiceEvent":
         self.service_event_index_id = mapped.id

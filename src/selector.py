@@ -8,6 +8,7 @@ import time
 from fileinputwatcher import FileInputWatcher
 from hmisxml28reader import HMISXML28Reader
 from hmisxml30reader import HMISXML30Reader
+from tbchmisxml30reader import TBCHUDHMISXML30Reader	# JCS New 2012-01-05
 from jfcsxmlreader import JFCSXMLReader
 from occhmisxml30reader import OCCHUDHMISXML30Reader
 #from synthesis.parxmlreader import PARXMLReader
@@ -483,13 +484,13 @@ class Selector:
         
         #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
         #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
-        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest]
+        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
         #tests = [HUDHMIS30XMLTest]
         #tests = [HUDHMIS28XMLTest]
         if settings.DEBUG:
             print "tests are", tests
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
-        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader}
+        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader, TBCExtendHUDHMISXMLTest:TBCHUDHMISXML30InputReader}
         #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
         
         if settings.SKIP_VALIDATION_TEST is True:
@@ -551,7 +552,46 @@ class VendorXMLTest:
         print '\nThe', self.name, 'test not implemented.'
         print '...but intended to validate', instance_filename
         return False
+
+class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
+    '''Load in the HUD HMIS Schema, version 3.0.'''
+    def __init__(self):
+        self.name = 'TBCExtendHUDHMISXML'
+        print 'running the', self.name, 'test'
+        self.schema_filename = settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml']
+        print "settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml'] is: ", settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml']
     
+    def validate(self, instance_stream):
+        '''This specific data format's validation process.'''
+        schema = open(self.schema_filename,'r')
+        schema_parsed = etree.parse(schema)
+        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        
+        try:
+            instance_parsed = etree.parse(instance_stream)
+            results = schema_parsed_xsd.validate(instance_parsed)
+            if results == True:
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
+                return results
+            if results == False:
+                print 'The xml did not successfully validate against %s' % self.name
+                try:
+                    detailed_results = schema_parsed_xsd.assertValid\
+                    (instance_parsed)
+                    print detailed_results
+                    return results
+                except etree.DocumentInvalid, error:
+                    print 'Document Invalid Exception.  Here is the detail:'
+                    print error
+                    return results
+            if results == None:
+                print "The validator erred and couldn't determine if the xml \
+                was either valid or invalid."
+                return results
+        except etree.XMLSyntaxError, error:
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            pass
+
 class HUDHMIS28XMLTest:
     '''Load in the HUD HMIS Schema, version 2.8.'''
     def __init__(self):
@@ -1010,7 +1050,20 @@ class PARXMLTest:
 #            self.reader.process_data(tree)
 #        except:
 #            raise        
-    
+
+class TBCHUDHMISXML30InputReader(TBCHUDHMISXML30Reader):
+    def __init__(self, instance_filename, db):
+        self.reader = TBCHUDHMISXML30Reader(instance_filename, db)
+        
+    def shred(self):
+        tree = self.reader.read()
+        try:
+            source_ids = self.reader.process_data(tree)
+            if source_ids != None:
+                return source_ids
+        except:
+            raise
+
 class HUDHMIS28XMLInputReader(HMISXML28Reader):
     def __init__(self, instance_filename, db):
         self.reader = HMISXML28Reader(instance_filename, db)

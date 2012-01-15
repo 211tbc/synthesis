@@ -2016,6 +2016,28 @@ class ServiceEvent(DB.Base, MapBase):
     service_event_recorded_date = Column(DateTime(timezone=False))
     useexisting = True
     
+class Referral(DB.Base, MapBase):
+    __tablename__ = 'referral'
+    id = Column(Integer, primary_key=True)
+    service_event_index_id = Column(Integer, ForeignKey('service_event.id')) 
+    export_index_id = Column(Integer, ForeignKey('export.id'))
+    person_index_id = Column(Integer, ForeignKey('person.id'))
+    need_index_id = Column(Integer, ForeignKey('need.id'))  # ??
+    referral_idid_num = Column(String(50))
+    referral_idid_str = Column(String(32))
+    referral_delete = Column(Integer)
+    referral_delete_occurred_date = Column(DateTime(timezone=False))
+    referral_delete_effective_date = Column(DateTime(timezone=False))
+    referral_agency_referred_to_idid_num = Column(String(50))
+    referral_agency_referred_to_idid_str = Column(String(50))
+    referral_agency_referred_to_name = Column(String(50))
+    referral_agency_referred_to_name_data_collection_stage = Column(String(50))
+    referral_agency_referred_to_name_date_collected = Column(DateTime(timezone=False))
+    referral_agency_referred_to_name_date_effective = Column(DateTime(timezone=False))
+    referral_need_idid_num = Column(String(50)) # In TBC, these refer to an already defined Need
+    referral_need_idid_str = Column(String(50))
+    useexisting = True
+
 class Source(DB.Base, MapBase):
     __tablename__ = 'source'
     id = Column(Integer, primary_key=True)
@@ -2047,8 +2069,7 @@ class Source(DB.Base, MapBase):
     useexisting = True
     #properties={'fk_source_to_export': relation(Export, backref='fk_export_to_source')})
         
-class SystemConfiguration(DB.Base, MapBase):	# Was
-#class SystemConfiguration(MapBase, DB.Base):	# JCS 10/1/11
+class SystemConfiguration(DB.Base, MapBase):
     __tablename__ = 'system_configuration_table'
     id = Column(Integer, primary_key=True)
     vendor_name = Column(String(50))

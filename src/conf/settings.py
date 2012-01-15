@@ -104,7 +104,8 @@ SCHEMA_DOCS = {
 'jfcs_service_event_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_SERVICE_EVENT.xsd'),
 'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
 'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd'),
-'occ_hud_hmis_xml_3_0':os.path.join(BASE_PATH, XSD_PATH, 'OCC_Extend_HUD_HMIS.xsd')
+'occ_hud_hmis_xml_3_0':os.path.join(BASE_PATH, XSD_PATH, 'OCC_Extend_HUD_HMIS.xsd'),
+'tbc_extend_hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'TBC_Extend_HUD_HMIS.xsd')
                }
 
 DEBUG = True								# Debug the application layer

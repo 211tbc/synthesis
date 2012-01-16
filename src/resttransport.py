@@ -27,7 +27,7 @@ class REST():
             return (False, "An error occurred while performing an HTTP-POST or receiving the response: (%s)" % str(err))
 
 if __name__ == "__main__":
-    rest = REST("003")
+    rest = REST("test")
     payload = """--%s
 Content-Disposition: attachment; name="test"; filename="test.xml"
 Content-Type: text/xml

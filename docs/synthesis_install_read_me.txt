@@ -71,7 +71,8 @@ $ ./bin/paster create -t pylons synthesis
 
 edit ~/myrestservice/bin/python to add the path:
 '/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis',
-as another entry in the sys.path[0:0] =  section.
+'/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis/synthesis',
+as two additional entries in the sys.path[0:0] =  section.
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
 ~/myrestservice$ cd synthesis

@@ -68,11 +68,12 @@ $ ./bin/paster create -t pylons synthesis
 -3DES file decryption by the web service is turned off by default.  If you want that on, edit ~/myrestservice/synthesis/synthesis/controllers/docs.py to #use_encryption = True
 
 -ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
+-also in conf/settings.py, make sure all the paths in are real.  Mainly put the actual username in, SMTPRECIPIENTS = {    
+        "/home/username/myrestservice/synthesis/synthesis/input_files":
 
 edit ~/myrestservice/bin/python to add the path:
-'/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis',
 '/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis/synthesis',
-as two additional entries in the sys.path[0:0] =  section.
+as an additional entry into the sys.path[0:0] =  section.
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
 ~/myrestservice$ cd synthesis

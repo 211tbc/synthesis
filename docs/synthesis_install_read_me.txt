@@ -92,11 +92,11 @@ If you try to run it from your system's built-in python interpreter (as with vir
 
 First, set up the database, so the IDs to be configured are present.  This doc explains that:
 
-http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/output_configurations.readme
+http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/output_configurations.readme
 
 Then, read about how to run nodebuilder here, to create the XML output in a new format.
 
-http://xsd.alexandriaconsulting.com/cgi-bin/trac.cgi/browser/trunk/synthesis/docs/generating_output_manually.readme
+http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
 
 There's currently no automated way to generate output (other than cron jobs), which is something we have to add.
 

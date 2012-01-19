@@ -1,16 +1,18 @@
-"""
+'''
 TODO:
 - Error checking
 - Compression(zip)
 - DES
 - SHA*
 - testing, testing, testing
-"""
+'''
 from conf import settings
-from Crypto.Hash import MD5 as baseMD5
 from Crypto.Cipher import AES as baseAES
+from Crypto.Cipher import Blowfish as baseBlowfish
+from Crypto.Cipher import DES as baseDES
 from Crypto.Cipher import DES3 as baseDES3
-from os import urandom
+from Crypto.Hash import MD5 as baseMD5
+from Crypto import Random
 import gnupg
 
 #################################################################
@@ -39,11 +41,12 @@ class Encryption:
 
 # Hash base class, not called directly #
 class Hash(Encryption):
-    """Base class for all Hash classes.
+    '''
+    Base class for all Hash classes.
 
     Hash.MD5(data='', digest_size=16)
+    '''
 
-    """
     def __init__(self):
         Encryption.__init__(self)
     
@@ -53,14 +56,14 @@ class Hash(Encryption):
 
 # MD5 Class #
 class MD5(Hash):
-    """Class for generating MD5 hashes.
+    '''
+    Class for generating MD5 hashes.
 
     MD5(data='', digest_size=16)          => Encryption.Hash.MD5
     MD5.encrypt(data='', digest_size=16)  => Encrypts data, digest_size is optional
     MD5.get_result()                      => Returns encrypted/hashed data
     MD5.get_data()                        => Returns original data
-
-    """
+    '''
 
     def __init__(self, data='', digest_size=16):
         Hash.__init__(self)
@@ -69,11 +72,12 @@ class MD5(Hash):
             self.result = self.encrypt(data)
     
     def encrypt(self, data='', digest_size=16):
-        """Encrypts data, digest_size is optional
+        '''
+        Encrypts data, digest_size is optional
 
         MD5.encrypt(data='', digest_size=16)
+        '''
 
-        """
         Hash.encrypt(self, data, digest_size)
         if data:
             self.data = data
@@ -89,27 +93,40 @@ class MD5(Hash):
 
 # Cipher base class, not called directly #
 class Cipher(Encryption):
-    """Base class for all cipher classes.
+    '''
+    Base class for all cipher classes.
+    '''
 
-    """
-
-    def __init__(self):
+    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=None, method="encrypt"):
         Encryption.__init__(self)
 
-        self.block_size = 16
+        self.block_size = block_size or 16
         self.data = ''
         self.key = ''
         self.result = ''
         self.enc_object = None
         self.pad_char = ''
 
+        if data: self.data = data
+        if key: self.key = key
+        if mode: self.mode = mode
+        if iv: self.iv = iv
+        if block_size: self.block_size = block_size
+        if method: self.method = method
+
+        if data and key:
+            if method == "encrypt": 
+                self.encrypt(data, key, block_size)
+            elif method == "decrypt":
+                self.decrypt(data, key, block_size)
+
     def can_encrypt(self): return True
     def can_decrypt(self): return True
-
     def set_key(self, key): self.key = key
 
     def pad(self, text, size=None, padding=chr(255)):
         if size: self.block_size = size
+        
         self.pad_char = padding
         if len(text) == 0: return padding * self.block_size
         if len(text) % self.block_size:
@@ -120,6 +137,28 @@ class Cipher(Encryption):
     def unpad(self, text):
         return text.rstrip(self.pad_char)
 
+    def encrypt(self, data='', key='', block_size=None):
+        if data: self.data = data
+        if key: self.key = key
+        if block_size: self.block_size = block_size
+        
+        #Encryption.encrypt(self, data=self.data, key=self.key, block_size=self.block_size)
+        self.result = self.enc_object.encrypt(self.pad(self.data))
+        return self.result
+
+    def decrypt(self, data, key, block_size=None):
+        if data: 
+            self.data = data
+        else:
+            if self.result: 
+                self.data = self.result
+                self.result = None
+        if key: self.key = key
+        if block_size: self.block_size = block_size
+        
+        #Encryption.decrypt(self, self.data, self.key, self.block_size)
+        self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
+        return self.result
 
 
 
@@ -130,42 +169,62 @@ class AES(Cipher):
     encrypted = aes.encrypt("text", "key")
     decrypted = aes.decrypt(encrypted, "key")
     '''
-    def __init__(self, data='', key='', block_size=32, method="encrypt"):
-        Cipher.__init__(self)
-        if data: self.data = data
-        if key: self.key = key
-        self.block_size = block_size
 
-        if data and key:
-            if method == "encrypt": 
-                self.encrypt(data, key, block_size)
-            elif method == "decrypt":
-                self.decrypt(data, key, block_size)
+    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=32, method="encrypt"):
+        Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
-    def encrypt(self, data='', key='', block_size=None):
-        if data: self.data = data
-        if key: self.key = key
-        if block_size: self.block_size = block_size
-        Cipher.encrypt(self, self.data, self.key, self.block_size)
+    def encrypt(self, data, key, block_size=32, mode=baseAES.MODE_ECB, iv=None):
+        if iv is None: iv = Random.get_random_bytes(16)
+        self.enc_object = baseAES.new(self.pad(key), mode, iv)
+        return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-        self.enc_object = baseAES.new(self.pad(self.key))
-        self.result = self.enc_object.encrypt(self.pad(self.data))
-        return self.result
+    def decrypt(self, data='', key='', block_size=32, mode=baseAES.MODE_ECB):
+        self.enc_object = baseAES.new(self.pad(self.key), mode=mode)
+        return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=None):
-        if data: 
-            self.data = data
-        else:
-            if self.result: 
-                self.data = self.result
-                self.result = None
-        if key: self.key = key
-        if block_size: self.block_size = block_size
-        Cipher.decrypt(self, self.data, self.key, self.block_size)
 
-        self.enc_object = baseAES.new(self.pad(self.key))
-        self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
-        return self.result
+
+# Blowfish Class #
+class Blowfish(Cipher):
+    '''
+    blowfish = Blowfish()
+    encrypted = blowfish.encrypt("text", "key")
+    decrypted = blowfish.decrypt(encrypted, "key")
+    '''
+
+    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=32, method="encrypt"):
+        Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
+    
+    def encrypt(self, data, key, block_size=32, mode=baseBlowfish.MODE_ECB, iv=None):
+        if iv is None: iv = Random.get_random_bytes(8)
+        self.enc_object = baseBlowfish.new(self.pad(key), mode, iv)
+        return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
+
+    def decrypt(self, data='', key='', block_size=32, mode=baseBlowfish.MODE_ECB):
+        self.enc_object = baseBlowfish.new(self.pad(self.key), mode=mode)
+        return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
+
+
+
+# DES Class #
+class DES(Cipher):
+    '''
+    des = DES()
+    encrypted = des.encrypt("text", "key")
+    decrypted = des.decrypt(encrypted, "key")
+    '''
+    
+    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=8, method="encrypt"):
+        Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
+    
+    def encrypt(self, data, key, block_size=8, mode=baseDES.MODE_ECB, iv=None):
+        if iv is None: iv = Random.get_random_bytes(8)
+        self.enc_object = baseDES.new(self.pad(key), mode, iv)
+        return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
+
+    def decrypt(self, data='', key='', block_size=8, mode=baseDES.MODE_ECB):
+        self.enc_object = baseDES.new(self.pad(self.key), mode=mode)
+        return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
 
 
@@ -176,43 +235,20 @@ class DES3(Cipher):
     encrypted = des.encrypt("text", "key")
     decrypted = des.decrypt(encrypted, "key")
     '''
-
-    def __init__(self, data='', key='', block_size=16, method="encrypt"):
-        Cipher.__init__(self)
-        if data: self.data = data
-        if key: self.key = key
-        self.block_size = block_size
-
-        if data and key:
-            if method == "encrypt": 
-                self.encrypt(data, key, block_size)
-            elif method == "decrypt":
-                self.decrypt(data, key, block_size)
     
-    def encrypt(self, data='', key='', block_size=None):
-        if data: self.data = data
-        if key: self.key = key
-        if block_size: self.block_size = block_size
-        Cipher.encrypt(self, self.data, self.key, self.block_size)
+    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=16, method="encrypt"):
+        Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
+    
+    def encrypt(self, data, key, block_size=16, mode=baseDES3.MODE_ECB, iv=None):
+        if iv is None: iv = Random.get_random_bytes(8)
+        self.enc_object = baseDES3.new(self.pad(key), mode, iv)
+        return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-        self.enc_object = baseDES3.new(self.pad(self.key))
-        self.result = self.enc_object.encrypt(self.pad(self.data))
-        return self.result
+    def decrypt(self, data='', key='', block_size=16, mode=baseDES3.MODE_ECB):
+        self.enc_object = baseDES3.new(self.pad(self.key), mode=mode)
+        return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=None):
-        if data: 
-            self.data = data
-        else:
-            if self.result: 
-                self.data = self.result
-                self.result = None
-        if key: self.key = key
-        if block_size: self.block_size = block_size
-        Cipher.decrypt(self, self.data, self.key, self.block_size)
 
-        self.enc_object = baseDES3.new(self.pad(self.key))
-        self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
-        return self.result
 
 #############################################################
 # Classes to handle all of our public key based encryptions #
@@ -220,9 +256,10 @@ class DES3(Cipher):
 
 # Public key base class, not called directly #
 class PublicKey(Encryption):
-    """Base class for all public key classes.
+    '''
+    Base class for all public key classes.
+    '''
 
-    """
     def can_encrypt(self): return True
     def can_decrypt(self): return True
 
@@ -263,7 +300,7 @@ class GPG(PublicKey):
         return str(self.result)
 
     def encryptFile(self, file_in, file_out=None, fingerprint='', pass_phrase='', sign=True):
-        """
+        '''
         Can be called 2 different ways, eg.
 
         gpg = GPG()
@@ -271,7 +308,7 @@ class GPG(PublicKey):
 
         gpg = GPG()
         encrypted_data = gpg.encryptFile('/tmp/file') # put encrypted file in memory
-        """
+        '''
 
         if fingerprint: self.fingerprint = fingerprint
         if pass_phrase: self.pass_phrase = pass_phrase
@@ -297,7 +334,7 @@ class GPG(PublicKey):
         return str(self.result)
     
     def decryptFile(self, file_in, file_out=None, pass_phrase=''):
-        """
+        '''
         Can be called 2 different ways, eg.
 
         gpg = GPG()
@@ -305,7 +342,7 @@ class GPG(PublicKey):
 
         gpg = GPG()
         decrypted_data = gpg.decryptFile('/tmp/file.gpg') # put decrypted file in memory
-        """
+        '''
 
         if pass_phrase: self.pass_phrase = pass_phrase
 
@@ -370,8 +407,7 @@ class GPG(PublicKey):
 
 
 def main():
-    
-    """
+    '''
     Example of simple usage...
     
     gpg = GPG()
@@ -404,8 +440,7 @@ def main():
     PGPHOMEDIR = '/home/synthesis/.gnupg'
     PASSPHRASE = 'mypassword'
     FINGERPRINT = '8FF0FFF8'
-    
-    """
+    '''
 
     #test code for development.. will change often
     debug = False

@@ -12,6 +12,7 @@ TODO:
 from conf import settings
 from Crypto.Hash import MD5 as baseMD5
 from Crypto.Cipher import AES as baseAES
+from Crypto.Cipher import DES3 as baseDES3
 from os import urandom
 import gnupg
 
@@ -110,9 +111,14 @@ class Cipher(Encryption):
 
     def set_key(self, key): self.key = key
 
-    def pad(self, text, padding='{'):
+    def pad(self, text, size=None, padding=chr(255)):
+        if size: self.block_size = size
         self.pad_char = padding
-        return text + (self.block_size - len(text) % self.block_size) * padding
+        if len(text) == 0: return padding * self.block_size
+        if len(text) % self.block_size:
+            return text + (self.block_size - len(text) % self.block_size) * padding
+        else:
+            return text
 
     def unpad(self, text):
         return text.rstrip(self.pad_char)
@@ -160,6 +166,50 @@ class AES(Cipher):
         return self.result
 
 
+
+# 3DES Class #
+class DES3(Cipher):
+    '''
+    des = DES3()
+    encrypted = des.encrypt("text", "key")
+    decrypted = des.decrypt(encrypted, "key")
+    '''
+
+    def __init__(self, data='', key='', block_size=16, method="encrypt"):
+        Cipher.__init__(self)
+        if data: self.data = data
+        if key: self.key = key
+        self.block_size = block_size
+
+        if data and key:
+            if method == "encrypt": 
+                self.encrypt(data, key, block_size)
+            elif method == "decrypt":
+                self.decrypt(data, key, block_size)
+    
+    def encrypt(self, data='', key='', block_size=None):
+        if data: self.data = data
+        if key: self.key = key
+        if block_size: self.block_size = block_size
+        Cipher.encrypt(self, self.data, self.key, self.block_size)
+
+        self.enc_object = baseDES3.new(self.pad(self.key))
+        self.result = self.enc_object.encrypt(self.pad(self.data))
+        return self.result
+
+    def decrypt(self, data='', key='', block_size=None):
+        if data: 
+            self.data = data
+        else:
+            if self.result: 
+                self.data = self.result
+                self.result = None
+        if key: self.key = key
+        if block_size: self.block_size = block_size
+        Cipher.decrypt(self, self.data, self.key, self.block_size)
+
+        self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
+        return self.result
 
 #############################################################
 # Classes to handle all of our public key based encryptions #

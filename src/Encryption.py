@@ -2,12 +2,9 @@
 TODO:
 - Error checking
 - Compression(zip)
-- AES.. in progress, fix decrypt padding issue
-- DES/DES3
+- DES
 - SHA*
-- finish openPGP wrapper after AES/RSA etc is finished
 - testing, testing, testing
-- fix padding bug on 32 chars exactly
 """
 from conf import settings
 from Crypto.Hash import MD5 as baseMD5
@@ -128,6 +125,11 @@ class Cipher(Encryption):
 
 # AES Class #
 class AES(Cipher):
+    '''
+    aes = AES()
+    encrypted = aes.encrypt("text", "key")
+    decrypted = aes.decrypt(encrypted, "key")
+    '''
     def __init__(self, data='', key='', block_size=32, method="encrypt"):
         Cipher.__init__(self)
         if data: self.data = data
@@ -162,7 +164,7 @@ class AES(Cipher):
         Cipher.decrypt(self, self.data, self.key, self.block_size)
 
         self.enc_object = baseAES.new(self.pad(self.key))
-        self.result = self.enc_object.decrypt(self.pad(self.data))
+        self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
         return self.result
 
 
@@ -208,6 +210,7 @@ class DES3(Cipher):
         if block_size: self.block_size = block_size
         Cipher.decrypt(self, self.data, self.key, self.block_size)
 
+        self.enc_object = baseDES3.new(self.pad(self.key))
         self.result = self.unpad(self.enc_object.decrypt(self.pad(self.data)))
         return self.result
 

@@ -170,7 +170,7 @@ class AES(Cipher):
     decrypted = aes.decrypt(encrypted, "key")
     '''
 
-    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=32, method="encrypt"):
+    def __init__(self, data=None, key=None, mode=baseAES.MODE_ECB, iv=None, block_size=32, method="encrypt"):
         Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
     def encrypt(self, data, key, block_size=32, mode=baseAES.MODE_ECB, iv=None):
@@ -178,8 +178,8 @@ class AES(Cipher):
         self.enc_object = baseAES.new(self.pad(key), mode, iv)
         return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=32, mode=baseAES.MODE_ECB):
-        self.enc_object = baseAES.new(self.pad(self.key), mode=mode)
+    def decrypt(self, data, key, block_size=32, mode=baseAES.MODE_ECB):
+        self.enc_object = baseAES.new(self.pad(key), mode=mode)
         return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
 
@@ -192,7 +192,7 @@ class Blowfish(Cipher):
     decrypted = blowfish.decrypt(encrypted, "key")
     '''
 
-    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=32, method="encrypt"):
+    def __init__(self, data=None, key=None, mode=baseBlowfish.MODE_ECB, iv=None, block_size=32, method="encrypt"):
         Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
     def encrypt(self, data, key, block_size=32, mode=baseBlowfish.MODE_ECB, iv=None):
@@ -200,8 +200,8 @@ class Blowfish(Cipher):
         self.enc_object = baseBlowfish.new(self.pad(key), mode, iv)
         return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=32, mode=baseBlowfish.MODE_ECB):
-        self.enc_object = baseBlowfish.new(self.pad(self.key), mode=mode)
+    def decrypt(self, data, key, block_size=32, mode=baseBlowfish.MODE_ECB):
+        self.enc_object = baseBlowfish.new(self.pad(key), mode=mode)
         return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
 
@@ -214,7 +214,7 @@ class DES(Cipher):
     decrypted = des.decrypt(encrypted, "key")
     '''
     
-    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=8, method="encrypt"):
+    def __init__(self, data=None, key=None, mode=baseDES.MODE_ECB, iv=None, block_size=8, method="encrypt"):
         Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
     def encrypt(self, data, key, block_size=8, mode=baseDES.MODE_ECB, iv=None):
@@ -222,8 +222,8 @@ class DES(Cipher):
         self.enc_object = baseDES.new(self.pad(key), mode, iv)
         return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=8, mode=baseDES.MODE_ECB):
-        self.enc_object = baseDES.new(self.pad(self.key), mode=mode)
+    def decrypt(self, data, key, block_size=8, mode=baseDES.MODE_ECB):
+        self.enc_object = baseDES.new(self.pad(key), mode=mode)
         return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
 
@@ -236,7 +236,7 @@ class DES3(Cipher):
     decrypted = des.decrypt(encrypted, "key")
     '''
     
-    def __init__(self, data=None, key=None, mode=None, iv=None, block_size=16, method="encrypt"):
+    def __init__(self, data=None, key=None, mode=baseDES3.MODE_ECB, iv=None, block_size=16, method="encrypt"):
         Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
     def encrypt(self, data, key, block_size=16, mode=baseDES3.MODE_ECB, iv=None):
@@ -244,8 +244,8 @@ class DES3(Cipher):
         self.enc_object = baseDES3.new(self.pad(key), mode, iv)
         return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data='', key='', block_size=16, mode=baseDES3.MODE_ECB):
-        self.enc_object = baseDES3.new(self.pad(self.key), mode=mode)
+    def decrypt(self, data, key, block_size=16, mode=baseDES3.MODE_ECB):
+        self.enc_object = baseDES3.new(self.pad(key), mode=mode)
         return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
 
 

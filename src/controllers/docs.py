@@ -1,5 +1,5 @@
-#use_encryption = True
-use_encryption = False
+use_encryption = True
+#use_encryption = False
 
 import os
 import logging
@@ -11,16 +11,13 @@ from lxml import etree
 import urllib
 from webob import Request
 if use_encryption:
-    from lib import decrypt3des
-from conf import settings 
+    from Encryption import *
+from conf import settings
+from selector import Selector
+import base64
 
 server_root = config['here']
-schema_file = 'OCC_Extend_HUD_HMIS.xsd'
-schema_path = config['here'] + '/schema/'
-schema_full_path = schema_path + schema_file
-schema_url = 'http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/OCC_Extend_HUD_HMIS.xsd'
 log = logging.getLogger(__name__)
-
 
 class DocsController(BaseController):
     """REST Controller styled on the Atom Publishing Protocol"""
@@ -116,22 +113,57 @@ class DocsController(BaseController):
                 encrypted_file = open(file_full_path, 'r') 
             except: 
                 print "couldn't open encrypted file for reading/decryption"
-            decrypted_stream = decrypt3des.decryptFile(encrypted_filepath = None, encrypted_stream=encrypted_file)
-            file_suffix_unenc = '_decrypted.xml'
-            file_name = file_prefix + file_suffix_unenc
-            file_full_path =  settings.INPUTFILES_PATH[0] + '/' + file_name
-            try:
-                decrypted_file = open(file_full_path, 'w')
-            except:
-                print "Error opening decrypted instance file for writing"
-            #write to file
-            print 'writing', file_name, 'to', server_root, 'to validate'
-            decrypted_file.write(decrypted_stream)
-            decrypted_file.close()
-            if not os.path.exists(file_full_path):
-                print "An decrypted file wasn't written"
+
+            data_decrypted = False
+            encoded_stream = encrypted_file.read()
+            encrypted_file.close()
+            cryptors = [DES3, GPG]
+            for cryptor in cryptors:
+                cobj = cryptor()
+                try:
+                    if cobj.__class__.__name__ == 'DES3':
+                        # decode base64 stream
+                        encrypted_stream = base64.b64decode(encoded_stream)
+                        # decrypt stream
+                        decrypted_stream = cobj.decrypt(str(encrypted_stream), settings.DES3_KEY)
+                        # test if the resulting decrypted_stream is XML
+                        xml_test = etree.XML(decrypted_stream)
+                        data_decrypted = True
+                        xml_test = None
+                        break
+                    if cobj.__class__.__name__ == 'GPG':
+                        # decode base64 stream
+                        encrypted_stream = base64.b64decode(encoded_stream)
+                        # decrypt stream
+                        decrypted_stream = cobj.decrypt(str(encrypted_stream))
+                        # test if the resulting decrypted_stream is XML
+                        xml_test = etree.XML(decrypted_stream)
+                        data_decrypted = True
+                        xml_test = None
+                        break
+                except:
+                    continue
+
+            if data_decrypted:
+                file_suffix_unenc = '_decrypted.xml'
+                file_name = file_prefix + file_suffix_unenc
+                file_full_path =  settings.INPUTFILES_PATH[0] + '/' + file_name
+                try:
+                    decrypted_file = open(file_full_path, 'w')
+                except:
+                    print "Error opening decrypted instance file for writing"
+                #write to file
+                print 'writing', file_name, 'to', server_root, 'to validate'
+                decrypted_file.write(decrypted_stream)
+                decrypted_file.close()
+                if not os.path.exists(file_full_path):
+                    print "An decrypted file wasn't written"
+                else:
+                    print "A file was written at: ", file_full_path
             else:
-                print "A file was written at: ", file_full_path
+                message = "Unable to decrypt %s or the decoded|decrypted data is not valid XML" % file_full_path
+                print message
+                return message
         
         #read in candidate XML file
 #        if use_encryption:
@@ -147,75 +179,22 @@ class DocsController(BaseController):
 #                print "couldn't open unencrypted file for reading"
             
         #validate  XML instance
-        if not os.path.exists(schema_path):
-            #print "schema folder already exists at: ", schema_path
-            try:
-                print "creating schema folder at: ", schema_path
-                os.mkdir(schema_path)
-            except:
-                print "couldn't create: ", schema_path
-        
-        #Get the schema if it doesn't exist in the folder
-        try:    
-            try:
-                schema = open(schema_full_path, 'r')
-                #schema = open(schema_full_path,'r')
-            except:        
-                urllib.urlretrieve(schema_url, schema_full_path)
-                schema = open(schema_full_path,'r')
-        except:
-            print "Error locating schema file"
-        schema_parsed = etree.parse(schema)
-        schema.close()
-        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
-        
-        file_name = file_prefix + file_suffix_unenc
+        select = Selector()
+        result = select.validate(file_full_path, False)
         try:
-            validation_candidate_file = open(file_full_path, 'r')
-        except Exception, e: 
-            print "couldn't open file for validation"
-            return e    
-        try:
-            instance_parsed = etree.parse(validation_candidate_file)
-            validation_candidate_file.close()
-            results = schema_parsed_xsd.validate(instance_parsed)
-            if results == True:
-                message = '202: The posted xml (locally at %s) successfully validated against %s .' % (file_name, schema_url)
-                response.status_int = 202
-                print message
-                #move valid file over to regular synthesis input_files directory for shredding
-                print "moving valid file ", file_name, "over to input_files for shredding"
-                import fileutils
-                fileutils.moveFile(file_full_path, settings.INPUTFILES_PATH[0])
-                return message
-            elif results == False:
-                message = 'The posted xml (locally at %s) did not successfully validate against %s .' % (file_name, schema_url)
-                try:
-                    message = message + schema_parsed_xsd.assertValid(instance_parsed)
-                    response.status_int = 200
-                    print message
-                    return message
-                except etree.DocumentInvalid, error:
-                    message = '452: Document Invalid Exception.  Here is the detail:' + str(error)
-                    response.status_int = 200
-                    print message
-                    return message
-            elif results == None:
-                message = "500: The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
-                response.status_int = 500
-                print message
-                return message
-            else:
-                fallback_message = "500: You should not see this, since it means the request wasn't handled properly"
-                return fallback_message
-        except etree.XMLSyntaxError, error:
-            message =  '452: XML Parse Error.  Here is the detail:  ' + str(error)
-            print message            
-            return message
-        except etree.XMLSyntaxError, error:
-            message =  '452: Document Invalid Exception.  Here is the detail:  ' + str(error)
+            this_schema = result.index(True)
+            schema_name = select.current_tests[this_schema].__name__
+            if len(schema_name) > 4:
+                schema_name = schema_name[:len(schema_name) - 4]
+            message = '202: The posted xml (locally at %s) successfully validated against the %s schema.' % (file_name, schema_name)
+            response.status_int = 202
             print message
-            response.status_int = 200
+            #move valid file over to regular synthesis input_files directory for shredding
+            print "moving valid file ", file_name, "over to input_files for shredding"
+            import fileutils
+            fileutils.moveFile(file_full_path, settings.INPUTFILES_PATH[0])
             return message
-    
+        except:
+            details = ''.join(list(set([str(issue) for issue in select.issues])))
+            message = '400: Could not find a matching schema for the posted xml. Details: %s' % (details)
+            return message

@@ -7,17 +7,49 @@ import settings
 
 Configuration = \
 {
-    '003':#For HUD files in test_files folder
+    'occtest':#For HUD files in test_files folder
         {
-            'vendor': 'Orange County Corrections',
+            'vendor': 'OCC',
             'outputFormat': 'svcpoint5',
-            'destinationURL': 'localhost',
+            'destinationURL': 'https://pix.penguix.net:8023/docs',
+            #'destinationURL': 'http://127.0.0.1:5000/docs',
+            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
+            'transportConfiguration': 'save',
+            # encryption type can be set to "none", "openpgp", "3des"
+            'encryption': '3des',
+            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
+            'destination': settings.BASE_PATH + '/occ_output_files',
+            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
+            'frequency': 'asap'
+        },
+    'tbctest':#For HUD files in test_files folder
+        {
+            'vendor': 'TBC',
+            'outputFormat': 'pseudo',
+            'destinationURL': 'https://pix.penguix.net:8024/docs',
+            #'destinationURL': 'http://127.0.0.1:5001/docs',
             # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
             'transportConfiguration': 'save',
             # encryption type can be set to "none", "openpgp", "3des"
             'encryption': 'none',
             # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
-            'destination': '',
+            'destination': settings.BASE_PATH + '/tbc_output_files',
+            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
+            'frequency': 'asap'
+        },
+    '003':#For HUD files in test_files folder
+        {
+            'vendor': 'Orange County Corrections',
+            'outputFormat': 'svcpoint5',
+            #'destinationURL': 'https://pix.penguix.net:8024/docs',
+            'destinationURL': 'http://fby.homeip.net:8092/docs',
+            #'destinationURL': 'http://127.0.0.1:5000/docs',
+            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
+            'transportConfiguration': 'save',
+            # encryption type can be set to "none", "openpgp", "3des"
+            'encryption': 'none',
+            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
+            'destination': settings.OUTPUTFILES_PATH,
             # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
             'frequency': 'asap'
         },

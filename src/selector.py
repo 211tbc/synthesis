@@ -475,6 +475,8 @@ class Selector:
             for item in settings.SCHEMA_DOCS:
                 print 'schema to potentially load: ' + settings.SCHEMA_DOCS[item]
 
+        self.current_tests = [] # Added by FBY on 2012-01-19
+        self.issues = [] # Added by FBY on 2012-01-19
 
     def validate(self, instance_file_loc, shred=True): 
         '''Validates against the various available schema and csv records.\
@@ -492,6 +494,8 @@ class Selector:
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
         readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader, TBCExtendHUDHMISXMLTest:TBCHUDHMISXML30InputReader}
         #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
+
+        self.current_tests = tests # Added by FBY on 2012-01-19
         
         if settings.SKIP_VALIDATION_TEST is True:
             print 'skipping tests battery for debugging'
@@ -508,6 +512,7 @@ class Selector:
         for test in tests:
             test_instance = test()
             result = test_instance.validate(instance_file_loc)
+            self.issues.append(test_instance.issues)
             results.append(result)
             if settings.DEBUG:
                 print "validation return result is", result
@@ -538,7 +543,8 @@ class Selector:
                                 self.source_ids += source_ids
                             
         if not results:
-            print "results empty"                 
+            print "results empty"
+        self.results = results # Added by FBY on 2012-01-19                 
         return results
 
 class VendorXMLTest:
@@ -556,6 +562,7 @@ class VendorXMLTest:
 class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
     '''Load in the HUD HMIS Schema, version 3.0.'''
     def __init__(self):
+        self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'TBCExtendHUDHMISXML'
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml']
@@ -579,10 +586,12 @@ class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
                     print detailed_results
+                    self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
                 except etree.DocumentInvalid, error:
                     print 'Document Invalid Exception.  Here is the detail:'
                     print error
+                    self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
                 print "The validator erred and couldn't determine if the xml \
@@ -595,6 +604,7 @@ class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
 class HUDHMIS28XMLTest:
     '''Load in the HUD HMIS Schema, version 2.8.'''
     def __init__(self):
+        self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'HUDHMIS28XML'
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_2_8']
@@ -620,10 +630,12 @@ class HUDHMIS28XMLTest:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
                     print detailed_results
+                    self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
                 except etree.DocumentInvalid, error:
                     print 'Document Invalid Exception.  Here is the detail:'
                     print error
+                    self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
                 print "The validator erred and couldn't determine if the xml \
@@ -636,6 +648,7 @@ class HUDHMIS28XMLTest:
 class HUDHMIS30XMLTest:
     '''Load in the HUD HMIS Schema, version 3.0.'''
     def __init__(self):
+        self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'HUDHMIS30XML'
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
@@ -661,10 +674,12 @@ class HUDHMIS30XMLTest:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
                     print detailed_results
+                    self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
                 except etree.DocumentInvalid, error:
                     print 'Document Invalid Exception.  Here is the detail:'
                     print error
+                    self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
                 print "The validator erred and couldn't determine if the xml \
@@ -678,6 +693,7 @@ class HUDHMIS30XMLTest:
 class OCCHUDHMIS30XMLTest:
     '''Load in the HUD HMIS Schema, version 3.0.'''
     def __init__(self):
+        self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'OCCHUDHMIS30XML'
         print 'running the', self.name, 'test'
         self.schema_filename = settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0']
@@ -706,10 +722,12 @@ class OCCHUDHMIS30XMLTest:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
                     print detailed_results
+                    self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
                 except etree.DocumentInvalid, error:
                     print 'Document Invalid Exception.  Here is the detail:'
                     print error
+                    self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
                 print "The validator erred and couldn't determine if the xml \
@@ -854,6 +872,7 @@ class JFCSXMLTest:
     '''
     
     def __init__(self):
+        self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'JFCS'
         print 'running the', self.name, 'test'
         
@@ -903,9 +922,11 @@ class JFCSXMLTest:
                 return False
             else:
                 print "All the JFCS Tests Failed, returning False"
+                self.issues = "All the JFCS Tests Failed, returning False"
                 return False
         except Exception, exception:
             print 'XML Syntax Error in validate.  There appears to be malformed XML.  ', exception
+            self.issues = 'XML Syntax Error in validate.  There appears to be malformed XML.  %s' % str(exception)
             return False
     
     def schemaTest(self, copy_instance_stream, schema_filename):

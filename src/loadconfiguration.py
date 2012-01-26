@@ -127,21 +127,39 @@ def loadData():
     session.add(new)					# JCS
     session.commit
 
-    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name2',
+    new = dbobjects.SystemConfiguration(vendor_name='OCC',
 					processing_mode='PROD',
-					source_id='334380997',
-					odbid='1999',
+					source_id='occtest',
+					odbid='1899',
 					providerid='14105',
 					userid='1913' )	# JCS
     session.add(new)					# JCS
     session.commit
     
-    new = dbobjects.SystemConfiguration(vendor_name='Vendor Name2',
+    new = dbobjects.SystemConfiguration(vendor_name='OCC',
 					processing_mode='TEST',
-					source_id='334380997',
-					odbid='1999',
+					source_id='occtest',
+					odbid='1899',
 					providerid='14105',
 					userid='1913' )	# JCS
+    session.add(new)					# JCS
+    session.commit
+    
+    new = dbobjects.SystemConfiguration(vendor_name='TBC',
+					processing_mode='PROD',
+					source_id='tbctest',
+					odbid='1999',
+					providerid='14106',
+					userid='1914' )	# JCS
+    session.add(new)					# JCS
+    session.commit
+
+    new = dbobjects.SystemConfiguration(vendor_name='TBC',
+					processing_mode='TEST',
+					source_id='tbctest',
+					odbid='1999',
+					providerid='14106',
+					userid='1914' )	# JCS
     session.add(new)					# JCS
     session.commit
 

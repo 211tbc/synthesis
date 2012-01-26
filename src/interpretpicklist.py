@@ -341,10 +341,10 @@ class Interpretpicklist:
 			,'Unemployed':'seasonal work'
 			}
 		,"EthnicityPick":{
-			"latino":"hispanic/latino",
-			"1":"hispanic/latino",
-			"other":"other",
-			"0":"other"
+			"0":"non-hispanic/non-latino (hud)",
+			"1":"hispanic/latino (hud)",
+			"8":"don't know (hud)",
+			"9":"refused (hud)"
 			}
 		}
 

@@ -16,6 +16,8 @@ from emailprocessor import XMLProcessorNotifier
 import iniutils
 import resttransport
 import soaptransport
+from Encryption import *
+import uuid
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded
@@ -43,13 +45,14 @@ class NodeBuilder():
         
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
         # this should then pull the correct module below and run the process.
-        generateOutputformat = outputConfiguration.Configuration[queryOptions.configID]['outputFormat']
+        self.generateOutputformat = outputConfiguration.Configuration[queryOptions.configID]['outputFormat']
         self.transport = outputConfiguration.Configuration[queryOptions.configID]['transportConfiguration']
-        outputFilesPath = outputConfiguration.Configuration[queryOptions.configID]['destination']
+        self.encryption = outputConfiguration.Configuration[queryOptions.configID]['encryption']
+        self.outputFilesPath = outputConfiguration.Configuration[queryOptions.configID]['destination']
         
         self.queryOptions = queryOptions
-        print '==== Output Format', generateOutputformat		# JCS
-        if generateOutputformat == 'svcpoint5':
+        print '==== Output Format', self.generateOutputformat		# JCS
+        if self.generateOutputformat == 'svcpoint5':
             #from svcPointXML20writer import SvcPointXML20Writer
             # pick the plug-in to import
             try:
@@ -60,13 +63,13 @@ class NodeBuilder():
                 print "import of Svcpt XML Writer, version 5 failed", e	# JCS
                 svcptxml5writer_loaded = False
             if self.transport == "save":
-                self.writer = SvcPointXML5Writer(outputFilesPath, queryOptions)
+                self.writer = SvcPointXML5Writer(self.outputFilesPath, queryOptions)
                 print '==== self.writer:', self.writer
                 self.validator = SvcPoint5XMLTest()
                 print '==== self.validator:', self.validator
         
         #if generateOutputformat == 'svcpoint406':	# Was
-        elif generateOutputformat == 'svcpoint406':	# JCS
+        elif self.generateOutputformat == 'svcpoint406':	# JCS
             #from svcPointXML20writer import SvcPointXML20Writer
             # pick the plug-in to import
             try:
@@ -77,10 +80,10 @@ class NodeBuilder():
                 print "import of Svcpt XML Writer, version 4.06 failed"
                 svcptxml406writer_loaded = False
             if self.transport == "save":
-                self.writer = SvcPointXMLWriter(outputFilesPath, queryOptions)
+                self.writer = SvcPointXMLWriter(self.outputFilesPath, queryOptions)
                 self.validator = SvcPoint406XMLTest()
             
-#        elif generateOutputformat == 'svcpoint20':
+#        elif self.generateOutputformat == 'svcpoint20':
 #            #from svcPointXML20writer import SvcPointXML20Writer
 #            # pick the plug-in to import
 #            try:
@@ -93,7 +96,7 @@ class NodeBuilder():
 #            self.writer = SvcPointXMLWriter(settings.OUTPUTFILES_PATH, queryOptions)
 #            self.validator = SVCPOINT20XMLTest()
                 
-        elif generateOutputformat == 'hmisxml28':
+        elif self.generateOutputformat == 'hmisxml28':
             try:
                 from hmisxml28writer import HMISXML28Writer#IGNORE:@ImportRedefinition
                 hmisxml28writer_loaded = True
@@ -102,11 +105,11 @@ class NodeBuilder():
                 hmisxml28writer_loaded = False
             if self.transport == "save":
                 if settings.DEBUG:
-                    print "destination is ", outputFilesPath
-                self.writer = HMISXML28Writer(outputFilesPath, queryOptions)           
+                    print "destination is ", self.outputFilesPath
+                self.writer = HMISXML28Writer(self.outputFilesPath, queryOptions)           
                 self.validator = HUDHMIS28XMLTest()
             
-        elif generateOutputformat == 'hmisxml30':
+        elif self.generateOutputformat == 'hmisxml30':
             try:
                 from hmisxml30writer import HMISXMLWriter#IGNORE:@ImportRedefinition
                 print "import of HMISXMLWriter, version 3.0 occurred successfully"
@@ -116,27 +119,29 @@ class NodeBuilder():
                 hmisxml30writer_loaded = False
             if self.transport == "save":
                 if settings.DEBUG:
-                    print "destination is ", outputFilesPath
-                self.writer = HMISXMLWriter(outputFilesPath, queryOptions)                    
+                    print "destination is ", self.outputFilesPath
+                self.writer = HMISXMLWriter(self.outputFilesPath, queryOptions)                    
                 self.validator = HUDHMIS30XMLTest() 
             
-        elif generateOutputformat == 'hmiscsv30':
+        elif self.generateOutputformat == 'hmiscsv30':
             try:
                 from hmiscsv30writer import HmisCsv30Writer
                 hmiscsv30writer_loaded = True
             except:
                 hmiscsv30writer_loaded = False
             if self.transport == "save":
-                self.writer = HmisCsv30Writer(outputFilesPath, queryOptions, debug=True)                    
+                self.writer = HmisCsv30Writer(self.outputFilesPath, queryOptions, debug=True)                    
             #self.validator = HmisCsv30Test()           
-        elif generateOutputformat == 'jfcsxml':
+        elif self.generateOutputformat == 'jfcsxml':
             print "Need to hook up the JFCSWriter in Nodebuilder"
 #            self.writer = JFCSXMLWriter()                   
-#            self.validator = JFCSXMLTest()                 
+#            self.validator = JFCSXMLTest()
+        elif self.generateOutputformat == 'pseudo':
+            print "Pseudo writer encounted. Skipping..."
         else:
             # new error cataloging scheme, pull the error from the catalog, then raise the exception (centralize error catalog management)
             err = catalog.errorCatalog[1001]
-            raise exceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + generateOutputformat)
+            raise exceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + self.generateOutputformat)
             
         #fileStream = open(new_file,'r')
         # validate the file prior to uploading it
@@ -145,6 +150,44 @@ class NodeBuilder():
         #setup the postprocessing module    
         self.pprocess = postprocessing.PostProcessing(queryOptions.configID)
         #print '==== self.pprocess:', self.pprocess	# JCS - empty??
+
+    def encrypt_data(self, data):
+        if self.encryption == "openpgp":
+            gpg = GPG()
+            encrypted_data = gpg.encrypt(data)
+            return encrypted_data
+        elif self.encryption == "3des":
+            des = DES3()
+            encrypted_data = des.encrypt(data, settings.DES3_KEY)
+            #TODO: Should the encrypted data be encoded as base64?
+            return encrypted_data
+        else:
+            # do nothing. return as is
+            return data
+
+    def encrypt_file(self, filename):
+        if self.encryption == "openpgp":
+            gpg = GPG()
+            gpg.encryptFile(filename, os.path.splitext(filename)[0] + '.gpg')
+            # TODO: Is it wise to delete the original XML file?
+            os.remove(filename)
+            return os.path.splitext(filename)[0] + '.gpg'
+        elif self.encryption == "3des":
+            fo = open(filename, 'r')
+            data = fo.read()
+            fo.close()
+            des = DES3()
+            encrypted_data = des.encrypt(data, settings.DES3_KEY)
+            fo = open(os.path.splitext(filename)[0] + '.des3', 'w')
+            fo.write(encrypted_data)
+            fo.flush()
+            fo.close()
+            # TODO: Is it wise to delete the original XML file?
+            os.remove(filename)
+            return os.path.splitext(filename)[0] + '.des3'
+        else:
+            # do nothing. return as is
+            return filename
         
     def run(self):
         '''This is the main method controlling this entire program.'''
@@ -160,67 +203,74 @@ class NodeBuilder():
             ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
             soup = soaptransport.SoapEnv(self.queryOptions.configID)
             #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
-            result, details = soap.send_soap_envelope(ccd_data)
+            result, details = soap.send_soap_envelope(self.encrypt_data(ccd_data))
             print result, details
         elif self.transport == 'rest':
             ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
             rest = resttransport.REST(self.queryOptions.configID)
             #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
-            result, details = rest.post(ccd_data)
+            result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), self.encrypt_data(ccd_data))
             print result, details
         else:
             # the remaining transport require file IO
-            if self.writer.write():
-                filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
-                
-                # create a list of valid files to upload
-                validFiles = []
-                # Loop over each file and validate it.
-                for eachFile in filesToTransfer:
-                    fs = open(eachFile, 'r')
-                    if self.validator.validate(fs):
-                        validFiles.append(eachFile)
-                        print 'oK'
-                    else:
-                        pass                # Fixme append invalid files to list and report this.
+            if self.generateOutputformat != "pseudo":
+                if self.writer.write():
+                    #filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
+                    filesToTransfer = fileutils.grabFiles(os.path.join(self.outputFilesPath, "*.xml"))
                     
-                    fs.close()
-                
-                # upload the valid files
-                # how to transport the files (debugging)
-                if self.transport == 'save':
-                    print 'Output Complete...Please see output files: %s' % filesToTransfer
-                    
-                if self.transport == 'sys.stdout':
-                    for eachFile in validFiles:
+                    # create a list of valid files to upload
+                    validFiles = []
+                    # Loop over each file and validate it.
+                    for eachFile in filesToTransfer:
                         fs = open(eachFile, 'r')
-                        # open the file and echo it to stdout
-                        lines = fs.readlines()
-                        fs.close()              # done with file close handle
-                        for line in lines:
-                            print line        
-                            
-                if self.transport == 'sftp':
-                    self.pprocess.processFileSFTP(validFiles)
-                elif self.transport == 'email':
-                    # Loop over the list and each file needs to be emailed separately (size)
-                    for eachFile in validFiles:
-                        self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
-                        msgBody = self.formatMsgBody()
-                        self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
-                elif self.transport == 'vpnftp':
-                    # SBB20100430 Only upload if we have a validated file(s)
-                    if len(validFiles) > 0:
-                        pd = iniutils.LoadConfig('fileConverter.ini')
-                        self.pprocess.setINI(pd)
-                        self.pprocess.processFileVPN(validFiles)
-                elif self.transport == 'vpncp':
-                    pass
+                        if self.validator.validate(fs):
+                            gpg = GPG()
+                            validFiles.append(eachFile)
+                            print 'oK'
+                            # since the file was validated, its OK to encrypt it now.
+                            possible_new_file_name = self.encrypt_file(eachFile)
+                            validFiles[validFiles.index(eachFile)] = possible_new_file_name
+                            filesToTransfer[filesToTransfer.index(eachFile)] = possible_new_file_name
+                        else:
+                            pass                # Fixme append invalid files to list and report this.
                         
-                    #print results
-                    #print 'This is the result before it goes back to the test_unit:', \
-                    #results
-                    #return results
+                        fs.close()
+                    
+                    # upload the valid files
+                    # how to transport the files (debugging)
+                    if self.transport == 'save':
+                        print 'Output Complete...Please see output files: %s' % filesToTransfer
+                        
+                    if self.transport == 'sys.stdout':
+                        for eachFile in validFiles:
+                            fs = open(eachFile, 'r')
+                            # open the file and echo it to stdout
+                            lines = fs.readlines()
+                            fs.close()              # done with file close handle
+                            for line in lines:
+                                print line        
+                                
+                    if self.transport == 'sftp':
+                        self.pprocess.processFileSFTP(validFiles)
+                    elif self.transport == 'email':
+                        # Loop over the list and each file needs to be emailed separately (size)
+                        for eachFile in validFiles:
+                            self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
+                            msgBody = self.formatMsgBody()
+                            self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
+                    elif self.transport == 'vpnftp':
+                        # SBB20100430 Only upload if we have a validated file(s)
+                        if len(validFiles) > 0:
+                            pd = iniutils.LoadConfig('fileConverter.ini')
+                            self.pprocess.setINI(pd)
+                            self.pprocess.processFileVPN(validFiles)
+                    elif self.transport == 'vpncp':
+                        pass
+                            
+                        #print results
+                        #print 'This is the result before it goes back to the test_unit:', \
+                        #results
+                        #return results
         
     def formatMsgBody(self):
         msgBody = "Your report was requested on %s. /r/n The report criteria is: \r\n\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)"#IGNORE:@UnusedVariable

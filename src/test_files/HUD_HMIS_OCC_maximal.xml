@@ -44,7 +44,7 @@
                     <hmis:Unhashed hmis:dateCollected="2010-06-05T18:51:58" hmis:dateEffective="2011-03-05T18:51:58">2</hmis:Unhashed>
                 </ext:Gender>
                 <ext:LegalFirstName>
-                    <hmis:Hashed hmis:dateCollected="2011-01-27T18:51:58" hmis:dateEffective="2011-03-05T18:51:58">Harold</hmis:Hashed>
+                    <hmis:Unhashed hmis:dateCollected="2011-01-27T18:51:58" hmis:dateEffective="2011-03-05T18:51:58">Harold</hmis:Unhashed>
                 </ext:LegalFirstName>
                 <ext:LegalLastName>
                     <hmis:Unhashed hmis:dateCollected="2011-03-05T18:51:58" hmis:dateEffective="2011-03-05T18:51:58">Smith</hmis:Unhashed>

@@ -1,5 +1,5 @@
-use_encryption = True
-#use_encryption = False
+#use_encryption = True
+use_encryption = False
 
 import os
 import logging

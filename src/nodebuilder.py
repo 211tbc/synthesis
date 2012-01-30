@@ -18,6 +18,7 @@ import resttransport
 import soaptransport
 from Encryption import *
 import uuid
+import shutil
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded
@@ -169,8 +170,7 @@ class NodeBuilder():
         if self.encryption == "openpgp":
             gpg = GPG()
             gpg.encryptFile(filename, os.path.splitext(filename)[0] + '.gpg')
-            # TODO: Is it wise to delete the original XML file?
-            os.remove(filename)
+            shutil.move(filename, settings.PROCESSEDFILES_PATH)
             return os.path.splitext(filename)[0] + '.gpg'
         elif self.encryption == "3des":
             fo = open(filename, 'r')
@@ -182,8 +182,7 @@ class NodeBuilder():
             fo.write(encrypted_data)
             fo.flush()
             fo.close()
-            # TODO: Is it wise to delete the original XML file?
-            os.remove(filename)
+            shutil.move(filename, settings.PROCESSEDFILES_PATH)
             return os.path.splitext(filename)[0] + '.des3'
         else:
             # do nothing. return as is
@@ -307,27 +306,27 @@ class NodeBuilder():
 #        #print "hmiscsv30writer not found in conf yet, so not initializing class: HmisCsvWriter yet"
 #    pass
 
-if hmisxml30writer_loaded is True:
-    class HmisXmlWriter(HMISXMLWriter):
-        
-        def __init__(self):
-            self.xML = HMISXMLWriter((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
-    
-        def write(self):
-            pass
-else: 
-    pass
+#if hmisxml30writer_loaded is True:
+#    class HmisXmlWriter(HMISXMLWriter):
+#        
+#        def __init__(self):
+#            self.xML = HMISXMLWriter((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
+#    
+#        def write(self):
+#            pass
+#else: 
+#    pass
 
-if hmisxml28writer_loaded is True:
-    class HmisXmlWriter(HMISXML28Writer):
-        
-        def __init__(self):
-            self.xML = HMISXML28Writer((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
-    
-        def write(self):
-            pass
-else: 
-    pass
+#if hmisxml28writer_loaded is True:
+#    class HmisXmlWriter(HMISXML28Writer):
+#        
+#        def __init__(self):
+#            self.xML = HMISXML28Writer((os.path.join(settings.BASE_PATH, settings.OUTPUTFILES_PATH)))
+#    
+#        def write(self):
+#            pass
+#else: 
+#    pass
 
 if __name__ == '__main__':
     

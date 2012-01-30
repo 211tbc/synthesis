@@ -49,7 +49,7 @@ Configuration = \
             # encryption type can be set to "none", "openpgp", "3des"
             'encryption': 'none',
             # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
-            'destination': settings.OUTPUTFILES_PATH,
+            'destination': settings.BASE_PATH + '/output_files',
             # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
             'frequency': 'asap'
         },
@@ -80,7 +80,7 @@ Configuration = \
             'destinationURL': 'localhost',
             'transportConfiguration': '', #we're just going to save this outputted XML file to a local drive
             'encryption': 'none', # should be 3DES for production for Orlando OCC
-            'destination': settings.OUTPUTFILES_PATH,    # (I get an error if I leave the value blank)
+            'destination': settings.BASE_PATH + '/output_files',    # (I get an error if I leave the value blank)
             'frequency': 'asap'
         },
     '8888':

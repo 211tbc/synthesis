@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 HAS_CONF = True
 HAS_ENCRYPTION = True
-POST_URL = "http://127.0.0.1:5000/docs"
-#POST_URL = "https://pix.penguix.net:8023/docs"
+#POST_URL = "http://127.0.0.1:5000/docs"
+OCC_POST_URL = "https://pix.penguix.net:8023/occdocs"
+TBC_POST_URL = "https://pix.penguix.net:8023/tbcdocs"
 import base64
 try:
     from conf import outputConfiguration
@@ -58,7 +59,7 @@ Content-Type: text/xml
 
 # test functions
 def occtest():
-    rest = REST("occtest", POST_URL)
+    rest = REST("occtest", OCC_POST_URL)
 
     occ_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ext:Sources
@@ -154,7 +155,7 @@ def occtest():
         print "Result of OCC test (encrypted): ", rest.post("occtest", encrypted_data, use_base64=True)
 
 def tbctest():
-    rest = REST("tbctest", POST_URL)
+    rest = REST("tbctest", TBC_POST_URL)
 
     tbc_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ext:Sources

@@ -68,9 +68,9 @@ WEB_SERVICE_INPUTFILES_PATH = [
 #XSD_PATH = SOURCE_PATH + "/" + "xsd"
 XSD_PATH = "xsd"
 # file path subdirectories
-OUTPUTFILES_PATH = os.path.join(BASE_PATH, "output_files")
-if not os.path.exists(OUTPUTFILES_PATH):
-    os.mkdir(OUTPUTFILES_PATH)
+#OUTPUTFILES_PATH = os.path.join(BASE_PATH, "output_files")
+#if not os.path.exists(OUTPUTFILES_PATH):
+#    os.mkdir(OUTPUTFILES_PATH)
     
 USEDFILES_PATH = os.path.join(BASE_PATH, "used_files")
 if not os.path.exists(USEDFILES_PATH):
@@ -79,6 +79,10 @@ if not os.path.exists(USEDFILES_PATH):
 FAILEDFILES_PATH = os.path.join(BASE_PATH, "failed_files")
 if not os.path.exists(FAILEDFILES_PATH):
     os.mkdir(FAILEDFILES_PATH)
+
+PROCESSEDFILES_PATH = os.path.join(BASE_PATH, "processed_files")
+if not os.path.exists(PROCESSEDFILES_PATH):
+    os.mkdir(PROCESSEDFILES_PATH)    
 
 #logging settings file location setup
 logging_level = 0

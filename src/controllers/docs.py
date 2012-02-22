@@ -1,6 +1,5 @@
-#use_encryption = True
-use_encryption = False
-
+from conf import settings
+from conf import inputConfiguration
 import os
 import logging
 from pylons import request, response, config
@@ -10,9 +9,8 @@ import datetime
 from lxml import etree
 import urllib
 from webob import Request
-if use_encryption:
+if inputConfiguration.USE_ENCRYPTION:
     from Encryption import *
-from conf import settings
 from selector import Selector
 import base64
 
@@ -58,28 +56,28 @@ class DocsController(BaseController):
         file_prefix = file_prefix.replace(' ', '_')
         file_suffix_enc = '_encrypted.xml'
         file_suffix_unenc = '_unencrypted.xml'
-        if use_encryption:
+        if inputConfiguration.USE_ENCRYPTION:
             print "using encryption"
             file_name = file_prefix + file_suffix_enc
-        elif not use_encryption:
+        elif not inputConfiguration.USE_ENCRYPTION:
             print "not using encryption"
             file_name = file_prefix + file_suffix_unenc
         else: 
             print "not sure if using encrypted file or not"
         
-        if not os.path.exists(settings.WEB_SERVICE_INPUTFILES_PATH[0]):
-                os.mkdir(settings.WEB_SERVICE_INPUTFILES_PATH[0])
-        file_full_path = os.path.join(settings.WEB_SERVICE_INPUTFILES_PATH[0], file_name)
+        if not os.path.exists(inputConfiguration.WEB_SERVICE_INPUTFILES_PATH[0]):
+                os.mkdir(inputConfiguration.WEB_SERVICE_INPUTFILES_PATH[0])
+        file_full_path = os.path.join(inputConfiguration.WEB_SERVICE_INPUTFILES_PATH[0], file_name)
         print 'file_full_path: ', file_full_path
         
         #open file 
-        if use_encryption:
+        if inputConfiguration.USE_ENCRYPTION:
             try:
                 print "trying to open encrypted file"
                 encrypted_file = open(file_full_path, 'w')
             except:
                 print "Error opening encrypted instance file for writing"
-        if not use_encryption:
+        if not inputConfiguration.USE_ENCRYPTION:
             try:
                 print "trying to open unencrypted file"
                 unencrypted_file = open(file_full_path, 'w')
@@ -87,13 +85,13 @@ class DocsController(BaseController):
                 print "Error opening unencrypted instance file for writing"
                 
         #write to file
-        if use_encryption:
+        if inputConfiguration.USE_ENCRYPTION:
             print 'writing', file_name, 'to', server_root, 'for decryption'
             print 'encrypted_file is', encrypted_file
             encrypted_file.write(stream_fieldstorage.value)
             encrypted_file.close()
             
-        if not use_encryption:
+        if not inputConfiguration.USE_ENCRYPTION:
             print 'writing', file_name, 'to', server_root, 'server root for parsing'
             print 'unencrypted_file is', unencrypted_file
             unencrypted_file.write(stream_fieldstorage.value)
@@ -108,7 +106,7 @@ class DocsController(BaseController):
         #decrypt file if using decryption
         #assume file is encrypted, since it can be difficult to tell if it is.  We could look for XML structures, but how do you easily tell bad/invalid  XML apart from encrypted?  If not encrypted, that's a problem.
         #decrypt file
-        if use_encryption:
+        if inputConfiguration.USE_ENCRYPTION:
             try:
                 encrypted_file = open(file_full_path, 'r') 
             except: 
@@ -147,7 +145,7 @@ class DocsController(BaseController):
             if data_decrypted:
                 file_suffix_unenc = '_decrypted.xml'
                 file_name = file_prefix + file_suffix_unenc
-                file_full_path =  settings.INPUTFILES_PATH[0] + '/' + file_name
+                file_full_path =  inputConfiguration.INPUTFILES_PATH[0] + '/' + file_name
                 try:
                     decrypted_file = open(file_full_path, 'w')
                 except:
@@ -166,13 +164,13 @@ class DocsController(BaseController):
                 return message
         
         #read in candidate XML file
-#        if use_encryption:
+#        if inputConfiguration.USE_ENCRYPTION:
 #            try:
 #                unencrypted_file = open(file_full_path, 'r') 
 #            except: 
 #                print "couldn't open decrypted file for reading"
 #            
-#        if not use_encryption:
+#        if inputConfiguration.USE_ENCRYPTION:
 #            try:
 #                unencrypted_file = open(file_full_path, 'r') 
 #            except: 
@@ -192,7 +190,7 @@ class DocsController(BaseController):
             #move valid file over to regular synthesis input_files directory for shredding
             print "moving valid file ", file_name, "over to input_files for shredding"
             import fileutils
-            fileutils.moveFile(file_full_path, settings.INPUTFILES_PATH[0])
+            fileutils.moveFile(file_full_path, inputConfiguration.INPUTFILES_PATH[0])
             return message
         except:
             details = ''.join(list(set([str(issue) for issue in select.issues])))

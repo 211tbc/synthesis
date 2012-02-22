@@ -1,5 +1,6 @@
 from smtplibrary import smtpInterface
 from conf import settings
+from conf import inputConfiguration
 import os
 from security import Security
 
@@ -14,14 +15,14 @@ class XMLProcessorNotifier(smtpInterface):
         self.mailSystem = smtpInterface(settings)
         if docName <> '':
             folderName = os.path.split(docName)[0]
-            self.mailSystem.setRecipients(settings.SMTPRECIPIENTS[folderName])
+            self.mailSystem.setRecipients(inputConfiguration.SMTPRECIPIENTS[folderName])
             self.docName = docName
         else:
             if len(docs) > 0:
                 # first file dictates where this is going, mostly files will be in the output location.
                 try:
                     folderName = os.path.split(docs[0])[0]
-                    self.mailSystem.setRecipients(settings.SMTPRECIPIENTS[folderName])
+                    self.mailSystem.setRecipients(inputConfiguration.SMTPRECIPIENTS[folderName])
                 except KeyError:
                     raise
             

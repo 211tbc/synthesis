@@ -16,9 +16,9 @@ SKIP_VALIDATION_TEST = False
 #However, the gui is cross-platform, so the GUI setting should be actually independent of the platform
 GUI = False  
 # DB settings:
-DB_DATABASE = "your_database_name_here(synthesis perhaps)"
-DB_USER = "your_database_user_name_here"
-DB_PASSWD = "your_password_here"
+DB_DATABASE = "synthesis"
+DB_USER = "synthesis"
+DB_PASSWD = "synthesis"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
@@ -28,14 +28,16 @@ SVCPT_VERSION = '406'                    # this is 4.06
 #SOURCE_PATH = 'synthesis/synthesis'
 #SOURCE_PATH = 'synthesis'
 #BASE_PATH = os.path.join(os.getcwd(), SOURCE_PATH)
-BASE_PATH = "/home/username/myrestservice/synthesis/synthesis"
+BASE_PATH = "~/myrestservice/synthesis/synthesis"
 print "BASE_PATH is: ", BASE_PATH
 #import pydevd; pydevd.settrace()
 #ABS_SOURCE_PATH = os.path.abspath(os.getcwd() + SOURCE_PATH)
 PATH_TO_GPG = '/usr/bin/gpg'
-PGPHOMEDIR = ''
+PGPHOMEDIR = '~/.gnupg'
 PASSPHRASE = ''
 FINGERPRINT = ''
+DES3_KEY = ''
+
 JFCS_SOURCE_ID = 734
 JFCS_AGENCY_ID = 711
 JFCS_SERVICE_ID = 705
@@ -45,25 +47,15 @@ USE_SPAWNED_PROCESSES = False
 # Maximum number of processes to maintain
 NUMBER_OF_PROCESSES = 1 
 
-# <rim:Classification /> properties
-AUTHOR_PERSON = "John Doe"
-AUTHOR_INSTITUTION = "ACME"
-AUTHOR_ROLE = "Wise Man"
-AUTHOR_SPECIALTY = "Mediation"
-NODE_REPRESENTATION = "Not Available"
-CODING_SCHEME = "LOINC"
-LOCALIZED_STRING = "Not Available"
+# <rim:Classification /> properties (used by the soaptransport)
+AUTHOR_PERSON = ""
+AUTHOR_INSTITUTION = ""
+AUTHOR_ROLE = ""
+AUTHOR_SPECIALTY = ""
+NODE_REPRESENTATION = ""
+CODING_SCHEME = ""
+LOCALIZED_STRING = ""
 
-# Input files Processing path
-# New 'Customers' input file path must be put into this 'list'.  Add it to the list mechanism.  
-INPUTFILES_PATH = [
-            BASE_PATH + "/input_files"
-            ,
-            ]
-WEB_SERVICE_INPUTFILES_PATH = [
-            BASE_PATH + "/ws_input_files"
-            ,
-            ]
 # subfolder 
 #XSD_PATH = SOURCE_PATH + "/" + "xsd"
 XSD_PATH = "xsd"
@@ -72,18 +64,6 @@ XSD_PATH = "xsd"
 #if not os.path.exists(OUTPUTFILES_PATH):
 #    os.mkdir(OUTPUTFILES_PATH)
     
-USEDFILES_PATH = os.path.join(BASE_PATH, "used_files")
-if not os.path.exists(USEDFILES_PATH):
-    os.mkdir(USEDFILES_PATH)
-    
-FAILEDFILES_PATH = os.path.join(BASE_PATH, "failed_files")
-if not os.path.exists(FAILEDFILES_PATH):
-    os.mkdir(FAILEDFILES_PATH)
-
-PROCESSEDFILES_PATH = os.path.join(BASE_PATH, "processed_files")
-if not os.path.exists(PROCESSEDFILES_PATH):
-    os.mkdir(PROCESSEDFILES_PATH)    
-
 #logging settings file location setup
 logging_level = 0
 logging_ini_file_name = 'conf/logging.ini'
@@ -97,8 +77,6 @@ LOGGING_INI = logging_ini_filepath
 LOGS = os.path.join(BASE_PATH, "logs")
 if not os.path.exists(LOGS):
     os.mkdir(LOGS)
-
-PROCESSED_PATH = ""
 
 SCHEMA_DOCS = {
 'hud_hmis_xml_2_8':os.path.join(BASE_PATH, XSD_PATH, 'versions','HMISXML','28','HUD_HMIS.xsd'),               
@@ -126,58 +104,7 @@ SMTPPORT = 25
 SMTPSENDER = 'me@localhost'
 SMTPSENDERPWD = 'mysecret'
 
-# SMTP Mail recipients is a dictionary that must be defined for each source of input files
-SMTPRECIPIENTS = {    
-        "~/myrestservice/synthesis/synthesis/input_files":
-        {
-        'VENDOR_NAME': 'SomeVendor',
-        'SMTPTOADDRESS': ['someone@somedomain.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-    ,"~/myrestservice/synthesis/synthesis/input_files2":
-        {
-        'VENDOR_NAME': 'SomeVendor2',
-        'SMTPTOADDRESS': ['admin@superhost.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-    ,"~/myrestservice/synthesis/synthesis/input_files3":
-        {
-        'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['sammy.davis@jr.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-# output processing
-    ,"~/myrestservice/synthesis/synthesis/output_files":
-        {
-        'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['user@host.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-    ,"~/myrestservice/synthesis/synthesis/output_files2":
-        {
-        'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['admin@somehost.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-    }
 try:
     from local_settings import *
 except ImportError:
     pass
-
-

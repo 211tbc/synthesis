@@ -6,6 +6,7 @@ import urllib2
 import sys
 import urlparse
 import uuid
+import base64
 
 class SoapEnv():
 
@@ -133,7 +134,7 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
 
     def send_soap_envelope(self, ccd_data, test=False):
         # construct the message and header
-        self._transport_properties["CCD"] = ccd_data
+        self._transport_properties["CCD"] = base64.b64encode(ccd_data)
         soap_env = self._ENVELOPE_TEMPLATE % self._transport_properties
         headers = {
             "Host"              : self._host,
@@ -151,7 +152,11 @@ Content-ID: <1.urn:uuid:%(PAYLOADUUID)s@apache.org>
         if test: # delete this if block
             import pprint as pp
             pp.pprint(headers)
-            print soap_env
+            #print soap_env
+            fo = open('soap_envelope.txt', 'w')
+            fo.write(soap_env)
+            fo.flush()
+            fo.close()
             return (True, "True")
 
         # send the SOAP envelope
@@ -336,4 +341,4 @@ Purpose section
 </ClinicalDocument>"""
 
     soap = SoapEnv('iH9HiPbW40JbS5m_')
-    soap.send_soap_envelope(ccd_data)
+    soap.send_soap_envelope(ccd_data, True)

@@ -1,25 +1,38 @@
 '''see ./docs/output_configurations.readme for information on setting these configurations'''
 #!/usr/bin/env python
-
+import os
 import settings
 
-# Adding a vendor.  Simply append a record by following the format below.
+PROCESSEDFILES_PATH = os.path.join(settings.BASE_PATH, "processed_files")
+if not os.path.exists(PROCESSEDFILES_PATH):
+    os.mkdir(PROCESSEDFILES_PATH)
+
+# Adding a vendor.  Simply append a record by following the sample format below.
 
 Configuration = \
 {
+    # Sample Format
+    'Source ID (e.g. 001)':
+        {
+            'vendor': '',
+            'outputFormat': '', # Possible values: 
+            'destinationURL': '',
+            'transportConfiguration': 'save', # Possible values: "save" (to directory), "soap", "rest", "ftps", "sftp"
+            'encryption': 'none', # Possible values: "none", "3des", "openpgp"
+            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
+            'destination': settings.BASE_PATH + '/output_files',
+            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
+            'frequency': 'asap'
+        },
     'occtest':#For HUD files in test_files folder
         {
             'vendor': 'OCC',
             'outputFormat': 'svcpoint5',
             'destinationURL': 'https://pix.penguix.net:8023/docs',
             #'destinationURL': 'http://127.0.0.1:5000/docs',
-            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
             'transportConfiguration': 'save',
-            # encryption type can be set to "none", "openpgp", "3des"
             'encryption': '3des',
-            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
             'destination': settings.BASE_PATH + '/occ_output_files',
-            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
             'frequency': 'asap'
         },
     'tbctest':#For HUD files in test_files folder
@@ -27,30 +40,19 @@ Configuration = \
             'vendor': 'TBC',
             'outputFormat': 'pseudo',
             'destinationURL': 'https://pix.penguix.net:8024/docs',
-            #'destinationURL': 'http://127.0.0.1:5001/docs',
-            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
             'transportConfiguration': 'save',
-            # encryption type can be set to "none", "openpgp", "3des"
             'encryption': 'none',
-            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
             'destination': settings.BASE_PATH + '/tbc_output_files',
-            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
             'frequency': 'asap'
         },
     '003':#For HUD files in test_files folder
         {
             'vendor': 'Orange County Corrections',
             'outputFormat': 'svcpoint5',
-            #'destinationURL': 'https://pix.penguix.net:8024/docs',
             'destinationURL': 'http://fby.homeip.net:8092/docs',
-            #'destinationURL': 'http://127.0.0.1:5000/docs',
-            # transport type can be set to "save" (to directory), "soap", "rest", "ftps", "sftp"
             'transportConfiguration': 'save',
-            # encryption type can be set to "none", "openpgp", "3des"
             'encryption': 'none',
-            # when transportConfiguration is set to "save", set destination to the absolute path of the save directory
             'destination': settings.BASE_PATH + '/output_files',
-            # frequency controls how often nodebuilder runs and can be set to "asap" (later on maybe "daily", "weekly", monthly")
             'frequency': 'asap'
         },
     '334380997':#For HUD files in test_files folder
@@ -129,4 +131,3 @@ Configuration = \
              'transportConfiguration': 'email' 
         },
 }
-

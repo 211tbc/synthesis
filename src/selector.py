@@ -15,6 +15,7 @@ from occhmisxml30reader import OCCHUDHMISXML30Reader
 from lxml import etree
 import Queue
 from conf import settings
+from conf import inputConfiguration
 from synthesis.emailprocessor import XMLProcessorNotifier
 from filerouter import Router
 from os import path
@@ -36,7 +37,7 @@ class FileHandler:
         self.exception = Value('i', 0)
 
         #change this so that it gets the watch_dir from the .ini file
-        dir_to_watch = settings.INPUTFILES_PATH 
+        dir_to_watch = inputConfiguration.INPUTFILES_PATH 
         self.queue = Queue.Queue(0)
         self.file_input_watcher = FileInputWatcher(dir_to_watch, self.queue)
         #Check the file to see if it validates against one of the tests.
@@ -78,7 +79,7 @@ class FileHandler:
             print "folder name to email is", folderName
         if os.path.isdir(folderName): 
             try:
-                self.ProcessingOptions = settings.SMTPRECIPIENTS[folderName]
+                self.ProcessingOptions = inputConfiguration.SMTPRECIPIENTS[folderName]
             except:
                 raise
         else:
@@ -161,7 +162,7 @@ class FileHandler:
         # get a list of files in the input path
         listOfFiles = list()
         # Loop over list of file locations [list]
-        for folder in settings.INPUTFILES_PATH:
+        for folder in inputConfiguration.INPUTFILES_PATH:
             listOfFiles.extend(fileutils.grabFiles(path.join(folder,'*')))
             if settings.DEBUG:
                     print "list of files grabbed in processExisting is", listOfFiles

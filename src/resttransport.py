@@ -2,9 +2,17 @@
 # -*- coding: utf-8 -*-
 HAS_CONF = True
 HAS_ENCRYPTION = True
-#POST_URL = "http://127.0.0.1:5000/docs"
-OCC_POST_URL = "https://pix.penguix.net:8023/occdocs"
-TBC_POST_URL = "https://pix.penguix.net:8023/tbcdocs"
+SENT_TO_LOCAL = True
+
+if SENT_TO_LOCAL:
+# LOCALHOST URLS
+    OCC_POST_URL = "http://127.0.0.1:5000/docs"
+    TBC_POST_URL = "http://127.0.0.1:5000/docs"
+else:
+# TEST SERVER URLS
+    OCC_POST_URL = "https://pix.penguix.net:8023/docs"
+    TBC_POST_URL = "https://pix.penguix.net:8024/docs"
+
 import base64
 try:
     from conf import outputConfiguration
@@ -71,7 +79,7 @@ def occtest():
     ext:version="3.0">
     <ext:Source>
         <ext:SourceID>
-                <hmis:IDStr>occtest</hmis:IDStr>
+                <hmis:IDStr>003</hmis:IDStr>
         </ext:SourceID>
         <ext:SoftwareVendor>OCC</ext:SoftwareVendor>
         <ext:SoftwareVersion>0.1</ext:SoftwareVersion>
@@ -146,13 +154,13 @@ def occtest():
 </ext:Sources>"""
     
     # test results
-    #print "Result of OCC test (unencrypted): ", rest.post("occtest", occ_xml)
-    
     if HAS_ENCRYPTION:
         des3 = DES3()
         encrypted_data = des3.encrypt(occ_xml, settings.DES3_KEY)
         #print encrypted_data
         print "Result of OCC test (encrypted): ", rest.post("occtest", encrypted_data, use_base64=True)
+    else:
+        print "Result of OCC test (unencrypted): ", rest.post("occtest", occ_xml, use_base64=False)
 
 def tbctest():
     rest = REST("tbctest", TBC_POST_URL)
@@ -163,19 +171,19 @@ def tbctest():
     xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" 
     xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
+    xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" 
     ext:version="3.0">
     <ext:Source>
         <ext:SourceID >
-                <hmis:IDStr>tbctest</hmis:IDStr>
+                <hmis:IDStr>003</hmis:IDStr>
         </ext:SourceID>
-        <ext:SoftwareVendor>TBC</ext:SoftwareVendor>
+        <ext:SoftwareVendor>Vendor Name Here</ext:SoftwareVendor>
         <ext:SoftwareVersion>7.1</ext:SoftwareVersion>
         <ext:SourceName>Source Name Here</ext:SourceName>
         <ext:Export>
             <ext:ExportID >
                 <!-- Since this is the first export, it's "1".  The second will be "2". -->
-                    <hmis:IDNum>11</hmis:IDNum>
+                    <hmis:IDNum>1010111</hmis:IDNum>
             </ext:ExportID>
             <ext:ExportDate>2011-09-23T18:51:58</ext:ExportDate>
             <ext:ExportPeriod>
@@ -185,7 +193,7 @@ def tbctest():
             </ext:ExportPeriod>
             <ext:Person>
                 <ext:PersonID>
-                    <hmis:IDNum>090888539</hmis:IDNum>
+                    <hmis:IDNum>2090888539</hmis:IDNum>
                 </ext:PersonID>
                 <ext:DateOfBirth>
                         <hmis:Unhashed hmis:dateCollected="2011-05-27T18:51:58">1984-04-21</hmis:Unhashed>
@@ -296,13 +304,13 @@ def tbctest():
 </ext:Sources>"""
     
     # test results
-    #print "Result of TBC test (unencrypted): ", rest.post("tbctest", tbc_xml)
-
     if HAS_ENCRYPTION:
         gpg = GPG()
         encrypted_data = gpg.encrypt(tbc_xml)
         #print encrypted_data
         print "Result of TBC test (encrypted): ", rest.post("tbctest", encrypted_data, use_base64=True)
+    else:
+        print "Result of TBC test (unencrypted): ", rest.post("tbctest", tbc_xml, use_base64=False)
 
 if __name__ == "__main__":
     # testing TBC HTTP-POST

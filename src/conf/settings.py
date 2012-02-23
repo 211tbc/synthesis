@@ -35,7 +35,7 @@ print "BASE_PATH is: ", BASE_PATH
 PATH_TO_GPG = '/usr/bin/gpg'
 PGPHOMEDIR = '~/.gnupg'
 PASSPHRASE = ''
-FINGERPRINT = ''
+PGP_KEY_ID = ''
 DES3_KEY = ''
 
 JFCS_SOURCE_ID = 734

@@ -268,38 +268,39 @@ class PublicKey(Encryption):
 
 #GPG class
 class GPG(PublicKey):
-    def __init__(self, fingerprint='', pass_phrase=''):
+    def __init__(self, pgp_key_id=None, pass_phrase=None):
         PublicKey.__init__(self)
 		
         if settings.PGPHOMEDIR is not None:
-            self.enc_object = gnupg.GPG(gnupghome=settings.PGPHOMEDIR)
+            self.enc_object = gnupg.GPG(gnupghome=settings.PGPHOMEDIR, verbose=False)
         else:
             self.enc_object = gnupg.GPG()
         
-        self.pass_phrase = self.fingerprint = ''
+        self.pass_phrase = self.pgp_key_id = None
         
-        if settings.PASSPHRASE is not None:
-            self.pass_phrase = settings.PASSPHRASE
+        if settings.PASSPHRASE:
+	    self.pass_phrase = settings.PASSPHRASE
         
-        if settings.FINGERPRINT is not None:
-            self.fingerprint = settings.FINGERPRINT
+        if settings.PGP_KEY_ID is not None:
+            self.pgp_key_id = settings.PGP_KEY_ID
 
-        if pass_phrase: self.pass_phrase = pass_phrase
-        if fingerprint: self.fingerprint = fingerprint
+        if pass_phrase: 
+	    self.pass_phrase = pass_phrase
+        if pgp_key_id: self.pgp_key_id = pgp_key_id
 
-    def encrypt(self, data, fingerprint='', pass_phrase='', sign=True):
-        if fingerprint: self.fingerprint = fingerprint
+    def encrypt(self, data, pgp_key_id=None, pass_phrase=None, sign=True):
+        if pgp_key_id: self.pgp_key_id = pgp_key_id
         if pass_phrase: self.pass_phrase = pass_phrase
         self.data = data
         
         if sign is True:
-            self.result = str(self.enc_object.encrypt(self.data, self.fingerprint, sign=self.fingerprint, passphrase=self.pass_phrase))
+            self.result = str(self.enc_object.encrypt(self.data, self.pgp_key_id, sign=self.pgp_key_id, passphrase=self.pass_phrase))
         else:
-            self.result = str(self.enc_object.encrypt(self.data, self.fingerprint, passphrase=self.pass_phrase))
+            self.result = str(self.enc_object.encrypt(self.data, self.pgp_key_id, passphrase=self.pass_phrase))
             
         return str(self.result)
 
-    def encryptFile(self, file_in, file_out=None, fingerprint='', pass_phrase='', sign=True):
+    def encryptFile(self, file_in, file_out=None, pgp_key_id=None, pass_phrase=None, sign=True):
         '''
         Can be called 2 different ways, eg.
 
@@ -310,14 +311,14 @@ class GPG(PublicKey):
         encrypted_data = gpg.encryptFile('/tmp/file') # put encrypted file in memory
         '''
 
-        if fingerprint: self.fingerprint = fingerprint
+        if pgp_key_id: self.pgp_key_id = pgp_key_id
         if pass_phrase: self.pass_phrase = pass_phrase
         
         with open(file_in, 'r') as f_in:
             if sign is True:
-                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.fingerprint, passphrase=self.pass_phrase)).rstrip('\r\n')
+                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.pgp_key_id, passphrase=self.pass_phrase)).rstrip('\r\n')
             else:
-                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.fingerprint)).rstrip('\r\n')
+                encrypted_data = str(self.enc_object.encrypt_file(f_in, self.pgp_key_id)).rstrip('\r\n')
 
         if file_out is not None:
             with open(file_out, 'w') as f_out:
@@ -333,7 +334,7 @@ class GPG(PublicKey):
         self.result = self.enc_object.decrypt(self.data, passphrase=self.pass_phrase)
         return str(self.result)
     
-    def decryptFile(self, file_in, file_out=None, pass_phrase=''):
+    def decryptFile(self, file_in, file_out=None, pass_phrase=None):
         '''
         Can be called 2 different ways, eg.
 
@@ -369,9 +370,9 @@ class GPG(PublicKey):
         keylist = self.listKeys(private)
         return [key for key in keylist for value in key if text in str(key[value])]
         
-    def setKey(self, fingerprint):
-        self.fingerprint = fingerprint
-        print "fingerprint set to {0}".format(self.fingerprint)
+    def setKey(self, pgp_key_id):
+        self.pgp_key_id = pgp_key_id
+        print "pgp_key_id set to {0}".format(self.pgp_key_id)
         
     def generateKey(self):
         pass
@@ -379,28 +380,28 @@ class GPG(PublicKey):
     def importKey(self, data):
         return self.enc_object.import_keys(data)
     
-    def exportKey(self, file_name, fingerprint='', public_file='', private_file=''):
-        if fingerprint: self.fingerprint = fingerprint
+    def exportKey(self, file_name, pgp_key_id='', public_file='', private_file=''):
+        if pgp_key_id: self.pgp_key_id = pgp_key_id
         
         if public_file:
-            public_key = self.enc_object.export_keys(self.fingerprint)
+            public_key = self.enc_object.export_keys(self.pgp_key_id)
             with open(file_name, 'w') as f:
                 f.write(f, public_key)
             
         if private_file:
-             private_key = self.enc_object.export_keys(self.fingerprint, True)
+             private_key = self.enc_object.export_keys(self.pgp_key_id, True)
              with open(file_name, 'w') as f:
                 f.write(f, private_key)
     
-    def deleteKeys(self, fingerprint=''):
-        if fingerprint: self.fingerprint = fingerprint
-        self.enc_object.delete_keys(self.fingerprint, True)
-        self.enc_object.delete_keys(self.fingerprint)
+    def deleteKeys(self, pgp_key_id=None):
+        if pgp_key_id: self.pgp_key_id = pgp_key_id
+        self.enc_object.delete_keys(self.pgp_key_id, True)
+        self.enc_object.delete_keys(self.pgp_key_id)
         
-    def receiveKeys(self, fingerprint='', server='keys.gnupg.net'):
-        return self.enc_object.recv_keys(server, fingerprint)
+    def receiveKeys(self, pgp_key_id=None, server='keys.gnupg.net'):
+        return self.enc_object.recv_keys(server, pgp_key_id)
     
-    def importKeyFromServer(self, fingerprint='', server='keys.gnupg.net'):
+    def importKeyFromServer(self, pgp_key_id=None, server='keys.gnupg.net'):
         pass
     
 
@@ -412,7 +413,7 @@ def main():
     
     gpg = GPG()
     #gpg.setKey() isn't needed if settings.py is properly filled out
-    gpg.setKey("XXXXXXXXXXXXXXXXXXXX") # fingerprint, full name, email, etc.
+    gpg.setKey("XXXXXXXXXXXXXXXXXXXX") # pgp_key_id, full name, email, etc.
     encrypted_data = gpg.encrypt("msg")
     decrypted_data = gpg.decrypt(encrypted_data)
     
@@ -439,7 +440,7 @@ def main():
     PATH_TO_GPG = '/usr/bin/gpg'
     PGPHOMEDIR = '/home/synthesis/.gnupg'
     PASSPHRASE = 'mypassword'
-    FINGERPRINT = '8FF0FFF8'
+    PGP_KEY_ID = '8FF0FFF8'
     '''
 
     #test code for development.. will change often
@@ -474,10 +475,10 @@ def main():
             f.write(msg)
         
         encrypted_data = gpg.encryptFile('/tmp/testcase.txt', '/tmp/testcase.txt.gpg')
-        remove('/tmp/testcase.txt')
+        #remove('/tmp/testcase.txt')
         
         decrypted_data = gpg.decryptFile('/tmp/testcase.txt.gpg', '/tmp/testcase.txt')
-        remove('/tmp/testcase.txt.gpg')
+        #remove('/tmp/testcase.txt.gpg')
 
         if debug is True: print "Encrypted = {0}".format(encrypted_data)
         if debug is True: print "Decrypted = {0}".format(decrypted_data)

@@ -75,6 +75,16 @@ Configuration = \
             'destination': '',
             'frequency': 'asap'
         },
+    'hl7CCD':  # Project Health Level 7 Continuity of Care Document
+        {
+            'vendor': 'HL7',
+            'outputFormat': 'hl7ccd',
+            'destinationURL': 'localhost',
+            'transportConfiguration': 'save',
+            'encryption': 'none',
+            'destination': settings.BASE_PATH + '/output_files',
+            'frequency': 'asap'
+        },
     '7777':#Project Synthesis Phase 3 for Orlando
         {
             'vendor': 'BIS',

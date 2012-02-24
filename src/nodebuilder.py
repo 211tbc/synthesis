@@ -5,7 +5,7 @@ import dbobjects
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
-from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest, SvcPoint5XMLTest
+from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest
 from errcatalog import catalog
 import os
 from queryobject import QueryObject
@@ -21,13 +21,13 @@ import uuid
 import shutil
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
-global hmiscsv30writer_loaded
-global hmisxml28writer_loaded
+global hmiscsv30writer_loaded   # "global" does not make vars global - it is supposed to be used inside functions
+global hmisxml28writer_loaded   # to say to use the definition of this name which is defined outside the function JCS
 global hmisxml30writer_loaded
 global svcptxml20writer_loaded 
 global svcptxml406writer_loaded
 global jfcsxmlwriter_loaded
-
+global hl7CCDwriter_loaded
 
 
 hmiscsv30writer_loaded = False
@@ -36,6 +36,7 @@ hmisxml30writer_loaded = False
 svcptxml20writer_loaded = False
 svcptxml406writer_loaded = False
 jfcsxmlwriter_loaded = False
+hl7CCDwriter_loaded = False
 
 class NodeBuilder():
 
@@ -54,14 +55,12 @@ class NodeBuilder():
         self.queryOptions = queryOptions
         print '==== Output Format', self.generateOutputformat		# JCS
         if self.generateOutputformat == 'svcpoint5':
-            #from svcPointXML20writer import SvcPointXML20Writer
-            # pick the plug-in to import
             try:
                 from synthesis.svcpointxml5writer import SvcPointXML5Writer
                 svcptxml5writer_loaded = True
                 print "import of Svcpt XML Writer, version 5 was successful"
-            except Exception as e:							# JCS
-                print "import of Svcpt XML Writer, version 5 failed", e	# JCS
+            except Exception as e:
+                print "import of Svcpt XML Writer, version 5 failed", e
                 svcptxml5writer_loaded = False
             if self.transport == "save":
                 self.writer = SvcPointXML5Writer(self.outputFilesPath, queryOptions)
@@ -69,10 +68,21 @@ class NodeBuilder():
                 self.validator = SvcPoint5XMLTest()
                 print '==== self.validator:', self.validator
         
-        #if generateOutputformat == 'svcpoint406':	# Was
+        elif self.generateOutputformat == 'hl7ccd':     # JCS
+            try:
+                from synthesis.hl7CCDwriter import hl7CCDwriter
+                hl7CCDwriter_loaded = True
+                print "import of HL7 XML Writer was successful"
+            except Exception as e:
+                print "import of HL7 XML Writer failed", e
+                hl7CCDwriter_loaded = False
+            if self.transport == "save":
+                self.writer = hl7CCDwriter(self.outputFilesPath, queryOptions)
+                print '==== self.writer:', self.writer
+                self.validator = hl7CCDXMLTest()
+                print '==== self.validator:', self.validator
+
         elif self.generateOutputformat == 'svcpoint406':	# JCS
-            #from svcPointXML20writer import SvcPointXML20Writer
-            # pick the plug-in to import
             try:
                 from synthesis.svcpointxml406writer import SvcPointXMLWriter
                 svcptxml406writer_loaded = True

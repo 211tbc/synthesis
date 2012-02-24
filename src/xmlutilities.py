@@ -144,8 +144,8 @@ def indent(elem, level=0):
             if level and (not elem.tail or not elem.tail.strip()):
                 elem.tail = i    
                 
-def writeOutXML(writer_instance):
-    print 'root_element is ', writer_instance.root_element
+def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
+    print '==== root_element is ', writer_instance.root_element
     tree = ET.ElementTree(writer_instance.root_element)
     if settings.DEBUG:
         print "trying to write XML to: %s " % os.path.join(writer_instance.outDirectory, "page.xml")
@@ -155,7 +155,7 @@ def writeOutXML(writer_instance):
     attempted_filename = 'page.xml'
     unique_filename = fileutils.getUniqueFileNameForMove(attempted_filename, writer_instance.outDirectory)
     #print '==== tree._root:', ET.tostring(writer_instance.root_element.getchildren()[0]) #_root.getchildren()[0].text  # getchildren() = clients, entry_exits
-    tree.write(os.path.join(writer_instance.outDirectory, unique_filename))
+    tree.write(os.path.join(writer_instance.outDirectory, unique_filename),encoding=encoding,xml_declaration=xml_declaration)	# JCS
             
 #if __name__ == "__main__":
 #    xmlU = xmlutilities()

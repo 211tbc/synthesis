@@ -63,7 +63,7 @@ XSD_PATH = "xsd"
 #OUTPUTFILES_PATH = os.path.join(BASE_PATH, "output_files")
 #if not os.path.exists(OUTPUTFILES_PATH):
 #    os.mkdir(OUTPUTFILES_PATH)
-    
+
 #logging settings file location setup
 logging_level = 0
 logging_ini_file_name = 'conf/logging.ini'
@@ -87,7 +87,8 @@ SCHEMA_DOCS = {
 'jfcs_client_xml':os.path.join(BASE_PATH, XSD_PATH, 'JFCS_CLIENT.xsd'),
 'operation_par_xml':os.path.join(BASE_PATH, XSD_PATH, 'Operation_PAR_Extend_HUD_HMIS_2_8.xsd'),
 'occ_hud_hmis_xml_3_0':os.path.join(BASE_PATH, XSD_PATH, 'OCC_Extend_HUD_HMIS.xsd'),
-'tbc_extend_hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'TBC_Extend_HUD_HMIS.xsd')
+'tbc_extend_hud_hmis_xml':os.path.join(BASE_PATH, XSD_PATH, 'TBC_Extend_HUD_HMIS.xsd'),
+'hl7_ccd_xml':os.path.join(BASE_PATH, XSD_PATH, 'hl7','infrastructure','cda','CDA.xsd')
                }
 
 DEBUG = True								# Debug the application layer

@@ -862,6 +862,45 @@ class SvcPoint5XMLTest:
             print 'XML Syntax Error.  There appears to be malformed XML.  ', error
             raise
 
+class hl7CCDXMLTest:
+    '''Load in the HL7 CCD Schema'''
+    def __init__(self):
+        self.name = 'hl7 CCD XML'
+        print 'running the hl7 CCD XML test'
+        self.schema_filename = settings.SCHEMA_DOCS['hl7_ccd_xml']
+    
+    def validate(self, instance_stream):
+        '''This specific data format's validation process.'''
+        schema = open(self.schema_filename,'r')
+        
+        schema_parsed = etree.parse(schema)
+        schema_parsed_xsd = etree.XMLSchema(schema_parsed)
+        
+        try:
+            instance_parsed = etree.parse(instance_stream)
+            results = schema_parsed_xsd.validate(instance_parsed)
+            if results == True:
+                fileutils.makeBlock('The %s successfully validated.' % self.name)
+                return results
+            if results == False:
+                print 'The xml did not successfully validate against %s' % self.name
+                try:
+                    detailed_results = schema_parsed_xsd.assertValid\
+                    (instance_parsed)
+                    print detailed_results
+                    return results
+                except etree.DocumentInvalid, error:
+                    print 'Document Invalid Exception.  Here is the detail:'
+                    print error
+                    return results
+            if results == None:
+                print "The validator erred and couldn't determine if the xml \
+                    was either valid or invalid."
+                return results
+        except etree.XMLSyntaxError, error:
+            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+            raise
+
 class JFCSXMLTest:
     ''' Tests for JFCS data 
         * There are 2 possible data source types ('service_event' or 'client')

@@ -50,11 +50,23 @@ Content-Type: text/xml
                 data = payload % (payload_uuid, filename, filename, base64.b64encode(ccd_data))
             else:
                 data = payload % (payload_uuid, filename, filename, ccd_data)
-            request = urllib2.Request(self._url)
-            request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
-            request.add_header("User-Agent", "synthesis")
-            request.add_data(data)
-            response = urllib2.urlopen(request).read()
+            #import pdb; pdb.set_trace()
+            if self._url.find("https") == 0:
+                https = urllib2.HTTPSHandler(debuglevel=1)
+                opener = urllib2.build_opener(https)
+                urllib2.install_opener(opener)
+                request = urllib2.Request(self._url)
+                request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
+                request.add_header("User-Agent", "synthesis")
+                request.add_data(data)
+                response = urllib2.urlopen(request).read()
+            else:
+                print "**** POSTING TO LOCAL SERVER ****" 
+                request = urllib2.Request(self._url)
+                request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
+                request.add_header("User-Agent", "synthesis")
+                request.add_data(data)
+                response = urllib2.urlopen(request).read()
 
             # check for some sign of success within the response
             if response[0:4] == "202:":
@@ -79,7 +91,7 @@ def occtest():
     ext:version="3.0">
     <ext:Source>
         <ext:SourceID>
-                <hmis:IDStr>003</hmis:IDStr>
+                <hmis:IDStr>occtest</hmis:IDStr>
         </ext:SourceID>
         <ext:SoftwareVendor>OCC</ext:SoftwareVendor>
         <ext:SoftwareVersion>0.1</ext:SoftwareVersion>
@@ -175,7 +187,7 @@ def tbctest():
     ext:version="3.0">
     <ext:Source>
         <ext:SourceID >
-                <hmis:IDStr>003</hmis:IDStr>
+                <hmis:IDStr>tbctest</hmis:IDStr>
         </ext:SourceID>
         <ext:SoftwareVendor>Vendor Name Here</ext:SoftwareVendor>
         <ext:SoftwareVersion>7.1</ext:SoftwareVersion>
@@ -314,7 +326,9 @@ def tbctest():
 
 if __name__ == "__main__":
     # testing TBC HTTP-POST
-    tbctest()
+    #tbctest()
 
     # testing OCC HTTP-POST
-    occtest()
+    #occtest()
+
+    pass

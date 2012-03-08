@@ -76,7 +76,7 @@ class NodeBuilder():
             except Exception as e:
                 print "import of HL7 XML Writer failed", e
                 hl7CCDwriter_loaded = False
-            if self.transport == "save":
+            if self.transport in ("save", "rest", "soap"):
                 self.writer = hl7CCDwriter(self.outputFilesPath, queryOptions)
                 print '==== self.writer:', self.writer
                 self.validator = hl7CCDXMLTest()
@@ -162,20 +162,6 @@ class NodeBuilder():
         self.pprocess = postprocessing.PostProcessing(queryOptions.configID)
         #print '==== self.pprocess:', self.pprocess	# JCS - empty??
 
-    def encrypt_data(self, data):
-        if self.encryption == "openpgp":
-            gpg = GPG()
-            encrypted_data = gpg.encrypt(data)
-            return encrypted_data
-        elif self.encryption == "3des":
-            des = DES3()
-            encrypted_data = des.encrypt(data, settings.DES3_KEY)
-            #TODO: Should the encrypted data be encoded as base64?
-            return encrypted_data
-        else:
-            # do nothing. return as is
-            return data
-
     def encrypt_file(self, filename):
         if self.encryption == "openpgp":
             gpg = GPG()
@@ -209,16 +195,16 @@ class NodeBuilder():
             #result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
         if self.transport == 'soap':
-            ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
-            soup = soaptransport.SoapEnv(self.queryOptions.configID)
+            ccd_data = self.writer.get() #TODO: This data should come from the "Continuity of Care Document" adapter
+            soap = soaptransport.SoapEnv(self.queryOptions.configID)
             #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
-            result, details = soap.send_soap_envelope(self.encrypt_data(ccd_data))
+            result, details = soap.send_soap_envelope(ccd_data)
             print result, details
         elif self.transport == 'rest':
-            ccd_data = '' #TODO: This data should come from the "Continuity of Care Document" adapter
+            ccd_data = self.writer.get() #TODO: This data should come from the "Continuity of Care Document" adapter
             rest = resttransport.REST(self.queryOptions.configID)
             #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
-            result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), self.encrypt_data(ccd_data))
+            result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)
             print result, details
         else:
             # the remaining transport require file IO

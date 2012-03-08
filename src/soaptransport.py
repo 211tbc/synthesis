@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from conf import settings
 from conf import outputConfiguration
+from Encryption import *
 import urllib2
 import sys
 import urlparse
@@ -9,10 +10,13 @@ import uuid
 import base64
 import time
 
+PRINT_SOAP_REQUEST = True
+
 class SoapEnv():
 
     def __init__(self, source_id):
         self._soap_server = outputConfiguration.Configuration[source_id]['destinationURL']
+        self._encryption_type = outputConfiguration.Configuration[source_id]['encryption']
         self._host = urlparse.urlparse(self._soap_server).netloc
         #self._post = urlparse.urlparse(self._soap_server).path
 
@@ -255,66 +259,57 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                     </rim:Association>
                 </rim:RegistryObjectList>
             </lcm:SubmitObjectsRequest>
-            <xdsb:Document id="%(DOCUMENT_OBJECT)s">
-                <xop:Include href="cid:1.urn:uuid:%(PAYLOAD_UUID)s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
-            </xdsb:Document>
+            %(ATTACHMENT_SECTION)s
         </xdsb:ProvideAndRegisterDocumentSetRequest>
     </soapenv:Body>
-</soapenv:Envelope>
+</soapenv:Envelope>%(MIME_BORDER_SECTION)s""".replace("\t","")
 
---MIMEBoundaryurn_uuid_%(XML_UUID)s
-Content-Type: text/xml
-Content-Transfer-Encoding: binary
-Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
+    def send_soap_envelope(self, ccd_data):
+        
+        print "soaptransport generating soap"
 
-%(CCD)s
---MIMEBoundaryurn_uuid_%(XML_UUID)s""".replace("\t","")
-
-    def send_soap_envelope(self, ccd_data, test=False):
+        soap_transport_properties = settings.SOAP_TRANSPORT_PROPERTIES
+        
         #
         # construct the message and header
         #
 
-        #self._transport_properties["CCD"] = ccd_data
-        settings.SOAP_TRANSPORT_PROPERTIES["CCD"] = base64.b64encode(ccd_data)
-
         # extrinsic author person
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_PERSON"] = "^Left^Right^^^"
+        soap_transport_properties["EXTRINSIC_AUTHOR_PERSON"] = "^Left^Right^^^"
 
         # registry author person
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_PERSON"] = "^First^Last^^^"
+        soap_transport_properties["REGISTRY_AUTHOR_PERSON"] = "^First^Last^^^"
 
         # Language Code
-        settings.SOAP_TRANSPORT_PROPERTIES["LANGUAGE_CODE"] = "en-us"
+        soap_transport_properties["LANGUAGE_CODE"] = "en-us"
 
         # Source Patient ID <== Where does this come from?
-        settings.SOAP_TRANSPORT_PROPERTIES["SOURCE_PATIENT_ID"] = "89765a87b^^^&amp;3.4.5&amp;ISO"
+        soap_transport_properties["SOURCE_PATIENT_ID"] = "89765a87b^^^&amp;3.4.5&amp;ISO"
         
         # submissionTime -- Where does it come from? Is this module responsible for generating it?
         t = time.gmtime()
         snapshot = str(t[0])+str(t[1]).zfill(2)+str(t[2]).zfill(2)+str(t[3]).zfill(2)+str(t[4]).zfill(2)+str(t[5]).zfill(2)
-        settings.SOAP_TRANSPORT_PROPERTIES["SUBMISSION_TIME"] = snapshot
+        soap_transport_properties["SUBMISSION_TIME"] = snapshot
 
         # creationTime -- Where does it come from? Is this module responsible for generating it?
         t = time.gmtime()
         snapshot = str(t[0])+str(t[1]).zfill(2)+str(t[2]).zfill(2)
-        settings.SOAP_TRANSPORT_PROPERTIES["CREATION_TIME"] = snapshot
+        soap_transport_properties["CREATION_TIME"] = snapshot
 
         # Patient ID <== Where does this come from?
-        settings.SOAP_TRANSPORT_PROPERTIES["PATIENT_ID"] = "ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO"
+        soap_transport_properties["PATIENT_ID"] = "ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO"
 
         # Source ID <== Where does this come from?
-        settings.SOAP_TRANSPORT_PROPERTIES["SOURCE_ID"] = "1.3.6.1.4.1.21367.2009.1.2.1"
+        soap_transport_properties["SOURCE_ID"] = "1.3.6.1.4.1.21367.2009.1.2.1"
 
         # Unique ID <== Where does this come from?
-        settings.SOAP_TRANSPORT_PROPERTIES["UNIQUE_ID"] = "1.2009.0827.08.33.5017"
+        soap_transport_properties["UNIQUE_ID"] = "1.2009.0827.08.33.5017"
 
         # Random UUIDs
-        settings.SOAP_TRANSPORT_PROPERTIES["PAYLOAD_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
-        settings.SOAP_TRANSPORT_PROPERTIES["START_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
-        settings.SOAP_TRANSPORT_PROPERTIES["XML_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
-        settings.SOAP_TRANSPORT_PROPERTIES["MESSAGE_ID_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
-        settings.SOAP_TRANSPORT_PROPERTIES["AUTHOR_UUID"] = str(uuid.uuid4())
+        soap_transport_properties["START_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
+        soap_transport_properties["XML_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
+        soap_transport_properties["MESSAGE_ID_UUID"] = str(uuid.uuid4()).replace("-", "").upper()
+        soap_transport_properties["AUTHOR_UUID"] = str(uuid.uuid4())
         
         #
         # BEGIN OPTIONAL TAGS
@@ -323,34 +318,34 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
         test = lambda s: s if len(s.strip()) > 0 else ""
         
         # Store original properties values by "testing" each property using the lambda function defined above
-        orig_EXTRINSIC_NAME_TAG = test(settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_NAME_TAG"])
-        orig_EXTRINSIC_DESCRIPTION_TAG = test(settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_DESCRIPTION_TAG"])
-        orig_EXTRINSIC_AUTHOR_INSTITUTION_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_INSTITUTION_SLOT"])
-        orig_EXTRINSIC_AUTHOR_ROLE_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_ROLE_SLOT"])
-        orig_EXTRINSIC_AUTHOR_SPECIALTY_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_SPECIALTY_SLOT"])
-        orig_REGISTRY_PACKAGE_NAME_TAG = test(settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_NAME_TAG"])
-        orig_REGISTRY_PACKAGE_DESCRIPTION_TAG = test(settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_DESCRIPTION_TAG"])
-        orig_REGISTRY_AUTHOR_INSTITUTION_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_INSTITUTION_SLOT"])
-        orig_REGISTRY_AUTHOR_ROLE_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_ROLE_SLOT"])
-        orig_REGISTRY_AUTHOR_SPECIALTY_SLOT = test(settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_SPECIALTY_SLOT"])
-        orig_SERVICE_START_TIME = test(settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_START_TIME"])
-        orig_SERVICE_STOP_TIME = test(settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_STOP_TIME"])
+        orig_EXTRINSIC_NAME_TAG = test(soap_transport_properties["EXTRINSIC_NAME_TAG"])
+        orig_EXTRINSIC_DESCRIPTION_TAG = test(soap_transport_properties["EXTRINSIC_DESCRIPTION_TAG"])
+        orig_EXTRINSIC_AUTHOR_INSTITUTION_SLOT = test(soap_transport_properties["EXTRINSIC_AUTHOR_INSTITUTION_SLOT"])
+        orig_EXTRINSIC_AUTHOR_ROLE_SLOT = test(soap_transport_properties["EXTRINSIC_AUTHOR_ROLE_SLOT"])
+        orig_EXTRINSIC_AUTHOR_SPECIALTY_SLOT = test(soap_transport_properties["EXTRINSIC_AUTHOR_SPECIALTY_SLOT"])
+        orig_REGISTRY_PACKAGE_NAME_TAG = test(soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"])
+        orig_REGISTRY_PACKAGE_DESCRIPTION_TAG = test(soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"])
+        orig_REGISTRY_AUTHOR_INSTITUTION_SLOT = test(soap_transport_properties["REGISTRY_AUTHOR_INSTITUTION_SLOT"])
+        orig_REGISTRY_AUTHOR_ROLE_SLOT = test(soap_transport_properties["REGISTRY_AUTHOR_ROLE_SLOT"])
+        orig_REGISTRY_AUTHOR_SPECIALTY_SLOT = test(soap_transport_properties["REGISTRY_AUTHOR_SPECIALTY_SLOT"])
+        orig_SERVICE_START_TIME = test(soap_transport_properties["SERVICE_START_TIME"])
+        orig_SERVICE_STOP_TIME = test(soap_transport_properties["SERVICE_STOP_TIME"])
 
         # if Extrinsic has a name attribute ...
         if len(orig_EXTRINSIC_NAME_TAG) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_NAME_TAG"] = """<rim:Name><rim:LocalizedString value="%s"/></rim:Name>""" % orig_EXTRINSIC_NAME_TAG
+            soap_transport_properties["EXTRINSIC_NAME_TAG"] = """<rim:Name><rim:LocalizedString value="%s"/></rim:Name>""" % orig_EXTRINSIC_NAME_TAG
         else:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_NAME_TAG"] = "<rim:Name/>"
+            soap_transport_properties["EXTRINSIC_NAME_TAG"] = "<rim:Name/>"
 
         # if Extrinsic has a description attribute ... 
         if len(orig_EXTRINSIC_DESCRIPTION_TAG) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_DESCRIPTION_TAG"] = """<rim:Description><rim:LocalizedString value="%s"/></rim:Description>""" % orig_EXTRINSIC_DESCRIPTION_TAG
+            soap_transport_properties["EXTRINSIC_DESCRIPTION_TAG"] = """<rim:Description><rim:LocalizedString value="%s"/></rim:Description>""" % orig_EXTRINSIC_DESCRIPTION_TAG
         else:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_DESCRIPTION_TAG"] = "<rim:Description/>"
+            soap_transport_properties["EXTRINSIC_DESCRIPTION_TAG"] = "<rim:Description/>"
 
         # if there is an authorInstitution slot for Extrinsic ...
         if len(orig_EXTRINSIC_AUTHOR_INSTITUTION_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_INSTITUTION_SLOT"] = """<rim:Slot name="authorInstitution">
+            soap_transport_properties["EXTRINSIC_AUTHOR_INSTITUTION_SLOT"] = """<rim:Slot name="authorInstitution">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                             </rim:ValueList>
@@ -358,7 +353,7 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is an authorRole slot for Extrinsic ...
         if len(orig_EXTRINSIC_AUTHOR_ROLE_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_ROLE_SLOT"] = """<rim:Slot name="authorRole">
+            soap_transport_properties["EXTRINSIC_AUTHOR_ROLE_SLOT"] = """<rim:Slot name="authorRole">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                             </rim:ValueList>
@@ -366,7 +361,7 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is an authorSpecialty slot for Extrinsic ...
         if len(orig_EXTRINSIC_AUTHOR_SPECIALTY_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_SPECIALTY_SLOT"] = """<rim:Slot name="authorSpecialty">
+            soap_transport_properties["EXTRINSIC_AUTHOR_SPECIALTY_SLOT"] = """<rim:Slot name="authorSpecialty">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                                 <!-- Add more value tags as needed -->
@@ -375,19 +370,19 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if RegistryPackage has a name attribute ...
         if len(orig_REGISTRY_PACKAGE_NAME_TAG) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString value="%s"/></rim:Name>""" % orig_REGISTRY_PACKAGE_NAME_TAG
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString value="%s"/></rim:Name>""" % orig_REGISTRY_PACKAGE_NAME_TAG
         else:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_NAME_TAG"] = "<rim:Name/>"
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = "<rim:Name/>"
 
         # if RegistryPackage has a description attribute ... 
         if len(orig_REGISTRY_PACKAGE_DESCRIPTION_TAG) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><rim:LocalizedString value="%s"/></rim:Description>""" % orig_REGISTRY_PACKAGE_DESCRIPTION_TAG
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><rim:LocalizedString value="%s"/></rim:Description>""" % orig_REGISTRY_PACKAGE_DESCRIPTION_TAG
         else:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = "<rim:Description/>"
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = "<rim:Description/>"
 
         # if there is an authorInstitution slot for RegistryPackage ...
         if len(orig_REGISTRY_AUTHOR_INSTITUTION_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_INSTITUTION_SLOT"] = """<rim:Slot name="authorInstitution">
+            soap_transport_properties["REGISTRY_AUTHOR_INSTITUTION_SLOT"] = """<rim:Slot name="authorInstitution">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                             </rim:ValueList>
@@ -395,7 +390,7 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is an authorRole slot for RegistryPackage ...
         if len(orig_REGISTRY_AUTHOR_ROLE_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_ROLE_SLOT"] = """<rim:Slot name="authorRole">
+            soap_transport_properties["REGISTRY_AUTHOR_ROLE_SLOT"] = """<rim:Slot name="authorRole">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                             </rim:ValueList>
@@ -403,7 +398,7 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is an authorSpecialty slot for RegistryPackage ...
         if len(orig_REGISTRY_AUTHOR_SPECIALTY_SLOT) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_SPECIALTY_SLOT"] = """<rim:Slot name="authorSpecialty">
+            soap_transport_properties["REGISTRY_AUTHOR_SPECIALTY_SLOT"] = """<rim:Slot name="authorSpecialty">
                             <rim:ValueList>
                                 <rim:Value>%s</rim:Value>
                             </rim:ValueList>
@@ -411,7 +406,7 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is a serviceStartTime ...
         if len(orig_SERVICE_START_TIME) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_START_TIME"] = """<rim:Slot name="serviceStartTime">
+            soap_transport_properties["SERVICE_START_TIME"] = """<rim:Slot name="serviceStartTime">
                                 <rim:ValueList>
                                     <rim:Value>%s</rim:Value>
                                 </rim:ValueList>
@@ -419,14 +414,14 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
 
         # if there is a serviceStopTime ...
         if len(orig_SERVICE_STOP_TIME) > 0:
-            settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_STOP_TIME"] = """<rim:Slot name="serviceStopTime">
+            soap_transport_properties["SERVICE_STOP_TIME"] = """<rim:Slot name="serviceStopTime">
                                 <rim:ValueList>
                                     <rim:Value>%s</rim:Value>
                                 </rim:ValueList>
                             </rim:Slot>""" % orig_SERVICE_STOP_TIME
         
         # if there is a sourcePatientInfo ...
-        #settings.SOAP_TRANSPORT_PROPERTIES["SOURCE_PATIENT_INFO"] = """
+        #soap_transport_properties["SOURCE_PATIENT_INFO"] = """
         #                <rim:Slot name="sourcePatientInfo">
         #                    <rim:ValueList>
         #                        <rim:Value>PID-3|89765a87b^^^&amp;3.4.5&amp;ISO</rim:Value>
@@ -441,8 +436,32 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
         # END OPTIONAL TAGS
         #
 
+        # Attachments
+        for data in ccd_data:
+            payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
+            soap_transport_properties["ATTACHMENT_SECTION"] += """<xdsb:Document id="%s">
+                <xop:Include href="cid:1.urn:uuid:%s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+            </xdsb:Document>""" % (soap_transport_properties["DOCUMENT_OBJECT"], payload_uuid)
+            attachment = data
+            if self._encryption_type != "none":
+                if self._encryption_type == "3des":
+                    des3 = DES3()
+                    attachment = base64.b64encode(des3.encrypt(data, settings.DES3_KEY))
+                if self._encryption_type == "openpgp":
+                    gpg = GPG()
+                    attachment = base64.b64encode(gpg.encrypt(data))
+            soap_transport_properties["MIME_BORDER_SECTION"] += """
+
+--MIMEBoundaryurn_uuid_%s
+Content-Type: text/xml
+Content-Transfer-Encoding: binary
+Content-ID: <1.urn:uuid:%s@apache.org>
+
+%s
+--MIMEBoundaryurn_uuid_%s""" % (soap_transport_properties["XML_UUID"], payload_uuid, attachment, soap_transport_properties["XML_UUID"])
+
         # generate the SOAP envelope
-        soap_env = self._ENVELOPE_TEMPLATE % settings.SOAP_TRANSPORT_PROPERTIES
+        soap_env = self._ENVELOPE_TEMPLATE % soap_transport_properties
 
         # create header
         headers = {
@@ -450,36 +469,22 @@ Content-ID: <1.urn:uuid:%(PAYLOAD_UUID)s@apache.org>
             "User-Agent"        : "synthesis",
             #"Content-type"      : "text/xml; charset=\"UTF-8\""
             "Content-type"      : "multipart/related",
-            "boundary"          : "MIMEBoundaryurn_uuid_%(XML_UUID)s" % settings.SOAP_TRANSPORT_PROPERTIES,
+            "boundary"          : "MIMEBoundaryurn_uuid_%(XML_UUID)s" % soap_transport_properties,
             "type"              : "application/xop+xml",
-            "start"             : "0.urn:uuid:%(START_UUID)s@apache.org" % settings.SOAP_TRANSPORT_PROPERTIES,
+            "start"             : "0.urn:uuid:%(START_UUID)s@apache.org" % soap_transport_properties,
             "start-info"        : "application/soap+xml",
             "Content-length"    : "%d" % len(soap_env),
             #"SOAPAction"        : self._host + "/ProvideAndRegisterDocumentSet-b",
             }
 
-        # Restore original settings values
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_NAME_TAG"] = orig_EXTRINSIC_NAME_TAG
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_DESCRIPTION_TAG"] = orig_EXTRINSIC_DESCRIPTION_TAG
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_INSTITUTION_SLOT"] = orig_EXTRINSIC_AUTHOR_INSTITUTION_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_ROLE_SLOT"] = orig_EXTRINSIC_AUTHOR_ROLE_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["EXTRINSIC_AUTHOR_SPECIALTY_SLOT"] = orig_EXTRINSIC_AUTHOR_SPECIALTY_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_NAME_TAG"] = orig_REGISTRY_PACKAGE_NAME_TAG
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = orig_REGISTRY_PACKAGE_DESCRIPTION_TAG
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_INSTITUTION_SLOT"] = orig_REGISTRY_AUTHOR_INSTITUTION_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_ROLE_SLOT"] = orig_REGISTRY_AUTHOR_ROLE_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["REGISTRY_AUTHOR_SPECIALTY_SLOT"] = orig_REGISTRY_AUTHOR_SPECIALTY_SLOT
-        settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_START_TIME"] = orig_SERVICE_START_TIME
-        settings.SOAP_TRANSPORT_PROPERTIES["SERVICE_STOP_TIME"] = orig_SERVICE_STOP_TIME
-
-        if test: # delete this if block
+        if PRINT_SOAP_REQUEST: # delete this if block
             import pprint as pp
             pp.pprint(headers)
-            #print soap_env
-            fo = open('soap_envelope.txt', 'w')
-            fo.write(soap_env)
-            fo.flush()
-            fo.close()
+            print soap_env
+            #fo = open('soap_envelope.txt', 'w')
+            #fo.write(soap_env)
+            #fo.flush()
+            #fo.close()
             return (True, "True")
 
         # send the SOAP envelope
@@ -664,4 +669,4 @@ Purpose section
 </ClinicalDocument>"""
 
     soap = SoapEnv('iH9HiPbW40JbS5m_')
-    soap.send_soap_envelope(ccd_data, True)
+    soap.send_soap_envelope(ccd_data)

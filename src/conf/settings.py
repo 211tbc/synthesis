@@ -52,7 +52,8 @@ SOAP_TRANSPORT_PROPERTIES = {
     "CCD"                               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "SOURCE_OBJECT"                     : "SubmissionSet01",
     "DOCUMENT_OBJECT"                   : "Document01",
-    "PAYLOAD_UUID"                      : "", # <== Leave this blank. It will be assigned by the soaptransport module.
+    "ATTACHMENT_SECTION"                : "", # <== Leave this blank. It will be assigned by the soaptransport module.
+    "MIME_BORDER_SECTION"               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "START_UUID"                        : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "XML_UUID"                          : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "MESSAGE_ID_UUID"                   : "", # <== Leave this blank. It will be assigned by the soaptransport module.

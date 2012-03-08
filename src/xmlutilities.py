@@ -157,6 +157,12 @@ def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
     #print '==== tree._root:', ET.tostring(writer_instance.root_element.getchildren()[0]) #_root.getchildren()[0].text  # getchildren() = clients, entry_exits
     tree.write(os.path.join(writer_instance.outDirectory, unique_filename),encoding=encoding,xml_declaration=xml_declaration)	# JCS
             
+def printOutXML(writer_instance, encoding=None, method="xml"):
+    print '==== root_element is ', writer_instance.root_element
+    tree = ET.ElementTree(writer_instance.root_element)
+    # return the XML string containing the CCD 
+    return ET.tostring(tree.getroot(), encoding=encoding, method=method)
+
 #if __name__ == "__main__":
 #    xmlU = xmlutilities()
 #    sequences = ["need", "client", "service", "goal", 'entry_exit']

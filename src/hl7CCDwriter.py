@@ -87,6 +87,41 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         #self.session.commit()       # This is only for updateReported()
         return True     # Now nodebuilder.run() will find all output files and validate them.
 
+    def get(self):    # Called from nodebuilder.run() one time.
+        self.session = self.db.Session()
+        if settings.DEBUG:
+            print '==== Self:', self
+        # Database traversal:
+        # Step through Exports. For each Export,
+        # Step through Persons. For each person,
+        # Step through ServiceEvent. For each Service Event, begin a new document, then
+        # Step through Entrys
+        # Step through ServiceEventNotes - concat all note_text into one. 
+        exports = self.session.query(dbobjects.Export)
+        ccd_list = []
+        for oneExport in exports:
+            selink = self.session.query(dbobjects.SourceExportLink).filter(
+                                        dbobjects.SourceExportLink.export_index_id == oneExport.id).one()
+            #print '==== Selink.id:', selink.id
+            oneSource = self.session.query(dbobjects.Source).filter(dbobjects.Source.id == selink.source_index_id).one()
+            #print '==== Source.id:', source.id
+            #self.configRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id
+            #                     == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
+            #print '==== sys config.id', self.configRec.id
+            persons = oneExport.fk_export_to_person  # = relationship('Person', backref='fk_person_to_export')
+
+            for onePerson in persons:
+
+               #ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.export_index_id == oneExport.id)
+                ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.person_index_id == onePerson.id)
+                for oneServEvt in ServEvts: # One document per event???
+                    #print "person is: ", self.person
+                    self.processXML(oneExport, onePerson, oneServEvt, oneSource)       # Create one document
+                    xmlutilities.indent(self.root_element)  #self.prettify()
+                    # Next wraps self.root_element in an ElementTree and writes it to disk
+                    ccd_list.append(xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"))
+        return ccd_list
+
     def newSubNode(self, parent, nodeName):
         newNode = ET.SubElement(parent, nodeName)
         return newNode

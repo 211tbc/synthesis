@@ -166,7 +166,7 @@ class NodeBuilder():
         if self.encryption == "openpgp":
             gpg = GPG()
             gpg.encryptFile(filename, os.path.splitext(filename)[0] + '.gpg')
-            shutil.move(filename, settings.PROCESSEDFILES_PATH)
+            shutil.move(filename, outputConfiguration.PROCESSEDFILES_PATH)
             return os.path.splitext(filename)[0] + '.gpg'
         elif self.encryption == "3des":
             fo = open(filename, 'r')
@@ -178,7 +178,7 @@ class NodeBuilder():
             fo.write(encrypted_data)
             fo.flush()
             fo.close()
-            shutil.move(filename, settings.PROCESSEDFILES_PATH)
+            shutil.move(filename, outputConfiguration.PROCESSEDFILES_PATH)
             return os.path.splitext(filename)[0] + '.des3'
         else:
             # do nothing. return as is
@@ -195,13 +195,13 @@ class NodeBuilder():
             #result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
         if self.transport == 'soap':
-            ccd_data = self.writer.get() #TODO: This data should come from the "Continuity of Care Document" adapter
+            ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
             soap = soaptransport.SoapEnv(self.queryOptions.configID)
             #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
             result, details = soap.send_soap_envelope(ccd_data)
             print result, details
         elif self.transport == 'rest':
-            ccd_data = self.writer.get() #TODO: This data should come from the "Continuity of Care Document" adapter
+            ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
             rest = resttransport.REST(self.queryOptions.configID)
             #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
             result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)

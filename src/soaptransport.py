@@ -4,11 +4,32 @@ from conf import settings
 from conf import outputConfiguration
 from Encryption import *
 import urllib2
-import sys
+from sys import version
 import urlparse
 import uuid
 import base64
 import time
+from exceptions import SoftwareCompatibilityError
+# py 2.5 support
+# dynamic import of modules
+thisVersion = version[0:3]
+if float(settings.MINPYVERSION) < float(version[0:3]):
+    try:
+        import xml.etree.cElementTree as ET
+        from xml.etree.ElementTree import dump
+    except ImportError:
+        import xml.etree.ElementTree as ET
+        from xml.etree.ElementTree import dump
+elif thisVersion == '2.4':
+    try:    # Try to use the much faster C-based ET.
+        import cElementTree as ET
+        from elementtree.ElementTree import dump
+    except ImportError:    # Fall back on the pure python one.
+        import elementtree.ElementTree as ET
+else:
+    print 'Sorry, please see the minimum requirements to run this Application'
+    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+    raise SoftwareCompatibilityError, theError
 
 PRINT_SOAP_REQUEST = True
 
@@ -247,16 +268,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                     <rim:Classification classifiedObject="SubmissionSet01"
                         classificationNode="urn:uuid:%(SUBMISSION_SET_UUID)s" id="%(SUBMISSION_SET_ID)s"
                         objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"/>
-                    <rim:Association
-                        associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
-                        sourceObject="%(SOURCE_OBJECT)s" targetObject="%(DOCUMENT_OBJECT)s" id="%(ASSOCIATION_ID)s"
-                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
-                        <rim:Slot name="SubmissionSetStatus">
-                            <rim:ValueList>
-                                <rim:Value>%(ASSOCIATION_VALUE)s</rim:Value>
-                            </rim:ValueList>
-                        </rim:Slot>
-                    </rim:Association>
+                    %(ASSOCIATION_SECTION)s
                 </rim:RegistryObjectList>
             </lcm:SubmitObjectsRequest>
             %(ATTACHMENT_SECTION)s
@@ -269,10 +281,20 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         print "soaptransport generating soap"
 
         soap_transport_properties = settings.SOAP_TRANSPORT_PROPERTIES
-        
+
+        #
+        # FBY: TODO: I'm not sure what the SOAP envelope should look like if ccd_data
+        #            contains multiple documents. For now, I'm only ever interested in
+        #            ccd_data[0]
+
+        ccd = ET.fromstring(ccd_data[0])
+
         #
         # construct the message and header
         #
+
+        # document id
+        soap_transport_properties["DOCUMENT_OBJECT"] = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
 
         # extrinsic author person
         soap_transport_properties["EXTRINSIC_AUTHOR_PERSON"] = "^Left^Right^^^"
@@ -281,10 +303,12 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         soap_transport_properties["REGISTRY_AUTHOR_PERSON"] = "^First^Last^^^"
 
         # Language Code
-        soap_transport_properties["LANGUAGE_CODE"] = "en-us"
+        soap_transport_properties["LANGUAGE_CODE"] = ccd.find("{urn:hl7-org:v3}languageCode").attrib.get("code")
 
-        # Source Patient ID <== Where does this come from?
-        soap_transport_properties["SOURCE_PATIENT_ID"] = "89765a87b^^^&amp;3.4.5&amp;ISO"
+        # Source Patient ID
+        patient_role = ccd.find("{urn:hl7-org:v3}recordTarget/{urn:hl7-org:v3}patientRole")
+        source_patient_id = patient_role.find("{urn:hl7-org:v3}id").attrib.get("extension")
+        soap_transport_properties["SOURCE_PATIENT_ID"] = "%s^^^&amp;3.4.5&amp;ISO" % source_patient_id
         
         # submissionTime -- Where does it come from? Is this module responsible for generating it?
         t = time.gmtime()
@@ -439,6 +463,21 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         # Attachments
         for data in ccd_data:
             payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
+            ccd = ET.fromstring(data)
+            ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
+            soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
+                        associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
+                        sourceObject="%s" targetObject="%s" id="%s"
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
+                        <rim:Slot name="SubmissionSetStatus">
+                            <rim:ValueList>
+                                <rim:Value>%s</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                    </rim:Association>""" % (soap_transport_properties["SOURCE_OBJECT"], \
+                                             ccd_id, \
+                                             soap_transport_properties["ASSOCIATION_ID"], \
+                                             soap_transport_properties["ASSOCIATION_VALUE"])
             soap_transport_properties["ATTACHMENT_SECTION"] += """<xdsb:Document id="%s">
                 <xop:Include href="cid:1.urn:uuid:%s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
             </xdsb:Document>""" % (soap_transport_properties["DOCUMENT_OBJECT"], payload_uuid)

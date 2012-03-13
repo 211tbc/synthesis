@@ -52,6 +52,7 @@ SOAP_TRANSPORT_PROPERTIES = {
     "CCD"                               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "SOURCE_OBJECT"                     : "SubmissionSet01",
     "DOCUMENT_OBJECT"                   : "Document01",
+    "ASSOCIATION_SECTION"               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "ATTACHMENT_SECTION"                : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "MIME_BORDER_SECTION"               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "START_UUID"                        : "", # <== Leave this blank. It will be assigned by the soaptransport module.
@@ -77,7 +78,7 @@ SOAP_TRANSPORT_PROPERTIES = {
     "CONTENT_TYPE_CODE_LOCALIZED_STRING"    : "History and Physical", # <== Where does this value come from?
     "SUBMISSION_TIME"                   : "", #<== Is format YYYYMMDDHHMMSS? Is this module responsible for generating this?
     "CREATION_TIME"                     : "", #<== Is format YYYYMMDD? Is this module responsible for generating this?
-    "LANGUAGE_CODE"                     : "en-us",
+    "LANGUAGE_CODE"                     : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "SOURCE_PATIENT_ID"                 : "", # <== Where does this value come from?
     "CLASS_CODE_UUID"                   : "41a5887f-8865-4c09-adf7-e362475b143a", # <== Where does this value come from?
     "CLASS_CODE_NODE_REPRESENTATION"    : "History and Physical", # Where does this value come from?

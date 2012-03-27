@@ -52,7 +52,7 @@ class NodeBuilder():
         self.encryption = outputConfiguration.Configuration[queryOptions.configID]['encryption']
         self.outputFilesPath = outputConfiguration.Configuration[queryOptions.configID]['destination']
         
-        self.queryOptions = queryOptions
+        self.queryOptions = queryOptions	# Passed in from QueryObject.getOptions()
         print '==== Output Format', self.generateOutputformat		# JCS
         if self.generateOutputformat == 'svcpoint5':
             try:

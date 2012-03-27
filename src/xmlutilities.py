@@ -11,28 +11,31 @@ from sys import version
 from exceptions import SoftwareCompatibilityError
 
 thisVersion = version[0:3]
-if float(settings.MINPYVERSION) < float(version[0:3]):
-    try:
-        # FIXME ( remove this once done debugging namespace issue )
-        #import xml.etree.cElementTree as ET
-        import xml.etree.ElementTree as ET
-        from xml.etree.ElementTree import Element, SubElement, dump
-    except ImportError:
-        import xml.etree.ElementTree as ET
-        from xml.etree.ElementTree import Element, SubElement
-elif thisVersion == '2.4':
-    try:
-    # Try to use the much faster C-based ET.
-        import cElementTree as ET
-        from elementtree.ElementTree import Element, SubElement, dump
-    except ImportError:
-    # Fall back on the pure python one.
-        import elementtree.ElementTree as ET
-        from elementtree.ElementTree import Element, SubElement
+if True:
+    from lxml import etree as ET
 else:
-    print 'Sorry, please see the minimum requirements to run this Application'
-    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise SoftwareCompatibilityError, theError
+    if float(settings.MINPYVERSION) < float(version[0:3]):
+        try:
+            # FIXME ( remove this once done debugging namespace issue )
+            #import xml.etree.cElementTree as ET
+            import xml.etree.ElementTree as ET
+            from xml.etree.ElementTree import Element, SubElement, dump
+        except ImportError:
+            import xml.etree.ElementTree as ET
+            from xml.etree.ElementTree import Element, SubElement
+    elif thisVersion == '2.4':
+        try:
+        # Try to use the much faster C-based ET.
+            import cElementTree as ET
+            from elementtree.ElementTree import Element, SubElement, dump
+        except ImportError:
+        # Fall back on the pure python one.
+            import elementtree.ElementTree as ET
+            from elementtree.ElementTree import Element, SubElement
+    else:
+        print 'Sorry, please see the minimum requirements to run this Application'
+        theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+        raise SoftwareCompatibilityError, theError
 
 class IDGeneration:    
     def __init__(self):
@@ -145,7 +148,7 @@ def indent(elem, level=0):
                 elem.tail = i    
                 
 def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
-    print '==== root_element is ', writer_instance.root_element
+    #print '==== root_element is ', writer_instance.root_element
     tree = ET.ElementTree(writer_instance.root_element)
     if settings.DEBUG:
         print "trying to write XML to: %s " % os.path.join(writer_instance.outDirectory, "page.xml")
@@ -155,7 +158,7 @@ def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
     attempted_filename = 'page.xml'
     unique_filename = fileutils.getUniqueFileNameForMove(attempted_filename, writer_instance.outDirectory)
     #print '==== tree._root:', ET.tostring(writer_instance.root_element.getchildren()[0]) #_root.getchildren()[0].text  # getchildren() = clients, entry_exits
-    tree.write(os.path.join(writer_instance.outDirectory, unique_filename),encoding=encoding,xml_declaration=xml_declaration)	# JCS
+    tree.write(os.path.join(writer_instance.outDirectory, unique_filename),xml_declaration=xml_declaration,encoding=encoding)	# JCS
             
 def printOutXML(writer_instance, encoding=None, method="xml"):
     print '==== root_element is ', writer_instance.root_element

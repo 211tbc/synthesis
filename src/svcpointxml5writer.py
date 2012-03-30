@@ -346,6 +346,7 @@ class SvcPointXML5Writer():
 
         for ph in self.ph:
             #print '==== ph person id:', ph.person_index_id #, ph.__dict__
+            # JCS - Fails if none - seen in going from tbc to here - but don't know if that ever happens
             hs = self.session.query(dbobjects.HousingStatus).filter(dbobjects.HousingStatus.person_historical_index_id == ph.id).one()
             hsText = self.pickList.getValue("HOUSINGSTATUSPickOption",hs.housing_status)
             #print '==== hs:', hsText
@@ -433,7 +434,7 @@ class SvcPointXML5Writer():
         return str(round(hourlyWage,2))
 
     def fixMiddleInitial(self, middle_initial):
-        fixed_middle_initial = str.lstrip(str.upper(middle_initial))[0]
+        fixed_middle_initial = middle_initial[0].upper().lstrip()
         return fixed_middle_initial
 
     def fixSSN(self, incomingSSN):

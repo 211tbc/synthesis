@@ -392,6 +392,10 @@ class TBCHUDHMISXML30Reader:
         itemElements = element.xpath(xpReferrals, namespaces = self.nsmap)
         if itemElements is not None:
             for item in itemElements:
+
+                # Need to parse the "Need" before the "Referral" so we have the correct "need_index_id"
+                hmisxml30reader.parse_need(self, item, pf='ext:')   # For nested Need
+
                 self.parse_dict = {}
                 
                 ''' Map elements to database columns '''
@@ -419,13 +423,14 @@ class TBCHUDHMISXML30Reader:
                 except: pass
                 try: hmisxml30reader.existence_test_and_add(self, 'service_event_index_id', self.service_event_index_id, 'no_handling')
                 except: pass
-                
+                print '==== need_index_id - self:', self.need_index_id
                 ''' Shred to database '''
                 hmisxml30reader.shred(self, self.parse_dict, dbobjects.Referral)
 
                 ''' Parse sub-tables '''
-                hmisxml30reader.parse_need(self, item, pf='ext:')   # For nested Need
-
+            # Need to parse the "Need" before the "Referral" so we have the correct "need_index_id"
+            #    hmisxml30reader.parse_need(self, item, pf='ext:')   # For nested Need
+            #    print '==== need_index_id - self:', self.need_index_id
 
 def main(argv=None):  
     ''' Manually test this Reader class '''

@@ -32,10 +32,10 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         self.hl7dateform = "%Y%m%d%H%M%S%z"
 
     def write(self):        # Called from nodebuilder.run() one time.
-	    return self.makeHL7Docs("disk")
+        return self.makeHL7Docs("disk")
 
     def get(self):
-	    return self.makeHL7Docs("string")
+        return self.makeHL7Docs("string")
 
     def makeHL7Docs(self,mode):
         self.session = self.db.Session()    # This starts a Transaction
@@ -58,15 +58,14 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
             #self.configRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id
             #                     == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
             #print '==== sys config.id', self.configRec.id
-            Persons = oneExport.fk_export_to_person  # = relationship('Person', backref='fk_person_to_export')
-            # Filter for options
+            Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.export_index_id == oneExport.id)
+            # More filtering for options
             if self.options.reported == True:
-               #Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
                 Persons = Persons.filter(dbobjects.Person.reported == True)
             elif self.options.unreported == True:
                 Persons = Persons.filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
             elif self.options.reported == None:
-                pass    #Persons = self.session.query(dbobjects.Person)
+                pass
             # Now apply the dates to the result set.
             if self.options.alldates == None:
                 Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected,

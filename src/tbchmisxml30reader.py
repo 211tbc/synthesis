@@ -393,8 +393,17 @@ class TBCHUDHMISXML30Reader:
         if itemElements is not None:
             for item in itemElements:
 
-                # Need to parse the "Need" before the "Referral" so we have the correct "need_index_id"
+                # Need to parse nested "Need" before put referral in DB, so we have the correct "self.need_index_id" (set in shred())
                 hmisxml30reader.parse_need(self, item, pf='ext:')   # For nested Need
+
+                dataToFind = item.xpath(xpReferralsReferralNeedIDIDNum,namespaces = self.nsmap)  # Returns: Element list
+                if dataToFind == []:    # No <hmis:IDNum>. Means there is no standalone need to refer to. Need must be nested.
+                    currentNeedID = self.need_index_id  # Just shredded above...
+                else:   # Need was parsed (much) earlier, so have to look up Need.id
+                    ididToSearch = dataToFind[0].text
+                    relNeed = self.session.query(dbobjects.Need).filter(dbobjects.Need.need_idid_num == ididToSearch).one()
+                    #print "======== Need:", relNeed.id, relNeed.site_service_idid_num, relNeed.need_idid_num, relNeed.person_index_id
+                    currentNeedID = relNeed.id
 
                 self.parse_dict = {}
                 
@@ -419,11 +428,12 @@ class TBCHUDHMISXML30Reader:
                 try: hmisxml30reader.existence_test_and_add(self, 'person_index_id', self.person_index_id, 'no_handling')
                 except: pass
                 # In TBC, self.need_index_id might be bogus cuz need isn't a parent? or might need to be looked up with NeedIDIDNum?
-                try: hmisxml30reader.existence_test_and_add(self, 'need_index_id', self.need_index_id, 'no_handling')
+                #try: hmisxml30reader.existence_test_and_add(self, 'need_index_id', self.need_index_id, 'no_handling')
+                try: hmisxml30reader.existence_test_and_add(self, 'need_index_id', currentNeedID, 'no_handling')
                 except: pass
                 try: hmisxml30reader.existence_test_and_add(self, 'service_event_index_id', self.service_event_index_id, 'no_handling')
                 except: pass
-                print '==== need_index_id - self:', self.need_index_id
+                #print '==== need_index_id - self:', self.need_index_id
                 ''' Shred to database '''
                 hmisxml30reader.shred(self, self.parse_dict, dbobjects.Referral)
 

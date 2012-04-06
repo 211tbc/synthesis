@@ -222,8 +222,9 @@ def occtest():
     
     # test results
     if HAS_ENCRYPTION:
+        keyiv = get_incoming_3des_key_iv()
         des3 = DES3()
-        encrypted_data = des3.encrypt(occ_xml, settings.DES3_KEY)
+        encrypted_data = des3.encrypt(occ_xml, keyiv['key'], iv=keyiv['iv'])
         #print encrypted_data
         print "Result of OCC test (encrypted): ", rest.test_post_local("occtest", [encrypted_data,], use_base64=True)
     else:

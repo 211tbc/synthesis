@@ -294,7 +294,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #
 
         # document id
-        soap_transport_properties["DOCUMENT_OBJECT"] = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
+        soap_transport_properties["DOCUMENT_OBJECT"] = ccd.find("id").attrib.get("extension")
 
         # extrinsic author person
         soap_transport_properties["EXTRINSIC_AUTHOR_PERSON"] = "^Left^Right^^^"
@@ -303,11 +303,11 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         soap_transport_properties["REGISTRY_AUTHOR_PERSON"] = "^First^Last^^^"
 
         # Language Code
-        soap_transport_properties["LANGUAGE_CODE"] = ccd.find("{urn:hl7-org:v3}languageCode").attrib.get("code")
+        soap_transport_properties["LANGUAGE_CODE"] = ccd.find("languageCode").attrib.get("code")
 
         # Source Patient ID
-        patient_role = ccd.find("{urn:hl7-org:v3}recordTarget/{urn:hl7-org:v3}patientRole")
-        source_patient_id = patient_role.find("{urn:hl7-org:v3}id").attrib.get("extension")
+        patient_role = ccd.find("recordTarget/patientRole")
+        source_patient_id = patient_role.find("id").attrib.get("extension")
         soap_transport_properties["SOURCE_PATIENT_ID"] = "%s^^^&amp;3.4.5&amp;ISO" % source_patient_id
         
         # submissionTime -- Where does it come from? Is this module responsible for generating it?
@@ -464,7 +464,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         for data in ccd_data:
             payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
             ccd = ET.fromstring(data)
-            ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
+            ccd_id = ccd.find("id").attrib.get("extension")
             soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
                         associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
                         sourceObject="%s" targetObject="%s" id="%s"
@@ -484,8 +484,9 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             attachment = data
             if self._encryption_type != "none":
                 if self._encryption_type == "3des":
+                    keyiv = get_incoming_3des_key_iv()
                     des3 = DES3()
-                    attachment = base64.b64encode(des3.encrypt(data, settings.DES3_KEY))
+                    attachment = base64.b64encode(des3.encrypt(data, keyiv['key'], iv=keyiv['iv']))
                 if self._encryption_type == "openpgp":
                     gpg = GPG()
                     attachment = base64.b64encode(gpg.encrypt(data))

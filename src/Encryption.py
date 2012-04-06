@@ -7,6 +7,8 @@ TODO:
 - testing, testing, testing
 '''
 from conf import settings
+from conf import inputConfiguration
+#from conf import outputConfiguration
 from Crypto.Cipher import AES as baseAES
 from Crypto.Cipher import Blowfish as baseBlowfish
 from Crypto.Cipher import DES as baseDES
@@ -14,6 +16,38 @@ from Crypto.Cipher import DES3 as baseDES3
 from Crypto.Hash import MD5 as baseMD5
 from Crypto import Random
 import gnupg
+import re
+
+
+def get_incoming_3des_key_iv():
+    keyfile = open(inputConfiguration.KEY_PATH, 'r')
+    key = keyfile.read().replace('\n', '')
+    keyfile.close()
+    ivfile = open(inputConfiguration.IV_PATH, 'r')
+    iv = ivfile.read().replace('\n', '')
+    ivfile.close()
+    return {'key' : key, 'iv' : iv}
+
+#def get_outgoing_3des_key_iv():
+#    keyfile = open(outputConfiguration.KEY_PATH, 'r')
+#    key = keyfile.read().strip()
+#    keyfile.close()
+#    ivfile = open(outputConfiguration.IV_PATH, 'r')
+#    iv = ivfile.read().strip()
+#    ivfile.close()
+#    return {'key' : key, 'iv' : iv}
+
+def truncateMeaninglessTrailingCharacters(string):
+    ''' This function copied over from decrypt3des module '''
+    #truncating meaningless characters after end of last XML tag
+    
+    p = re.compile('</ext:Sources>.*', re.DOTALL)
+    changed_string = p.sub('</ext:Sources>', string)
+#    print "string_parts[0]:"
+#    print string_parts[0]
+#    print "string_parts[1]"
+#    print string_parts[1]
+    return changed_string
 
 #################################################################
 # Master base class from which all subclasses will inherit from #
@@ -239,14 +273,19 @@ class DES3(Cipher):
     def __init__(self, data=None, key=None, mode=baseDES3.MODE_ECB, iv=None, block_size=16, method="encrypt"):
         Cipher.__init__(self, data=data, key=key, mode=mode, iv=iv, block_size=block_size, method=method)
     
-    def encrypt(self, data, key, block_size=16, mode=baseDES3.MODE_ECB, iv=None):
+    def encrypt(self, data, key, block_size=16, mode=baseDES3.MODE_CBC, iv=None):
         if iv is None: iv = Random.get_random_bytes(8)
-        self.enc_object = baseDES3.new(self.pad(key), mode, iv)
+        #self.enc_object = baseDES3.new(self.pad(key), mode, iv)
+        self.enc_object = baseDES3.new(key, mode, iv)
         return Cipher.encrypt(self, data=data, key=key, block_size=block_size)
 
-    def decrypt(self, data, key, block_size=16, mode=baseDES3.MODE_ECB):
-        self.enc_object = baseDES3.new(self.pad(key), mode=mode)
-        return Cipher.decrypt(self, data=data, key=key, block_size=block_size)
+    def decrypt(self, data, key, block_size=16, mode=baseDES3.MODE_CBC, iv=None):
+        if iv is None: iv = Random.get_random_bytes(8)
+        #self.enc_object = baseDES3.new(self.pad(key), mode=mode)
+        self.enc_object = baseDES3.new(key, mode, iv)
+        decrypted_string = Cipher.decrypt(self, data=data, key=key, block_size=block_size)
+        decrypted_string = truncateMeaninglessTrailingCharacters(decrypted_string)
+        return decrypted_string
 
 
 

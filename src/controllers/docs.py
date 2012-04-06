@@ -120,10 +120,11 @@ class DocsController(BaseController):
                 cobj = cryptor()
                 try:
                     if cobj.__class__.__name__ == 'DES3':
+                        keyiv = get_incoming_3des_key_iv()
                         # decode base64 stream
                         encrypted_stream = base64.b64decode(encoded_stream)
                         # decrypt stream
-                        decrypted_stream = cobj.decrypt(str(encrypted_stream), settings.DES3_KEY)
+                        decrypted_stream = cobj.decrypt(str(encrypted_stream), keyiv['key'], iv=keyiv['iv'])
                         # test if the resulting decrypted_stream is XML
                         xml_test = etree.XML(decrypted_stream)
                         data_decrypted = True

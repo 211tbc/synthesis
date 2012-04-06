@@ -3,6 +3,10 @@
 import os
 import settings
 
+# 3DES
+KEY_PATH = '' # full directory path to the 3DES key file
+IV_PATH = '' # full directory path to the 3DES IV file
+
 PROCESSEDFILES_PATH = os.path.join(settings.BASE_PATH, "processed_files")
 if not os.path.exists(PROCESSEDFILES_PATH):
     os.mkdir(PROCESSEDFILES_PATH)

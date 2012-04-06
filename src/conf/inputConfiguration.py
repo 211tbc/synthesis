@@ -5,6 +5,10 @@ import settings
 USE_ENCRYPTION = False
 #USE_ENCRYPTION = True
 
+# 3DES
+KEY_PATH = '' # full directory path to the 3DES key file
+IV_PATH = '' # full directory path to the 3DES IV file
+
 FAILEDFILES_PATH = os.path.join(settings.BASE_PATH, "failed_files")
 if not os.path.exists(FAILEDFILES_PATH):
     os.mkdir(FAILEDFILES_PATH)

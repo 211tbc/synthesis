@@ -36,7 +36,6 @@ PATH_TO_GPG = '/usr/bin/gpg'
 PGPHOMEDIR = '~/.gnupg'
 PASSPHRASE = ''
 PGP_KEY_ID = ''
-DES3_KEY = ''
 
 JFCS_SOURCE_ID = 734
 JFCS_AGENCY_ID = 711

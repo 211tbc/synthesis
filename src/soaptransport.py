@@ -13,23 +13,31 @@ from exceptions import SoftwareCompatibilityError
 # py 2.5 support
 # dynamic import of modules
 thisVersion = version[0:3]
-if float(settings.MINPYVERSION) < float(version[0:3]):
-    try:
-        import xml.etree.cElementTree as ET
-        from xml.etree.ElementTree import dump
-    except ImportError:
-        import xml.etree.ElementTree as ET
-        from xml.etree.ElementTree import dump
-elif thisVersion == '2.4':
-    try:    # Try to use the much faster C-based ET.
-        import cElementTree as ET
-        from elementtree.ElementTree import dump
-    except ImportError:    # Fall back on the pure python one.
-        import elementtree.ElementTree as ET
+if True:
+    from lxml import etree as ET
 else:
-    print 'Sorry, please see the minimum requirements to run this Application'
-    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise SoftwareCompatibilityError, theError
+    if float(settings.MINPYVERSION) < float(version[0:3]):
+        try:
+            # FIXME ( remove this once done debugging namespace issue )
+            #import xml.etree.cElementTree as ET
+            import xml.etree.ElementTree as ET
+            from xml.etree.ElementTree import Element, SubElement, dump
+        except ImportError:
+            import xml.etree.ElementTree as ET
+            from xml.etree.ElementTree import Element, SubElement
+    elif thisVersion == '2.4':
+        try:
+        # Try to use the much faster C-based ET.
+            import cElementTree as ET
+            from elementtree.ElementTree import Element, SubElement, dump
+        except ImportError:
+        # Fall back on the pure python one.
+            import elementtree.ElementTree as ET
+            from elementtree.ElementTree import Element, SubElement
+    else:
+        print 'Sorry, please see the minimum requirements to run this Application'
+        theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+        raise SoftwareCompatibilityError, theError
 
 PRINT_SOAP_REQUEST = True
 
@@ -294,7 +302,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #
 
         # document id
-        soap_transport_properties["DOCUMENT_OBJECT"] = ccd.find("id").attrib.get("extension")
+        soap_transport_properties["DOCUMENT_OBJECT"] = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
 
         # extrinsic author person
         soap_transport_properties["EXTRINSIC_AUTHOR_PERSON"] = "^Left^Right^^^"
@@ -303,11 +311,11 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         soap_transport_properties["REGISTRY_AUTHOR_PERSON"] = "^First^Last^^^"
 
         # Language Code
-        soap_transport_properties["LANGUAGE_CODE"] = ccd.find("languageCode").attrib.get("code")
+        soap_transport_properties["LANGUAGE_CODE"] = ccd.find("{urn:hl7-org:v3}languageCode").attrib.get("code")
 
         # Source Patient ID
-        patient_role = ccd.find("recordTarget/patientRole")
-        source_patient_id = patient_role.find("id").attrib.get("extension")
+        patient_role = ccd.find("{urn:hl7-org:v3}recordTarget/{urn:hl7-org:v3}patientRole")
+        source_patient_id = patient_role.find("{urn:hl7-org:v3}id").attrib.get("extension")
         soap_transport_properties["SOURCE_PATIENT_ID"] = "%s^^^&amp;3.4.5&amp;ISO" % source_patient_id
         
         # submissionTime -- Where does it come from? Is this module responsible for generating it?
@@ -464,7 +472,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         for data in ccd_data:
             payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
             ccd = ET.fromstring(data)
-            ccd_id = ccd.find("id").attrib.get("extension")
+            ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
             soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
                         associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
                         sourceObject="%s" targetObject="%s" id="%s"

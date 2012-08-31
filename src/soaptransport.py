@@ -533,11 +533,11 @@ Content-ID: <1.urn:uuid:%s@apache.org>
             #fo.write(soap_env)
             #fo.flush()
             #fo.close()
-            return (True, "True")
+            #return (True, "True")
 
         # send the SOAP envelope
         try:
-            request = urllib2.Request(self._soap_server, soap_msg, headers)
+            request = urllib2.Request(self._soap_server, soap_env, headers)
             res = urllib2.urlopen(request)
             response = res.read()
             if response.find("ResponseStatusType:Success") != -1:

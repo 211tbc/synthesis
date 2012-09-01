@@ -10,35 +10,7 @@ from writer import Writer
 from zope.interface import implements
 from sqlalchemy import or_, and_, between
 from conf import settings
-
-# py 2.5 support
-# dynamic import of modules
-thisVersion = version[0:3]
-if True:
-    from lxml import etree as ET
-else:
-    if float(settings.MINPYVERSION) < float(version[0:3]):
-        try:
-            # FIXME ( remove this once done debugging namespace issue )
-            #import xml.etree.cElementTree as ET
-            import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement, dump
-        except ImportError:
-            import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement
-    elif thisVersion == '2.4':
-        try:
-        # Try to use the much faster C-based ET.
-            import cElementTree as ET
-            from elementtree.ElementTree import Element, SubElement, dump
-        except ImportError:
-        # Fall back on the pure python one.
-            import elementtree.ElementTree as ET
-            from elementtree.ElementTree import Element, SubElement
-    else:
-        print 'Sorry, please see the minimum requirements to run this Application'
-        theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-        raise SoftwareCompatibilityError, theError
+from lxml import etree as ET
 
 def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
@@ -77,7 +49,7 @@ class SvcPointXML5Writer():
         self.processXML()
         self.prettify()
         print '==== Self:', self
-        xmlutilities.writeOutXML(self)	# JCS
+        xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")	# JCS, 1 Sep 2012
         #self.commitTransaction()
         return True
 
@@ -214,12 +186,37 @@ class SvcPointXML5Writer():
         # End of ProcessXML()		
 
     def createDoc(self):
-        root_element = ET.Element("records")
-        root_element.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-        root_element.attrib["xsi:noNamespaceSchemaLocation"] = "sp5.xsd" 
-        # JCS Need: odb_identifier="qwo7Wsoi" import_identifier="v7:1bl.e"
+
+        # From hl7
+        #self.mymap = { None  : "urn:hl7-org:v3",
+        #          "voc" : "urn:hl7-org:v3/voc",
+        #          "xsi" : "http://www.w3.org/2001/XMLSchema-instance"}
+        #root_element = ET.Element("ClinicalDocument", nsmap=self.mymap)
+        #root_element.attrib["{"+self.mymap["xsi"]+"}schemaLocation"] = "urn:hl7-org:v3 infrastructure/cda/CDA.xsd"
+        # From hl7 end
+
+        #sp5_instance looks like this
+        # <records xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        #       xsi:noNamespaceSchemaLocation="file:/home/eric/workspace/servicepoint_schema/sp5/sp5.xsd" 
+        #       odb_identifier="qwo7Wsoi"      
+        #       import_identifier="v7:1bl.e">
+
+        self.mymap = {"xsi" : "http://www.w3.org/2001/XMLSchema-instance"}  # Yes lxml
+
+        #root_element = ET.Element("records")       # Non-lxml
+        root_element = ET.Element("records", nsmap=self.mymap)  # Yes lxml
+
+        #root_element.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"    # Non-lxml
+        
+        #root_element.attrib["xsi:noNamespaceSchemaLocation"] = "sp5.xsd"     # Non-lxml
+        root_element.attrib["{"+self.mymap["xsi"]+"}noNamespaceSchemaLocation"] = "sp5.xsd"  # Yes lxml
+
+        # Added by JCS 1 Sep 2012
+        root_element.attrib["odb_identifier"] = "qwo7Wsoi"      # Yes lxml
+        root_element.attrib["import_identifier"] = "v7:1bl.e"   # Yes lxml
+
         #root_element.attrib["schema_revision"] = "300_108"	# JCS Not in Schema
-        root_element.text = "\n"
+        #root_element.text = "\n"
         return root_element
 
     def createClients(self, root_element):

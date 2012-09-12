@@ -190,21 +190,26 @@ class DocsController(BaseController):
             print message
             #move valid file over to regular synthesis input_files directory for shredding
             print "moving valid file ", file_name, "over to input_files for shredding"
-            import fileutils
-            # FBY: There appears to be a timing issue with the following line on the test server
-            fileutils.moveFile(file_full_path, inputConfiguration.INPUTFILES_PATH[0])
-
-            # FBY: Instead of a call to fileutils.moveFile, lets do the following
-            #try:
-            #    if not os.path.exists(inputConfiguration.INPUTFILES_PATH[0]):
-            #        os.mkdir(inputConfiguration.INPUTFILES_PATH[0])
-            #    import subprocess
-            #    mvp = subprocess.Popen('mv %s %s' % (file_full_path, fileutils.getUniqueFileNameForMove(file_full_path, inputConfiguration.INPUTFILES_PATH[0])))
-            #    # FBY: Wait for the "mv" call to finish
-            #    mvp.wait()
-            #except Exception, e:
-            #    print e
-            #return message
+            ###
+            ### FBY: The following if-else code block is just plain weird!
+            ###
+            if not inputConfiguration.USE_ENCRYPTION:
+                # FBY: Call fileutils.moveFile to move unencrypted files into the input_files folder
+                import fileutils
+                fileutils.moveFile(file_full_path, inputConfiguration.INPUTFILES_PATH[0])
+            else:
+                # FBY: For encrypted files, instead of a call to fileutils.moveFile, move
+                #      the files using system calls (i.e. the "mv" command)
+                try:
+                    if not os.path.exists(inputConfiguration.INPUTFILES_PATH[0]):
+                        os.mkdir(inputConfiguration.INPUTFILES_PATH[0])
+                    import subprocess
+                    mvp = subprocess.Popen('mv %s %s' % (file_full_path, fileutils.getUniqueFileNameForMove(file_full_path, inputConfiguration.INPUTFILES_PATH[0])))
+                    # FBY: Wait for the "mv" call to finish
+                    mvp.wait()
+                except Exception, e:
+                    print e
+            return message            
         except:
             details = ''.join(list(set([str(issue) for issue in select.issues])))
             message = '400: Could not find a matching schema for the posted xml. Details: %s' % (details)

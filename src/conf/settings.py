@@ -22,6 +22,10 @@ DB_PASSWD = "synthesis"
 DB_PORT = 5432
 DB_HOST = "localhost"
 
+# SSL key file
+SSL_CERTIFICATE_FILE = ""
+SSL_CERTIFICATE_KEY_FILE = ""
+
 # Which SvcPt version is this site using, if any?  This version number pulls the xsd schema in and configures the plug in as well.
 SVCPT_VERSION = '406'                    # this is 4.06
 # uses current working directory, uncomment the line if the output path needs to be elsewhere.

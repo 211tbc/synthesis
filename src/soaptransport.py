@@ -4,6 +4,7 @@ from conf import settings
 from conf import outputConfiguration
 from Encryption import *
 import urllib2
+import httplib
 from sys import version
 import urlparse
 import uuid
@@ -40,6 +41,19 @@ else:
         raise SoftwareCompatibilityError, theError
 
 PRINT_SOAP_REQUEST = True
+
+class HTTPSClientAuthHandler(urllib2.HTTPSHandler):  
+    def __init__(self, key, cert):  
+        urllib2.HTTPSHandler.__init__(self)  
+        self.key = key  
+        self.cert = cert  
+    def https_open(self, req):  
+        #Rather than pass in a reference to a connection class, we pass in  
+        # a reference to a function which, for all intents and purposes,  
+        # will behave as a constructor  
+        return self.do_open(self.getConnection, req)  
+    def getConnection(self, host, timeout=300):  
+        return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert)  
 
 class SoapEnv():
 
@@ -537,14 +551,26 @@ Content-ID: <1.urn:uuid:%s@apache.org>
 
         # send the SOAP envelope
         try:
-            request = urllib2.Request(self._soap_server, soap_env, headers)
-            res = urllib2.urlopen(request)
-            response = res.read()
-            if response.find("ResponseStatusType:Success") != -1:
-                return (True, response)
-            else:
-                return (False, response)
-        except:
+            if len(SSL_CERTIFICATE_FILE.strip()) > 0 and len(SSL_CERTIFICATE_KEY_FILE) > 0:
+                opener = urllib2.build_opener(HTTPSClientAuthHandler(settings.SSL_CERTIFICATE_KEY_FILE, settings.SSL_CERTIFICATE_FILE))
+                urllib2.install_opener(opener)
+                request = urllib2.Request(self._soap_server, soap_env, headers)
+                res = urllib2.urlopen(request)
+                response = res.read()
+                if response.find("ResponseStatusType:Success") != -1:
+                    return (True, response)
+                else:
+                    return (False, response)
+             else:
+                request = urllib2.Request(self._soap_server, soap_env, headers)
+                res = urllib2.urlopen(request)
+                response = res.read()
+                if response.find("ResponseStatusType:Success") != -1:
+                    return (True, response)
+                else:
+                    return (False, response)
+        except Exception as e:
+            print e
             return (False, "An error occurred while sending the SOAP request or receiving the SOAP response")
 
 if __name__ == "__main__":

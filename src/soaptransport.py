@@ -561,7 +561,7 @@ Content-ID: <1.urn:uuid:%s@apache.org>
                     return (True, response)
                 else:
                     return (False, response)
-             else:
+            else:
                 request = urllib2.Request(self._soap_server, soap_env, headers)
                 res = urllib2.urlopen(request)
                 response = res.read()

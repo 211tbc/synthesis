@@ -551,7 +551,7 @@ Content-ID: <1.urn:uuid:%s@apache.org>
 
         # send the SOAP envelope
         try:
-            if len(settings.SSL_CERTIFICATE_FILE.strip()) > 0 and len(settings.SSL_CERTIFICATE_KEY_FILE) > 0:
+            if len(settings.SSL_CERTIFICATE_FILE.strip()) > 0 and len(settings.SSL_CERTIFICATE_KEY_FILE.strip()) > 0:
                 opener = urllib2.build_opener(HTTPSClientAuthHandler(settings.SSL_CERTIFICATE_KEY_FILE, settings.SSL_CERTIFICATE_FILE))
                 urllib2.install_opener(opener)
                 request = urllib2.Request(self._soap_server, soap_env, headers)

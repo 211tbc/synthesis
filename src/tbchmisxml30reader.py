@@ -88,11 +88,13 @@ class TBCHUDHMISXML30Reader:
                 source_id_str = item.xpath(xpSourceIDIDStr, namespaces = self.nsmap)
                 source_id_num = item.xpath(xpSourceIDIDNum, namespaces = self.nsmap)
 
-                if source_id_str is not None:
+                #if source_id_str is not None:
+                if len(source_id_str) == 1:
                     #source_id = source_id_str[0].text 
                     hmisxml30reader.existence_test_and_add(self, 'source_id', source_id_str, 'text')
 
-                elif source_id_num is not None:
+                #elif source_id_num is not None:
+                elif len(source_id_num) == 1:
                     #source_id = source_id_num[0].text 
                     hmisxml30reader.existence_test_and_add(self, 'source_id', source_id_num, 'text')
 

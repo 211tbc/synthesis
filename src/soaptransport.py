@@ -65,10 +65,14 @@ class SoapEnv():
 
         # define the soap envelope template
 
-        self._ENVELOPE_TEMPLATE = """--MIMEBoundaryurn_uuid_%(XML_UUID)s
-Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml"
-Content-Transfer-Encoding: binary
+        self._ENVELOPE_TEMPLATE = """
+
+
+--MIMEBoundaryurn_uuid_%(XML_UUID)s
+Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml; action="DocumentRepository_ProvideAndRegisterDocumentSet-b"
+Content-Transfer-Encoding: 8bit
 Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
+
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
     xmlns:wsa="http://www.w3.org/2005/08/addressing">    
@@ -513,15 +517,13 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                     gpg = GPG()
                     attachment = base64.b64encode(gpg.encrypt(data))
             soap_transport_properties["MIME_BORDER_SECTION"] += """
-
 --MIMEBoundaryurn_uuid_%s
 Content-Type: text/xml; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Content-ID: <1.urn:uuid:%s@apache.org>
 Content-Disposition: attachment; name="uuid_%s.xml"
 
-%s
---MIMEBoundaryurn_uuid_%s""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
+%s--MIMEBoundaryurn_uuid_%s""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
 
         # generate the SOAP envelope
         soap_env = self._ENVELOPE_TEMPLATE % soap_transport_properties
@@ -533,13 +535,8 @@ Content-Disposition: attachment; name="uuid_%s.xml"
             "Accept-Encoding"   : "gzip,deflate",
             "Connection"        : "Keep-Alive",
             "MIME-Version"      : "1.0",
-            "Content-type"      : "multipart/related",
-            "boundary"          : "MIMEBoundaryurn_uuid_%(XML_UUID)s" % soap_transport_properties,
-            "type"              : "application/xop+xml",
-            "start"             : "0.urn:uuid:%(START_UUID)s@apache.org" % soap_transport_properties,
-            "start-info"        : "application/soap+xml",
+            "Content-type"      : "multipart/related; type=\"application/xop+xml\"; start=\"<0.urn:uuid:%s@apache.org>\"; start-info=\"application/soap+xml\"; boundary=\"MIMEBoundaryurn_uuid_%s\"; action=\"urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b\"" % (soap_transport_properties["START_UUID"], soap_transport_properties["XML_UUID"]),
             "Content-length"    : "%d" % len(soap_env),
-            "action"            : "urn:ihe:iti:xds-b:2007:ProvideAndRegisterDocumentSet-b",
             }
 
         if PRINT_SOAP_REQUEST: # delete this if block
@@ -565,15 +562,21 @@ Content-Disposition: attachment; name="uuid_%s.xml"
                 else:
                     return (False, response)
             else:
+                print "*****************************"
+                print "*    BEGIN urllib2 debug    *"
+                print "*****************************"
                 opener = urllib2.build_opener(urllib2.HTTPSHandler(debuglevel=1))
                 urllib2.install_opener(opener)
                 request = urllib2.Request(self._soap_server, soap_env, headers)
                 res = urllib2.urlopen(request)
                 response = res.read()
+                print "*****************************"
+                print "*     END urllib2 debug     *"
+                print "*****************************"
                 if response.find("ResponseStatusType:Success") != -1:
                     return (True, response)
                 else:
-                    return (False, response)                
+                    return (False, response)
         except Exception as e:
             print e
             return (False, "An error occurred while sending the SOAP request or receiving the SOAP response")

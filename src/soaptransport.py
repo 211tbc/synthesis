@@ -70,7 +70,7 @@ class SoapEnv():
 
 --MIMEBoundaryurn_uuid_%(XML_UUID)s
 Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml; action="DocumentRepository_ProvideAndRegisterDocumentSet-b"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: binary
 Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -519,7 +519,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             soap_transport_properties["MIME_BORDER_SECTION"] += """
 --MIMEBoundaryurn_uuid_%s
 Content-Type: text/xml; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: binary
 Content-ID: <1.urn:uuid:%s@apache.org>
 Content-Disposition: attachment; name="uuid_%s.xml"
 

@@ -523,7 +523,7 @@ Content-Transfer-Encoding: binary
 Content-ID: <1.urn:uuid:%s@apache.org>
 Content-Disposition: attachment; name="uuid_%s.xml"
 
-%s--MIMEBoundaryurn_uuid_%s""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
+%s--MIMEBoundaryurn_uuid_%s--""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
 
         # generate the SOAP envelope
         soap_env = self._ENVELOPE_TEMPLATE % soap_transport_properties

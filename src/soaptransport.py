@@ -306,7 +306,8 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         
         print "soaptransport generating soap"
 
-        soap_transport_properties = settings.SOAP_TRANSPORT_PROPERTIES
+        import copy
+        soap_transport_properties = copy.deepcopy(settings.SOAP_TRANSPORT_PROPERTIES)
 
         #
         # FBY: TODO: I'm not sure what the SOAP envelope should look like if ccd_data

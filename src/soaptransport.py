@@ -522,7 +522,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 Content-Type: text/xml; charset=us-ascii
 Content-Transfer-Encoding: binary
 Content-ID: <1.urn:uuid:%s@apache.org>
-Content-Disposition: attachment; name="uuid_%s.xml"
+Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
 
 %s--MIMEBoundaryurn_uuid_%s--""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
 

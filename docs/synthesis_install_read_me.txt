@@ -62,14 +62,20 @@ $ ./bin/paster create -t pylons synthesis
 ~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
 
 -run buildout again: 
+~/myrestservice/synthesis/synthesis$ cd ../..
 ~/myrestservice$ ./bin/buildout
 
 -edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc..  
--3DES file decryption by the web service is turned off by default.  If you want that on, edit ~/myrestservice/synthesis/synthesis/controllers/docs.py to #use_encryption = True
+-Incoming file decryption by the web service is turned off by default.  If you want it it on, uncomment  "USE_ENCRYPTION = True" within ~/myrestservice/synthesis/synthesis/conf/inputConfiguration.py (and comment the statement containing the opposite value) NOTE: Only 3DES incoming decryption is supported at this time.  Outgoing supports PGP.   
+-If you enable 3DES decryption, make sure to also set the paths within inputConfiguration.py for the corresponding 3DES key and IV: 
+KEY_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/3des3.txt' # full directory path to the 3DES key file
+IV_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/IV3.txt' # full directory path to the 3DES IV file
+Make sure those files exist in those places.   
 
--ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
--also in conf/settings.py, make sure all the paths in are real.  Mainly put the actual username in, SMTPRECIPIENTS = {    
+-ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db upon each restart.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
+-also in conf/inputConfiguration.py, make sure all the paths in are real.  Mainly, put the actual username in, SMTPRECIPIENTS = {    
         "/home/username/myrestservice/synthesis/synthesis/input_files":
+  Do not use "~" in the path.  It will cause errors.
 
 edit ~/myrestservice/bin/python to add the path:
 '/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis/synthesis',
@@ -98,7 +104,5 @@ http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/output_con
 Then, read about how to run nodebuilder here, to create the XML output in a new format.
 
 http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
-
-There's currently no automated way to generate output (other than cron jobs), which is something we have to add.
 
 You can also test the pylons web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.

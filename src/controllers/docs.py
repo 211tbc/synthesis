@@ -176,7 +176,18 @@ class DocsController(BaseController):
 #                unencrypted_file = open(file_full_path, 'r') 
 #            except: 
 #                print "couldn't open unencrypted file for reading"
-            
+
+        # remove multiple source tags
+        incoming_doc = etree.parse(file_full_path)
+        ns='{http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd}'
+        for i, src in enumerate(incoming_doc.findall('{0}Source'.format(ns))):
+            if i == 0:
+                # we only care about the first one
+                continue
+            # remove the remaning source tags
+            incoming_doc.getroot().remove(src)
+        incoming_doc.write(file_full_path, pretty_print=True, encoding="UTF-8")
+
         #validate  XML instance
         select = Selector()
         result = select.validate(file_full_path, False)

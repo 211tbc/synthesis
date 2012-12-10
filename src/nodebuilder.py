@@ -1,6 +1,8 @@
 from conf import settings
+from conf import inputConfiguration
 import exceptions as exceptions
 import dbobjects
+import traceback
 
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
@@ -19,6 +21,7 @@ import soaptransport
 from Encryption import *
 import uuid
 import shutil
+from smtplibrary import smtpInterface
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded   # "global" does not make vars global - it is supposed to be used inside functions
@@ -43,8 +46,7 @@ class NodeBuilder():
     def __init__(self, queryOptions):
         print "initializing nodebuilder"
         # initialize dbobjects
-    
-        
+        self.mailSystem = smtpInterface(settings)
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
         # this should then pull the correct module below and run the process.
         self.generateOutputformat = outputConfiguration.Configuration[queryOptions.configID]['outputFormat']
@@ -196,17 +198,56 @@ class NodeBuilder():
             #result = item.validate(instance_doc)
             # if results is True, we can process against this reader.
         if self.transport == 'soap':
-            ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
-            soap = soaptransport.SoapEnv(self.queryOptions.configID)
-            #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
-            result, details = soap.send_soap_envelope(ccd_data)
-            print result, details
+            try:
+                ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
+                soap = soaptransport.SoapEnv(self.queryOptions.configID)
+                #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
+                result, details = soap.send_soap_envelope(ccd_data)
+                print result, details
+            except:
+                #TODO: (FBY) Send somebody an email explaining why the hl7CCDwriter failed
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "\nTODO: Send somebody an email stating that the hl7CCDwriter failed\n"
+                synthesis_error = traceback.format_exc()
+                print synthesis_error
+                smtp = smtpInterface(settings)
+                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:SOAP:hl7CCDWriter")
+                smtp.setRecipients([settings.SMTPSENDER, ])
+                smtp.setMessage("%s\r\n" % synthesis_error )
+                smtp.formatMessage()
+                try:
+                    print "trying to send message"
+                    smtp.sendMessage()
+                except:
+                    print 'send failed'                
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
         elif self.transport == 'rest':
-            ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
-            rest = resttransport.REST(self.queryOptions.configID)
-            #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
-            result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)
-            print result, details
+            try:
+                ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
+                rest = resttransport.REST(self.queryOptions.configID)
+                #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
+                result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)
+                print result, details
+            except:
+                #TODO: (FBY) Send somebody an email explaining why the hl7CCDwriter failed
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "\nTODO: Send somebody an email stating that the hl7CCDwriter failed\n"
+                synthesis_error = traceback.format_exc()
+                print synthesis_error
+                smtp = smtpInterface(settings)
+                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:REST:hl7CCDWriter")
+                smtp.setRecipients([settings.SMTPSENDER, ])
+                smtp.setMessage("%s\r\n" % synthesis_error )
+                smtp.formatMessage()
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
         else:
             # the remaining transport require file IO
             if self.generateOutputformat != "pseudo":

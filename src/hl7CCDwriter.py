@@ -71,6 +71,12 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                 Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected,
                                              self.options.startDate, self.options.endDate))
             for onePerson in Persons:
+                # update the reported field here instead of at the end of the loop
+                # in case an exception is thrown by processXML. Even if there is an
+                # error, the offending record in the Person's table is deactivated hiding it
+                # from future queries
+                self.updateReported(onePerson)
+                self.session.commit()       # This is only for updateReported()
                 ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.person_index_id == onePerson.id)
                 for oneServEvt in ServEvts: # One document per event???
                     #print "person is: ", self.person
@@ -81,9 +87,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                         xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")	# JCS - enc. defaults to ASCII w/decl.
                     else:
                         ccd_list.append(xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"))
-                self.updateReported(onePerson)
 
-        self.session.commit()       # This is only for updateReported()
         if mode=="disk":
             return True     # Now nodebuilder.run() will find all output files and validate them.
         else:
@@ -130,11 +134,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                                    onePerson.person_legal_suffix_unhashed)      # TODO Done?  ?LegalMiddleName.Unhashed
         self.addGender(patient, onePerson.person_gender_unhashed)
         birthTime = ET.SubElement(patient,"birthTime")
-        # if the date of birth is invalid, ignore the exception for now
-        try:
-            birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
-        except:
-            pass
+        birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
         self.races = onePerson.fk_person_to_races
         self.addRace(patient, self.races)  #.race_unhashed)
         self.addEthnicity(patient, onePerson.person_ethnicity_unhashed)

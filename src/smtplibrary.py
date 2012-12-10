@@ -1,6 +1,7 @@
 import os
 import smtplib
 from conf import settings
+from conf import inputConfiguration
 from logger import Logger
 
 # Import the email modules we'll need
@@ -15,7 +16,7 @@ def main():
     smtp = smtpInterface(settings)
     smtp.setMessageSubject("Test Message")
     smtp.setTargetSystem('beta2')
-    smtp.setRecipients(settings.SMTPRECIPIENTS['testSource'])
+    smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
     smtp.setMessage("This is a test message...\r\n" )
     smtp.formatMessage()
     smtp.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailprocessor.py'))
@@ -105,16 +106,23 @@ class smtpInterface:
         #self.message = self.msg.as_string()
         
     def sendMessage(self):
+        logged_in = False
         print "ServerAddress: %s" % self.settings.SMTPSERVER
-        try:
-            server = smtplib.SMTP(self.settings.SMTPSERVER)
-        except smtplib.socket.error:
-            print "exception: socket error can't connect to smtp server"
-            return
+        attempts = 1
+        while attempts <= 5:
+            try:
+                server = smtplib.SMTP(self.settings.SMTPSERVER)
+                server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
+                logged_in = True
+                break
+            except smtplib.socket.error:
+                print "exception: socket error can't connect to smtp server"
+            else:
+                print "no exception: can't connect to smtp server"
+            count += 1
         else:
-            print "no exception: can't connect to smtp server"
             return
-        if self.settings.SMTPSENDERPWD != '':
+        if self.settings.SMTPSENDERPWD != '' and not logged_in:
             try:
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
             except smtplib.SMTPRecipientsRefused:

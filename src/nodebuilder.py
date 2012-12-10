@@ -214,9 +214,8 @@ class NodeBuilder():
                 print synthesis_error
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:SOAP:hl7CCDWriter")
-                smtp.setRecipients([settings.SMTPSENDER, ])
+                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
-                smtp.formatMessage()
                 try:
                     print "trying to send message"
                     smtp.sendMessage()
@@ -242,9 +241,8 @@ class NodeBuilder():
                 print synthesis_error
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:REST:hl7CCDWriter")
-                smtp.setRecipients([settings.SMTPSENDER, ])
+                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
-                smtp.formatMessage()
                 print "*****************************************************************"
                 print "*****************************************************************"
                 print "*****************************************************************"

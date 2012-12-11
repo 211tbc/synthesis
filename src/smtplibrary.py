@@ -119,7 +119,7 @@ class smtpInterface:
                 print "exception: socket error can't connect to smtp server"
             else:
                 print "no exception: can't connect to smtp server"
-            count += 1
+            attempts += 1
         else:
             return
         if self.settings.SMTPSENDERPWD != '' and not logged_in:

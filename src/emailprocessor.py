@@ -46,7 +46,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.sendMessage()
         except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail.value
+                print "problem sending notification", str(detail)
             return
         
     def notifyValidationFailure(self, failureMsgs=''):
@@ -58,7 +58,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.sendMessage()
         except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail.value
+                print "problem sending notification", str(detail)
             return
         
     def notifyDuplicateDocumentError(self, failureMsgs=''):
@@ -70,7 +70,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.sendMessage()
         except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail.value
+                print "problem sending notification", str(detail)
             return
         
     
@@ -81,7 +81,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.sendMessage()
         except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification", detail.value
+                print "problem sending notification", str(detail)
             return
     
     def sendMessage(self):
@@ -91,7 +91,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.mailSystem.sendMessage()
         except Exception, detail:
             if settings.DEBUG:
-                print "problem sending notification through mail system", detail.value
+                print "problem sending notification through mail system", str(detail)
             return
 
 if __name__ == '__main__':

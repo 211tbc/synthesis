@@ -199,21 +199,20 @@ class NodeBuilder():
             # if results is True, we can process against this reader.
         if self.transport == 'soap':
             try:
-                ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
+                ccd_data = self.writer.get()
                 soap = soaptransport.SoapEnv(self.queryOptions.configID)
                 #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
                 result, details = soap.send_soap_envelope(ccd_data)
                 print result, details
             except:
-                #TODO: (FBY) Send somebody an email explaining why the hl7CCDwriter failed
                 print "*****************************************************************"
                 print "*****************************************************************"
                 print "*****************************************************************"
-                print "\nTODO: Send somebody an email stating that the hl7CCDwriter failed\n"
                 synthesis_error = traceback.format_exc()
                 print synthesis_error
                 smtp = smtpInterface(settings)
-                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:SOAP:hl7CCDWriter")
+                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
+                    (self.transport.upper(), self.generateOutputformat.capitalize())
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
@@ -226,87 +225,110 @@ class NodeBuilder():
                 print "*****************************************************************"
         elif self.transport == 'rest':
             try:
-                ccd_data = self.writer.get() #TODO: (FBY) The data return from this call be a list of documents. Is this correct?
+                ccd_data = self.writer.get()
                 rest = resttransport.REST(self.queryOptions.configID)
                 #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
                 result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)
                 print result, details
             except:
-                #TODO: (FBY) Send somebody an email explaining why the hl7CCDwriter failed
                 print "*****************************************************************"
                 print "*****************************************************************"
                 print "*****************************************************************"
-                print "\nTODO: Send somebody an email stating that the hl7CCDwriter failed\n"
                 synthesis_error = traceback.format_exc()
                 print synthesis_error
                 smtp = smtpInterface(settings)
-                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:REST:hl7CCDWriter")
+                smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
+                    (self.transport.upper(), self.generateOutputformat.capitalize())
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
+                try:
+                    print "trying to send message"
+                    smtp.sendMessage()
+                except:
+                    print 'send failed'                
                 print "*****************************************************************"
                 print "*****************************************************************"
                 print "*****************************************************************"
         else:
             # the remaining transport require file IO
             if self.generateOutputformat != "pseudo":
-                if self.writer.write():
-                    #filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
-                    filesToTransfer = fileutils.grabFiles(os.path.join(self.outputFilesPath, "*.xml"))
-                    
-                    # create a list of valid files to upload
-                    validFiles = []
-                    # Loop over each file and validate it.
-                    for eachFile in filesToTransfer:
-                        fs = open(eachFile, 'r')
-                        if self.validator.validate(fs):
-                            gpg = GPG()
-                            validFiles.append(eachFile)
-                            print 'oK'
-                            # since the file was validated, its OK to encrypt it now.
-                            possible_new_file_name = self.encrypt_file(eachFile)
-                            validFiles[validFiles.index(eachFile)] = possible_new_file_name
-                            filesToTransfer[filesToTransfer.index(eachFile)] = possible_new_file_name
-                        else:
-                            pass                # Fixme append invalid files to list and report this.
+                try:
+                    if self.writer.write():
+                        #filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
+                        filesToTransfer = fileutils.grabFiles(os.path.join(self.outputFilesPath, "*.xml"))
                         
-                        fs.close()
-                    
-                    # upload the valid files
-                    # how to transport the files (debugging)
-                    if self.transport == 'save':
-                        print 'Output Complete...Please see output files: %s' % filesToTransfer
-                        
-                    if self.transport == 'sys.stdout':
-                        for eachFile in validFiles:
+                        # create a list of valid files to upload
+                        validFiles = []
+                        # Loop over each file and validate it.
+                        for eachFile in filesToTransfer:
                             fs = open(eachFile, 'r')
-                            # open the file and echo it to stdout
-                            lines = fs.readlines()
-                            fs.close()              # done with file close handle
-                            for line in lines:
-                                print line        
-                                
-                    if self.transport == 'sftp':
-                        self.pprocess.processFileSFTP(validFiles)
-                    elif self.transport == 'email':
-                        # Loop over the list and each file needs to be emailed separately (size)
-                        for eachFile in validFiles:
-                            self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
-                            msgBody = self.formatMsgBody()
-                            self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
-                    elif self.transport == 'vpnftp':
-                        # SBB20100430 Only upload if we have a validated file(s)
-                        if len(validFiles) > 0:
-                            pd = iniutils.LoadConfig('fileConverter.ini')
-                            self.pprocess.setINI(pd)
-                            self.pprocess.processFileVPN(validFiles)
-                    elif self.transport == 'vpncp':
-                        pass
+                            if self.validator.validate(fs):
+                                validFiles.append(eachFile)
+                                print 'oK'
+                                # since the file was validated, its OK to encrypt it now.
+                                possible_new_file_name = self.encrypt_file(eachFile)
+                                validFiles[validFiles.index(eachFile)] = possible_new_file_name
+                                filesToTransfer[filesToTransfer.index(eachFile)] = possible_new_file_name
+                            else:
+                                pass                # Fixme append invalid files to list and report this.
                             
-                        #print results
-                        #print 'This is the result before it goes back to the test_unit:', \
-                        #results
-                        #return results
-        
+                            fs.close()
+                        
+                        # upload the valid files
+                        # how to transport the files (debugging)
+                        if self.transport == 'save':
+                            print 'Output Complete...Please see output files: %s' % filesToTransfer
+                            
+                        if self.transport == 'sys.stdout':
+                            for eachFile in validFiles:
+                                fs = open(eachFile, 'r')
+                                # open the file and echo it to stdout
+                                lines = fs.readlines()
+                                fs.close()              # done with file close handle
+                                for line in lines:
+                                    print line        
+                                    
+                        if self.transport == 'sftp':
+                            self.pprocess.processFileSFTP(validFiles)
+                        elif self.transport == 'email':
+                            # Loop over the list and each file needs to be emailed separately (size)
+                            for eachFile in validFiles:
+                                self.email = XMLProcessorNotifier("", eachFile)     # fixme (zip and encrypt?)
+                                msgBody = self.formatMsgBody()
+                                self.email.sendDocumentAttachment('Your report results', msgBody, eachFile)
+                        elif self.transport == 'vpnftp':
+                            # SBB20100430 Only upload if we have a validated file(s)
+                            if len(validFiles) > 0:
+                                pd = iniutils.LoadConfig('fileConverter.ini')
+                                self.pprocess.setINI(pd)
+                                self.pprocess.processFileVPN(validFiles)
+                        elif self.transport == 'vpncp':
+                            pass
+                                
+                            #print results
+                            #print 'This is the result before it goes back to the test_unit:', \
+                            #results
+                            #return results
+                except:
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    synthesis_error = traceback.format_exc()
+                    print synthesis_error
+                    smtp = smtpInterface(settings)
+                    smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
+                        (self.transport.upper(), self.generateOutputformat.capitalize())
+                    smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+                    smtp.setMessage("%s\r\n" % synthesis_error )
+                    try:
+                        print "trying to send message"
+                        smtp.sendMessage()
+                    except:
+                        print 'send failed'                
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    
     def formatMsgBody(self):
         msgBody = "Your report was requested on %s. /r/n The report criteria is: \r\n\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)"#IGNORE:@UnusedVariable
 

@@ -295,7 +295,7 @@ class OCCHUDHMISXML30Reader:
                 hmisxml30reader.shred(self, self.parse_dict, dbobjects.Person)
     
                 ''' Parse sub-tables '''
-                hmisxml30reader.parse_site_service_participation(self, item)
+                hmisxml30reader.parse_site_service_participation(self, item, 'ext')
                 hmisxml30reader.parse_need(self, item)          
                 hmisxml30reader.parse_service_event(self, item, 'hmis')
                 self.parse_person_historical(item)

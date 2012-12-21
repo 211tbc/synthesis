@@ -212,7 +212,7 @@ class NodeBuilder():
                 print synthesis_error
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
-                    (self.transport.upper(), self.generateOutputformat.capitalize())
+                    (self.transport.upper(), self.generateOutputformat.capitalize()))
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
@@ -238,7 +238,7 @@ class NodeBuilder():
                 print synthesis_error
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
-                    (self.transport.upper(), self.generateOutputformat.capitalize())
+                    (self.transport.upper(), self.generateOutputformat.capitalize()))
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
@@ -317,7 +317,7 @@ class NodeBuilder():
                     print synthesis_error
                     smtp = smtpInterface(settings)
                     smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
-                        (self.transport.upper(), self.generateOutputformat.capitalize())
+                        (self.transport.upper(), self.generateOutputformat.capitalize()))
                     smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                     smtp.setMessage("%s\r\n" % synthesis_error )
                     try:

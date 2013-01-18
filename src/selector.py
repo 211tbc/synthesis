@@ -25,7 +25,7 @@ from synthesis.socketcomm import ServiceController
 import dbobjects
 from multiprocessing import Process, Array, Value
 import pid                        
-
+from smtplibrary import smtpInterface
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -189,7 +189,27 @@ class FileHandler:
             # next call nodebuilder for each source id
             # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
             (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
-            NODEBUILDER = NodeBuilder(options)
+            try:
+                NODEBUILDER = NodeBuilder(options)
+            except:
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
+                synthesis_error = traceback.format_exc()
+                print synthesis_error
+                smtp = smtpInterface(settings)
+                smtp.setMessageSubject("ERROR -- Synthesis:FileHandler:processExisting")
+                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+                smtp.setMessage("%s\r\n" % synthesis_error )
+                try:
+                    print "trying to send message"
+                    smtp.sendMessage()
+                except:
+                    print 'send failed'                
+                print "*****************************************************************"
+                print "*****************************************************************"
+                print "*****************************************************************"
+                continue
             RESULTS = NODEBUILDER.run()
         # empty list of source ids
         self.selector.source_ids = list()
@@ -357,7 +377,27 @@ class FileHandler:
                             # next call nodebuilder for each source id
                             # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
                             (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
-                            NODEBUILDER = NodeBuilder(options)
+                            try:
+                                NODEBUILDER = NodeBuilder(options)
+                            except:
+                                print "*****************************************************************"
+                                print "*****************************************************************"
+                                print "*****************************************************************"
+                                synthesis_error = traceback.format_exc()
+                                print synthesis_error
+                                smtp = smtpInterface(settings)
+                                smtp.setMessageSubject("ERROR -- Synthesis:FileHandler:monitor")
+                                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+                                smtp.setMessage("%s\r\n" % synthesis_error )
+                                try:
+                                    print "trying to send message"
+                                    smtp.sendMessage()
+                                except:
+                                    print 'send failed'                
+                                print "*****************************************************************"
+                                print "*****************************************************************"
+                                print "*****************************************************************"
+                                continue
                             RESULTS = NODEBUILDER.run()
                         # empty list of source ids
                         self.selector.source_ids = list()
@@ -442,7 +482,27 @@ class FileHandler:
                 # next call nodebuilder for each source id
                 # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
                 (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
-                NODEBUILDER = NodeBuilder(options)
+                try:
+                    NODEBUILDER = NodeBuilder(options)
+                except:
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    synthesis_error = traceback.format_exc()
+                    print synthesis_error
+                    smtp = smtpInterface(settings)
+                    smtp.setMessageSubject("ERROR -- Synthesis:FileHandler:_worker_process")
+                    smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+                    smtp.setMessage("%s\r\n" % synthesis_error )
+                    try:
+                        print "trying to send message"
+                        smtp.sendMessage()
+                    except:
+                        print 'send failed'                
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    print "*****************************************************************"
+                    continue
                 RESULTS = NODEBUILDER.run()
         except KeyboardInterrupt:
             self.process_list[id] = 0

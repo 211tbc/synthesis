@@ -37,7 +37,7 @@ SVCPT_VERSION = '406'                    # this is 4.06
 #SOURCE_PATH = 'synthesis/synthesis'
 #SOURCE_PATH = 'synthesis'
 #BASE_PATH = os.path.join(os.getcwd(), SOURCE_PATH)
-BASE_PATH = "~/myrestservice/synthesis/synthesis"
+BASE_PATH = "/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis"
 print "BASE_PATH is: ", BASE_PATH
 #import pydevd; pydevd.settrace()
 #ABS_SOURCE_PATH = os.path.abspath(os.getcwd() + SOURCE_PATH)

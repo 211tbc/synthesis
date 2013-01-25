@@ -66,6 +66,8 @@ $ ./bin/paster create -t pylons synthesis
 ~/myrestservice$ ./bin/buildout
 
 -edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc..  
+BASE_PATH = "/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis"
+-if you get logging errors on the first start, it's probably because your base base isn't configured correctly
 -Incoming file decryption by the web service is turned off by default.  If you want it it on, uncomment  "USE_ENCRYPTION = True" within ~/myrestservice/synthesis/synthesis/conf/inputConfiguration.py (and comment the statement containing the opposite value) NOTE: Only PGP and 3DES incoming decryption is supported at this time.  Outgoing supports PGP.   
 -If you enable 3DES decryption, make sure to also set the paths within inputConfiguration.py for the corresponding 3DES key and IV: 
 KEY_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/3des3.txt' # full directory path to the 3DES key file
@@ -78,7 +80,7 @@ Make sure those files exist in those places.
   Do not use "~" in the path.  It will cause errors.
 
 edit ~/myrestservice/bin/python to add the path:
-'/home/your_username_here_ie_$USERNAME)/myrestservice/synthesis/synthesis',
+'/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis',
 as an additional entry into the sys.path[0:0] =  section.
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
@@ -90,8 +92,10 @@ If you try to run it from your system's built-in python interpreter (as with vir
  
 -or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
 -stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
+-run it foregrounded in the console with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files automatically, so not a problem.
+-If you get 
 
 -Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested.
  

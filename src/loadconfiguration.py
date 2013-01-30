@@ -129,7 +129,7 @@ def loadData():
 
     new = dbobjects.SystemConfiguration(vendor_name='OCC',
 					processing_mode='PROD',
-					source_id='occtest',
+					source_id='004',
 					odbid='1899',
 					providerid='14105',
 					userid='1913' )	# JCS
@@ -138,7 +138,7 @@ def loadData():
     
     new = dbobjects.SystemConfiguration(vendor_name='OCC',
 					processing_mode='TEST',
-					source_id='occtest',
+					source_id='004',
 					odbid='1899',
 					providerid='14105',
 					userid='1913' )	# JCS

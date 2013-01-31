@@ -105,8 +105,12 @@ First, set up the database, so the IDs to be configured are present.  This doc e
 
 http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/output_configurations.readme
 
-Then, read about how to run nodebuilder here, to create the XML output in a new format.
+The tbc referral mapping for Pinellas County Florida, can be loaded manually, if you are developing for that system
+../bin/python ./synthesis/loadtbcmappingconfiguration.py
 
-http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
+#DEPRECATED, nodebuilder now runs automatically# ECJ 01-13-2013
+#Then, read about how to run nodebuilder here, to create the XML output in a new format.
+#
+#http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
 
 You can also test the pylons web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.

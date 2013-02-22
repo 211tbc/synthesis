@@ -6,7 +6,7 @@ targetNamespace="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TB
 elementFormDefault="qualified"
 attributeFormDefault="qualified"
 xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd">
-    <xsd:import namespace="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"/>
+    <xsd:import namespace="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" schemaLocation="http://xsd.alexandriaconsulting.com/repos/tags/HUD_HMIS_XML/HUD_HMIS_XML_3.0-final-server-move-interim/HUD_HMIS.xsd"/>
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>

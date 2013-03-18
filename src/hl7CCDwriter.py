@@ -30,12 +30,13 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         self.db = dbobjects.DB()            # JCS 10/05/11
         self.db.Base.metadata.create_all()
         self.hl7dateform = "%Y%m%d%H%M%S%z"
-
+        self.referredToProviderID
+        
     def write(self):        # Called from nodebuilder.run() one time.
         return self.makeHL7Docs("disk")
 
     def get(self):
-        return self.makeHL7Docs("string")
+        return [self.makeHL7Docs("string"), self.referredToProviderID]
 
     def makeHL7Docs(self,mode):
         self.session = self.db.Session()    # This starts a Transaction
@@ -275,6 +276,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                                # id | export_index_id | site_service_index_id | need_index_id |  code   
             tbcSENotes = ET.SubElement(refNode,"{"+self.extMap["tbc"]+"}ServiceEventNotes")
             hmisNote = ET.SubElement(tbcSENotes,"{"+self.extMap["hmis"]+"}note")
+            self.referredToProviderID = oneRef.referral_agency_referred_to_idid_num
             seNotes = self.session.query(dbobjects.ServiceEventNotes).filter(dbobjects.ServiceEventNotes.service_event_index_id
                                  == oneServEvt.id)
             for note in seNotes:

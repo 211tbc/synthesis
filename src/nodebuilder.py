@@ -199,7 +199,7 @@ class NodeBuilder():
             # if results is True, we can process against this reader.
         if self.transport == 'soap':
             try:
-                ccd_data = self.writer.get()
+                [ccd_data, referredToProviderID] = self.writer.get()
                 soap = soaptransport.SoapEnv(self.queryOptions.configID)
                 #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
                 result, details = soap.send_soap_envelope(ccd_data)

@@ -202,7 +202,7 @@ class NodeBuilder():
                 [ccd_data, referredToProviderID] = self.writer.get()
                 soap = soaptransport.SoapEnv(self.queryOptions.configID)
                 #assert (soap.send_soap_envelope(ccd_data)[0] == True), "Sending CCD via SOAP transport failed!"
-                result, details = soap.send_soap_envelope(ccd_data)
+                result, details = soap.send_soap_envelope(ccd_data, referredToProviderID)
                 print result, details
             except:
                 print "*****************************************************************"

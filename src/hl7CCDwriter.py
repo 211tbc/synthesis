@@ -376,7 +376,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         elif eth_parm == 1:         # hispanic/latino (hud)
             ethCode.attrib["code"] = "2135-2" 
         elif eth_parm in [8, 9]:    # 8:don't know (hud)  9:refused (hud)
-            gendCode.attrib["nullFlavor"] = "ASKU"
+            ethCode.attrib["nullFlavor"] = "ASKU"
         ethCode.attrib["codeSystem"] = "2.16.840.1.113883.5.50" 
         ethCode.attrib["codeSystemName"] = "Race and Ethnicity Code Sets"
 

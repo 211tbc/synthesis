@@ -1,43 +1,51 @@
-to manually generate output using one of the available output formats:
--first follow the instructions at /docs/linux_synthesis_install.readme and shred some xml 
--then perform the following steps:
 
-JCS Nov 2011
 
-To run nodebuilder by itself, copy the '~/myrestservice/bin/paster' script to a '~/myrestservice/bin/nodebuild' script,
-then modify the bottom of the file to be:
-#######################################
-if __name__ == '__main__':
-    from synthesis.nodebuilder import NodeBuilder
-    from synthesis.queryobject import QueryObject
-    optParse = QueryObject()
-    options = optParse.getOptions()
-    print "==== options:", options
-    if options != None:
-        NODEBUILDER = NodeBuilder(options)
-        RESULTS = NODEBUILDER.run()
-#########################################
+The following section is deprecated, since nodebuilder now is automated.
+However the tbc referral mapping for Pinellas County Florida, can be loaded manually, for their referral system
+../bin/python ./synthesis/loadtbcmappingconfiguration.py
 
-First, import data into the database.
-Then, if you imported in TEST mode, run loadConfiguration.py to reload the system_configuration_table.
-Then run nodebuilder by being in your synthesis dir and entering:   
-
-~/myrestservice/synthesis$ ../bin/nodebuild -i '7777' -a
-
-The '-a' is a new option that processes all dates. It is mutually exclusive with the start and end dates options.
-
-This has been tested after loading data from:
--received_data_deidentified_2011-08-29.xml
--received_data_deidentified_fixed.xml
--HUD_HMIS_3_0_Instance.xml
--HUD_HMIS_OCC_maximal.xml
-
-output xml generated is SvcPt 5.00 (svcpointxml5writer.py)
+ECJ 01-31-2013
 
 -Note: not all input adapters are tested to work with all output adapters.  Historically, the hmisxml30writer or its
 predecessors were the most supported output adapters, but currently, hmisxm30writer.py has some bugs.  We'll
 add known working combinations of input and output adapters to this page as we add/troubleshoot them. 
 
 
--todo: document an automated configuration, where loadConfiguration and nodebuilder does not need to be manually called.  This functionality does not exist yet.
+#To manually generate output using one of the available output formats:
+#-first follow the instructions at /docs/linux_synthesis_install.readme and shred some xml 
+#-then perform the following steps:
+#
+#To run nodebuilder by itself, copy the '~/myrestservice/bin/paster' script to a '~/myrestservice/bin/nodebuild' script,
+#then modify the bottom of the file to be:
+#######################################
+#if __name__ == '__main__':
+#    from synthesis.nodebuilder import NodeBuilder
+#    from synthesis.queryobject import QueryObject
+#    optParse = QueryObject()
+#    options = optParse.getOptions()
+#    print "==== options:", options
+#    if options != None:
+#        NODEBUILDER = NodeBuilder(options)
+#        RESULTS = NODEBUILDER.run()
+##########################################
+#
+#First, import data into the database.
+#Then, if you imported in TEST mode, run loadConfiguration.py to reload the system_configuration_table.
+#Then run nodebuilder by being in your synthesis dir and entering:   
+#
+#~/myrestservice/synthesis$ ../bin/nodebuild -i '7777' -a
+#
+#The '-a' is a new option that processes all dates. It is mutually exclusive with the start and end dates options.
+#
+#This has been tested after loading data from:
+#-received_data_deidentified_2011-08-29.xml
+#-received_data_deidentified_fixed.xml
+#-HUD_HMIS_3_0_Instance.xml
+#-HUD_HMIS_OCC_maximal.xml
+#
+#JCS Nov 2011
+#    
+#output xml generated is SvcPt 5.00 (svcpointxml5writer.py)
+
+
 

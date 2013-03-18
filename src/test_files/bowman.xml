@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hmis:Sources xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" xmlns:hmis="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hmisrel="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" hmis:version="3.1" xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd">
+<hmis:Source>
+<hmis:SourceID>
+<hmisrel:IDNum>003</hmisrel:IDNum>
+</hmis:SourceID>
+<hmis:SoftwareVendor>Bowman Systems L.L.C.</hmis:SoftwareVendor>
+<hmis:SoftwareVersion>5.5</hmis:SoftwareVersion>
+<hmis:SourceContactPhone>5555555555</hmis:SourceContactPhone>
+<hmis:SourceName>ServicePoint-CallPoint</hmis:SourceName>
+<hmis:Export>
+<hmis:ExportID>
+<hmisrel:IDNum>21</hmisrel:IDNum>
+</hmis:ExportID>
+<hmis:ExportDate>2012-10-02T10:24:13.768-05:00</hmis:ExportDate>
+<hmis:Person>
+<hmis:PersonID>
+<hmisrel:IDNum>2</hmisrel:IDNum>
+</hmis:PersonID>
+<hmis:DateOfBirth>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:24:04">1980-09-27</hmisrel:Unhashed>
+<hmisrel:DateOfBirthType hmisrel:dateCollected="2012-10-02T10:24:04">1</hmisrel:DateOfBirthType>
+</hmis:DateOfBirth>
+<hmis:Ethnicity>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:24:04">1</hmisrel:Unhashed>
+</hmis:Ethnicity>
+<hmis:Gender>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:24:04">0</hmisrel:Unhashed>
+</hmis:Gender>
+<hmis:LegalFirstName>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:23:25.965-05:00">Just</hmisrel:Unhashed>
+</hmis:LegalFirstName>
+<hmis:LegalLastName>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:23:25.965-05:00">test</hmisrel:Unhashed>
+</hmis:LegalLastName>
+<hmis:LegalMiddleName>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:23:25.965-05:00">A</hmisrel:Unhashed>
+</hmis:LegalMiddleName>
+<hmis:Need>
+<hmis:NeedID>
+<hmis:IDNum>106</hmis:IDNum>
+</hmis:NeedID>
+<hmis:SiteServiceID>129</hmis:SiteServiceID>
+<hmis:NeedStatus>1</hmis:NeedStatus>
+<hmis:Taxonomy>
+<airs:Code>LX-1700.0500</airs:Code>
+</hmis:Taxonomy>
+</hmis:Need>
+<hmis:Race>
+<hmisrel:Unhashed hmisrel:dateCollected="2012-10-02T10:24:04">1</hmisrel:Unhashed>
+</hmis:Race>
+<hmis:ServiceEvent>
+<hmis:ServiceEventID>
+<hmisrel:IDNum>129</hmisrel:IDNum>
+</hmis:ServiceEventID>
+<hmis:SiteServiceID>8712</hmis:SiteServiceID>
+<hmis:IsReferral>1</hmis:IsReferral>
+<hmis:Referrals>
+<hmis:Referral>
+<hmis:ReferralID>
+<hmisrel:IDNum>129</hmisrel:IDNum>
+</hmis:ReferralID>
+<hmis:AgencyReferredToID>
+<hmisrel:IDNum>12047</hmisrel:IDNum>
+</hmis:AgencyReferredToID>
+<hmis:AgencyReferredToName hmisrel:dateCollected="2012-02-29T22:14:24.902-06:00">AUTO-ADD #12047</hmis:AgencyReferredToName>
+<hmis:NeedID>
+<hmisrel:IDNum>106</hmisrel:IDNum>
+</hmis:NeedID>
+</hmis:Referral>
+</hmis:Referrals>
+<hmis:ServiceEventAIRSCode>LX-1700.0500</hmis:ServiceEventAIRSCode>
+<hmis:ServiceEventNotes>
+<hmisrel:note>
+<hmisrel:NoteID>
+<hmisrel:IDNum>83</hmisrel:IDNum>
+</hmisrel:NoteID>
+<hmisrel:NoteText hmisrel:dateCollected="2012-10-02T10:23:25.965-05:00">Here is a call note.</hmisrel:NoteText>
+</hmisrel:note>
+</hmis:ServiceEventNotes>
+</hmis:ServiceEvent>
+<hmis:SocialSecurityNumber>
+<hmisrel:Unhashed hmisrel:dateCollected="2005-05-18T14:52:30.077-05:00">111223333</hmisrel:Unhashed>
+<hmisrel:SocialSecNumberQualityCode hmisrel:dateCollected="2005-05-18T14:52:30.077-05:00">8</hmisrel:SocialSecNumberQualityCode>
+</hmis:SocialSecurityNumber>
+</hmis:Person>
+</hmis:Export>
+</hmis:Source>
+</hmis:Sources>

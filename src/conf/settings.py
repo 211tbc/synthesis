@@ -108,6 +108,7 @@ SOAP_TRANSPORT_PROPERTIES = {
     "PRACTICE_SETTING_CODE_NODE_REPRESENTATION" : "General Medicine", # Where does this value come from?
     "PRACTICE_SETTING_CODE_VALUE"       : "Connect-a-thon practiceSettingCodes", # Where does this value come from?
     "PRACTICE_SETTING_CODE_NAME"        : "General Medicine", # Where does this value come from?
+    "RECEIVING_PROVIDER_ID"                          : "", # <== Leave this blank. It will be assigned by the soaptransport module    
     "TYPE_CODE_UUID"                    : "f0306f51-975f-434e-a61c-c59651d33983", # <== Where does this value come from?
     "TYPE_CODE_NODE_REPRESENTATION"     : "34108-1", # Where does this value come from?
     "TYPE_CODE_VALUE"                   : "LOINC", # Where does this value come from?

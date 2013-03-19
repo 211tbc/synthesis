@@ -7,7 +7,7 @@ import sys, os
 from reader import Reader
 from zope.interface import implements
 from lxml import etree
-from sqlalchemy.exceptions import IntegrityError
+from sqlalchemy.exc import IntegrityError
 import dateutil.parser
 #import logging
 from conf import settings

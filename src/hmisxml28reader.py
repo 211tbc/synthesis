@@ -9,7 +9,7 @@ from lxml import etree
 #from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 #from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
 #from sqlalchemy.types import DateTime, Date
-from sqlalchemy.exceptions import IntegrityError
+from sqlalchemy.exc import IntegrityError
 import dateutil.parser
 #import logging
 import exceptions

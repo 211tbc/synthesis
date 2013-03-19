@@ -69,6 +69,8 @@ $ ./bin/paster create -t pylons synthesis
 BASE_PATH = "/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis"
 -if you get logging errors on the first start, it's probably because your base base isn't configured correctly
 -Incoming file decryption by the web service is turned off by default.  If you want it it on, uncomment  "USE_ENCRYPTION = True" within ~/myrestservice/synthesis/synthesis/conf/inputConfiguration.py (and comment the statement containing the opposite value) NOTE: Only PGP and 3DES incoming decryption is supported at this time.  Outgoing supports PGP.   
+ if you get "XMLSyntaxError: Document is empty, line 1, column 1" errors from the server, this may be something to look at.
+
 -If you enable 3DES decryption, make sure to also set the paths within inputConfiguration.py for the corresponding 3DES key and IV: 
 KEY_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/3des3.txt' # full directory path to the 3DES key file
 IV_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/IV3.txt' # full directory path to the 3DES IV file

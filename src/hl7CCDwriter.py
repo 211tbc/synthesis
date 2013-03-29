@@ -30,7 +30,8 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         self.db = dbobjects.DB()            # JCS 10/05/11
         self.db.Base.metadata.create_all()
         self.hl7dateform = "%Y%m%d%H%M%S%z"
-        self.referredToProviderID
+        
+        self.referredToProviderID = ""
         
     def write(self):        # Called from nodebuilder.run() one time.
         return self.makeHL7Docs("disk")

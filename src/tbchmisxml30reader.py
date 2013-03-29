@@ -403,7 +403,7 @@ class TBCHUDHMISXML30Reader:
                     currentNeedID = self.need_index_id  # Just shredded above...
                 else:   # Need was parsed (much) earlier, so have to look up Need.id
                     ididToSearch = dataToFind[0].text
-                    relNeed = self.session.query(dbobjects.Need).filter(dbobjects.Need.need_idid_num == ididToSearch).one()
+                    relNeed = self.session.query(dbobjects.Need).filter(dbobjects.Need.need_idid_num == ididToSearch).first()
                     #print "======== Need:", relNeed.id, relNeed.site_service_idid_num, relNeed.need_idid_num, relNeed.person_index_id
                     currentNeedID = relNeed.id
 

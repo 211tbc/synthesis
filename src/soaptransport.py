@@ -301,13 +301,14 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             </lcm:SubmitObjectsRequest>
             %(ATTACHMENT_SECTION)s
         </xdsb:ProvideAndRegisterDocumentSetRequest>
-        <ntst:ReferringProviderId xmlns:ntst="http://schemas.datacontract.org/2004/07/NTST.Data.Platform.PresentationModels">%(REFERRING_PROVIDER_ID)s</ntst:ReferringProviderId>
     </soapenv:Body>
 </soapenv:Envelope>%(MIME_BORDER_SECTION)s""".replace("\t","")
 
     def send_soap_envelope(self, ccd_data, referredToProviderID):
         
         print "soaptransport generating soap"
+
+        ReceivingProviderId = ""
 
         import copy
         soap_transport_properties = copy.deepcopy(settings.SOAP_TRANSPORT_PROPERTIES)
@@ -359,12 +360,12 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #03/17/2013 ECJ adding referring provider id to differentiate originating source
         # for Suncoast Center
         if referredToProviderID in ['885','12047','12048','12049','12052','12054','12055','12060','15333','15392','15399','15400','15402','15403','15404','15405','15407','15408','15409','15410','15411','15413','15414','15416','15434','15436','15437','15438','15442','15443','15444','15445','15446','15447','15484','15485','15487','15488','15489','15490','15492','15493','15494','15495','15496','15500','15501','15502','15503','15505','15506','15507','15508','15509','15510','15511','15513','15514','15515','15516','15517','15518','15519','15520','15521','15522','15523','15524','15525','15526','15527','15529','15530','15531','15532','15533','15534','15535','15536','15537','15538']:
-            soap_transport_properties["RECEIVING_PROVIDER_ID"] = "29F2951F-7F47-451D-AED8-5729F29347D5"
+            ReceivingProviderId = "29F2951F-7F47-451D-AED8-5729F29347D5"
         # for PEMHS    
         elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
-            soap_transport_properties["RECEIVING_PROVIDER_ID"] = "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
+            ReceivingProviderId= "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
         else:
-            soap_transport_properties["RECEIVING_PROVIDER_ID"] = ""
+            ReceivingProviderId = ""
 
         # Unique ID <== Where does this come from?
         soap_transport_properties["UNIQUE_ID"] = "1.2009.0827.08.33.5017"
@@ -549,6 +550,7 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
             "Accept-Encoding"   : "gzip,deflate",
             "Connection"        : "Keep-Alive",
             "MIME-Version"      : "1.0",
+            "ReceivingProviderId" : ReceivingProviderId,
             "Content-type"      : "multipart/related; type=\"application/xop+xml\"; start=\"<0.urn:uuid:%s@apache.org>\"; start-info=\"application/soap+xml\"; boundary=\"MIMEBoundaryurn_uuid_%s\"; action=\"urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b\"" % (soap_transport_properties["START_UUID"], soap_transport_properties["XML_UUID"]),
             "Content-length"    : "%d" % len(soap_env),
             }
@@ -558,6 +560,7 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
             pp.pprint(headers)
             print soap_env
             #fo = open('soap_envelope.txt', 'w')
+            #fo.write("\n".join(["%s : %s" % (key, headers[key]) for key in headers.keys()]))
             #fo.write(soap_env)
             #fo.flush()
             #fo.close()

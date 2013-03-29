@@ -153,7 +153,7 @@ class SvcPointXML5Writer():
                 self.customizeClientPersonalIdentifiers(self.client, self.person)
                 self.assessment_data = self.createAssessmentData(self.client) # JCS New - self?
                 self.customizeAssessmentData(self.assessment_data)
-                if self.site_service_part:		# JCS 21 Dec 2012
+                if self.site_service_part:      # JCS 21 Dec 2012
                     self.child_entry_exit = self.createChildEntryExit(self.client)
                     for ssp in self.site_service_part:
                         self.createEntryExit(self.child_entry_exit, ssp)

@@ -11,7 +11,7 @@
 -To be able to run the createdb command, you'll probably first need to edit the pg_hba.conf and create a postgres user with postgres@localhost:$ createuser -s -P your_user_name
 -Save the db password for later.
 
--also get gcc, python-dev, libpq-dev (for postgres connectivity), make, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
+-also get gcc, python-dev, libpq-dev (for postgres connectivity), make, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml), postgres-server-dev (for psyco-pg2)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
 
 -Create a directory to share all buildout files and your Pylons project: 
 ~$ cd ~
@@ -22,7 +22,7 @@
 ~/myrestservice$ wget "http://downloads.buildout.org/2/bootstrap.py"
 
 -Get the buildout script: 
-~/myrestservice$ wget "http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/docs/buildout.cfg"
+~/myrestservice$ wget "https://raw.github.com/211tbc/synthesis/master/docs/buildout.cfg"
 
 -Now we have a clean buildout config. Let's bootstrap the buildout and run it:
 
@@ -50,6 +50,8 @@ FormAlchemy-1.1.1-py2.5.egg/  Routes-1.10.2-py2.5.egg/
 -Make a synthesis development egg directory: 
 ~/myrestservice$ mkdir synthesis 
 
+-uncomment "#develop = synthesis" in buildout.cfg
+-rerun ./bin/buildout to create the development egg for synthesis
 -Create a pylons project with the newly created paster binary:
 
 $ ./bin/paster create -t pylons synthesis
@@ -59,7 +61,15 @@ $ ./bin/paster create -t pylons synthesis
 -go into this new project folder
 ~/myrestservice$ cd synthesis/synthesis
 
-~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
+Download the latest synthesis source: 
+wget https://github.com/211tbc/synthesis/archive/master.zip
+unzip -u -o ./master.zip
+
+-extract the "src" subfolder's contents with:
+mv synthesis-master/src/* .
+rm master.zip
+rm -rf synthesis-master
+ 
 
 -run buildout again: 
 ~/myrestservice/synthesis/synthesis$ cd ../..

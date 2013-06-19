@@ -85,11 +85,17 @@ do
         else
             echo "paramiko install ... ok."
         fi
-        if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'pyramid*' -print -quit)"
+        if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'pyramid' -print -quit)"
         then
             echo "pyramid install ... failed!"
         else
             echo "pyramid install ... ok."
+        fi
+        if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'pyramid_controllers' -print -quit)"
+        then
+            echo "pyramid-controllers install ... failed!"
+        else
+            echo "pyramid-controllers install ... ok."
         fi
     fi
 done

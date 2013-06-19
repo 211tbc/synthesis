@@ -78,7 +78,7 @@ class SvcPointXMLWriter():
 		# SBB20070628 adding a buffer for errors to be displayed at the end of the process.
 		self.errorMsgs = []
 		self.iDG = xmlutilities.IDGeneration()
-		#self.mappedObjects = dbobjects.DatabaseObjects()
+		#self.mappedObjects = dbobjects.DB()
 		
 		#import logging
 		#logging.basicConfig()

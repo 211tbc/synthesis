@@ -19,8 +19,8 @@ import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
-#class HMISXML28Reader(dbobjects.DatabaseObjects):
-class HMISXML28Reader:#(dbobjects.DatabaseObjects):
+#class HMISXML28Reader(dbobjects.DB):
+class HMISXML28Reader:#(dbobjects.DB):
     '''Implements reader interface.'''
     implements (Reader) 
     

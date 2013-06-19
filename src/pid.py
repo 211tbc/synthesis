@@ -58,7 +58,7 @@ def does_process_exist(process_name, process_ids):
 
 
 if __name__ == '__main__':
-    pids = get_ids_of_process('paster')
+    pids = get_ids_of_process('pserve')
     print pids
 
-    print does_process_exist('paster', pids)
+    print does_process_exist('pserve', pids)

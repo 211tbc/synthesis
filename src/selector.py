@@ -287,7 +287,7 @@ class FileHandler:
 #                wait_counter = 0
             while 1:
                 # If some stops the paster server, stop all paster processes
-                if not pid.does_process_exist('paster', paster_ids):
+                if not pid.does_process_exist('pserve', paster_ids):
                     print "shutting down..."
                     i = 0
                     while i < len(self.process_list):

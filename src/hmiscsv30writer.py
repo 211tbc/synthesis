@@ -151,7 +151,7 @@ class HmisCSV30Writer():
         print "Setting up dbobjects..."
         import time
         startReal = time.time()
-        self.mappedObjects = dbobjects.DatabaseObjects()
+        self.mappedObjects = dbobjects.DB()
         endReal = time.time()
         print "dbobjects setup finished after %0.2f real seconds." % (endReal - startReal)
 

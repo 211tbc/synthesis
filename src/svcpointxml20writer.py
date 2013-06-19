@@ -12,7 +12,7 @@ import logging
 
 from sys import version
 from conf import settings
-import clsexceptions as clsexceptions
+import exceptions
 import dbobjects as dbobjects
 from writer import Writer
 from zope.interface import implements
@@ -23,7 +23,7 @@ from sqlalchemy import or_, and_, between
 # dynamic import of modules
 thisVersion = version[0:3]
 
-if thisVersion == '2.5':
+if thisVersion >= '2.5':
     try:
         import xml.etree.cElementTree as ET
         from xml.etree.ElementTree import Element, SubElement, dump
@@ -42,13 +42,13 @@ elif thisVersion == '2.4':
 else:
     print 'Sorry, please see the minimum requirements to run this Application'
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise clsexceptions.SoftwareCompatibilityError, theError
+    raise exceptions.SoftwareCompatibilityError, theError
 
 def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
-class SVCPOINTXML20Writer(dbobjects.DatabaseObjects):
+class SVCPOINTXML20Writer(dbobjects.DB):
     
     # Writer Interface
     implements (Writer)
@@ -87,7 +87,7 @@ class SVCPOINTXML20Writer(dbobjects.DatabaseObjects):
         #if debug == True:
         #    print "Debug switch is: %s" % debug
         
-        self.mappedObjects = dbobjects.DatabaseObjects()
+        self.mappedObjects = dbobjects.DB()
         
         #import logging
         #
@@ -409,17 +409,17 @@ class SVCPOINTXML20Writer(dbobjects.DatabaseObjects):
             mi_initial.text = self.fixMiddleInitial(recordset.person_legal_middle_name_unhashed)
             
 
-    # SBB20070920 Fix SSN's to make sure that they have the right format
-    # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
-    fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed)
-    #ECJ20071111 Omit SSN if it's blank            
-    if fixedSSN <> "" and fixedSSN <> None:    
-        soc_sec_no = ET.SubElement(client, "soc_sec_no")
-        soc_sec_no.text = fixedSSN
-        
-        #ECJ20071203 We could make the code more complex to determine if partial ssn, but don't know/refused would have to be collected by shelter.
-        ssn_data_quality = ET.SubElement(client, "ssn_data_quality")
-        ssn_data_quality.text = "full ssn reported (hud)"
+        # SBB20070920 Fix SSN's to make sure that they have the right format
+        # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
+        fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed)
+        #ECJ20071111 Omit SSN if it's blank            
+        if fixedSSN <> "" and fixedSSN <> None:    
+            soc_sec_no = ET.SubElement(client, "soc_sec_no")
+            soc_sec_no.text = fixedSSN
+            
+            #ECJ20071203 We could make the code more complex to determine if partial ssn, but don't know/refused would have to be collected by shelter.
+            ssn_data_quality = ET.SubElement(client, "ssn_data_quality")
+            ssn_data_quality.text = "full ssn reported (hud)"
         
 
     def customizeClientPersonalIdentifiersForEntryExit(self, client, recordset):
@@ -429,20 +429,20 @@ class SVCPOINTXML20Writer(dbobjects.DatabaseObjects):
         last_name = ET.SubElement(client, "last_name")
         last_name.text = recordset['Last Name']
         
-    #we don't have the following elements for daily_census only clients, but SvcPt requires them:
-    # I simulated this w/my datasets.  Column names are as in the program
-    if recordset['MI'] <> "":
-        mi_initial = ET.SubElement(client, "mi_initial")
-        mi_initial.text = self.fixMiddleInitial(recordset['MI'])
-    
+        #we don't have the following elements for daily_census only clients, but SvcPt requires them:
+        # I simulated this w/my datasets.  Column names are as in the program
+        if recordset['MI'] <> "":
+            mi_initial = ET.SubElement(client, "mi_initial")
+            mi_initial.text = self.fixMiddleInitial(recordset['MI'])
+        
 
-    # SBB20070920 Fix SSN's to make sure that they have the right format
-    # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
-    fixedSSN = self.fixSSN(recordset['SSN'])    
-    #ECJ20071111 Omit SSN if its blank    
-    if fixedSSN <> "":    
-        soc_sec_no = ET.SubElement(client, "soc_sec_no")
-        soc_sec_no.text = fixedSSN
+        # SBB20070920 Fix SSN's to make sure that they have the right format
+        # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
+        fixedSSN = self.fixSSN(recordset['SSN'])    
+        #ECJ20071111 Omit SSN if its blank    
+        if fixedSSN <> "":    
+            soc_sec_no = ET.SubElement(client, "soc_sec_no")
+            soc_sec_no.text = fixedSSN
         
 
     def createAddress_1(self, dynamiccontent): 
@@ -1515,32 +1515,32 @@ class SVCPOINTXML20Writer(dbobjects.DatabaseObjects):
     def fixSSN(self, incomingSSN):
         originalSSN = incomingSSN
     
-    # ECJ20071111 Added to make it so blank SSNs don't return "--", and instead return ""
-    if incomingSSN == "" or incomingSSN == None:
-        return incomingSSN
-    
-    dashCount = incomingSSN.count('-') 
-    if dashCount > 0:
-        if dashCount == 2:
-        # already has the dashes, return the string
-            if self.debug == True:
-                self.debugMessages.log("incoming SSN is correctly formatted: %s\n" % (incomingSSN))
-                
+        # ECJ20071111 Added to make it so blank SSNs don't return "--", and instead return ""
+        if incomingSSN == "" or incomingSSN == None:
             return incomingSSN
-        else:                    # incoming SSN has 1 dash but not 2.  This is an error
-        # fix this data
-            incomingSSN = string.replace(incomingSSN, '-', '')
-            if len(incomingSSN) < 9:
+        
+        dashCount = incomingSSN.count('-') 
+        if dashCount > 0:
+            if dashCount == 2:
+            # already has the dashes, return the string
                 if self.debug == True:
-                    self.debugMessages.log(">>>> Incoming SSN is INcorrectly formatted.  Original SSN from input file is: %s and Attempted cleaned up SSN is: %s\n" % (originalSSN, incomingSSN))
-                    # reformat the string and return
-                    theError = (1020, 'Data format error discovered in trying to cleanup incoming SSN: %s, original SSN: %s' % (incomingSSN, originalSSN))
-                    raise dataFormatError, theError
-            
-    # If we are here, we can simply reformat the string into dashes
-    if self.debug == True:
-        self.debugMessages.log("incoming SSN is INcorrectly formatted: %s.  Reformatting to: %s\n" % (incomingSSN, '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])))
-    return '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])
+                    self.debugMessages.log("incoming SSN is correctly formatted: %s\n" % (incomingSSN))
+                    
+                return incomingSSN
+            else:                    # incoming SSN has 1 dash but not 2.  This is an error
+            # fix this data
+                incomingSSN = string.replace(incomingSSN, '-', '')
+                if len(incomingSSN) < 9:
+                    if self.debug == True:
+                        self.debugMessages.log(">>>> Incoming SSN is INcorrectly formatted.  Original SSN from input file is: %s and Attempted cleaned up SSN is: %s\n" % (originalSSN, incomingSSN))
+                        # reformat the string and return
+                        theError = (1020, 'Data format error discovered in trying to cleanup incoming SSN: %s, original SSN: %s' % (incomingSSN, originalSSN))
+                        raise dataFormatError, theError
+                
+        # If we are here, we can simply reformat the string into dashes
+        if self.debug == True:
+            self.debugMessages.log("incoming SSN is INcorrectly formatted: %s.  Reformatting to: %s\n" % (incomingSSN, '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])))
+        return '%s-%s-%s' % (incomingSSN[0:3], incomingSSN[3:5], incomingSSN[5:10])
             
 if __name__ == "__main__":
     vld = SVCPOINTXML20Writer(".")

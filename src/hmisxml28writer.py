@@ -47,7 +47,7 @@ def buildWorkhistoryAttributes(element):
     element.attrib['date_effective'] = datetime.now().isoformat() #@IndentOk
 
 
-class HMISXML28Writer(dbobjects.DatabaseObjects):
+class HMISXML28Writer(dbobjects.DB):
     
     # Writer Interface
     implements (Writer)
@@ -138,7 +138,7 @@ class HMISXML28Writer(dbobjects.DatabaseObjects):
         # Clear the session
         #session.clear()
     
-        mappedObjects = dbobjects.DatabaseObjects()
+        mappedObjects = dbobjects.DB()
         # first get the export object then get it's related objects
         Persons = mappedObjects.queryDB(dbobjects.Person)
         for self.person in Persons:
@@ -383,25 +383,25 @@ class HMISXML28Writer(dbobjects.DatabaseObjects):
         code.text = "BH-180"
         
     
-    if self.debug == True:
-        notes = ET.SubElement(need, "notes")
-        notes.text = 'Client ID: %s' % self.dsRec['Client ID']
-        notes.tail = '\n'
+        if self.debug == True:
+            notes = ET.SubElement(need, "notes")
+            notes.text = 'Client ID: %s' % self.dsRec['Client ID']
+            notes.tail = '\n'
+            
+        date_set = ET.SubElement(need, "date_set")
+        # ECJ20071114: The Need date_set will be the same day as the service provided date
+        orig_format = self.dsRec['Date']
+        #We should have the shelter switch to a 4 digit year, then change the %y to %Y
+        date_set_datetime_object_format = self.fixDate(orig_format) 
+        date_set.text = date_set_datetime_object_format
         
-    date_set = ET.SubElement(need, "date_set")
-    # ECJ20071114: The Need date_set will be the same day as the service provided date
-    orig_format = self.dsRec['Date']
-    #We should have the shelter switch to a 4 digit year, then change the %y to %Y
-    date_set_datetime_object_format = self.fixDate(orig_format) 
-    date_set.text = date_set_datetime_object_format
-    
-        
-    def createServices(self, need):
-    # services Section
-        services = ET.SubElement(need, "services")
-        services.text = "\n"
-        services.tail = "\n"
-        return services
+            
+        def createServices(self, need):
+        # services Section
+            services = ET.SubElement(need, "services")
+            services.text = "\n"
+            services.tail = "\n"
+            return services
 
 # These services have to be created whenever there is an associated service in the daily census
 #    But ... first we have to get a daily census dictionary populated and available to call
@@ -998,33 +998,33 @@ class HMISXML28Writer(dbobjects.DatabaseObjects):
 #        employersphonenumber = ET.SubElement(workhistory, 'employersphonenumber')
 #        employersphonenumber.tail = "\n"
 #        buildWorkhistoryAttributes(employersphonenumber)
-    if self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) <> "":
-        employmentstatus_1 = ET.SubElement(workhistory, 'employmentstatus_1')
-        buildWorkhistoryAttributes(employmentstatus_1)
-        employmentstatus_1.text = self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus'])
+        if self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) <> "":
+            employmentstatus_1 = ET.SubElement(workhistory, 'employmentstatus_1')
+            buildWorkhistoryAttributes(employmentstatus_1)
+            employmentstatus_1.text = self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus'])
 
-    if self.intakes['Hours-Week'] <> "":
-        hoursofworkperweek = ET.SubElement(workhistory, 'hoursofworkperweek')
-        buildWorkhistoryAttributes(hoursofworkperweek)
-        hoursofworkperweek.text = self.intakes['Hours-Week']
+        if self.intakes['Hours-Week'] <> "":
+            hoursofworkperweek = ET.SubElement(workhistory, 'hoursofworkperweek')
+            buildWorkhistoryAttributes(hoursofworkperweek)
+            hoursofworkperweek.text = self.intakes['Hours-Week']
 
-    if self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount']) <> "":
-        hourlywage = ET.SubElement(workhistory, 'hourlywage')
-        buildWorkhistoryAttributes(hourlywage)
-        hourlywage.text = self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount'])
+        if self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount']) <> "":
+            hourlywage = ET.SubElement(workhistory, 'hourlywage')
+            buildWorkhistoryAttributes(hourlywage)
+            hourlywage.text = self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount'])
 
-#        receivinghealthinsurancethisemployer = ET.SubElement(workhistory, 'receivinghealthinsurancethisemployer')
-#        receivinghealthinsurancethisemployer.tail = "\n"
-#        buildWorkhistoryAttributes(receivinghealthinsurancethisemployer)
-#        categoryofemployment = ET.SubElement(workhistory, 'categoryofemployment')
-#        categoryofemployment.tail = "\n"
-#        buildWorkhistoryAttributes(categoryofemployment)
-#        employersfax_1 = ET.SubElement(workhistory, 'employersfax_1')
-#        employersfax_1.tail = "\n"
-#        buildWorkhistoryAttributes(employersfax_1)
-#        workhistorystart = ET.SubElement(workhistory, 'workhistorystart')
-#        workhistorystart.tail = "\n"
-#        buildWorkhistoryAttributes(workhistorystart)
+    #        receivinghealthinsurancethisemployer = ET.SubElement(workhistory, 'receivinghealthinsurancethisemployer')
+    #        receivinghealthinsurancethisemployer.tail = "\n"
+    #        buildWorkhistoryAttributes(receivinghealthinsurancethisemployer)
+    #        categoryofemployment = ET.SubElement(workhistory, 'categoryofemployment')
+    #        categoryofemployment.tail = "\n"
+    #        buildWorkhistoryAttributes(categoryofemployment)
+    #        employersfax_1 = ET.SubElement(workhistory, 'employersfax_1')
+    #        employersfax_1.tail = "\n"
+    #        buildWorkhistoryAttributes(employersfax_1)
+    #        workhistorystart = ET.SubElement(workhistory, 'workhistorystart')
+    #        workhistorystart.tail = "\n"
+    #        buildWorkhistoryAttributes(workhistorystart)
         
     def createHouseholds(self, records):
     # households section

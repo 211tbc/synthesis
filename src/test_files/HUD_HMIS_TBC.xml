@@ -8,7 +8,7 @@
     ext:version="3.0">
     <ext:Source>
         <ext:SourceID >
-                <hmis:IDStr>003</hmis:IDStr>
+                <hmis:IDStr>tbctest</hmis:IDStr>
         </ext:SourceID>
         <ext:SoftwareVendor>Vendor Name Here</ext:SoftwareVendor>
         <ext:SoftwareVersion>7.1</ext:SoftwareVersion>

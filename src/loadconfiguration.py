@@ -5,7 +5,7 @@ from conf import settings
 
 def loadData():
    ## pg_db = create_engine('postgres://%s:%s@%s:%s/%s' % (settings.DB_USER, settings.DB_PASSWD, settings.DB_HOST, settings.DB_PORT, settings.DB_DATABASE), echo=settings.DEBUG_ALCHEMY)#, server_side_cursors=True)
-   ## dbobjects.DatabaseObjects()
+   ## dbobjects.DB()
    ## #model.init_model(self.pg_db)
    ## Session = sessionmaker(bind=pg_db, autoflush=True)
    ## session = Session()

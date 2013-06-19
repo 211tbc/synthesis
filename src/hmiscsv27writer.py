@@ -5,7 +5,7 @@ from zope.interface import implements
 import dbobjects
 from writer import Writer
 
-class HMISCSV27Writer(dbobjects.DatabaseObjects):
+class HMISCSV27Writer(dbobjects.DB):
 
     # Writer Interface
     implements (Writer)

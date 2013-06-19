@@ -73,7 +73,7 @@ class MainProcessor:
             if settings.DEBUG:
                 print "Now instantiating FileHandler"
             #Get list of paster process ids
-            paster_ids = pid.get_ids_of_process('paster')
+            paster_ids = pid.get_ids_of_process('pserve')
             FileHandler(paster_ids) 
             print "calling sys.exit"
             sys.exit

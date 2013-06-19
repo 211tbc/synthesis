@@ -32,7 +32,7 @@ class HMISXML30Reader:
         #if settings.DEBUG:
         #    print "does self.xml_file exist?", os.path.exists(self.xml_file)
         ''' Instantiate database object '''
-        #dbo = DatabaseObjects()
+        #dbo = DB()
         self.session = db.Session()
 
     def read(self):

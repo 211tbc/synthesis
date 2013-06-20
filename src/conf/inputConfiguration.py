@@ -23,10 +23,17 @@ INPUTFILES_PATH = [
             settings.BASE_PATH + "/input_files"
             ,
             ]
+for input_path in INPUTFILES_PATH:
+    if not os.path.exists(input_path):
+        os.mkdir(input_path)
+
 WEB_SERVICE_INPUTFILES_PATH = [
             settings.BASE_PATH + "/ws_input_files"
             ,
             ]
+for wsinput_path in WEB_SERVICE_INPUTFILES_PATH:
+    if not os.path.exists(wsinput_path):
+        os.mkdir(wsinput_path)
 
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = {    

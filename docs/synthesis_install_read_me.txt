@@ -1,5 +1,3 @@
-*adapted from: http://wiki.pylonshq.com/display/pylonscommunity/Howto+install+Pylons+with+buildout
-
 -Note: Synthesis currently runs only on unix platforms.  The hangup is Windows' lack of support for pyinotify.  
 -There are workarounds, but nobody has requested this for Windows. 
 
@@ -11,59 +9,29 @@
 -To be able to run the createdb command, you'll probably first need to edit the pg_hba.conf and create a postgres user with postgres@localhost:$ createuser -s -P your_user_name
 -Save the db password for later.
 
+-Install python-setuptools like '$ apt-get install python-setuptools'
+
+-Install python-virtualenv like '$ apt-get install python-virtualenv'
+
 -also get gcc, python-dev, libpq-dev (for postgres connectivity), make, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
 
--Create a directory to share all buildout files and your Pylons project: 
+-Create the virtual environment for the Pyramid project
 ~$ cd ~
-~$ mkdir myrestservice
+~$ virtualenv --distribute --no-site-packages myrestservice
 ~$ cd myrestservice
 
--Get the latest version of buildout's bootstrap script:
-~/myrestservice$ wget "http://downloads.buildout.org/2/bootstrap.py"
+-Retrieve the installation scripts
 
--Get the buildout script: 
-~/myrestservice$ wget "http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/docs/buildout.cfg"
+~$ wget "https://github.com/211tbc/synthesis/blob/synthesis-pyramid/docs/dependencies.sh"
+~$ wget "https://github.com/211tbc/synthesis/blob/synthesis-pyramid/docs/deploy-synthesis.sh"
 
--Now we have a clean buildout config. Let's bootstrap the buildout and run it:
+-Install dependencies
 
-~/myrestservice$ mkdir downloads
-~/myrestservice$ python bootstrap.py
+~$ sh dependencies.sh
 
--you should get "Generated script '~/myrestservice/bin/buildout'."
--Now run the generated script
+-Deploy Synthesis within the virtual environment
 
-~/myrestservice$ ./bin/buildout
-
--This will take a while.  Ignore the "Couldn't develop '~/myrestservice/synthesis' (not found)" error.  We'll add that in later.
-
--You now have two new binaries in the bin/ directory:
-
-~/myrestservice$ ls bin
-buildout  migrate  migrate-repository  nosetests  nosetests-2.7  paster  python
-
--All eggs can be found in eggs/:
-
-~/myrestservice$ ls eggs
-Beaker-1.2-py2.5.egg/         Pylons-0.9.7rc4-py2.5.egg/
-FormAlchemy-1.1.1-py2.5.egg/  Routes-1.10.2-py2.5.egg/
-...
--Make a synthesis development egg directory: 
-~/myrestservice$ mkdir synthesis 
-
--Create a pylons project with the newly created paster binary:
-
-$ ./bin/paster create -t pylons synthesis
-
--choose the 'mako' template engine, and say 'True' to sqlalchemy as well.
-
--go into this new project folder
-~/myrestservice$ cd synthesis/synthesis
-
-~/myrestservice/synthesis/synthesis$ wget --mirror --no-parent --no-host-directories --cut-dirs=4 http://xsd.alexandriaconsulting.com/repos/trunk/synthesis/src/
-
--run buildout again: 
-~/myrestservice/synthesis/synthesis$ cd ../..
-~/myrestservice$ ./bin/buildout
+~$ sh deploy-synthesis.sh
 
 -edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc..  
 BASE_PATH = "/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis"
@@ -87,14 +55,14 @@ as an additional entry into the sys.path[0:0] =  section.
 
 -start the server, but first move to the newly built location.  we have to do this because paster looks for the contents of the synthesis.egg-info dir to provide controller and serve command options
 ~/myrestservice$ cd synthesis
-~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini start
+~/myrestservice/synthesis$ ../bin/pserve development.ini start
 
-*Note: synthesis, since it is built using buildout, which generates a proxy python interpreter, *always* must be run from this generated python interpreter.
-If you try to run it from your system's built-in python interpreter (as with virtualenv), synthesis will not find its dependencies.
+*Note: test scripts, since it is built using virtualenv, which generates a proxy python interpreter, *always* must be run from this generated python interpreter.
+If you try to run it from your system's built-in python interpreter, synthesis will not find its dependencies.
  
--or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
--stop it with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini stop
--run it foregrounded in the console with: ~/myrestservice/synthesis$ ../bin/python ../bin/paster serve ./development.ini
+-or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/pserve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
+-stop it with: ~/myrestservice/synthesis$ ../bin/pserve ./development.ini stop
+-run it foregrounded in the console with: ~/myrestservice/synthesis$ ../bin/pserve ./development.ini
 
 -Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files automatically, so not a problem.
 
@@ -108,4 +76,4 @@ http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/output_con
 
 #http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
 
-You can also test the pylons web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.
+You can also test the pyramid web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.

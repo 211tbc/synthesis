@@ -22,8 +22,8 @@
 
 -Retrieve the installation scripts
 
-~$ wget "https://github.com/211tbc/synthesis/blob/synthesis-pyramid/docs/dependencies.sh"
-~$ wget "https://github.com/211tbc/synthesis/blob/synthesis-pyramid/docs/deploy-synthesis.sh"
+~$ wget "https://raw.github.com/211tbc/synthesis/synthesis-pyramid/docs/dependencies.sh"
+~$ wget "https://raw.github.com/211tbc/synthesis/synthesis-pyramid/docs/deploy-synthesis.sh"
 
 -Install dependencies
 

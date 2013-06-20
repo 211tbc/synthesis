@@ -57,14 +57,10 @@ as an additional entry into the sys.path[0:0] =  section.
 ~/myrestservice$ cd synthesis
 ~/myrestservice/synthesis$ ../bin/pserve development.ini start
 
-*Note: test scripts, since it is built using virtualenv, which generates a proxy python interpreter, *always* must be run from this generated python interpreter.
-If you try to run it from your system's built-in python interpreter, synthesis will not find its dependencies.
- 
--or make the paster server outside the console: ~/myrestservice/synthesis$ ../bin/pserve --daemon --pid-file=./paster.pid --log-file=./paster.log ./development.ini start
+The above starts the server in daemon mode where all outout is written to a file call pyramid.log
+
 -stop it with: ~/myrestservice/synthesis$ ../bin/pserve ./development.ini stop
 -run it foregrounded in the console with: ~/myrestservice/synthesis$ ../bin/pserve ./development.ini
-
--Note, on first run, the wget operation above will drop index.html files into you input_files folder, but it'll just get moved to failed_files automatically, so not a problem.
 
 -Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested.
  

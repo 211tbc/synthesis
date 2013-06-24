@@ -252,7 +252,8 @@ def main(global_config, **settings):
     config.include('pyramid_controllers')
     config.add_controller('docs', '/docs', DocsController())
     config.add_static_view('static', 'static', cache_max_age=3600)
-    config.add_route('home', '/')
+    #config.add_route('home', '/')
+    config.add_route('index', '/')
     config.scan()
     app = config.make_wsgi_app()
     # MainProcessor setup the database among other things

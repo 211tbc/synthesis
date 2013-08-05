@@ -13,7 +13,7 @@
 
 -Install python-virtualenv like '$ apt-get install python-virtualenv'
 
--also get gcc, python-dev, libpq-dev (for postgres connectivity), make, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
+-also get gcc, python-dev, libpq-dev (for postgres connectivity), make, unzip, libxml2, libxml2-dev, libxslt1.1, libxslt1-dev, (all for lxml)  if you don't have those packages installed on your system already: run 'apt-get install gcc python-dev libpq' as root), if you don't already have that on your system.
 
 -Create the virtual environment for the Pyramid project
 ~$ cd ~

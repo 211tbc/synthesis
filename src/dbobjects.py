@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.types import DateTime, Date
+from sqlalchemy.pool import NullPool
 from conf import settings
 from logging import Logger
 
@@ -10,7 +11,7 @@ print "loaded dbobjects module"
 class DB:
     #print "loaded DB Class" 
     database_string = 'postgresql+psycopg2://' + settings.DB_USER + ':' + settings.DB_PASSWD + '@' + settings.DB_HOST + ':' + str(settings.DB_PORT) + '/' + settings.DB_DATABASE
-    pg_db_engine = create_engine(database_string, echo=settings.DEBUG_ALCHEMY)
+    pg_db_engine = create_engine(database_string, poolclass=NullPool, echo=settings.DEBUG_ALCHEMY)
     mymetadata = MetaData(bind=pg_db_engine)
     Base = declarative_base(metadata=mymetadata)
     

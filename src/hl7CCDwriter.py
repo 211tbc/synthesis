@@ -136,7 +136,10 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                                    onePerson.person_legal_suffix_unhashed)      # TODO Done?  ?LegalMiddleName.Unhashed
         self.addGender(patient, onePerson.person_gender_unhashed)
         birthTime = ET.SubElement(patient,"birthTime")
-        birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
+        try:
+            birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
+        except:
+            pass
         self.races = onePerson.fk_person_to_races
         self.addRace(patient, self.races)  #.race_unhashed)
         self.addEthnicity(patient, onePerson.person_ethnicity_unhashed)

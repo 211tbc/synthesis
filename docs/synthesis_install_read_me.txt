@@ -1,7 +1,7 @@
 -Note: Synthesis currently runs only on unix platforms.  The hangup is Windows' lack of support for pyinotify.  
 -There are workarounds, but nobody has requested this for Windows. 
 
--Install python > = 2.6.  In linux, the best way is to do this through your system's package manager.   Most linux distros already have it though.
+-Install python >= 2.6 and <= 2.7.x.  In linux, the best way is to do this through your system's package manager.   Most linux distros already have it though.
 
 -Install a postgres database.  Get it from your package manager, then configure it.  Here are notes for Debian: http://codeghar.wordpress.com/2009/01/24/postgresql-83-on-debian-lenny/
 

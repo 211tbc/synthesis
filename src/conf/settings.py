@@ -46,15 +46,12 @@ PGPHOMEDIR = '~/.gnupg'
 PASSPHRASE = ''
 PGP_KEY_ID = ''
 
-JFCS_SOURCE_ID = 734
-JFCS_AGENCY_ID = 711
-JFCS_SERVICE_ID = 705
-
 # If you wish to use spawned processes, set this flag to True
 USE_SPAWNED_PROCESSES = False
 # Maximum number of processes to maintain
 NUMBER_OF_PROCESSES = 1 
 
+# ECJ 08-16-2013: the following SOAP configs should be moved to an HL7 output confif file, so it doesn't clutter this general settings file
 # SOAP Transport properties
 SOAP_TRANSPORT_PROPERTIES = {
     "CCD"                               : "", # <== Leave this blank. It will be assigned by the soaptransport module.

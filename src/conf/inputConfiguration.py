@@ -38,7 +38,7 @@ for wsinput_path in WEB_SERVICE_INPUTFILES_PATH:
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = {    
     # input processing
-    "~/myrestservice/synthesis/synthesis/input_files":
+    "/home/your_username_here/myrestservice/synthesis/synthesis/input_files":
         {
         'VENDOR_NAME': 'SomeVendor',
         'SMTPTOADDRESS': ['someone@somedomain.com',],
@@ -47,7 +47,7 @@ SMTPRECIPIENTS = {
         'FINGERPRINT':'',
         'USES_ENCRYPTION':False
         }
-    ,"~/myrestservice/synthesis/synthesis/input_files2":
+    ,"/home/your_username_here/synthesis/synthesis/input_files2":
         {
         'VENDOR_NAME': 'SomeVendor2',
         'SMTPTOADDRESS': ['admin@superhost.com',],
@@ -56,7 +56,7 @@ SMTPRECIPIENTS = {
         'FINGERPRINT':'',
         'USES_ENCRYPTION':False
         }
-    ,"~/myrestservice/synthesis/synthesis/input_files3":
+    ,"/home/your_username_here/synthesis/synthesis/input_files3":
         {
         'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['sammy.davis@jr.com',],
@@ -66,7 +66,7 @@ SMTPRECIPIENTS = {
         'USES_ENCRYPTION':False
         }
     # output processing
-    ,"~/myrestservice/synthesis/synthesis/output_files":
+    ,"/home/your_username_here/synthesis/synthesis/output_files":
         {
         'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['user@host.com',],
@@ -75,7 +75,7 @@ SMTPRECIPIENTS = {
         'FINGERPRINT':'',
         'USES_ENCRYPTION':False
         }
-    ,"~/myrestservice/synthesis/synthesis/output_files2":
+    ,"/home/your_username_here/synthesis/synthesis/output_files2":
         {
         'VENDOR_NAME': '',
         'SMTPTOADDRESS': ['admin@somehost.com',],

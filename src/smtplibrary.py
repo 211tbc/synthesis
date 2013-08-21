@@ -112,6 +112,10 @@ class smtpInterface:
         while attempts <= 5:
             try:
                 server = smtplib.SMTP(self.settings.SMTPSERVER)
+                if self.settings.SMTPTLS:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
                 logged_in = True
                 break

@@ -38,6 +38,16 @@ for wsinput_path in WEB_SERVICE_INPUTFILES_PATH:
 # SMTP Mail recipients is a dictionary that must be defined for each source of input files
 SMTPRECIPIENTS = {    
     # input processing
+    "testSource":
+        {
+        'VENDOR_NAME': 'SomeVendor',
+        'SMTPTOADDRESS': ['someone@somedomain.com',],
+        'SMTPTOADDRESSCC': [],
+        'SMTPTOADDRESSBCC': [],
+        'FINGERPRINT':'',
+        'USES_ENCRYPTION':False
+        }
+    # input processing
     "/home/your_username_here/myrestservice/synthesis/synthesis/input_files":
         {
         'VENDOR_NAME': 'SomeVendor',

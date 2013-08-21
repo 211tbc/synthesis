@@ -31,16 +31,16 @@ class XMLProcessorNotifier(smtpInterface):
         self.mailSystem.setMessageSubject(Subject)
         self.mailSystem.setMessage(Message)
         self.mailSystem.formatMessage()
-        for file in attachment:
+        for f in attachment:
             if self.encrypt:
                 attachment = 'encryptdAttachment.enc'
                 # FIXME encrypt the file before attaching.
-                self.security.encryptFile(file, attachment)
+                self.security.encryptFile(f, attachment)
                 
             else:
-                attachment = file
+                attachment = f
             
-            print 'file: %s' % file
+            print 'file: %s' % f
             self.mailSystem.setAttachmentText(attachment)
         try:
             self.sendMessage()

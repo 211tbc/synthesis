@@ -59,8 +59,18 @@ The above starts the server in daemon mode where all outout is written to a file
 -run it foregrounded in the console with: ~/myrestservice/synthesis$ ../bin/pserve ./development.ini
 
 -Now, test the installation by moving test_files xml files over to input_files.  Try the HUD_HMIS_3_0 XML files first, because those are most tested.
+
+When you try to shred the HUD_HMIS_3_0 XML, you may see the error "smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+KeyError: 'testSource'"
+in your log files. To remedy this, make sure you have a 'testSource' entry in SMTPRECIPIENTS in the inputConfiguration.py file. 
+
+If, after moving in a test file, you see the error "exception: socket error can't connect to smtp server", then you need to configure that in the conf/settings file.  Example config:
+SMTPSERVER = 'smtp.gmail.com'
+SMTPPORT = 587
+
+Note, if importing this virtualenv instance as a pydev project, add /usr/lib/python27 to your path as the last entry, or else certain standard python libs that pydev needs won't be found.  Just make it last in the list, if precedence counts.  
  
--To generate XML output after you have shredded some test XML.  
+-To generate XML output after you have shredded some test XML: 
 
 First, set up the database, so the IDs to be configured are present.  This doc explains that:
 

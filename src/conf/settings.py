@@ -180,6 +180,7 @@ SMTPSERVER = 'localhost'
 SMTPPORT = 25
 SMTPSENDER = 'me@localhost'
 SMTPSENDERPWD = 'mysecret'
+SMTPTLS = False #set to true to connect to something like gmail
 
 try:
     from local_settings import *

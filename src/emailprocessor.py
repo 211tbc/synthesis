@@ -76,7 +76,7 @@ class XMLProcessorNotifier(smtpInterface):
     
     def notifyValidationSuccess(self):
         self.mailSystem.setMessageSubject('Success: XMLDocument PASSED Validation')
-        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation proprerly.' % self.docName)
+        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation properly.' % self.docName)
         try:
             self.sendMessage()
         except Exception, detail:

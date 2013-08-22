@@ -1,19 +1,21 @@
 from interpretpicklist import Interpretpicklist
-import dateutils
-from datetime import datetime
+#import dateutils
+#from datetime import datetime
 import xmlutilities
-from exceptions import SoftwareCompatibilityError, DataFormatError
+#from exceptions import SoftwareCompatibilityError, DataFormatError
 import logger
-from sys import version
+#from sys import version
 import dbobjects
 from writer import Writer
-from zope.interface import implements
-from sqlalchemy import or_, and_, between
+from zope.interface import implementer
+
+from sqlalchemy import or_, between#, and_
 from conf import settings
 from lxml import etree as ET
 
+@implementer(Writer)
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
-    implements (Writer) # Writer Interface
+    #implements(Writer) # Writer Interface
 
     def __init__(self, poutDirectory, processingOptions, debugMessages=None):
         print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__
@@ -268,7 +270,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                      "airs" : "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
         refsNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}Referrals", nsmap=self.extMap)
 
-       #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
+        #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
         referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.person_index_id == onePerson.id)
         for oneRef in referrals:
             taxoRec = self.session.query(dbobjects.Taxonomy).filter(dbobjects.Taxonomy.need_index_id == oneRef.need_index_id).one()
@@ -277,7 +279,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
             ET.SubElement(tbcRefID,"{"+self.extMap["hmis"]+"}IDNum").text=oneRef.referral_idid_num
             hmisTaxo = ET.SubElement(refNode,"{"+self.extMap["hmis"]+"}Taxonomy")
             ET.SubElement(hmisTaxo,"{"+self.extMap["airs"]+"}Code").text=taxoRec.code   # TODO Done?
-                               # id | export_index_id | site_service_index_id | need_index_id |  code   
+            # id | export_index_id | site_service_index_id | need_index_id |  code   
             tbcSENotes = ET.SubElement(refNode,"{"+self.extMap["tbc"]+"}ServiceEventNotes")
             hmisNote = ET.SubElement(tbcSENotes,"{"+self.extMap["hmis"]+"}note")
             self.referredToProviderID = oneRef.referral_agency_referred_to_idid_num
@@ -409,7 +411,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         if not isNullOrMT(postalCode):
             addZip = ET.SubElement(address,"postalCode")
             addZip.text = postalCode
-	
+
     def updateReported(self, currentObject):
         # update the reported field of the currentObject being passed in.  These should all exist.
         try:

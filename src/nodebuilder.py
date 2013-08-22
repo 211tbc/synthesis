@@ -1,13 +1,12 @@
 from conf import settings
 from conf import inputConfiguration
 import exceptions as exceptions
-import dbobjects
 import traceback
 
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
-from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest
+from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest#, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest
 from errcatalog import catalog
 import os
 from queryobject import QueryObject
@@ -18,7 +17,7 @@ from emailprocessor import XMLProcessorNotifier
 import iniutils
 import resttransport
 import soaptransport
-from Encryption import *
+from Encryption import GPG, DES3, get_incoming_3des_key_iv
 import uuid
 import shutil
 from smtplibrary import smtpInterface
@@ -31,7 +30,6 @@ global svcptxml20writer_loaded
 global svcptxml406writer_loaded
 global jfcsxmlwriter_loaded
 global hl7CCDwriter_loaded
-
 
 hmiscsv30writer_loaded = False
 hmisxml28writer_loaded = False
@@ -59,11 +57,11 @@ class NodeBuilder():
         if self.generateOutputformat == 'svcpoint5':
             try:
                 from synthesis.svcpointxml5writer import SvcPointXML5Writer
-                svcptxml5writer_loaded = True
+                #svcptxml5writer_loaded = True
                 print "import of Svcpt XML Writer, version 5 was successful"
             except Exception as e:
                 print "import of Svcpt XML Writer, version 5 failed", e
-                svcptxml5writer_loaded = False
+                #svcptxml5writer_loaded = False
             if self.transport == "save":
                 self.writer = SvcPointXML5Writer(self.outputFilesPath, queryOptions)
                 print '==== self.writer:', self.writer
@@ -84,17 +82,17 @@ class NodeBuilder():
                 self.validator = hl7CCDXMLTest()
                 print '==== self.validator:', self.validator
 
-        elif self.generateOutputformat == 'svcpoint406':	# JCS
-            try:
-                from synthesis.svcpointxml406writer import SvcPointXMLWriter
-                svcptxml406writer_loaded = True
-                print "import of Svcpt XML Writer, version 4.06 was successful"
-            except:
-                print "import of Svcpt XML Writer, version 4.06 failed"
-                svcptxml406writer_loaded = False
-            if self.transport == "save":
-                self.writer = SvcPointXMLWriter(self.outputFilesPath, queryOptions)
-                self.validator = SvcPoint406XMLTest()
+#         elif self.generateOutputformat == 'svcpoint406':	# JCS
+#             try:
+#                 from synthesis.svcpointxml406writer import SvcPointXMLWriter
+#                 svcptxml406writer_loaded = True
+#                 print "import of Svcpt XML Writer, version 4.06 was successful"
+#             except:
+#                 print "import of Svcpt XML Writer, version 4.06 failed"
+#                 svcptxml406writer_loaded = False
+#             if self.transport == "save":
+#                 self.writer = SvcPointXMLWriter(self.outputFilesPath, queryOptions)
+#                 self.validator = SvcPoint406XMLTest()
             
 #        elif self.generateOutputformat == 'svcpoint20':
 #            #from svcPointXML20writer import SvcPointXML20Writer
@@ -136,21 +134,21 @@ class NodeBuilder():
                 self.writer = HMISXMLWriter(self.outputFilesPath, queryOptions)                    
                 self.validator = HUDHMIS30XMLTest() 
             
-        elif self.generateOutputformat == 'hmiscsv30':
-            try:
-                from hmiscsv30writer import HmisCsv30Writer
-                hmiscsv30writer_loaded = True
-            except:
-                hmiscsv30writer_loaded = False
-            if self.transport == "save":
-                self.writer = HmisCsv30Writer(self.outputFilesPath, queryOptions, debug=True)                    
+        #elif self.generateOutputformat == 'hmiscsv30':
+            #try:
+                #from hmiscsv30writer import HmisCSV30Writer
+                #hmiscsv30writer_loaded = True
+            #except:
+                #hmiscsv30writer_loaded = False
+            #if self.transport == "save":
+                #self.writer = HmisCsv30Writer(self.outputFilesPath, queryOptions, debug=True)                    
             #self.validator = HmisCsv30Test()           
-        elif self.generateOutputformat == 'jfcsxml':
-            print "Need to hook up the JFCSWriter in Nodebuilder"
+        #elif self.generateOutputformat == 'jfcsxml':
+            #print "Need to hook up the JFCSWriter in Nodebuilder"
 #            self.writer = JFCSXMLWriter()                   
 #            self.validator = JFCSXMLTest()
         elif self.generateOutputformat == 'pseudo':
-            print "Pseudo writer encounted. Skipping..."
+            print "Pseudo writer encountered. Skipping..."
         else:
             # new error cataloging scheme, pull the error from the catalog, then raise the exception (centralize error catalog management)
             err = catalog.errorCatalog[1001]

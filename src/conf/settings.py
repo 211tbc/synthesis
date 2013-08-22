@@ -181,6 +181,11 @@ SMTPPORT = 25
 SMTPSENDER = 'me@localhost'
 SMTPSENDERPWD = 'mysecret'
 SMTPTLS = False #set to true to connect to something like gmail
+SMTPAUTH = False #set to false if delivering locally and no authentication needed
+
+#report configurations
+#TBC_Monthly_Referral_Report
+TBC_REFERRAL_EMAIL_RECIPIENT = 'me@localhost'
 
 try:
     from local_settings import *

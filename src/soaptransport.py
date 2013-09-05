@@ -313,12 +313,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         import copy
         soap_transport_properties = copy.deepcopy(settings.SOAP_TRANSPORT_PROPERTIES)
 
-        #
-        # FBY: TODO: I'm not sure what the SOAP envelope should look like if ccd_data
-        #            contains multiple documents. For now, I'm only ever interested in
-        #            ccd_data[0]
-
-        ccd = ET.fromstring(ccd_data[0])
+        ccd = ET.fromstring(ccd_data)
 
         #
         # construct the message and header
@@ -362,7 +357,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         if referredToProviderID in ['885','12047','12048','12049','12052','12054','12055','12060','15333','15392','15399','15400','15402','15403','15404','15405','15407','15408','15409','15410','15411','15413','15414','15416','15434','15436','15437','15438','15442','15443','15444','15445','15446','15447','15484','15485','15487','15488','15489','15490','15492','15493','15494','15495','15496','15500','15501','15502','15503','15505','15506','15507','15508','15509','15510','15511','15513','15514','15515','15516','15517','15518','15519','15520','15521','15522','15523','15524','15525','15526','15527','15529','15530','15531','15532','15533','15534','15535','15536','15537','15538']:
             ReceivingProviderId = "29F2951F-7F47-451D-AED8-5729F29347D5"
         # for PEMHS    
-        elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
+        elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034']:
             ReceivingProviderId= "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
         else:
             ReceivingProviderId = ""
@@ -501,37 +496,36 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         # END OPTIONAL TAGS
         #
 
-        # Attachments
-        for data in ccd_data:
-            payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
-            ccd = ET.fromstring(data)
-            ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
-            soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
-                        associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
-                        sourceObject="%s" targetObject="%s" id="%s"
-                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
-                        <rim:Slot name="SubmissionSetStatus">
-                            <rim:ValueList>
-                                <rim:Value>%s</rim:Value>
-                            </rim:ValueList>
-                        </rim:Slot>
-                    </rim:Association>""" % (soap_transport_properties["SOURCE_OBJECT"], \
-                                             ccd_id, \
-                                             soap_transport_properties["ASSOCIATION_ID"], \
-                                             soap_transport_properties["ASSOCIATION_VALUE"])
-            soap_transport_properties["ATTACHMENT_SECTION"] += """<xdsb:Document id="%s">
-                <xop:Include href="cid:1.urn:uuid:%s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
-            </xdsb:Document>""" % (soap_transport_properties["DOCUMENT_OBJECT"], payload_uuid)
-            attachment = data
-            if self._encryption_type != "none":
-                if self._encryption_type == "3des":
-                    keyiv = get_incoming_3des_key_iv()
-                    des3 = DES3()
-                    attachment = base64.b64encode(des3.encrypt(data, keyiv['key'], iv=keyiv['iv']))
-                if self._encryption_type == "openpgp":
-                    gpg = GPG()
-                    attachment = base64.b64encode(gpg.encrypt(data))
-            soap_transport_properties["MIME_BORDER_SECTION"] += """
+        # SOAP Attachment
+        payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
+        ccd = ET.fromstring(ccd_data)
+        ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
+        soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
+                    associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
+                    sourceObject="%s" targetObject="%s" id="%s"
+                    objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
+                    <rim:Slot name="SubmissionSetStatus">
+                        <rim:ValueList>
+                            <rim:Value>%s</rim:Value>
+                        </rim:ValueList>
+                    </rim:Slot>
+                </rim:Association>""" % (soap_transport_properties["SOURCE_OBJECT"], \
+                                         ccd_id, \
+                                         soap_transport_properties["ASSOCIATION_ID"], \
+                                         soap_transport_properties["ASSOCIATION_VALUE"])
+        soap_transport_properties["ATTACHMENT_SECTION"] += """<xdsb:Document id="%s">
+            <xop:Include href="cid:1.urn:uuid:%s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+        </xdsb:Document>""" % (soap_transport_properties["DOCUMENT_OBJECT"], payload_uuid)
+        attachment = ccd_data
+        if self._encryption_type != "none":
+            if self._encryption_type == "3des":
+                keyiv = get_incoming_3des_key_iv()
+                des3 = DES3()
+                attachment = base64.b64encode(des3.encrypt(ccd_data, keyiv['key'], iv=keyiv['iv']))
+            if self._encryption_type == "openpgp":
+                gpg = GPG()
+                attachment = base64.b64encode(gpg.encrypt(ccd_data))
+        soap_transport_properties["MIME_BORDER_SECTION"] += """
 --MIMEBoundaryurn_uuid_%s
 Content-Type: text/xml; charset=us-ascii
 Content-Transfer-Encoding: binary
@@ -768,4 +762,4 @@ Purpose section
 </ClinicalDocument>"""
 
     soap = SoapEnv('iH9HiPbW40JbS5m_')
-    soap.send_soap_envelope(ccd_data)
+    soap.send_soap_envelope(ccd_data, '885')

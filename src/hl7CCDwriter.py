@@ -1,21 +1,19 @@
 from interpretpicklist import Interpretpicklist
-#import dateutils
-#from datetime import datetime
+import dateutils
+from datetime import datetime
 import xmlutilities
-#from exceptions import SoftwareCompatibilityError, DataFormatError
+from exceptions import SoftwareCompatibilityError, DataFormatError
 import logger
-#from sys import version
+from sys import version
 import dbobjects
 from writer import Writer
-from zope.interface import implementer
-
-from sqlalchemy import or_, between#, and_
+from zope.interface import implements
+from sqlalchemy import or_, and_, between
 from conf import settings
 from lxml import etree as ET
 
-@implementer(Writer)
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
-    #implements(Writer) # Writer Interface
+    implements (Writer) # Writer Interface
 
     def __init__(self, poutDirectory, processingOptions, debugMessages=None):
         print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__
@@ -39,7 +37,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return self.makeHL7Docs("disk")
 
     def get(self):
-        return [self.makeHL7Docs("string"), self.referredToProviderID]
+        return self.makeHL7Docs("string")
 
     def makeHL7Docs(self,mode):
         self.session = self.db.Session()    # This starts a Transaction
@@ -52,7 +50,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         # Step through Entrys
         # Step through ServiceEventNotes - and all note_text 
         exports = self.session.query(dbobjects.Export)
-        ccd_list = []
+        hl7_output = []
         for oneExport in exports:
             selink = self.session.query(dbobjects.SourceExportLink).filter(
                                         dbobjects.SourceExportLink.export_index_id == oneExport.id).one()
@@ -90,12 +88,13 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                     if mode=="disk":
                         xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")	# JCS - enc. defaults to ASCII w/decl.
                     else:
-                        ccd_list.append(xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"))
+                        # here return the ccd document along with it's referral ID
+                        hl7_output.append((xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"), self.referredToProviderID))
 
         if mode=="disk":
             return True     # Now nodebuilder.run() will find all output files and validate them.
         else:
-            return ccd_list
+            return hl7_output
 
     def newSubNode(self, parent, nodeName):
         newNode = ET.SubElement(parent, nodeName)
@@ -270,7 +269,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                      "airs" : "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
         refsNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}Referrals", nsmap=self.extMap)
 
-        #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
+       #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
         referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.person_index_id == onePerson.id)
         for oneRef in referrals:
             taxoRec = self.session.query(dbobjects.Taxonomy).filter(dbobjects.Taxonomy.need_index_id == oneRef.need_index_id).one()
@@ -279,7 +278,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
             ET.SubElement(tbcRefID,"{"+self.extMap["hmis"]+"}IDNum").text=oneRef.referral_idid_num
             hmisTaxo = ET.SubElement(refNode,"{"+self.extMap["hmis"]+"}Taxonomy")
             ET.SubElement(hmisTaxo,"{"+self.extMap["airs"]+"}Code").text=taxoRec.code   # TODO Done?
-            # id | export_index_id | site_service_index_id | need_index_id |  code   
+                               # id | export_index_id | site_service_index_id | need_index_id |  code   
             tbcSENotes = ET.SubElement(refNode,"{"+self.extMap["tbc"]+"}ServiceEventNotes")
             hmisNote = ET.SubElement(tbcSENotes,"{"+self.extMap["hmis"]+"}note")
             self.referredToProviderID = oneRef.referral_agency_referred_to_idid_num
@@ -411,7 +410,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         if not isNullOrMT(postalCode):
             addZip = ET.SubElement(address,"postalCode")
             addZip.text = postalCode
-
+	
     def updateReported(self, currentObject):
         # update the reported field of the currentObject being passed in.  These should all exist.
         try:

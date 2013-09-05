@@ -37,7 +37,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return self.makeHL7Docs("disk")
 
     def get(self):
-        return [self.makeHL7Docs("string"), self.referredToProviderID]
+        return self.makeHL7Docs("string")
 
     def makeHL7Docs(self,mode):
         self.session = self.db.Session()    # This starts a Transaction
@@ -50,7 +50,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         # Step through Entrys
         # Step through ServiceEventNotes - and all note_text 
         exports = self.session.query(dbobjects.Export)
-        ccd_list = []
+        hl7_output = []
         for oneExport in exports:
             selink = self.session.query(dbobjects.SourceExportLink).filter(
                                         dbobjects.SourceExportLink.export_index_id == oneExport.id).one()
@@ -88,12 +88,13 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                     if mode=="disk":
                         xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")	# JCS - enc. defaults to ASCII w/decl.
                     else:
-                        ccd_list.append(xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"))
+                        # here return the ccd document along with it's referral ID
+                        hl7_output.append((xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"), self.referredToProviderID))
 
         if mode=="disk":
             return True     # Now nodebuilder.run() will find all output files and validate them.
         else:
-            return ccd_list
+            return hl7_output
 
     def newSubNode(self, parent, nodeName):
         newNode = ET.SubElement(parent, nodeName)
@@ -136,7 +137,10 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                                    onePerson.person_legal_suffix_unhashed)      # TODO Done?  ?LegalMiddleName.Unhashed
         self.addGender(patient, onePerson.person_gender_unhashed)
         birthTime = ET.SubElement(patient,"birthTime")
-        birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
+        try:
+            birthTime.attrib["value"] = onePerson.person_date_of_birth_unhashed.strftime(self.hl7dateform) #"19770701" # TODO Done?
+        except:
+            pass
         self.races = onePerson.fk_person_to_races
         self.addRace(patient, self.races)  #.race_unhashed)
         self.addEthnicity(patient, onePerson.person_ethnicity_unhashed)

@@ -9,7 +9,7 @@ from lxml import etree
 #from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 #from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
 #from sqlalchemy.types import DateTime, Date
-from sqlalchemy.exceptions import IntegrityError
+#from sqlalchemy.exceptions import IntegrityError
 from sqlalchemy.exc import IntegrityError
 import dateutil.parser
 #import logging
@@ -19,8 +19,8 @@ import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
-#class HMISXML28Reader(dbobjects.DatabaseObjects):
-class HMISXML28Reader:#(dbobjects.DatabaseObjects):
+#class HMISXML28Reader(dbobjects.DB):
+class HMISXML28Reader:#(dbobjects.DB):
     '''Implements reader interface.'''
     implements (Reader) 
     
@@ -35,7 +35,7 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
         #clear_mappers()
         
         # moved all mapping ORM logic to new module/class
-        self.session = dbobjects.Session()
+        #self.session = dbobjects.Session()
         #self.export_map()
         #self.database_map()
         #self.person_map()
@@ -66,8 +66,8 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
         root_element = tree.getroot()
         try:
             self.parse_export(root_element)
-            source_ids = parse_source(self, root_element)
-            return source_ids
+            #source_ids = parse_source(self, root_element)
+            #return source_ids
         except IntegrityError:
             fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
@@ -1622,10 +1622,10 @@ class HMISXML28Reader:#(dbobjects.DatabaseObjects):
         if mapping.__name__ == "SiteServiceParticipation":
             self.site_service_index_id = mapped.id
         self.session.commit()
-        if records_dict.has_key("source_id"):
-            return records_dict["source_id"]
-        else:
-            return None
+        #if records_dict.has_key("source_id"):
+            #return records_dict["source_id"]
+        #else:
+            #return None
     
     def existence_test_and_add(self, db_column, query_string, handling):
         '''checks that the query actually has a result and adds to dict'''

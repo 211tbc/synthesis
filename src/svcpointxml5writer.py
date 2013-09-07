@@ -7,18 +7,20 @@ import logger
 from sys import version
 import dbobjects
 from writer import Writer
-from zope.interface import implements
+#from zope.interface import interface
+#from zope.interface import Interface, Attribute, implements
 from sqlalchemy import or_, and_, between
 from conf import settings
 from lxml import etree as ET
+
 
 def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
-class SvcPointXML5Writer():
+class SvcPointXML5Writer(Writer):
     # Writer Interface
-    implements (Writer)
+    #implements(Writer)
 
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
@@ -31,7 +33,7 @@ class SvcPointXML5Writer():
 
         if settings.DEBUG:
             print "XML File to be dumped to: %s" % poutDirectory
-            self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)	# JCS 10/3/11
+            self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)    # JCS 10/3/11
 
         self.outDirectory = poutDirectory
         self.pickList = Interpretpicklist()
@@ -43,13 +45,13 @@ class SvcPointXML5Writer():
 
         self.db = dbobjects.DB()            # JCS 10/05/11
         self.db.Base.metadata.create_all()
-	
+            
     def write(self):
         self.startTransaction()
         self.processXML()
         self.prettify()
         print '==== Self:', self
-        xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")	# JCS, 1 Sep 2012
+        xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")    # JCS, 1 Sep 2012
         #self.commitTransaction()
         return True
 
@@ -98,7 +100,7 @@ class SvcPointXML5Writer():
         #print '==== Source.id:', source.id
         self.configurationRec = self.session.query(dbobjects.SystemConfiguration).filter(and_(dbobjects.SystemConfiguration.source_id == source.source_id, dbobjects.SystemConfiguration.processing_mode == settings.MODE)).one()
         #print '==== sys config.id', self.configurationRec.id
-	
+    
     def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
         if settings.DEBUG:
             print "processXML: Appending XML to Base Record"
@@ -106,7 +108,7 @@ class SvcPointXML5Writer():
         #print '==== root created'
         clients = self.createClients(self.root_element) # JCS - tag is <clientRecords> Only node under clients is <Client>
         print '==== clientRecords created'
-		
+        
         if self.options.reported == True:
             Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
         elif self.options.unreported == True:
@@ -116,8 +118,8 @@ class SvcPointXML5Writer():
         # Now apply the dates to the result set.
         if self.options.alldates == None:
             Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected, self.options.startDate, self.options.endDate))
-		
-        pulledConfigID = 0	# JCS Only pull it if it has changed
+        
+        pulledConfigID = 0    # JCS Only pull it if it has changed
         for self.person in Persons:
             #print "person is: ", self.person
 
@@ -130,26 +132,26 @@ class SvcPointXML5Writer():
             if pulledConfigID != export.id:
                 self.pullConfiguration(export.export_id)
                 pulledConfigID = export.id
-			
+            
             # update the reported flag for person (This needs to be applied to all objects that we are getting data from)
             self.updateReported(self.person)
-            self.ph = self.person.fk_person_to_person_historical	# JCS This is a list of records
+            self.ph = self.person.fk_person_to_person_historical    # JCS This is a list of records
             self.race = self.person.fk_person_to_races
-            self.site_service_part = self.person.site_service_participations	# JCS
+            self.site_service_part = self.person.site_service_participations    # JCS
 
-            information_releases = self.person.fk_person_to_release_of_information	# JCS a set
+            #information_releases = self.person.fk_person_to_release_of_information    # JCS a set
             #self.service_event = self.person.fk_person_to_service_event
             # Instead of generating a number (above), use the client number that is already provided in the legacy system
             # or
-     #       self.iDG.initializeSystemID(self.person.id)
-            self.sysID = self.person.id		# JCS beware set self.sysID
+            # self.iDG.initializeSystemID(self.person.id)
+            self.sysID = self.person.id        # JCS beware set self.sysID
             #if settings.DEBUG:
                 #print "self.person is:", self.person 
             if self.person: # and not self.person.person_legal_first_name_unhashed+self.person.person_legal_last_name_unhashed == None:
                 self.client = self.createClient(clients) # JCS - no clients in svc5? yes as clientRecords
                 # Sub can be: active, anonymous, firstName, suffix, unnamedClient, alias, middleName, childEntryExit,
                 # childReleaseOfInfo, childGoal
-                self.customizeClient(self.client)	
+                self.customizeClient(self.client)    
                 self.customizeClientPersonalIdentifiers(self.client, self.person)
                 self.assessment_data = self.createAssessmentData(self.client) # JCS New - self?
                 self.customizeAssessmentData(self.assessment_data)
@@ -168,7 +170,7 @@ class SvcPointXML5Writer():
 #            site_service_part = self.session.query(dbobjects.SiteServiceParticipation)
 #        else:
 #            pass
-#		
+#        
 #        # setup the date filter also
 #        site_service_part = site_service_part.filter(between(dbobjects.SiteServiceParticipation.site_service_participation_idid_num_date_collected, self.options.startDate, self.options.endDate))
 #
@@ -178,12 +180,12 @@ class SvcPointXML5Writer():
 #            person = EE.fk_participation_to_person
 #            export = person.fk_person_to_export
 #            self.pullConfiguration(export.export_id)
-#            self.updateReported(EE)		# Reporting Update
-#            self.sysID = EE.id			# JCS beware set self.sysID
+#            self.updateReported(EE)        # Reporting Update
+#            self.sysID = EE.id            # JCS beware set self.sysID
 #            self.createEntryExit(entry_exits, EE)
 
 
-        # End of ProcessXML()		
+        # End of ProcessXML()        
 
     def createDoc(self):
 
@@ -215,7 +217,7 @@ class SvcPointXML5Writer():
         root_element.attrib["odb_identifier"] = "qwo7Wsoi"      # Yes lxml
         root_element.attrib["import_identifier"] = "v7:1bl.e"   # Yes lxml
 
-        #root_element.attrib["schema_revision"] = "300_108"	# JCS Not in Schema
+        #root_element.attrib["schema_revision"] = "300_108"    # JCS Not in Schema
         #root_element.text = "\n"
         return root_element
 
@@ -224,29 +226,29 @@ class SvcPointXML5Writer():
         return clients
 
     def createClient(self, clients):
-        client = ET.SubElement(clients, "Client")	#  Cap 'C' in svc5
+        client = ET.SubElement(clients, "Client")    #  Cap 'C' in svc5
         return client
 
     def createChildEntryExit(self,client):
         child_entry_exit = ET.SubElement(client, "childEntryExit") # JCS new - sub-client
         return child_entry_exit
-		
+        
     def createEntryExits(self,root_element):
         entry_exits = ET.SubElement(root_element, "entryExitRecords") # JCS - not in SVP5?
         return entry_exits
-		
+        
     def customizeClient(self, client):
 
         #print "==== Customize Client:", self.configurationRec.odbid, self.person.person_id_id_num
         client.attrib["record_id"] = "CL-" + str(self.person.id) 
         #client.attrib["external_id"] = self.person.person_id_id_num    # JCS -this item is optional
-        client.attrib["system_id"] = self.person.person_id_id_num	    # JCS just a guess ????
+        client.attrib["system_id"] = self.person.person_id_id_num        # JCS just a guess ????
         client.attrib["date_added"] = dateutils.fixDate(datetime.now())
         client.attrib["date_updated"] = dateutils.fixDate(datetime.now())
 
         # SBB20070702 check if self.intakes has none, this is a daily census that is alone
-    def customizeClientPersonalIdentifiers(self,client,recordset):	# params are: self.client, self.person
-	
+    def customizeClientPersonalIdentifiers(self,client,recordset):    # params are: self.client, self.person
+    
         if recordset.person_legal_first_name_unhashed <> "" and recordset.person_legal_first_name_unhashed <> None:
             first_name = ET.SubElement(client, "firstName")
             first_name.text = recordset.person_legal_first_name_unhashed
@@ -260,22 +262,22 @@ class SvcPointXML5Writer():
         if recordset.person_legal_middle_name_unhashed <> "" and recordset.person_legal_middle_name_unhashed <> None:
             mi_initial = ET.SubElement(client, "mi_initial")
             mi_initial.text = self.fixMiddleInitial(recordset.person_legal_middle_name_unhashed)
-			
+            
         # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
         fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed) # JCS  .person_SSN_unhashed)
-        			
-        if fixedSSN <> "" and fixedSSN <> None:	    #ECJ20071111 Omit SSN if it's blank
+                    
+        if fixedSSN <> "" and fixedSSN <> None:        #ECJ20071111 Omit SSN if it's blank
             soc_sec_no = ET.SubElement(client, "socSecNoDashed")
             soc_sec_no.text = fixedSSN
             ssn_data_quality = ET.SubElement(client, "ssnDataQualityValue")
             ssn_data_quality.text = "full ssn reported (hud)"
 
-    def createEntryExit(self, entry_exits, EE):	# Outer Node, one EntryExit(ssp)
+    def createEntryExit(self, entry_exits, EE):    # Outer Node, one EntryExit(ssp)
 
         entry_exit = ET.SubElement(entry_exits, "EntryExit")
 
         entry_exit.attrib["record_id"] = "EE-"+str(EE.id)
-		# ssp-idid-num looks like it ought to be unique, but isn't in sample input data, so append client id????
+        # ssp-idid-num looks like it ought to be unique, but isn't in sample input data, so append client id????
         entry_exit.attrib["system_id"] = EE.site_service_participation_idid_num+"-"+EE.person.person_id_id_num
         # person.site_service_participations = relationship("SiteServiceParticipation", backref="person")
         entry_exit.attrib["date_added"] = dateutils.fixDate(datetime.now())
@@ -286,11 +288,11 @@ class SvcPointXML5Writer():
 
     def customizeEntryExit(self, entry_exit, EE):
         # Schema expects one of ( active, typeEntryExit, client, exitDate, reasonLeavingValue, reasonLeavingOther,
-		#    destinationValue, destinationOther, notes, group )
+        #    destinationValue, destinationOther, notes, group )
         # There is no type in our input XML, nor a field in ssp. Schema needs {'basic', 'basic center program entry/exit',
-		#   'hprp', 'hud', 'path', 'quick call', 'standard', 'transitional living program entry/exit'}
-        type = ET.SubElement(entry_exit, "typeEntryExit")	# JCS  this is a fudge to pass validation
-        type.text = "basic"	# "hud-40118"
+        #   'hprp', 'hud', 'path', 'quick call', 'standard', 'transitional living program entry/exit'}
+        type1 = ET.SubElement(entry_exit, "typeEntryExit")    # JCS  this is a fudge to pass validation
+        type1.text = "basic"    # "hud-40118"
 
         provider_id = ET.SubElement(entry_exit, "provider")
         provider_id.text = '%s' % self.configurationRec.providerid
@@ -300,8 +302,8 @@ class SvcPointXML5Writer():
             entry_date.text = dateutils.fixDate(EE.participation_dates_start_date)
 
             if EE.participation_dates_end_date <> "" and EE.participation_dates_end_date <> None:
-            	exit_date = ET.SubElement(entry_exit, "exitDate")
-            	exit_date.text = dateutils.fixDate(EE.participation_dates_end_date)
+                exit_date = ET.SubElement(entry_exit, "exitDate")
+                exit_date.text = dateutils.fixDate(EE.participation_dates_end_date)
         return
 
     def createAssessmentData(self, client):        # dynamic content type
@@ -316,29 +318,29 @@ class SvcPointXML5Writer():
             persGender.attrib["date_effective"] = dateutils.fixDate(self.person.person_gender_unhashed_date_effective)
             persGender.text = str(self.person.person_gender_unhashed)
 
-        # dob (Date of Birth)	lots of:SVPPROFDOB	a few:DATEOFBIRTH
+        # dob (Date of Birth)    lots of:SVPPROFDOB    a few:DATEOFBIRTH
         if self.person.person_date_of_birth_unhashed <> "" and self.person.person_date_of_birth_unhashed <> None:
             dob = ET.SubElement(assessment_data, "svpprofdob")
             dob.attrib["date_added"] = dateutils.fixDate(self.person.person_date_of_birth_unhashed_date_collected)
-            dob.attrib["date_effective"] = dateutils.fixDate(datetime.now())	# No date effect. in Person
+            dob.attrib["date_effective"] = dateutils.fixDate(datetime.now())    # No date effect. in Person
             dob.text = dateutils.fixDate(self.person.person_date_of_birth_unhashed)
 
-        # Ethnicity   		lots of:SVPPROFETH	a few:Ethnicity	 uses:ETHNICITYPickOption
+        # Ethnicity           lots of:SVPPROFETH    a few:Ethnicity     uses:ETHNICITYPickOption
         if self.person.person_ethnicity_unhashed <> "" and self.person.person_ethnicity_unhashed <> None:
             # Our Interpretpicklist basically has 2 options. The schema has 23
             ethText = self.pickList.getValue("EthnicityPick",str(self.person.person_ethnicity_unhashed))
             eth = ET.SubElement(assessment_data, "svpprofeth")
             eth.attrib["date_added"] = dateutils.fixDate(self.person.person_ethnicity_unhashed_date_collected)
-            eth.attrib["date_effective"] = dateutils.fixDate(datetime.now())	# No date effect. in Person
+            eth.attrib["date_effective"] = dateutils.fixDate(datetime.now())    # No date effect. in Person
             eth.text = ethText  # str(self.person.person_ethnicity_unhashed)
-	
+    
         # Race    more than one?? JCS
         for race in self.race:
             # JCS schema has 'RACEPickOption' - using existing RacePick for now
             raceText = self.pickList.getValue("RacePick",str(race.race_unhashed))
             # print '==== race:', race.race_unhashed, raceText
             if raceText <> None:
-                raceNode = ET.SubElement(assessment_data, "svpprofrace")	# JCS "primaryrace" or "svpprofrace"?
+                raceNode = ET.SubElement(assessment_data, "svpprofrace")    # JCS "primaryrace" or "svpprofrace"?
                 raceNode.attrib["date_added"] = dateutils.fixDate(race.race_date_collected)
                 raceNode.attrib["date_effective"] = dateutils.fixDate(race.race_date_effective)
                 raceNode.text = raceText
@@ -350,7 +352,7 @@ class SvcPointXML5Writer():
             hsText = self.pickList.getValue("HOUSINGSTATUSPickOption",hs.housing_status)
             #print '==== hs:', hsText
             if hsText <> None:
-                housingStatus = ET.SubElement(assessment_data, "svp_hud_housingstatus")	# JCS
+                housingStatus = ET.SubElement(assessment_data, "svp_hud_housingstatus")    # JCS
                 housingStatus.attrib["date_added"] = dateutils.fixDate(hs.housing_status_date_collected)
                 housingStatus.attrib["date_effective"] = dateutils.fixDate(hs.housing_status_date_effective)
                 housingStatus.text = hsText
@@ -358,7 +360,7 @@ class SvcPointXML5Writer():
             foster = self.session.query(dbobjects.FosterChildEver).filter(dbobjects.FosterChildEver.person_historical_index_id == ph.id).one()
             fosterText = self.pickList.getValue("ENHANCEDYESNOPickOption",str(foster.foster_child_ever))
             if fosterText <> None:
-                fosterEver = ET.SubElement(assessment_data, "x20wereyoueverafoster")	# JCS
+                fosterEver = ET.SubElement(assessment_data, "x20wereyoueverafoster")    # JCS
                 fosterEver.attrib["date_added"] = dateutils.fixDate(foster.foster_child_ever_date_collected)
                 fosterEver.attrib["date_effective"] = dateutils.fixDate(foster.foster_child_ever_date_effective)
                 fosterEver.text = fosterText
@@ -368,7 +370,7 @@ class SvcPointXML5Writer():
         losaprText = self.pickList.getValue("LENGTHOFTHESTAYPickOption",losapr.length_of_stay_at_prior_residence)
         #print '==== losapr:', losaprText
         if losaprText <> None:
-            lengthOfStay = ET.SubElement(assessment_data, "hud_lengthofstay")	# JCS
+            lengthOfStay = ET.SubElement(assessment_data, "hud_lengthofstay")    # JCS
             lengthOfStay.attrib["date_added"] = dateutils.fixDate(losapr.length_of_stay_at_prior_residence_date_collected)
             lengthOfStay.attrib["date_effective"] = dateutils.fixDate(losapr.length_of_stay_at_prior_residence_date_effective)
             lengthOfStay.text = losaprText
@@ -378,7 +380,7 @@ class SvcPointXML5Writer():
         tolsText = self.pickList.getValue("LIVINGSITTYPESPickOption",tols.prior_residence_code)
         #print '==== (prior) tols:', tolsText
         if tolsText <> None:
-            priorLiving = ET.SubElement(assessment_data, "typeoflivingsituation")	# JCS
+            priorLiving = ET.SubElement(assessment_data, "typeoflivingsituation")    # JCS
             priorLiving.attrib["date_added"] = dateutils.fixDate(tols.prior_residence_code_date_collected)
             priorLiving.attrib["date_effective"] = dateutils.fixDate(tols.prior_residence_code_date_effective)
             priorLiving.text = tolsText
@@ -389,7 +391,7 @@ class SvcPointXML5Writer():
         pdynText = pdyn.has_physical_disability
         #print '==== pdyn:', pdynText
         if pdynText <> None:
-            physDisabYN = ET.SubElement(assessment_data, "svpphysicaldisabilit")	# JCS
+            physDisabYN = ET.SubElement(assessment_data, "svpphysicaldisabilit")    # JCS
             physDisabYN.attrib["date_added"] = dateutils.fixDate(pdyn.has_physical_disability_date_collected)
             # This is required, but input is usually blank - something plugs in now()
             physDisabYN.attrib["date_effective"] = dateutils.fixDate(pdyn.has_physical_disability_date_effective)
@@ -401,7 +403,7 @@ class SvcPointXML5Writer():
         vvsText = vvs.veteran_status
         #print '==== vvs:', vvsText
         if vvsText <> None:
-            vetStat = ET.SubElement(assessment_data, "veteran")	# JCS
+            vetStat = ET.SubElement(assessment_data, "veteran")    # JCS
             vetStat.attrib["date_added"] = dateutils.fixDate(vvs.veteran_status_date_collected)
             vetStat.attrib["date_effective"] = dateutils.fixDate(vvs.veteran_status_date_effective)
             vetStat.text = vvsText
@@ -418,7 +420,7 @@ class SvcPointXML5Writer():
         if settings.DEBUG:
             print "Current XML Picture is"
             print "======================\n" * 2
-            dump(node)
+            ET.dump(node)
             print "======================\n" * 2
 
     def calcHourlyWage(self, monthlyWage):

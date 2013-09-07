@@ -108,21 +108,27 @@ class smtpInterface:
     def sendMessage(self):
         logged_in = False
         print "ServerAddress: %s" % self.settings.SMTPSERVER
-        attempts = 1
-        while attempts <= 5:
-            try:
-                server = smtplib.SMTP(self.settings.SMTPSERVER)
-                server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
-                logged_in = True
-                break
-            except smtplib.socket.error:
-                print "exception: socket error can't connect to smtp server"
-            else:
-                print "no exception: can't connect to smtp server"
-            attempts += 1
-        else:
-            return
-        if self.settings.SMTPSENDERPWD != '' and not logged_in:
+        if self.settings.SMTPAUTH:
+            attempts = 0
+            while attempts <= 5:
+                attempts += 1
+                try:
+                    server = smtplib.SMTP(self.settings.SMTPSERVER)
+                    if self.settings.SMTPTLS:
+                        server.ehlo()
+                        server.starttls()
+                        server.ehlo
+                    else: 
+                        print "no TLS tried for smtp" 
+                    server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
+                    logged_in = True
+                    break
+                except smtplib.socket.error:
+                    print "exception: socket error can't connect to smtp server"
+        else: 
+            print "no authentication specified in settings for smtp"
+            server = smtplib.SMTP(self.settings.SMTPSERVER)
+        if self.settings.SMTPSENDERPWD != '' and not logged_in and self.settings.SMTPAUTH:
             try:
                 server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
             except smtplib.SMTPRecipientsRefused:
@@ -139,6 +145,10 @@ class smtpInterface:
                 if settings.DEBUG:
                     print "some other type of smtp exception"
                 return
+        else:
+            if not logged_in and not self.settings.SMTPAUTH:
+                print "Just sending the message without authentication"
+        print "trying to send the message"
         server.set_debuglevel(0)
         self.formatMessage()
         server.sendmail(self.fromaddr, self.toaddrs, self.msg.as_string())

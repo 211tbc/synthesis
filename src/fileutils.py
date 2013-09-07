@@ -69,10 +69,10 @@ def checkPath(filePath):
             raise
 
 def keyToDict(listVals):
-    dict={}
+    dict1={}
     for key in range(0,len(listVals)):
-        dict.setdefault(listVals[key],key)
-    return dict
+        dict1.setdefault(listVals[key],key)
+    return dict1
     
 def stripData(record, delimiter='\n'):
     #print "ready to strip bad data"
@@ -163,11 +163,11 @@ def suckFile(filename):
     #records = []
     print "Ready to suck file in %s" % filename
     try:
-        file = open(filename, 'r')
+        file1 = open(filename, 'r')
     except:
         print "ERROR: filename: %s not found.  Please investigate" % filename
          
-    records = file.readlines()
+    records = file1.readlines()
         
     print 'sucked in %s records' % len(records)
     
@@ -224,10 +224,10 @@ def grabFiles(directoryToProcess):
     # adding file sucking capability
     files = glob.glob(directoryToProcess)
     # pull list of files
-    for file in files:
-        print "processing: %s" % file
+    for f in files:
+        print "processing: %s" % f
     
-        validFiles.append(file)
+        validFiles.append(f)
     
     print 'Done Grabbing Files'
     return validFiles

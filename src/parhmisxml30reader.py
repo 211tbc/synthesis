@@ -11,14 +11,14 @@ from lxml import etree
 from sqlalchemy.exc import IntegrityError
 import dateutil.parser
 from conf import settings
-import clsexceptions
+import exceptions
 import dbobjects as dbobjects
 import fileutils
 from errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
-#class HMISXML30Reader(dbobjects.DatabaseObjects):
-class HMISXML30Reader(dbobjects.DatabaseObjects): 
+#class HMISXML30Reader(dbobjects.DB):
+class HMISXML30Reader(dbobjects.DB): 
     ''' Implements reader interface '''
     implements (Reader) 
 
@@ -33,7 +33,7 @@ class HMISXML30Reader(dbobjects.DatabaseObjects):
         self.xml_file = xml_file
 
         ''' Instantiate database object '''
-        dbo = dbobjects.DatabaseObjects()
+        dbo = dbobjects.DB()
         self.session = dbo.Session()
 
     def read(self):

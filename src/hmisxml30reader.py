@@ -3,14 +3,14 @@
     This is a log database, so it holds everything and doesn't worry about deduplication.
 '''
 
-import os, sys
+import os#, sys
 from reader import Reader
-from zope.interface import implements
+from zope.interface import implementer
 from lxml import etree
 import dateutil.parser
-import dbobjects
-from dbobjects import *
+from dbobjects import *  # @UnusedWildImport
 
+@implementer(Reader)
 class HMISXML30Reader: 
     
 #    print "Base.metadata before create in hmisxmlreader3: ", Base.metadata
@@ -18,7 +18,7 @@ class HMISXML30Reader:
 #    print "Base.metadata after create in hmisxmlreader3: ", Base.metadata
 
     ''' Implements reader interface '''
-    implements (Reader) 
+    #implements (Reader) 
 
     ''' Define XML namespaces '''
     hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
@@ -32,7 +32,7 @@ class HMISXML30Reader:
         #if settings.DEBUG:
         #    print "does self.xml_file exist?", os.path.exists(self.xml_file)
         ''' Instantiate database object '''
-        #dbo = DatabaseObjects()
+        #dbo = DB()
         self.session = db.Session()
 
     def read(self):

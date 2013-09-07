@@ -19,7 +19,7 @@ from writer import Writer
 from zope.interface import implements
 
 
-class VendorXMLXXWriter(dbobjects.DatabaseObjects):
+class VendorXMLXXWriter(dbobjects.DB):
 
     # Writer Interface
     implements (Writer)

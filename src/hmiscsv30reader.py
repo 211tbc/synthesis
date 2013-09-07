@@ -3,31 +3,32 @@ their informaton into a postgresql database.  This is a log database, so it hold
 everything and doesn't worry about deduplication.  The only thing it enforces 
 are exportids, which must be unique.'''
 
-import sys, os
+#import sys, os
 from reader import Reader
-from zope.interface import implements
-from lxml import etree
-from sqlalchemy.exc import IntegrityError
-import dateutil.parser
+from zope.interface import implementer
+#from lxml import etree
+#from sqlalchemy.exc import IntegrityError
+#import dateutil.parser
 #import logging
-from conf import settings
-import clsExceptions
-import DBObjects
-from fileUtils import fileUtilities
-from errcatalog import catalog
+#from conf import settings
+#import clsExceptions
+import dbobjects
+#from fileUtils import fileUtilities
+#from errcatalog import catalog
 
-class HmisCsv30Reader(DBObjects.databaseObjects):
+@implementer(Reader)
+class HmisCsv30Reader(dbobjects.DB):
     '''Implements reader interface.'''
-    implements (Reader) 
+    #implements (Reader) 
     
     hmis_namespace = None 
     airs_namespace = None
     nsmap = None
-    global FILEUTIL
-    FILEUTIL = fileUtilities(settings.DEBUG, None)
+    #global FILEUTIL
+    #FILEUTIL = fileUtilities(settings.DEBUG, None)
 
     def __init__(self, dir_name):
         pass
         
-if __name__ == "__main__":
-    sys.exit(main()) 
+# if __name__ == "__main__":
+#     sys.exit(main()) 

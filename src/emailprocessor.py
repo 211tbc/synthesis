@@ -31,16 +31,16 @@ class XMLProcessorNotifier(smtpInterface):
         self.mailSystem.setMessageSubject(Subject)
         self.mailSystem.setMessage(Message)
         self.mailSystem.formatMessage()
-        for file in attachment:
+        for f in attachment:
             if self.encrypt:
                 attachment = 'encryptdAttachment.enc'
                 # FIXME encrypt the file before attaching.
-                self.security.encryptFile(file, attachment)
+                self.security.encryptFile(f, attachment)
                 
             else:
-                attachment = file
+                attachment = f
             
-            print 'file: %s' % file
+            print 'file: %s' % f
             self.mailSystem.setAttachmentText(attachment)
         try:
             self.sendMessage()
@@ -76,7 +76,7 @@ class XMLProcessorNotifier(smtpInterface):
     
     def notifyValidationSuccess(self):
         self.mailSystem.setMessageSubject('Success: XMLDocument PASSED Validation')
-        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation proprerly.' % self.docName)
+        self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation properly.' % self.docName)
         try:
             self.sendMessage()
         except Exception, detail:

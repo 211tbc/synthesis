@@ -108,16 +108,16 @@ class NodeBuilder():
 #            self.validator = SVCPOINT20XMLTest()
                 
         elif self.generateOutputformat == 'hmisxml28':
-            try:
-                from hmisxml28writer import HMISXML28Writer#IGNORE:@ImportRedefinition
-                hmisxml28writer_loaded = True
-            except:
-                print "import of HMISXMLWriter, version 2.8, failed"
-                hmisxml28writer_loaded = False
+            #try:
+                #from hmisxml28writer import HMISXML28Writer#IGNORE:@ImportRedefinition
+                #hmisxml28writer_loaded = True
+            #except:
+                #print "import of HMISXMLWriter, version 2.8, failed"
+                #hmisxml28writer_loaded = False
             if self.transport == "save":
                 if settings.DEBUG:
                     print "destination is ", self.outputFilesPath
-                self.writer = HMISXML28Writer(self.outputFilesPath, queryOptions)           
+                #self.writer = HMISXML28Writer(self.outputFilesPath, queryOptions)           
                 self.validator = HUDHMIS28XMLTest()
             
         elif self.generateOutputformat == 'hmisxml30':

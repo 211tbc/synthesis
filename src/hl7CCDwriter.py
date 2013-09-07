@@ -185,17 +185,17 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         leRepOrg = ET.SubElement(legalEnt,"representedOrganization")
         self.addGroupId(leRepOrg, "11", "2-1-1 Tampa Bay Cares")
 
-        participant = ET.SubElement(self.root_element,"participant")            # Root 6
-        participant.attrib["typeCode"] = "IND"
-        assocEnt = ET.SubElement(participant,"associatedEntity")
-        assocEnt.attrib["classCode"] = "GUAR"
-        aeId = ET.SubElement(assocEnt,"id")
-        aeId.attrib["root"] = "4ff51570-83a9-47b7-91f2-93ba30373141"
-        self.addAnAddress(assocEnt, "12 Verde Rd.", "Saint Petersburg", "Florida", "33710")
-        aeTel = ET.SubElement(assocEnt,"telecom")
-        aeTel.attrib["value"] = "tel:(727)111-2222"                 # TODO
-        aePers = ET.SubElement(assocEnt,"associatedPerson")
-        self.addAName(aePers, "", "Jim", "Snow", "")                # TODO
+        #participant = ET.SubElement(self.root_element,"participant")            # Root 6
+        #participant.attrib["typeCode"] = "IND"
+        #assocEnt = ET.SubElement(participant,"associatedEntity")
+        #assocEnt.attrib["classCode"] = "GUAR"
+        #aeId = ET.SubElement(assocEnt,"id")
+        #aeId.attrib["root"] = "4ff51570-83a9-47b7-91f2-93ba30373141"
+        #self.addAnAddress(assocEnt, "12 Verde Rd.", "Saint Petersburg", "Florida", "33710")
+        #aeTel = ET.SubElement(assocEnt,"telecom")
+        #aeTel.attrib["value"] = "tel:(727)111-2222"                 # TODO
+        #aePers = ET.SubElement(assocEnt,"associatedPerson")
+        #self.addAName(aePers, "", "Jim", "Snow", "")                # TODO
         #           TODO Should be telecom node here? under aePers? PersonPhoneNumber>2346543210 
 
         docuOf = ET.SubElement(self.root_element,"documentationOf")             # Root 7

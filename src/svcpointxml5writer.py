@@ -7,8 +7,7 @@ import logger
 from sys import version
 import dbobjects
 from writer import Writer
-#from zope.interface import interface
-#from zope.interface import Interface, Attribute, implements
+from zope.interface import implements
 from sqlalchemy import or_, and_, between
 from conf import settings
 from lxml import etree as ET
@@ -18,9 +17,9 @@ def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
-class SvcPointXML5Writer(Writer):
+class SvcPointXML5Writer():
     # Writer Interface
-    #implements(Writer)
+    implements(Writer)
 
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"

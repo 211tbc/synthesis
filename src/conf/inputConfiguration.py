@@ -48,7 +48,7 @@ SMTPRECIPIENTS = {
         'USES_ENCRYPTION':False
         }
     # input processing
-    "/home/your_username_here/myrestservice/synthesis/synthesis/input_files":
+    ,"/home/your_username_here/myrestservice/synthesis/synthesis/input_files":
         {
         'VENDOR_NAME': 'SomeVendor',
         'SMTPTOADDRESS': ['someone@somedomain.com',],

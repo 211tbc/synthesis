@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hmis:Sources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
- xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
- xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
+    xsi:schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+    xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+    xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
  hmis:version="3.0">
     <hmis:Source>
         <hmis:SourceID hmis:delete="1" hmis:deleteOccurredDate="2011-10-03T18:51:58" hmis:deleteEffective="2011-05-08T18:51:58">

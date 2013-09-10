@@ -1,8 +1,8 @@
 #!/usr/bin/env/python
 # -*- coding: utf-8 -*-
-from conf import settings
+from conf import settings  # @UnusedImport
 from conf import outputConfiguration
-from Encryption import *
+from Encryption import *  # @UnusedWildImport
 import urllib2
 import httplib
 from sys import version
@@ -11,32 +11,32 @@ import uuid
 import base64
 import time
 from exceptions import SoftwareCompatibilityError
-import dbobjects
+#import dbobjects
 
 # py 2.5 support
 # dynamic import of modules
 thisVersion = version[0:3]
 if True:
-    from lxml import etree as ET
+    from lxml import etree as ET  # @UnusedImport
 else:
     if float(settings.MINPYVERSION) < float(version[0:3]):
         try:
             # FIXME ( remove this once done debugging namespace issue )
             #import xml.etree.cElementTree as ET
             import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement, dump
+            from xml.etree.ElementTree import Element, SubElement, dump  # @UnusedImport
         except ImportError:
-            import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement
+            import xml.etree.ElementTree as ET  # @UnusedImport
+            from xml.etree.ElementTree import Element, SubElement  # @UnusedImport
     elif thisVersion == '2.4':
         try:
         # Try to use the much faster C-based ET.
             import cElementTree as ET
-            from elementtree.ElementTree import Element, SubElement, dump
+            from elementtree.ElementTree import Element, SubElement, dump  # @UnusedImport
         except ImportError:
         # Fall back on the pure python one.
             import elementtree.ElementTree as ET
-            from elementtree.ElementTree import Element, SubElement
+            from elementtree.ElementTree import Element, SubElement  # @UnusedImport
     else:
         print 'Sorry, please see the minimum requirements to run this Application'
         theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
@@ -307,8 +307,15 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
     def send_soap_envelope(self, ccd_data, referredToProviderID):
         
         print "soaptransport generating soap"
-
+        SystemUserId = ""  # @UnusedVariable
         ReceivingProviderId = ""
+        # Uncomment this line if you are testing with Netsmart
+        # No referrals will actually go to the providers, 
+        #   which will make them happy during testing
+        SystemUserId = "69470500-66A2-4841-931A-23D226FBC937"
+            
+        #Uncomment this line if you are communicating with Netsmart Production
+        #SystemUserId = "2A5B7129-6A70-473B-995F-B0A459A4E5C6"
 
         import copy
         soap_transport_properties = copy.deepcopy(settings.SOAP_TRANSPORT_PROPERTIES)
@@ -355,10 +362,21 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #03/17/2013 ECJ adding referring provider id to differentiate originating source
         # for Suncoast Center
         if referredToProviderID in ['885','12047','12048','12049','12052','12054','12055','12060','15333','15392','15399','15400','15402','15403','15404','15405','15407','15408','15409','15410','15411','15413','15414','15416','15434','15436','15437','15438','15442','15443','15444','15445','15446','15447','15484','15485','15487','15488','15489','15490','15492','15493','15494','15495','15496','15500','15501','15502','15503','15505','15506','15507','15508','15509','15510','15511','15513','15514','15515','15516','15517','15518','15519','15520','15521','15522','15523','15524','15525','15526','15527','15529','15530','15531','15532','15533','15534','15535','15536','15537','15538']:
-            ReceivingProviderId = "29F2951F-7F47-451D-AED8-5729F29347D5"
+            #old Suncoast Production
+            #ReceivingProviderId = "29F2951F-7F47-451D-AED8-5729F29347D5"
+            #Suncoast Production
+            #ReceivingProviderId= "3634CE56-C001-4CF5-9620-A2E3BAC128AF"
+            #Suncoast Test
+            ReceivingProviderId= "8754B0BB-CC45-465E-9F97-1A9D2F5FE058"
         # for PEMHS    
-        elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034']:
-            ReceivingProviderId= "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
+        elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
+            #old PEMHS production
+            #ReceivingProviderId= "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
+            #PEMHS Production
+            #ReceivingProviderId= "D76C72B3-8DFA-4240-96CC-328B985BB4EA"
+            #PEMHS Test
+            ReceivingProviderId= "D22D0095-FD2E-4011-BEA4-4479AE92C414"
+
         else:
             ReceivingProviderId = ""
 
@@ -544,6 +562,7 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
             "Accept-Encoding"   : "gzip,deflate",
             "Connection"        : "Keep-Alive",
             "MIME-Version"      : "1.0",
+            "SystemUserId"    : SystemUserId,
             "ReceivingProviderId" : ReceivingProviderId,
             "Content-type"      : "multipart/related; type=\"application/xop+xml\"; start=\"<0.urn:uuid:%s@apache.org>\"; start-info=\"application/soap+xml\"; boundary=\"MIMEBoundaryurn_uuid_%s\"; action=\"urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b\"" % (soap_transport_properties["START_UUID"], soap_transport_properties["XML_UUID"]),
             "Content-length"    : "%d" % len(soap_env),

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 xmlns="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"          
-xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
 targetNamespace="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
 elementFormDefault="qualified"
 attributeFormDefault="qualified"
 xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd">
-    <xsd:import namespace="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" schemaLocation="http://xsd.alexandriaconsulting.com/repos/tags/HUD_HMIS_XML/HUD_HMIS_XML_3.0-final-server-move-interim/HUD_HMIS.xsd"/>
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>

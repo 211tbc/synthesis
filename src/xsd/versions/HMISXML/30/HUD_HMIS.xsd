@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsd:schema 
-	targetNamespace="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
-	xmlns="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"	
-	xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+	targetNamespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+	xmlns="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"	
+	xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"	
+	xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"	
 	elementFormDefault="qualified"
 	attributeFormDefault="qualified"
 	version="3.0">
-	<xsd:import namespace="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" schemaLocation="AIRS_3_0_mod.xsd"/>
+	<xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"/>
 		
 	<!-- MAIN -->
 	
@@ -18,7 +18,6 @@
 			<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.1.</xsd:documentation>
 		</xsd:annotation>
 	</xsd:element>
-
 	
 	<!--GLOBAL DEFINITIONS - Importable Top Level Complex Types -->		
 	
@@ -30,7 +29,6 @@
 			<xsd:element name="Line2" type="hmis:string100" minOccurs="0"/>
 			<xsd:element name="City" type="hmis:string50"/>
 			<xsd:element name="County" type="hmis:string50" minOccurs="0"/>
-
 			<xsd:element name="State" type="hmis:state"/>
 			<xsd:element name="ZIPCode" type="hmis:zIPCode" minOccurs="0"/>
 			<xsd:element name="Country" type="hmis:string50" minOccurs="0"/>
@@ -41,7 +39,6 @@
 		<xsd:complexContent>
 			<xsd:extension base="airs:tAgency">
 				<xsd:attributeGroup ref="hmis:deleteStampGroup">
-
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">Allows for the deletion of an agency.  Provide only the airs:tAgency.Key when this is used.</xsd:documentation>
 					</xsd:annotation>
@@ -51,7 +48,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="asset">
-
 		<xsd:sequence>
 			<xsd:element name="AssetID" type="hmis:iDIndex">
 				<xsd:annotation>
@@ -60,7 +56,6 @@
 			</xsd:element>
 			<xsd:element name="AssetCount" type="hmis:bedCountBase">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Quantity of asset tracked.  Usually, this will be "1", if assigned to an individual.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -69,7 +64,6 @@
 					<xsd:documentation xml:lang="en">Currently, the only asset types are beds or units.  If it is not one of these, HUD will not need this asset reported.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="AssetEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Similar to the Inventory Start and End Dates in 2.9G and 2.9H, except this only pertains to one bed/unit.</xsd:documentation>
@@ -78,7 +72,6 @@
 			<xsd:element name="AssetRecordedDate" type="xsd:dateTime">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Simply tracks the date and time the asset was entered into the system for synchronization purposes.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Assignment" type="hmis:assignment" minOccurs="0" maxOccurs="unbounded">
@@ -87,7 +80,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="assignment">
@@ -97,7 +89,6 @@
 					<xsd:documentation xml:lang="en">Assigns a unique identifier to the assignment of the asset to the person.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="PersonID" type="hmis:id">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">ID of the Person linked to this asset assignment.</xsd:documentation>
@@ -106,7 +97,6 @@
 			<xsd:element name="HouseholdID" type="hmis:id" minOccurs="0" maxOccurs="1">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Optional unique identifier of a household associated with this asset assignment.  The Assignment.PersonID should identify a member of this household.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="AssignmentPeriod" type="hmis:dateRangeCapped" minOccurs="0" maxOccurs="unbounded">
@@ -115,7 +105,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="barrier">
@@ -125,7 +114,6 @@
 					<xsd:documentation xml:lang="en">Establishes a unique id for the grouping of Barrier Code and BarrierOther.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="BarrierCode" type="hmis:barrierCode" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15F" xml:lang="en">"If not enrolled, identify problems in enrolling child"</xsd:documentation>
@@ -134,7 +122,6 @@
 			<xsd:element name="BarrierOther" type="hmis:string50" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.15F" xml:lang="en"></xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -146,7 +133,6 @@
 	
 	<xsd:complexType name="barrierCode">
 		<xsd:simpleContent>
-
 			<xsd:extension base="hmis:barrierCodeBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
@@ -157,7 +143,6 @@
 		<xsd:sequence>
 			<xsd:element name="HMISParticipationPeriod" type="hmis:dateRangeOpen" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9J" xml:lang="en">"This is the date when the HMIS participating bed information first applies (i.e., the date when a change in the number of HMIS participating beds occurs for a program’s Bed and Unit Inventory Record)."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -167,7 +152,6 @@
 	<xsd:complexType name="bedCountBase">
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:nonNegativeInteger">
-
 				<xsd:attributeGroup ref="bedAndUnitInfo"/>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -178,7 +162,6 @@
 			<xsd:element name="ChildEnrollmentBarrier" type="hmis:barrier" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15F" xml:lang="en">"If not enrolled, identify problems in enrolling child"</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ChildSchoolLastEnrolledDate" type="hmis:date" minOccurs="0">
@@ -187,7 +170,6 @@
 					<xsd:documentation xml:lang="en">If day not known, use "01" for day.</xsd:documentation>					
 				</xsd:annotation>
 			</xsd:element>
-
 		</xsd:sequence>
 	</xsd:group>
 	
@@ -197,7 +179,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15F" xml:lang="en">If yes [to ChildCurrentlyEnrolledInSchool], name of child’s school.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="ChildMcKinneyVentoLiaison" type="hmis:fourValDKRefused" minOccurs="0">
 				<xsd:annotation>
@@ -206,7 +187,6 @@
 			</xsd:element>
 			<xsd:element name="ChildSchoolType" type="hmis:fourValDKRefused2" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15F" xml:lang="en">"If yes [to ChildCurrentlyEnrolledInSchool], type of school."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -216,7 +196,6 @@
 	<xsd:complexType name="childEnrollmentStatus">
 		<xsd:sequence>
 			<xsd:element name="ChildEnrollmentStatusID" type="hmis:iDIndex">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the School Enrollment Status sequence.</xsd:documentation>
 				</xsd:annotation>
@@ -225,7 +204,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15F" xml:lang="en">"Current enrollment status"</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:choice>
 				<xsd:group ref="hmis:childEnrolledYes">
@@ -234,7 +212,6 @@
 					</xsd:annotation>
 				</xsd:group>
 				<xsd:group ref="hmis:childEnrolledNo">
-
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">Use this group if the child is not currently enrolled in school.</xsd:documentation>
 					</xsd:annotation>
@@ -245,7 +222,6 @@
 	
 	<xsd:complexType name="chronicHealthCondition">
 		<xsd:sequence>
-
 			<xsd:element name="HasChronicHealthCondition" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.5" xml:lang="en">"For the purposes of this Notice, a chronic health condition means a diagnosed condition that is more than three months in duration and is either not curable or has residual effects that limit daily living and require adaptation in function or special assistance."</xsd:documentation>
@@ -254,7 +230,6 @@
 			<xsd:element name="ReceiveChronicHealthServices" type="hmis:fourValDKRefused" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.5" xml:lang="en">"(If yes[to HasChronicHealthCondition]) Currently receiving services or treatment for this condition or received services/treatment prior to exiting the program?</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -264,7 +239,6 @@
 		<xsd:sequence>
 			<xsd:element name="ContactID" type="hmis:iDIndex">
 				<xsd:annotation>
-
 					<xsd:documentation source="Establishes a unique id for the contact" xml:lang="en"></xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -273,7 +247,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.11" xml:lang="en">Because a client may be contacted multiple times on the same day, the response category must include a time stamp (i.e., hour and minute) indicating when the contact occurred in order to uniquely identify each contact. Note that to record a contact in HMIS requires that a client record be established with at least minimal client descriptors included in the Universal Data Elements (e.g., name, gender, race).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="ContactLocation" type="hmis:contactLocation">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.11" xml:lang="en">For the purpose of the APR,  street outreach programs must report the total number of contacts during the operating year by location of contact."</xsd:documentation>
@@ -283,7 +256,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="contactDate">
-
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:dateTime">
 				<xsd:attribute name="dataCollectionStage" type="hmis:fourValBase" use="optional">
@@ -292,7 +264,6 @@
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
-
 		</xsd:simpleContent>
 	</xsd:complexType>
 	
@@ -302,7 +273,6 @@
 				<xsd:attribute name="dataCollectionStage" type="hmis:fourValBase" use="optional">
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C..</xsd:documentation>
-
 					</xsd:annotation>
 				</xsd:attribute>
 			</xsd:extension>
@@ -313,7 +283,6 @@
 		<xsd:sequence>
 			<xsd:element name="ContactMade" type="hmis:contactMade" maxOccurs="unbounded"/>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="date">
@@ -323,7 +292,6 @@
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:date">
 				<xsd:attributeGroup ref="hmis:dateStampGroupStatic"/>
-
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -333,7 +301,6 @@
 			<xsd:documentation xml:lang="en">A date range, both start and end dates are required.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-
 			<xsd:element name="StartDate" type="xsd:dateTime" />
 			<xsd:element name="EndDate" type="xsd:dateTime" />
 		</xsd:sequence>
@@ -343,7 +310,6 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">A date range, but either start or end date is optional.</xsd:documentation>
 		</xsd:annotation>
-
 		<xsd:sequence minOccurs="0"> 
 			<xsd:element name="StartDate" type="xsd:dateTime" minOccurs="0"/>
 			<xsd:element name="EndDate" type="xsd:dateTime" minOccurs="0"/>
@@ -354,7 +320,6 @@
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">ISO date, without timestamp.  Different from hmis:date, as staticDate has no "hmis:dateEffective" attribute.</xsd:documentation>
 		</xsd:annotation>
-
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:date">
 				<xsd:attributeGroup ref="hmis:dateStampGroupStatic"/>
@@ -365,7 +330,6 @@
 	<xsd:complexType name="degree">
 		<xsd:sequence>
 			<xsd:element name="DegreeID" type="hmis:iDIndex">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the DegreeCode DegreeOther set.</xsd:documentation>
 				</xsd:annotation>
@@ -374,7 +338,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">"If client has received a high school diploma, GED or enrolled in post-secondary education, what degree(s) has the client earned"</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="DegreeOther" type="hmis:string50" minOccurs="0">
 				<xsd:annotation>
@@ -385,7 +348,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="degreeCode">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:degreeCodeBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
@@ -395,7 +357,6 @@
 
 	<xsd:complexType name="destinationCode">
 		<xsd:annotation>
-
 			<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.10"/>
 		</xsd:annotation>
 		<xsd:simpleContent>
@@ -406,7 +367,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="destination">
-
 		<xsd:sequence>
 			<xsd:element name="DestinationID" type="hmis:iDIndex">
 				<xsd:annotation>
@@ -416,7 +376,6 @@
 			<xsd:element name="DestinationCode" type="hmis:destinationCode" minOccurs="0">   
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.10" xml:lang="en">Determine the response value that best describes where the client will be staying after they leave the program.</xsd:documentation>
-
 				</xsd:annotation>   
 			</xsd:element>  
 			<xsd:element name="DestinationOther" type="hmis:string50" minOccurs="0">
@@ -428,7 +387,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="destinations">
-
 		<xsd:sequence>
 			<xsd:element name="Destination" type="hmis:destination" maxOccurs="unbounded"/>     
 		</xsd:sequence>
@@ -439,7 +397,6 @@
 			<xsd:element name="HasDevelopmentalDisability" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.4" xml:lang="en">"For the purposes of this Notice, a developmental disability means a severe, chronic disability that is attributed to a mental or physical impairment (or combination of physical and mental impairments) that occurs before 22 years of age and limits the capacity for independent living and economic self-sufficiency."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceiveDevelopmentalDisabilityServicesTreatment" type="hmis:fourValDKRefused" minOccurs="0">
@@ -448,7 +405,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 
 	<xsd:complexType name="dischargeStatus">
@@ -458,7 +414,6 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="dOBHashingChoice">
 		<xsd:sequence>
@@ -469,7 +424,6 @@
 			<xsd:element name="DateOfBirthType" type="hmis:fourValDKRefused2">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.3" xml:lang="en">"In another field, record the appropriate date of birth type (data quality code)."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -480,7 +434,6 @@
 			<xsd:element name="DomesticViolenceSurvivor" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.9" xml:lang="en">"...determine (a) if the client has ever been a victim of domestic violence..."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="DVOccurred" type="hmis:sixValDKRefused2" minOccurs="0">
@@ -489,7 +442,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="elevenVal">
@@ -501,7 +453,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="email">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:emailBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
@@ -512,7 +463,6 @@
 	<xsd:complexType name="employment">
 		<xsd:sequence>
 			<xsd:element name="EmploymentID" type="hmis:iDIndex">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: I.2.</xsd:documentation>
 				</xsd:annotation>
@@ -521,7 +471,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15A" xml:lang="en">"...determine: (1) if the client is currently employed..."</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="HoursWorkedLastWeek" type="hmis:nonNegativeInteger" minOccurs="0">
 				<xsd:annotation>
@@ -530,7 +479,6 @@
 			</xsd:element>
 			<xsd:element name="EmploymentTenure" type="hmis:fiveValDKRefused" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15A" xml:lang="en">"...if currently employed, is the work permanent, temporary, or seasonal..."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -539,7 +487,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15A" xml:lang="en">[If unemployed] Is the client looking for work? [If employed] Is the client looking for additional employment or increased hours at their current job?</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 		</xsd:sequence>
 	</xsd:complexType>
 		
@@ -549,7 +496,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: A.3.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>			
 			<xsd:element name="ExportDate" type="xsd:dateTime">
 				<xsd:annotation>
@@ -559,7 +505,6 @@
 			<xsd:element name="ExportPeriod" type="hmis:dateRangeCapped" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: A.3.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Agency" type="hmis:agency" minOccurs="0" maxOccurs="unbounded">
@@ -567,7 +512,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.1" xml:lang="en">To uniquely identify an organization that operates a CoC Program within the CoC.</xsd:documentation>
 					<xsd:documentation xml:lang="en">Organization Identifier is mapped to airs:tAgency.Key</xsd:documentation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.2" xml:lang="en">To identify the name of each organization that operates a CoC Program within the CoC.</xsd:documentation>
-
 					<xsd:documentation xml:lang="en">Organization Name is mapped to airs:tAgency.Name</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -576,7 +520,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.2.</xsd:documentation>
 				</xsd:annotation>   
 			</xsd:element>
-
 			<xsd:element name="Person" type="hmis:person" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.3.</xsd:documentation>
@@ -585,7 +528,6 @@
 			<xsd:element name="Service" type="hmis:service" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 1.2" xml:lang="en">The 2009 Notice proposes the addition of a set of program descriptor data standards – that is, data to be collected about all homeless assistance and HPRP homelessness prevention programs in the CoC.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Site" type="hmis:site" minOccurs="0" maxOccurs="unbounded">
@@ -594,7 +536,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.5.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="SiteService" type="hmis:siteService" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.6.</xsd:documentation>
@@ -604,7 +545,6 @@
 	</xsd:complexType>
 		
 	<xsd:complexType name="fiveValDKRefused">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:fiveValDKRefusedBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
@@ -615,7 +555,6 @@
 	<xsd:complexType name="fourVal">
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:fourValBase">
-
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -626,7 +565,6 @@
 			<xsd:extension base="hmis:fourValDKRefusedBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
-
 		</xsd:simpleContent>
 	</xsd:complexType>
 	
@@ -637,7 +575,6 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="fourValDKRefused2">
 		<xsd:simpleContent>
@@ -649,7 +586,6 @@
 	
 	<xsd:complexType name="fourValDKRefusedHashingChoice">
 		<xsd:choice>
-
 			<xsd:element name="Unhashed" type="hmis:fourValDKRefusedStatic" minOccurs="0"/>
 			<xsd:element name="Hashed" type="hmis:string50Base" minOccurs="0"/>
 		</xsd:choice>
@@ -660,7 +596,6 @@
 			<xsd:element name="FundingSourceID" type="iDIndex"/>
 			<xsd:element name="FederalCFDA" type="hmis:cFDANumber" minOccurs="0"/>
 			<xsd:element name="ReceivesMcKinneyFunding" type="hmis:twoValBase" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation source="NA">Indicates whether this program receives HUD McKinney-Vento Funding.</xsd:documentation>
 				</xsd:annotation>
@@ -669,7 +604,6 @@
 			<!-- extend with custom LocalFundingSource element-->
 		</xsd:sequence>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="fundingSourceServiceEvent">
 		<xsd:complexContent>
@@ -679,7 +613,6 @@
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">Optional way to indicate if the service event is for a past expenses</xsd:documentation>
 						</xsd:annotation>
-
 					</xsd:element>
 					<xsd:element name="FinancialAssistanceAmount" type="hmis:currency" minOccurs="0">
 						<xsd:annotation>
@@ -688,7 +621,6 @@
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
-
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -700,7 +632,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="fundingSourcesServiceEvent">
-
 		<xsd:sequence>
 			<xsd:element name="FundingSource" type="hmis:fundingSourceServiceEvent" maxOccurs="unbounded"/>
 		</xsd:sequence>
@@ -711,7 +642,6 @@
 			<xsd:extension base="hmis:geographicCodeBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
 			</xsd:extension>
-
 		</xsd:simpleContent>
 	</xsd:complexType>
 	
@@ -723,7 +653,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="healthStatus">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:healthStatusBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
@@ -734,7 +663,6 @@
 	<xsd:complexType name="highestSchoolLevel">
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:highestSchoolLevelBase">
-
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -745,7 +673,6 @@
 			<xsd:element name="HasHIVAIDS" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.6" xml:lang="en">"...determine if the client (a) has been diagnosed with AIDS or has tested positive for HIV..."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceiveHIVAIDSServices" type="hmis:fourValDKRefused" minOccurs="0">
@@ -754,7 +681,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="hMISAsset">
@@ -765,7 +691,6 @@
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="hMISServiceEvent">
@@ -775,7 +700,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15H" xml:lang="en">"To determine the services provided to clients during program participation."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="TypeOfServiceOther" type="hmis:string50Base" minOccurs="0"/>	
 		</xsd:sequence>
 	</xsd:complexType>
@@ -786,7 +710,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.15" xml:lang="en">To count the number of households served in a program.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="HeadOfHouseholdID" type="hmis:iDIndexStamped" minOccurs="0">
 				<xsd:annotation>
@@ -795,7 +718,6 @@
 			</xsd:element>
 			<xsd:element name="Members" type="hmis:members" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.2.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>		
@@ -806,7 +728,6 @@
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="1">
 				<xsd:element name="IDNum" type="xsd:nonNegativeInteger">
-
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
 					</xsd:annotation>
@@ -815,7 +736,6 @@
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
 					</xsd:annotation>
-
 				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
@@ -826,7 +746,6 @@
 			<xsd:choice minOccurs="1" maxOccurs="1">
 				<xsd:element name="IDNum" type="xsd:nonNegativeInteger">
 					<xsd:annotation>
-
 						<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
@@ -835,7 +754,6 @@
 						<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-
 			</xsd:choice>
 		</xsd:sequence>
 		<xsd:attributeGroup ref="hmis:deleteStampGroup">
@@ -844,7 +762,6 @@
 			</xsd:annotation>
 		</xsd:attributeGroup>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="iDIndexStamped">
 		<xsd:complexContent>
@@ -856,7 +773,6 @@
 	
 	<xsd:complexType name="incomeAndSources">
 		<xsd:sequence>
-
 			<xsd:element name="IncomeAndSource" type="hmis:incomeAndSource" maxOccurs="unbounded"/>     
 		</xsd:sequence>
 	</xsd:complexType>
@@ -867,7 +783,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for Income and Sources transactions.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:sequence maxOccurs="unbounded">
 				<xsd:element name="IncomeSourceCode" type="hmis:incomeSourceCode">
@@ -876,7 +791,6 @@
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="IncomeSourceOther" type="hmis:string50" minOccurs="0">
-
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">2010 HUD HMIS Data and Technical Standards, Program-Specific Data Element 4.1.</xsd:documentation>
 					</xsd:annotation>
@@ -885,7 +799,6 @@
     				<xsd:element name="ReceivingIncomeSource" type="hmis:twoVal">
     					<xsd:annotation>
     						<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.1" xml:lang="en">"When a client has income, but does not know the amount, a “Yes” response should be recorded for both the overall income question and the specific source, and the income amount should be left blank. ... To reduce data collection and reporting burden, if a client reports receiving no income from any source in the past 30 days, no additional data collection is required. If a client reports receiving income, an HMIS may be designed such that programs only need to directly enter “yes” for the benefits the clients received. The HMIS software may automatically generate a “No” response for the other income sources. The HMIS may also be designed to automatically generate a “Yes” response where income amounts are recorded. However, since clients often know the source of income, but not the precise amount, users should have the ability to enter “Yes” without recording an exact amount."</xsd:documentation>
-
     					</xsd:annotation>
     				</xsd:element>
     				<xsd:element name="IncomeSourceAmount" type="hmis:nonNegativeInteger" minOccurs="0">
@@ -894,7 +807,6 @@
     						<xsd:documentation xml:lang="en">This is the amount received in the last 30 days.</xsd:documentation>
     					</xsd:annotation>
     				</xsd:element>
-
     			</xsd:choice>
 			</xsd:sequence>
 		</xsd:sequence>
@@ -905,7 +817,6 @@
 			<xsd:extension base="hmis:incomeSourceCodeBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
 			</xsd:extension>
-
 		</xsd:simpleContent>
 	</xsd:complexType>
 	
@@ -915,7 +826,6 @@
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="hmis:bedAndUnitInfo">
-
 				<xsd:sequence>
 					<xsd:element name="InventoryID" type="hmis:iDIndex">
 						<xsd:annotation>
@@ -924,7 +834,6 @@
 					</xsd:element>
 					<xsd:element name="BedInventory" type="hmis:bedCountBase" minOccurs="0">
 						<xsd:annotation>
-
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9D" xml:lang="en">"The bed inventory data element is an integer that tracks the total number of beds available for occupancy as of the inventory start date..."</xsd:documentation>
 						</xsd:annotation>	
 					</xsd:element>
@@ -934,7 +843,6 @@
 						</xsd:annotation>   
 					</xsd:element>
 					<xsd:element name="InventoryEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
-
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9G" xml:lang="en">"The inventory effective period constrains when the bed and unit inventory information applies."</xsd:documentation>
 						</xsd:annotation>   
@@ -943,7 +851,6 @@
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">Used for synchronization purposes to differentiate two sets of inventory for the same period.</xsd:documentation>
 						</xsd:annotation>
-
 					</xsd:element>
 					<xsd:element name="UnitInventory" type="xsd:nonNegativeInteger" minOccurs="0">
 						<xsd:annotation>
@@ -953,7 +860,6 @@
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="member">
@@ -964,7 +870,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: IV.7.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -976,7 +881,6 @@
 	
 	<xsd:complexType name="mentalHealthProblem">
 		<xsd:sequence>
-
 			<xsd:element name="HasMentalHealthProblem" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.7" xml:lang="en">"A mental health problem may include serious depression, serious anxiety, hallucinations, violent behavior or thoughts of suicide."</xsd:documentation>
@@ -985,7 +889,6 @@
 			<xsd:element name="MentalHealthIndefinite" type="hmis:fourValDKRefused" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.7" xml:lang="en">"(If yes[to HasMentalHealthProblem]) Expected to be of long-continued and indefinite duration and substantially impairs ability to live independently"</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceiveMentalHealthServices" type="hmis:fourValDKRefused" minOccurs="0">
@@ -994,7 +897,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="militaryBranches">
@@ -1004,7 +906,6 @@
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the Military Branches sequence.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="DischargeStatus" type="hmis:dischargeStatus" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">Discharge status</xsd:documentation>
@@ -1013,7 +914,6 @@
 			<xsd:element name="DischargeStatusOther" type="hmis:string50" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en"></xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="MilitaryBranch" type="hmis:sevenValDKRefused2" minOccurs="0">
@@ -1022,7 +922,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="MilitaryBranchOther" type="hmis:string50" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en"></xsd:documentation>
 				</xsd:annotation>
@@ -1033,7 +932,6 @@
 	<xsd:complexType name="need">
 		<xsd:sequence>
 			<xsd:element name="NeedID" type="hmis:iDIndex">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.f..</xsd:documentation>
 				</xsd:annotation>
@@ -1042,7 +940,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.f..</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="ServiceEventID" type="hmis:id" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
@@ -1051,7 +948,6 @@
 			</xsd:element>
 			<xsd:element name="NeedEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">When the need is occurring.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1060,7 +956,6 @@
 					<xsd:documentation xml:lang="en">This is simply the date the need was determined.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="NeedStatus" type="hmis:threeValBase">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.f..</xsd:documentation>
@@ -1069,7 +964,6 @@
 			<xsd:element name="Taxonomy" type="airs:tTaxonomy" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.f..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>	
 		</xsd:sequence>
@@ -1080,7 +974,6 @@
 			<xsd:element name="NonCashBenefitID" type="hmis:iDIndex">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the non-cash benefit record.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:sequence maxOccurs="unbounded">
@@ -1089,7 +982,6 @@
     					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.2" xml:lang="en">"For each source listed below, determine if the client received any non-cash benefits in the past 30 days. Clients may identify multiple sources of non-cash benefits."</xsd:documentation>
     				</xsd:annotation>
 				</xsd:element>
-
 				<xsd:element name="NonCashSourceOther" type="hmis:string50" minOccurs="0">
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">Free text field to record NonCashSource when "Other" is selected in NonCashSourceCode.</xsd:documentation>
@@ -1098,7 +990,6 @@
 				<xsd:element name="ReceivingNonCashSource" type="hmis:twoVal">
 					<xsd:annotation>
 						<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.2" xml:lang="en">"If a client reports receiving non-cash benefits, an HMIS may be designed such that programs only need to directly enter “Yes” for the benefits the clients received. The HMIS software may automatically generate a “No” response for the other non-cash benefit sources."</xsd:documentation>
-
 					</xsd:annotation>
 				</xsd:element>
 			</xsd:sequence>		
@@ -1110,7 +1001,6 @@
 			<xsd:element name="NonCashBenefit" type="hmis:nonCashBenefit" maxOccurs="unbounded"/>     
 		</xsd:sequence>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="nonCashSourceCode">
 		<xsd:simpleContent>
@@ -1123,7 +1013,6 @@
 	
 	<xsd:complexType name="nonNegativeInteger">
 		<xsd:simpleContent>
-
 			<xsd:extension base="xsd:nonNegativeInteger">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
@@ -1134,7 +1023,6 @@
 		<xsd:sequence>
 			<xsd:element name="NoteID" type="hmis:iDIndex"/>
 			<xsd:element name="NoteText" type="hmis:string255"/>
-
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -1146,7 +1034,6 @@
 	
 	<xsd:complexType name="otherNames">
 		<xsd:sequence>
-
 			<xsd:element name="OtherFirstName" type="hmis:hashingChoiceStamped" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.a..</xsd:documentation>
@@ -1155,7 +1042,6 @@
 			<xsd:element name="OtherMiddleName" type="hmis:hashingChoiceStamped" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.a..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="OtherLastName" type="hmis:hashingChoiceStamped" minOccurs="0">
@@ -1164,7 +1050,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="OtherSuffix" type="hmis:hashingChoiceStamped" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.a..</xsd:documentation>
 				</xsd:annotation>
@@ -1174,17 +1059,14 @@
 
 	<xsd:complexType name="person">
 		<xsd:sequence>
-
 			<xsd:element name="PersonID" type="hmis:iDIndex">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.14" xml:lang="en">"Every client receiving services from a contributory CoC program within a CoC is assigned a Personal Identification Number (PIN), which is a permanent and unique number generated by the HMIS application.  The PIN is used to obtain an unduplicated count of persons served within a CoC."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			
 			<xsd:element name="DateOfBirth" type="hmis:dOBHashingChoice" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.3" xml:lang="en">The date of birth can be used to calculate the age of persons served at time of program entry or at any point in receiving services.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Ethnicity" type="hmis:fourValDKRefusedHashingChoice" minOccurs="0">
@@ -1193,7 +1075,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Gender" type="hmis:sevenValDKRefusedHashingChoice" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.6" xml:lang="en">"To create separate counts of homeless men, women and transgendered clients served."</xsd:documentation>
 				</xsd:annotation>
@@ -1202,7 +1083,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.1" xml:lang="en">"The first, middle, last names, and suffix should be collected to support the unique identification of each person served."</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="LegalLastName" type="hmis:hashingChoiceStamped" minOccurs="0">
 				<xsd:annotation>
@@ -1211,7 +1091,6 @@
 			</xsd:element>
 			<xsd:element name="LegalMiddleName" type="hmis:hashingChoiceStamped" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.1" xml:lang="en">"The first, middle, last names, and suffix should be collected to support the unique identification of each person served."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1220,7 +1099,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.1" xml:lang="en">"The first, middle, last names, and suffix should be collected to support the unique identification of each person served."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="Need" type="hmis:need" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.3.e.i..</xsd:documentation>
@@ -1229,7 +1107,6 @@
 			<xsd:element name="OtherNames" type="hmis:otherNames" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Aliases, nicknames, non-legal names.  See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.a..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>	
 			<xsd:element name="PersonHistorical" type="hmis:personHistorical" minOccurs="0" maxOccurs="unbounded">
@@ -1239,7 +1116,6 @@
 			</xsd:element>
 			<xsd:element name="Race" type="hmis:sevenValDKRefused2HashingChoiceStatic" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.4" xml:lang="en">Race is used to count the number of homeless persons who identify themselves within five different racial categories.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1248,7 +1124,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.3.c..</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="ServiceEvent" type="hmis:serviceEvent" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation>The existence of a service event outside a SiteServiceParticipation is to be used when the person is not enrolled in a SiteService.  One use of this could be for point-in-time counts.</xsd:documentation>
@@ -1257,7 +1132,6 @@
 			<xsd:element name="SiteServiceParticipation" type="hmis:siteServiceParticipation" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.3.e..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SocialSecurityNumber" type="hmis:sSNHashingChoice" minOccurs="0">
@@ -1266,7 +1140,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 
 	<xsd:complexType name="personAddress">
@@ -1278,7 +1151,6 @@
 	</xsd:complexType>	
 	
 	<xsd:complexType name="personAddressBase">
-
 		<xsd:complexContent>
 			<xsd:extension base="hmis:addressBase">
 				<xsd:sequence>
@@ -1287,7 +1159,6 @@
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.10" xml:lang="en">To identify the former geographic location of persons experiencing homelessness or current geographic location of persons who are at risk of homelessness.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-
 					<xsd:element name="ZIPQualityCode" type="hmis:zIPQualityCode" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.10" xml:lang="en">"...record the appropriate zip code type (data quality code)."</xsd:documentation>
@@ -1296,7 +1167,6 @@
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
-
 	</xsd:complexType>	
 
 	<xsd:complexType name="personHistorical">
@@ -1307,7 +1177,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SiteServiceID" type="xsd:nonNegativeInteger" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Attributes these records to a collecting SiteService.  Links to airs:tSiteService.Key</xsd:documentation>
 				</xsd:annotation>
@@ -1316,7 +1185,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">establishes a sequence for child school enrollment</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="ChronicHealthCondition" type="hmis:chronicHealthCondition" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
@@ -1325,7 +1193,6 @@
 			</xsd:element>
 			<xsd:element name="CurrentlyInSchool" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">"Currently in school or working on any degree or certificate"</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1335,7 +1202,6 @@
 				</xsd:annotation>
 			</xsd:element>	
 			<xsd:element name="Degree" type="hmis:degree" minOccurs="0" maxOccurs="unbounded">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">If client has received a high school diploma, GED or enrolled in post-secondary education, what degree(s) has the client earned</xsd:documentation>
 				</xsd:annotation>
@@ -1344,7 +1210,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Groups destination elements into a sequence with ID.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="DisablingCondition" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
@@ -1354,7 +1219,6 @@
 			<xsd:element name="DevelopmentalDisability" type="hmis:developmentalDisability" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.4" xml:lang="en">To count the number of developmentally disabled persons served, determine eligibility for disability benefits, and assess their need for services.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="DomesticViolence" type="hmis:domesticViolence" minOccurs="0" maxOccurs="unbounded">
@@ -1363,7 +1227,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Employment" type="hmis:employment" minOccurs="0" maxOccurs="unbounded">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Groups employment elements into a sequence with ID.</xsd:documentation>
 				</xsd:annotation>
@@ -1372,7 +1235,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.12" xml:lang="en">The definition of a client engagement may vary among programs and communities. As a matter of general principle, an engagement is defined as an interactive client relationship that results in a deliberate client assessment.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="HealthStatus" type="hmis:healthStatus" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
@@ -1382,7 +1244,6 @@
 			<xsd:element name="HighestSchoolLevel" type="hmis:highestSchoolLevel" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">"Highest level of school completed"</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="HIVAIDSStatus" type="hmis:hIVAIDSStatus" minOccurs="0" maxOccurs="unbounded">
@@ -1392,7 +1253,6 @@
 			</xsd:element>	
 			<xsd:element name="HousingStatus" type="hmis:sixValDKRefused2" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.11" xml:lang="en">"A new data element, Housing Status has been added in order to distinguish persons who are literally homeless from those who are at imminent risk of losing housing, or in a stable housing situation.".</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1402,7 +1262,6 @@
 				</xsd:annotation>
 			</xsd:element>	
 			<xsd:element name="HUDHomelessEpisodes" type="hmis:dateRangeOpen" minOccurs="0" maxOccurs="unbounded">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.B.</xsd:documentation>
 				</xsd:annotation>
@@ -1411,7 +1270,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.1" xml:lang="en">"Income received from any source in past 30 days?"</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="IncomeAndSources" type="hmis:incomeAndSources" minOccurs="0">
 				<xsd:annotation>
@@ -1420,7 +1278,6 @@
 			</xsd:element>
 			<xsd:element name="IncomeTotalMonthly" type="hmis:nonNegativeInteger" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.1" xml:lang="en">"the client’s total monthly income (rounded to the nearest U.S. dollar)."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1429,7 +1286,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.9" xml:lang="en">To identify the type of residence and length of stay at that residence just prior to (i.e., the night before) program admission.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="MentalHealthProblem" type="hmis:mentalHealthProblem" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.7" xml:lang="en">"To count the number of persons with mental health problems served and to assess the need for treatment."</xsd:documentation>
@@ -1438,7 +1294,6 @@
 			<xsd:element name="NonCashBenefitsLast30Days" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.2" xml:lang="en">Non-cash benefit received from any source in past 30 days?</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="NonCashBenefits" type="hmis:nonCashBenefits" minOccurs="0">
@@ -1447,7 +1302,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="PersonAddress" type="hmis:personAddress" minOccurs="0" maxOccurs="unbounded">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.B.</xsd:documentation>
 				</xsd:annotation>
@@ -1456,7 +1310,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.B.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="PersonPhoneNumber" type="hmis:phoneNumber" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
@@ -1466,7 +1319,6 @@
 			<xsd:element name="PhysicalDisability" type="hmis:physicalDisability" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.3" xml:lang="en">To count the number of physically disabled persons served, determine eligibility for disability benefits, and assess the need for services.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Pregnancy" type="hmis:pregnancy" minOccurs="0" maxOccurs="unbounded">
@@ -1476,7 +1328,6 @@
 			</xsd:element>
 			<xsd:element name="PriorResidence" type="hmis:priorResidence" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Groups PriorResidence Codes with PriorResidenceOther responses.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1485,7 +1336,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.8" xml:lang="en">"To count the number of persons served with substance abuse problems and to assess the need for treatment."</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="Veteran" type="hmis:veteran" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">To collect a more detailed profile of the homeless veteran’s experience and to determine eligibility for Department of Veterans Affairs (VA) programs and benefits.</xsd:documentation>
@@ -1494,7 +1344,6 @@
 			<xsd:element name="VocationalTraining" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">"Received vocational training or apprenticeship certificates"</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -1504,7 +1353,6 @@
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:phoneNumberBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
-
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -1514,7 +1362,6 @@
 			<xsd:element name="HasPhysicalDisability" type="hmis:fourValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.3" xml:lang="en">"For the purposes of this Notice, a physical disability means a physical impairment which is (a) expected to be of long, continued and indefinite duration, (b) substantially impedes an individual’s ability to live independently, and (c) of such a nature that such ability could be improved by more suitable housing conditions."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceivePhysicalDisabilityServices" type="hmis:fourValDKRefused" minOccurs="0">
@@ -1523,7 +1370,6 @@
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="pITCount">
@@ -1533,7 +1379,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Date range for which the PIT Counts apply.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="PITCountRecordedDate" type="xsd:date">
 				<xsd:annotation>
@@ -1542,7 +1387,6 @@
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="pITHouseholdType" type="threeValBase" use="required">
-
 			<xsd:annotation>
 				<xsd:documentation source="'2010 Housing Inventory and 2010 Point-in-Time Homeless Persons Counts Data Collection Guidance', 1/15/2010" xml:lang="en">Within each sheltered and unsheltered category, PIT homeless person counts will be recorded in the following household types:
 					a. Number of persons in households without children;
@@ -1559,7 +1403,6 @@
 	<xsd:complexType name="pITCounts">
 		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
 			<xsd:element name="PITCount" type="hmis:pITCount">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">for Point In Time Chart</xsd:documentation>
 				</xsd:annotation>
@@ -1569,7 +1412,6 @@
 	
 	<xsd:complexType name="pITCountSet">
 		<xsd:annotation>
-
 			<xsd:documentation xml:lang="en">Based on 1/15/2010 "2010 Housing Inventory and 2010 Point-in-Time Homeless Persons Counts Data Collection Guidance"	</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
@@ -1578,7 +1420,6 @@
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the Pregnancy element sequence.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="HUDWaiverReceived" type="hmis:twoValBase" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">for Point In Time Chart, whether HUD granted a waiver for PIT reporting</xsd:documentation>
@@ -1587,7 +1428,6 @@
 			<xsd:element name="HUDWaiverDate" type="xsd:date" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">for Point In Time Chart, date HUD granted a waiver for PIT reporting</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="HUDWaiverEffectivePeriod" type="dateRangeOpen" minOccurs="0">
@@ -1596,7 +1436,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="LastPITShelteredCountDate" type="xsd:date" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">for Housing Inventory Chart and Point In Time Chart</xsd:documentation>
 				</xsd:annotation>
@@ -1605,7 +1444,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">for Housing Inventory Chart and Point In Time Chart</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="PITCounts" type="hmis:pITCounts" minOccurs="0" >
 				<xsd:annotation>
@@ -1614,7 +1452,6 @@
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="pregnancy">
 		<xsd:sequence>
@@ -1624,7 +1461,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="PregnancyStatus" type="hmis:fourValDKRefused">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15D" xml:lang="en">"In separate fields, determine (a) if a client is pregnant..."</xsd:documentation>
 				</xsd:annotation>
@@ -1633,7 +1469,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15D" xml:lang="en">"If yes, due date."</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1643,7 +1478,6 @@
 			<xsd:element name="PriorResidenceID" type="hmis:iDIndex">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the Prior Residence element sequence.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="PriorResidenceCode" type="hmis:residence" minOccurs="0">
@@ -1652,7 +1486,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="PriorResidenceOther" type="hmis:string50" minOccurs="0"/>
-
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -1662,7 +1495,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the ReasonForLeaving element sequence.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="ReasonForLeaving" type="hmis:elevenVal" minOccurs="0">
 				<xsd:annotation>
@@ -1671,7 +1503,6 @@
 			</xsd:element>
 			<xsd:element name="ReasonForLeavingOther" type="hmis:string50" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Free text field used when "Other" is selected in ReasonForLeaving.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1681,7 +1512,6 @@
 	<xsd:complexType name="region">
 		<xsd:sequence>
 			<xsd:element name="RegionID" type="hmis:id"/>
-
 			<xsd:element name="SiteServiceID" type="xsd:nonNegativeInteger"/>
 			<xsd:element name="RegionType" type="hmis:twoVal" minOccurs="0"/>
 			<xsd:element name="RegionDescription" type="hmis:string30" minOccurs="0"></xsd:element>
@@ -1692,7 +1522,6 @@
 		<xsd:sequence>
 			<xsd:element  name="Region" type="hmis:region" maxOccurs="unbounded"/>
 		</xsd:sequence>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="releaseOfInformation">
@@ -1702,7 +1531,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="SiteServiceID" type="xsd:nonNegativeInteger">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Appendix 1.10.</xsd:documentation>
@@ -1711,7 +1539,6 @@
 			<xsd:element name="Documentation" type="hmis:fourVal">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3:7.12.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="EffectivePeriod" type="hmis:dateRangeOpen"/>
@@ -1720,7 +1547,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3:7.12.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 		</xsd:sequence>
 	</xsd:complexType>			
 	
@@ -1731,7 +1557,6 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="service">
 		<xsd:complexContent>
@@ -1741,7 +1566,6 @@
 						<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.3" xml:lang="en">To uniquely identify each CoC Program within the CoC.</xsd:documentation>
 						<xsd:documentation xml:lang="en">Program Identifier is mapped to airs:tService.Key</xsd:documentation>
 						<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.4" xml:lang="en">To identify the name of each CoC Program within the CoC.</xsd:documentation>
-
 						<xsd:documentation xml:lang="en">Program Name is mapped to airs:tService.Name</xsd:documentation>
 					</xsd:annotation>
 					<xsd:element name="COCCode" type="hmis:string5Base" minOccurs="0">
@@ -1750,7 +1574,6 @@
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="Configuration" minOccurs="0" type="hmis:threeValBase">
-
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6A" xml:lang="en">"...record the site configuration type as follows: 1. Single site, single building. Housing units (or service encounters) are at one site, in a single structure. 2. Single site, multiple buildings. Housing units (or service encounters) are at one site, in multiple structures (e.g., single apartment complex with multiple buildings and program units in two or more buildings). 3. Multiple sites. Housing units (or service encounters) are at multiple sites (e.g., scattered-site housing, outreach)."</xsd:documentation>
 						</xsd:annotation>
@@ -1759,7 +1582,6 @@
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.5" xml:lang="en">To differentiate CoC Programs in the HMIS that provide direct services from organizations that do not provide direct services (such as HMIS Lead Agencies, organizations that oversee or support CoC Programs, or software solution providers).</xsd:documentation>
 						</xsd:annotation>
-
 					</xsd:element>
 					<xsd:element name="FundingSources" type="hmis:fundingSourcesService" minOccurs="0">
 						<xsd:annotation>
@@ -1768,7 +1590,6 @@
 					</xsd:element>
 					<xsd:element name="GranteeIdentifier" type="hmis:string10Base" minOccurs="0">
 						<xsd:annotation>
-
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.13" xml:lang="en">"All subgrantees of a federal HPRP grantee must identify their projects with the original state or local grantee identifier as assigned by HUD."</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
@@ -1777,7 +1598,6 @@
 							<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.4.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-
 					<xsd:element name="Inventory" type="hmis:inventory" minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9" xml:lang="en">To record inventory information for each residential CoC Program in order to produce Housing Inventory data for the CoC application and the AHAR.</xsd:documentation>
@@ -1785,7 +1605,6 @@
 							<xsd:documentation xml:lang="en">Alternatively, each bed can be individually reported using an asset.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-
 					<xsd:element name="ResidentialTrackingMethod" type="hmis:threeValBase" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.12">Record the method used to track the actual nights that a client stays in a program.</xsd:documentation>
@@ -1794,7 +1613,6 @@
 					<xsd:element name="ServiceType" type="hmis:serviceType" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.8" xml:lang="en">To associate each CoC Program with the specific type of service offered.</xsd:documentation>
-
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="ServiceEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
@@ -1803,7 +1621,6 @@
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="ServiceRecordedDate" type="xsd:dateTime">
-
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">Simply the date when this Service data was added to the system for synchronization purposes.  Required.</xsd:documentation>
 						</xsd:annotation>
@@ -1812,7 +1629,6 @@
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.10" xml:lang="en">"This information may be used to track bed utilization and service gaps."</xsd:documentation>
 						</xsd:annotation>
-
 					</xsd:element>
 					<xsd:element name="TargetPopulationB" type="hmis:fourValBase" minOccurs="0">
 						<xsd:annotation>
@@ -1821,7 +1637,6 @@
 					</xsd:element>
 				</xsd:sequence>
 				<xsd:attributeGroup ref="hmis:deleteStampGroup"/>
-
 			</xsd:extension>
 		</xsd:complexContent>	
 	</xsd:complexType>
@@ -1832,7 +1647,6 @@
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="serviceEvent">
@@ -1842,7 +1656,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.d..</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="SiteServiceID" type="xsd:nonNegativeInteger">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Links the ServiceEvent to a particular SiteService</xsd:documentation>
@@ -1851,7 +1664,6 @@
 			<xsd:element name="HouseholdID" type="hmis:id" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">If the person's entire household is also receiving the service, insert the ID of the household receiving this same ServiceEvent.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="FundingSources" type="hmis:fundingSourcesServiceEvent" minOccurs="0">
@@ -1860,7 +1672,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="IsReferral" type="hmis:twoValBase" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
 				</xsd:annotation>
@@ -1869,7 +1680,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="QuantityOfServiceEventUnit" type="hmis:unit" minOccurs="0">
 				<xsd:annotation>
@@ -1879,7 +1689,6 @@
 			<xsd:element name="ServiceEventAIRSCode" type="hmis:string50Base" minOccurs="0">	
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ServiceEventEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
@@ -1888,7 +1697,6 @@
 					<xsd:documentation xml:lang="en">This data element allows a period of time for the service, instead of just a single date, which is also valid.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="ServiceEventProvisionDate" type="xsd:date" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation source="" xml:lang="en">"Record “date of service” as the two-digit month, two-digit day and four-digit year."</xsd:documentation>
@@ -1897,7 +1705,6 @@
 			</xsd:element>
 			<xsd:element name="ServiceEventRecordedDate" type="xsd:dateTime" minOccurs="0">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">This is simply the date the ServiceEvent was recorded in the HMIS system.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -1907,7 +1714,6 @@
 				</xsd:annotation>
 			</xsd:element>	
 			<xsd:element name="ServiceEventIndFam" type="hmis:twoValBase" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
 				</xsd:annotation>
@@ -1916,7 +1722,6 @@
 				<xsd:element name="HMISServiceEventCode" type="hmis:hMISServiceEvent">
 					<xsd:annotation>
 						<xsd:documentation xml:lang="en">Groups HMIS Service Type with free text other response.</xsd:documentation>
-
 					</xsd:annotation>
 				</xsd:element>
 				<xsd:element name="HPRPFinancialAssistanceServiceEventCode" type="hmis:sixValBase" minOccurs="0">
@@ -1926,7 +1731,6 @@
 					</xsd:annotation>
 				</xsd:element>  
 				<xsd:element name="HPRPRelocationStabilizationServiceEventCode" type="hmis:fiveValBase">
-
 					<xsd:annotation>
 						<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.14" xml:lang="en">To determine the housing relocation and stabilization services provided during program participation. This data element is required for HPRP-funded programs in order to complete the QPR and APR.</xsd:documentation>
 					</xsd:annotation>
@@ -1937,7 +1741,6 @@
 	
 	<xsd:complexType name="sevenVal">
 		<xsd:simpleContent>
-
 			<xsd:extension base="hmis:sevenValBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
@@ -1948,7 +1751,6 @@
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:sevenValDKRefusedBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
-
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -1959,7 +1761,6 @@
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="sevenValDKRefused2HashingChoiceStatic">
@@ -1971,7 +1772,6 @@
 	
 	<xsd:complexType name="sevenValDKRefused2Static">
 		<xsd:simpleContent>
-
 			<xsd:extension base="hmis:sevenValDKRefused2Base">
 				<xsd:attributeGroup ref="hmis:dateStampGroupStatic"/>
 			</xsd:extension>
@@ -1982,7 +1782,6 @@
 		<xsd:choice>
 			<xsd:element name="Unhashed" type="hmis:sevenValDKRefused" minOccurs="0"/>
 			<xsd:element name="Hashed" type="hmis:string50" minOccurs="0"/>
-
 		</xsd:choice>
 	</xsd:complexType>
 	
@@ -1993,7 +1792,6 @@
     				<xsd:element name="AgencyKey" type="xsd:nonNegativeInteger" minOccurs="0">
     					<xsd:annotation>
     						<xsd:documentation>This represents ID of parent Agency.</xsd:documentation>
-
     					</xsd:annotation>
     				</xsd:element>
     			</xsd:sequence>
@@ -2002,7 +1800,6 @@
     					<xsd:documentation xml:lang="en">Allows for the deletion of a Site.  Provide only the airs:tSite.Key when this is used.</xsd:documentation>
     				</xsd:annotation>
     			</xsd:attributeGroup>
-
     		</xsd:extension>
     	</xsd:complexContent>
 	</xsd:complexType>
@@ -2013,7 +1810,6 @@
 				<xsd:sequence>
 					<xsd:element name="ServiceID" type="xsd:nonNegativeInteger"/>
 					<xsd:element name="SiteID" type="xsd:nonNegativeInteger">
-
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">A "Site" is, in AIRS XML parlance, the parent of a SiteService; a physical location.  This ID links back up to the parent Site.Key.</xsd:documentation>
 						</xsd:annotation>
@@ -2023,7 +1819,6 @@
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6C" xml:lang="en">For the principal program service site, record the geocode associated with the geographic location of the site.</xsd:documentation>         
 						</xsd:annotation>   
 					</xsd:element>
-
 					<xsd:element name="HMISAsset" type="hmis:hMISAsset" minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">A physical item that can be assigned to an individual.  The two types of assets currently covered by the HMIS Revised Data Standard are housing units and shelter beds, so the generic asset type is extended to make the hMISAsset, which has HMIS-specific asset information.  The aggregate counts of these can serve as a proxy for an Inventory, found in Service.</xsd:documentation>
@@ -2032,7 +1827,6 @@
 					<xsd:element name="HousingType" type="hmis:sevenVal" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6E" xml:lang="en">For the principal program service site, record the appropriate housing type.</xsd:documentation>
-
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="Inventory" type="hmis:inventory" minOccurs="0" maxOccurs="unbounded">
@@ -2041,7 +1835,6 @@
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9" xml:lang="en">The revised data stnadards also state: "These data may also be collected separately for distinct sites within a program, as long as they can be aggregated to the program level.".  The placement of Inventory, here within SiteService, accomodates conveying site-based inventories.  However, this is not required, and Inventory is also included as a subelement of Service, so that non-site-based inventories can be conveyed.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-
 					<xsd:element name="Principal" type="hmis:twoValBase" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6B" xml:lang="en">This yes/no element designates whether this SiteService is the "principal program service site".</xsd:documentation>
@@ -2050,7 +1843,6 @@
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6" xml:lang="en">In the data standards, it mentions that "Programs may choose to record the Site Information data element for each site or facility operated by the program.", so even if a Site Service is not the principal SiteService, information in section 2.6 can still be tracked.</xsd:documentation>
 						</xsd:annotation>   
 					</xsd:element>
-
 					<xsd:element name="PITCountSet" type="hmis:pITCountSet" minOccurs="0" maxOccurs="unbounded">
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">Holds a set of PIT Count data collected at the program site level.</xsd:documentation>
@@ -2059,7 +1851,6 @@
 					<xsd:element name="SiteServiceEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation xml:lang="en">When this SiteService was entered into the system, for synchronization purposes.</xsd:documentation>
-
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="SiteServiceRecordedDate" type="xsd:dateTime" minOccurs="0">
@@ -2068,7 +1859,6 @@
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="SiteServiceType" type="hmis:threeValBase" minOccurs="0">
-
 						<xsd:annotation>
 							<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6D" xml:lang="en">For the principal program service site, record the site type as follows: 1. Non-residential: services only. The program only provides supportive services and does not provide overnight accommodations. 2. Residential: special needs and non-special needs. Residential housing (i.e., site that provides overnight accommodation) is located within a building or complex that houses both persons with special needs—e.g., homeless or formerly homeless persons, persons with substance abuseproblems, persons with mental illness, or persons with HIV/AIDS—andpersons without any special needs. 3. Residential: special needs only. Residential housing is located within a building or complex that houses only persons with special needs—e.g., homeless or formerly homeless persons, persons with substance abuse problems, persons with mental illness, persons with HIV/AIDS, persons with a physical disability, and/or elderly persons.</xsd:documentation>
 						</xsd:annotation>
@@ -2077,7 +1867,6 @@
 				<xsd:attributeGroup ref="deleteStampGroup"/>
 			</xsd:extension>
 		</xsd:complexContent>
-
 	</xsd:complexType>	
 	
 	<xsd:complexType name="siteServiceParticipation">
@@ -2088,7 +1877,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SiteServiceID" type="xsd:nonNegativeInteger">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.e..</xsd:documentation>
 					<xsd:documentation xml:lang="en">Links to airs:tSiteService.Key</xsd:documentation>
@@ -2097,7 +1885,6 @@
 			<xsd:element name="HouseholdID" type="hmis:id" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.e..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>			
 			<xsd:element name="Need" type="hmis:need" minOccurs="0" maxOccurs="unbounded">
@@ -2107,7 +1894,6 @@
 			</xsd:element>
 			<xsd:element name="ParticipationDates" type="hmis:dateRangeOpen">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.12 and 3.13" xml:lang="en">This data element is needed for reporting purposes for all programs and to measure lengths of stay for residential programs.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>			
@@ -2116,7 +1902,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.b..</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="ReasonsForLeaving" type="hmis:reasonForLeaving" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Groups ReasonForLeavingCode with ReasonForLeavingOther responses.</xsd:documentation>
@@ -2125,7 +1910,6 @@
 			<xsd:element name="ServiceEvent" type="hmis:serviceEvent" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.B.3.d..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -2136,7 +1920,6 @@
 			<xsd:extension base="hmis:sixValDKRefusedBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
-
 		</xsd:simpleContent>
 	</xsd:complexType>
 	
@@ -2147,7 +1930,6 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-
 	
 	<xsd:complexType name="source">
 		<xsd:sequence>                   
@@ -2158,7 +1940,6 @@
 			</xsd:element>
 			<xsd:element name="SoftwareVendor" type="hmis:string50Base">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -2167,7 +1948,6 @@
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="SourceContactEmail" type="hmis:emailBase" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2..</xsd:documentation>
@@ -2176,7 +1956,6 @@
 			<xsd:element name="SourceContactExtension" type="hmis:extension" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2..</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SourceContactFirst" type="hmis:string20Base" minOccurs="0">
@@ -2185,7 +1964,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SourceContactLast" type="hmis:string20Base" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2..</xsd:documentation>
 				</xsd:annotation>
@@ -2194,7 +1972,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2..</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="SourceName" type="hmis:string50Base">
 				<xsd:annotation>
@@ -2203,7 +1980,6 @@
 			</xsd:element>
 			<xsd:element name="Export" type="hmis:export" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.3..</xsd:documentation>
 				</xsd:annotation>                   
 			</xsd:element>
@@ -2214,7 +1990,6 @@
 		<xsd:sequence>
 			<xsd:element name="Source" type="hmis:source" minOccurs="1" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.A.2..</xsd:documentation>	
 				</xsd:annotation>
 			</xsd:element>
@@ -2223,7 +1998,6 @@
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">The version number of HMIS XML Schema the XML instance document conforms to (e.g. 3.0).</xsd:documentation>
 			</xsd:annotation>
-
 		</xsd:attribute>
 	</xsd:complexType>
 	
@@ -2234,7 +2008,6 @@
 				<xsd:element name="Hashed" type="hmis:string50" minOccurs="0"/>
 			</xsd:choice>
 			<xsd:element name="SocialSecNumberQualityCode" type="hmis:fourValDKRefused2">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 3.2" xml:lang="en">"In another field, record the appropriate SSN type (data quality code)."</xsd:documentation>
 				</xsd:annotation>
@@ -2244,7 +2017,6 @@
 	
 	<xsd:complexType name="sSNumber">
 		<xsd:simpleContent>
-
 			<xsd:extension base="hmis:sSNumberBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
 			</xsd:extension>
@@ -2255,7 +2027,6 @@
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:stateBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
-
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
@@ -2266,7 +2037,6 @@
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
-
 	</xsd:complexType>
 	
 	<xsd:complexType name="string50">
@@ -2278,7 +2048,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="string100">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:string100Base">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
@@ -2289,7 +2058,6 @@
 	<xsd:complexType name="string255">
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:string255Base">
-
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -2300,7 +2068,6 @@
 			<xsd:element name="HasSubstanceAbuseProblem" type="hmis:sixValDKRefused">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.8" xml:lang="en">"...determine (a) if the client has an alcohol or drug abuse problem or both,..."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SubstanceAbuseIndefinite" type="hmis:fourValDKRefused" minOccurs="0">
@@ -2309,7 +2076,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceiveSubstanceAbuseServices" type="hmis:fourValDKRefused" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.8" xml:lang="en">"(If client has a substance abuse problem) Currently receiving services or treatment for this condition or received services/treatment prior to exiting the program?</xsd:documentation>
 				</xsd:annotation>
@@ -2319,7 +2085,6 @@
 	
 	<xsd:complexType name="twoVal">
 		<xsd:simpleContent>
-
 			<xsd:extension base="hmis:twoValBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
@@ -2330,7 +2095,6 @@
 		<xsd:sequence>
 			<xsd:element name="MilitaryBranches" type="hmis:militaryBranches" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Establishes a sequence for MilitaryBranch and MilitaryBranchOther Responses</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
@@ -2339,7 +2103,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">"Duration of active duty"</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
 			<xsd:element name="ServedInWarZone" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">"Served in a war zone"</xsd:documentation>
@@ -2348,7 +2111,6 @@
 			<xsd:element name="ServiceEra" type="hmis:serviceEra" minOccurs="0" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">"...determine: 1) which military service era did the client serve..."</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="VeteranStatus" type="hmis:fourValDKRefused" minOccurs="0" maxOccurs="unbounded">
@@ -2357,7 +2119,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="WarZonesServed" type="hmis:warZoneServed" minOccurs="0" maxOccurs="unbounded">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a sequence of War Zone related elements.</xsd:documentation>
 				</xsd:annotation>
@@ -2368,7 +2129,6 @@
 	<xsd:complexType name="warZone">
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:warZoneBase">
-
 				<xsd:attributeGroup ref="hmis:dateStampGroup"></xsd:attributeGroup>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -2379,7 +2139,6 @@
 			<xsd:element name="WarZoneID" type="hmis:iDIndex">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Establishes a unique ID for the War Zone sequence.</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="MonthsInWarZone" type="hmis:nonNegativeInteger" minOccurs="0">
@@ -2388,7 +2147,6 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="ReceivedFire" type="hmis:fourValDKRefused" minOccurs="0">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">If yes, [to ServedInWarZone] received hostile or friendly fire"</xsd:documentation>
 				</xsd:annotation>
@@ -2397,7 +2155,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15E" xml:lang="en">"If yes[to ServedInWarZone], name of war zone"</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:element>
 			<xsd:element name="WarZoneOther" type="hmis:string50" minOccurs="0">
 				<xsd:annotation>
@@ -2408,7 +2165,6 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="zIPCode">
-
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:zIPCodeBase">
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
@@ -2419,7 +2175,6 @@
 	<xsd:complexType name="zIPQualityCode">
 		<xsd:simpleContent>
 			<xsd:extension base="hmis:zIPQualityCodeBase">
-
 				<xsd:attributeGroup ref="hmis:dateStampGroup"/>
 			</xsd:extension>
 		</xsd:simpleContent>
@@ -2431,7 +2186,6 @@
 		<xsd:attribute name="bedAvailability" type="hmis:threeValBase">
 			<xsd:annotation>
 				<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9C" xml:lang="en">"Describes the availability of beds based on whether beds are available on a planned basis year-round or seasonally (during a defined period of high demand), or on an ad hoc or temporary basis as demand indicates."</xsd:documentation>
-
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="bedStatus" type="hmis:threeValBase">
@@ -2440,7 +2194,6 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="bedType" type="hmis:threeValBase">
-
 			<xsd:annotation>
 				<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9B" xml:lang="en">"describes the type of program beds based on whether beds are: located in a residential homeless assistance program facility (including cots or mats); provided through a voucher with a hotel or motel; other types of beds"</xsd:documentation>
 			</xsd:annotation>
@@ -2449,7 +2202,6 @@
 			<xsd:annotation>
 				<xsd:documentation>This data element arises from HIC requirements.  The Service also indicates whether it primarily serves individuals or families, but this is more specific for inventory counts for the HIC.</xsd:documentation>
 			</xsd:annotation>
-
 		</xsd:attribute>
 		<xsd:attribute name="chronicHomelessBed" type="hmis:twoValBase">
 			<xsd:annotation>
@@ -2458,7 +2210,6 @@
 			</xsd:annotation>   
 		</xsd:attribute>
 		<xsd:attribute name="domesticViolenceShelterBed" type="hmis:twoValBase">
-
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">For HIC reporting of domestic violence shelter beds</xsd:documentation>
 			</xsd:annotation>
@@ -2467,7 +2218,6 @@
 			<xsd:annotation>
 				<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9A" xml:lang="en">"describes the household type served by beds and units counted in the Bed and Unit Inventory Information data elements"</xsd:documentation>
 			</xsd:annotation>
-
 		</xsd:attribute>
 	</xsd:attributeGroup>
 	
@@ -2477,7 +2227,6 @@
 		</xsd:annotation>
 		<xsd:attribute name="dateCollected" type="xsd:dateTime" use="required">
 			<xsd:annotation>
-
 				<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C..</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2486,7 +2235,6 @@
 				<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C..</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-
 		<xsd:attribute name="dataCollectionStage" type="hmis:fourValBase" use="optional">
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C..</xsd:documentation>
@@ -2496,7 +2244,6 @@
 	
 	<xsd:attributeGroup name="dateStampGroupStatic">
 		<xsd:annotation>
-
 			<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C...</xsd:documentation>
 		</xsd:annotation>
 		<xsd:attribute name="dateCollected" type="xsd:dateTime" use="required">
@@ -2505,7 +2252,6 @@
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="dataCollectionStage" type="hmis:fourValBase" use="optional">
-
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, IV.C..</xsd:documentation>
 			</xsd:annotation>
@@ -2516,7 +2262,6 @@
     	<xsd:attribute name="delete" type="hmis:twoValBase" fixed="1" use="optional">
     		<xsd:annotation>
     			<xsd:documentation xml:lang="en">Optionally allows specification of a deleted record.  If record is to be added, do not append this attribute, since "add" is the default, understood behavior.</xsd:documentation>
-
     		</xsd:annotation>
     	</xsd:attribute>
     	<xsd:attribute name="deleteOccurredDate" type="xsd:dateTime" use="optional">
@@ -2525,7 +2270,6 @@
     		</xsd:annotation>
     	</xsd:attribute>
     	<xsd:attribute name="deleteEffective" type="xsd:dateTime" use="optional">
-
     		<xsd:annotation>
     			<xsd:documentation xml:lang="en">Date deletion effective.</xsd:documentation>
     		</xsd:annotation>
@@ -2536,7 +2280,6 @@
 	
 	<xsd:simpleType name="barrierCodeBase">
 		<xsd:annotation>
-
 			<xsd:documentation>
 				Problems in enrolling child
     				1 = None
@@ -2558,7 +2301,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">None</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
 				<xsd:annotation>
@@ -2567,7 +2309,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="3">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Availability of school records</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2576,7 +2317,6 @@
 					<xsd:documentation xml:lang="en">Birth certificates</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="5">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Legal guardianship requirements</xsd:documentation>
@@ -2585,7 +2325,6 @@
 			<xsd:enumeration value="6">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Transportation</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="7">
@@ -2594,7 +2333,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="8">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Don’t know</xsd:documentation>
 				</xsd:annotation>
@@ -2603,7 +2341,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="10">
 				<xsd:annotation>
@@ -2612,7 +2349,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="11">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Physical examination records</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2621,7 +2357,6 @@
 					<xsd:documentation xml:lang="en">Other</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -2631,7 +2366,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="'2010 Housing Inventory and 2010 Point-in-Time Homeless Persons Counts Data Collection Guidance', 1/15/2010 " xml:lang="en">Number of persons in households without children</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="householdOneAdultOneChild">
 				<xsd:annotation>
@@ -2640,7 +2374,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="householdOnlyChildren">
 				<xsd:annotation>
-
 					<xsd:documentation source="'2010 Housing Inventory and 2010 Point-in-Time Homeless Persons Counts Data Collection Guidance', 1/15/2010 " xml:lang="en">Number of persons in households with only children. This includes only persons age 17 or under, including unaccompanied youth, adolescent parents and their children, adolescent siblings, or other household configurations composed only of children.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>          
@@ -2651,7 +2384,6 @@
 		<xsd:restriction base="xsd:decimal">
 			<xsd:minExclusive value="0"/>
 			<xsd:fractionDigits value="3"/>
-
 			<xsd:totalDigits value="5"></xsd:totalDigits>
 		</xsd:restriction>
 	</xsd:simpleType> 
@@ -2663,7 +2395,6 @@
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="degreeCodeBase">
-
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
 				Degree List
@@ -2682,7 +2413,6 @@
 			<xsd:enumeration value="0">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">None</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="1">
@@ -2691,7 +2421,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Bachelors Degree</xsd:documentation>
 				</xsd:annotation>
@@ -2700,7 +2429,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Masters Degree</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="4">
 				<xsd:annotation>
@@ -2709,7 +2437,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Other graduate/professional degree</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2718,7 +2445,6 @@
 					<xsd:documentation xml:lang="en">Certificate of advanced training</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="8">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Don’t Know</xsd:documentation>
@@ -2727,7 +2453,6 @@
 			<xsd:enumeration value="9">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 		</xsd:restriction>
@@ -2763,7 +2488,6 @@
 				9 = Refused
 			</xsd:documentation>
 		</xsd:annotation>
-
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1">
 				<xsd:annotation>
@@ -2772,7 +2496,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Transitional housing for homeless persons (including homeless youth)*</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2781,7 +2504,6 @@
 					<xsd:documentation xml:lang="en">Permanent housing for formerly homeless persons (such as SHP, S+C, or SRO Mod Rehab)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="4">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Psychiatric hospital or other psychiatric facility</xsd:documentation>
@@ -2790,7 +2512,6 @@
 			<xsd:enumeration value="5">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Substance abuse treatment facility or detox center</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
@@ -2799,7 +2520,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="7">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Jail, prison or juvenile detention facility</xsd:documentation>
 				</xsd:annotation>
@@ -2808,7 +2528,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Don’t Know</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="9">
 				<xsd:annotation>
@@ -2817,7 +2536,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="10">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Rental by client, no ongoing housing subsidy</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2826,7 +2544,6 @@
 					<xsd:documentation xml:lang="en">Owned by client, no ongoing housing subsidy</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="12">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Staying or living with family, temporary tenure (e.g., room, apartment or house)</xsd:documentation>
@@ -2835,7 +2552,6 @@
 			<xsd:enumeration value="13">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Staying or living with friends, temporary tenure (.e.,g, room apartment or house;)</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="14">
@@ -2844,7 +2560,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="15">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Foster care home or foster care group home</xsd:documentation>
 				</xsd:annotation>
@@ -2853,7 +2568,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Place not meant for habitation (e.g., a vehicle, an abandoned building, bus/train/subway station/airport or anywhere outside)</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="17">
 				<xsd:annotation>
@@ -2862,7 +2576,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="18">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Safe Haven</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2871,7 +2584,6 @@
 					<xsd:documentation xml:lang="en">Rental by client, VASH Subsidy</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="20">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Rental by client, other (non-VASH) ongoing housing subsidy</xsd:documentation>
@@ -2880,7 +2592,6 @@
 			<xsd:enumeration value="21">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Owned by client, with ongoing housing subsidy:</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="22">
@@ -2889,7 +2600,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="23">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Staying or living with friends, permanent tenure</xsd:documentation>
 				</xsd:annotation>
@@ -2898,7 +2608,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Deceased</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -2917,7 +2626,6 @@
     				9 = Refused
 			</xsd:documentation>
 		</xsd:annotation>
-
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1">
 				<xsd:annotation>
@@ -2926,7 +2634,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">General</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -2935,7 +2642,6 @@
 					<xsd:documentation xml:lang="en">Medical</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="4">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Bad conduct</xsd:documentation>
@@ -2944,7 +2650,6 @@
 			<xsd:enumeration value="5">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Dishonorable</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
@@ -2953,7 +2658,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="8">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Don’t know</xsd:documentation>
 				</xsd:annotation>
@@ -2962,7 +2666,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>	
@@ -2998,7 +2701,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
-
 			<xsd:minInclusive value="1"/>
 			<xsd:maxInclusive value="11"/>
 		</xsd:restriction>
@@ -3009,7 +2711,6 @@
 			<xsd:pattern value="(([A-Za-z0-9]+_+)|([A-Za-z0-9]+\-+)|([A-Za-z0-9]+\.+)|([A-Za-z0-9]+\++))*[A-Za-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-zA-Z]{2,6}"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-
 	
 	<xsd:simpleType name="extension">
 		<xsd:restriction base="xsd:string">
@@ -3040,7 +2741,6 @@
 				4 = Legal services
 				5 = Credit repair
 			</xsd:documentation>
-
 		</xsd:annotation>
 		
 		<xsd:restriction base="xsd:unsignedInt">
@@ -3052,7 +2752,6 @@
 	<xsd:simpleType name="fiveValDKRefusedBase">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
-
 				Applicable to:
 				Employment Tenure
 				1 = Permanent
@@ -3068,7 +2767,6 @@
 			<xsd:enumeration value="3"/>
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -3104,7 +2802,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
-
 			<xsd:minInclusive value="1"/>
 			<xsd:maxInclusive value="4"/>
 		</xsd:restriction>
@@ -3125,7 +2822,6 @@
     				8 = Don't know
     				9 = Refused
 			</xsd:documentation>
-
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="0"/>
@@ -3136,7 +2832,6 @@
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="fourValDKRefused2Base">
-
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
 				fourValDKRefused2: Applicable to:
@@ -3161,7 +2856,6 @@
 			<xsd:enumeration value="1"/>
 			<xsd:enumeration value="2"/>
 			<xsd:enumeration value="8"/>
-
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -3174,7 +2868,6 @@
 	
 	<xsd:simpleType name="healthStatusBase">
 		<xsd:annotation>
-
 			<xsd:documentation xml:lang="en">	
 				HealthStatus
 				1 = Excellent
@@ -3192,7 +2885,6 @@
 			<xsd:enumeration value="3"/>
 			<xsd:enumeration value="4"/>
 			<xsd:enumeration value="5"/>
-
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
@@ -3216,7 +2908,6 @@
 				11 = GED
 				12 = Post-secondary school
 			</xsd:documentation>
-
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="0">
@@ -3225,7 +2916,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="1">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">Nursery school to 4th grade</xsd:documentation>
 				</xsd:annotation>
@@ -3234,7 +2924,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">5th grade or 6th grade</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="3">
 				<xsd:annotation>
@@ -3243,7 +2932,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="4">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">9th grade</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3252,7 +2940,6 @@
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">10th grade</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="6">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">11th grade</xsd:documentation>
@@ -3261,7 +2948,6 @@
 			<xsd:enumeration value="7">
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">12th grade, No diploma</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="8">
@@ -3270,7 +2956,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="9">
-
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">Refused</xsd:documentation>
 				</xsd:annotation>
@@ -3279,7 +2964,6 @@
 				<xsd:annotation>
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">High school diploma</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="11">
 				<xsd:annotation>
@@ -3288,7 +2972,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="12">
 				<xsd:annotation>
-
 					<xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 4.15B" xml:lang="en">Post-secondary school</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3298,7 +2981,6 @@
 	<xsd:simpleType name="incomeSourceCodeBase">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
-
 				Income Source Code
 				1 = Earned Income (i.e., employment income)
 				2 = Unemployment Insurance 
@@ -3323,7 +3005,6 @@
 					<xsd:documentation xml:lang="en">Earned Income (i.e., employment income)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="2">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Unemployment Insurance</xsd:documentation>
@@ -3332,7 +3013,6 @@
 			<xsd:enumeration value="3">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Supplemental Security Income (SSI)</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="4">
@@ -3341,7 +3021,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Veteran's Disability Payment</xsd:documentation>
 				</xsd:annotation>
@@ -3350,7 +3029,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Private Disability Insurance</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="7">
 				<xsd:annotation>
@@ -3359,7 +3037,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="10">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Temporary Assistance for Needy Families (TANF) (or use local program name)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3368,7 +3045,6 @@
 					<xsd:documentation xml:lang="en">General Assistance (GA) (or use local program name)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="12">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Retirement Income from Social Security</xsd:documentation>
@@ -3377,7 +3053,6 @@
 			<xsd:enumeration value="13">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Veteran’s Pension</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="14">
@@ -3386,7 +3061,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="15">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Child Support</xsd:documentation>
 				</xsd:annotation>
@@ -3395,7 +3069,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Alimony or Other Spousal Support</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="17">
 				<xsd:annotation>
@@ -3404,7 +3077,6 @@
 			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
-
 	
 	<xsd:simpleType name="nonCashSourceCodeBase">
 		<xsd:annotation>
@@ -3427,7 +3099,6 @@
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Supplemental Nutrition Assistance Program (SNAP) (Previously known as Food Stamps)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3436,7 +3107,6 @@
 					<xsd:documentation xml:lang="en">MEDICAID health insurance program (or use local name)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="3">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">MEDICARE health insurance program (or use local name)</xsd:documentation>
@@ -3445,7 +3115,6 @@
 			<xsd:enumeration value="4">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">State Children’s Health Insurance Program (or use local name)</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
@@ -3454,7 +3123,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Veteran’s Administration (VA) Medical Services</xsd:documentation>
 				</xsd:annotation>
@@ -3463,7 +3131,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">TANF Child Care services (or use local name)</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="10">
 				<xsd:annotation>
@@ -3472,7 +3139,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="11">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Other TANF-funded services (or use local name)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3481,7 +3147,6 @@
 					<xsd:documentation xml:lang="en">Section 8, public housing, or other ongoing rental assistance</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="13">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Other source</xsd:documentation>
@@ -3490,7 +3155,6 @@
 			<xsd:enumeration value="14">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Temporary rental assistance</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 		</xsd:restriction>
@@ -3501,7 +3165,6 @@
 			<xsd:pattern value="[2-9][0-9]{2}[2-9][0-9]{2}[0-9]{4}"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-
 	
 	<xsd:simpleType name="residenceBase">
 		<xsd:annotation>
@@ -3534,7 +3197,6 @@
 			<xsd:enumeration value="1">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Emergency shelter, including hotel or motel paid for with emergency shelter voucher*</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
@@ -3543,7 +3205,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="3">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Permanent housing for formerly homeless persons (such as SHP, S+C, or SRO Mod Rehab)</xsd:documentation>
 				</xsd:annotation>
@@ -3552,7 +3213,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Psychiatric hospital or other psychiatric facility</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
 				<xsd:annotation>
@@ -3561,7 +3221,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Hospital (non-psychiatric)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3570,7 +3229,6 @@
 					<xsd:documentation xml:lang="en">Jail, prison or juvenile detention facility</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="8">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Don’t Know</xsd:documentation>
@@ -3579,7 +3237,6 @@
 			<xsd:enumeration value="9">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="12">
@@ -3588,7 +3245,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="13">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Staying or living in a friend’s room, apartment or house</xsd:documentation>
 				</xsd:annotation>
@@ -3597,7 +3253,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Hotel or motel paid for without emergency shelter voucher</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="15">
 				<xsd:annotation>
@@ -3606,7 +3261,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="16">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Place not meant for habitation (e.g., a vehicle, an abandoned building, bus/train/subway station/airport or anywhere outside); inclusive of “non-housing service site (outreach programs only)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3615,7 +3269,6 @@
 					<xsd:documentation xml:lang="en">Other</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="18">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Safe Haven</xsd:documentation>
@@ -3624,7 +3277,6 @@
 			<xsd:enumeration value="19">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Rental by client, with VASH housing subsidy</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="20">
@@ -3633,7 +3285,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="21">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Owned by client, with ongoing housing subsidy:</xsd:documentation>
 				</xsd:annotation>
@@ -3642,7 +3293,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Rental by client, no ongoing housing subsidy</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="23">
 				<xsd:annotation>
@@ -3651,7 +3301,6 @@
 			</xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
-
 	
 	
 	
@@ -3674,7 +3323,6 @@
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Persian Gulf Era (August 1991 – September 10, 2001)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3683,7 +3331,6 @@
 					<xsd:documentation xml:lang="en">Post Vietnam (May 1975 – July 1991)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="3">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Vietnam Era (August 1964 – April 1975)</xsd:documentation>
@@ -3692,7 +3339,6 @@
 			<xsd:enumeration value="4">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Between Korean and Vietnam War (February 1955– July 1964)</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
@@ -3701,7 +3347,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Between WWII and Korean War (August 1947 – May 1950)</xsd:documentation>
 				</xsd:annotation>
@@ -3710,7 +3355,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">World War II (September 1940 – July 1947)</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="8">
 				<xsd:annotation>
@@ -3719,7 +3363,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="9">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -3728,7 +3371,6 @@
 					<xsd:documentation xml:lang="en">Post September 11, 2001 (September 11, 2001 -Present)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -3748,7 +3390,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
-
 			<xsd:minInclusive value="1"/>
 			<xsd:maxInclusive value="9"/>
 		</xsd:restriction>
@@ -3768,7 +3409,6 @@
     					6 = Single homes/townhouses/duplexes
     					7 = Not applicable: non-residential program
 				</xsd:documentation>
-
 			</xsd:annotation>
 			<xsd:minInclusive value="1"/>
 			<xsd:maxInclusive value="7"/>
@@ -3779,7 +3419,6 @@
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:annotation>
 				<xsd:documentation xml:lang="en">
-
 					Applicable to:
 					Gender
     					0 = Female
@@ -3797,7 +3436,6 @@
 			<xsd:enumeration value="3"/>
 			<xsd:enumeration value="4"/>
 			<xsd:enumeration value="8"/>
-
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -3832,7 +3470,6 @@
     				9 = Refused
 			</xsd:documentation>
 		</xsd:annotation>
-
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1"/>
 			<xsd:enumeration value="2"/>
@@ -3842,7 +3479,6 @@
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
-
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="sixValBase">
@@ -3860,7 +3496,6 @@
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1"/>
-
 			<xsd:enumeration value="2"/>
 			<xsd:enumeration value="3"/>
 			<xsd:enumeration value="4"/>
@@ -3871,7 +3506,6 @@
 	
 	<xsd:simpleType name="sixValDKRefusedBase">
 		<xsd:annotation>
-
 			<xsd:documentation xml:lang="en">
 				Applicable to:
 				Substance Abuse Problem 
@@ -3888,7 +3522,6 @@
 			<xsd:enumeration value="1"/>
 			<xsd:enumeration value="2"/>
 			<xsd:enumeration value="3"/>
-
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
@@ -3913,7 +3546,6 @@
     				8= Don’t Know
     				9= Refused
 			</xsd:documentation>
-
 		</xsd:annotation>
 		
 		<xsd:restriction base="xsd:unsignedInt">
@@ -3924,7 +3556,6 @@
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>
 		</xsd:restriction>
-
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="sSNumberBase">
@@ -3936,7 +3567,6 @@
 	<xsd:simpleType name="stateBase">
 		<xsd:restriction base="xsd:string">
 			<!-- US States -->
-
 			<xsd:enumeration value="AK"/>
 			<xsd:enumeration value="AL"/>
 			<xsd:enumeration value="AR"/>
@@ -3946,7 +3576,6 @@
 			<xsd:enumeration value="CT"/>
 			<xsd:enumeration value="DE"/>
 			<xsd:enumeration value="FL"/>
-
 			<xsd:enumeration value="GA"/>
 			<xsd:enumeration value="HI"/>
 			<xsd:enumeration value="IA"/>
@@ -3956,7 +3585,6 @@
 			<xsd:enumeration value="KS"/>
 			<xsd:enumeration value="KY"/>
 			<xsd:enumeration value="LA"/>
-
 			<xsd:enumeration value="MA"/>
 			<xsd:enumeration value="MD"/>
 			<xsd:enumeration value="ME"/>
@@ -3966,7 +3594,6 @@
 			<xsd:enumeration value="MS"/>
 			<xsd:enumeration value="MT"/>
 			<xsd:enumeration value="NC"/>
-
 			<xsd:enumeration value="ND"/>
 			<xsd:enumeration value="NE"/>
 			<xsd:enumeration value="NH"/>
@@ -3976,7 +3603,6 @@
 			<xsd:enumeration value="NY"/>
 			<xsd:enumeration value="OH"/>
 			<xsd:enumeration value="OK"/>
-
 			<xsd:enumeration value="OR"/>
 			<xsd:enumeration value="PA"/>
 			<xsd:enumeration value="RI"/>
@@ -3986,7 +3612,6 @@
 			<xsd:enumeration value="TX"/>
 			<xsd:enumeration value="UT"/>
 			<xsd:enumeration value="VA"/>
-
 			<xsd:enumeration value="VT"/>
 			<xsd:enumeration value="WA"/>
 			<xsd:enumeration value="WI"/>
@@ -3996,7 +3621,6 @@
 			<xsd:enumeration value="DC"/>
 			<!-- US Territories -->
 			<xsd:enumeration value="AS"/>
-
 			<xsd:enumeration value="FM"/>
 			<xsd:enumeration value="GU"/>
 			<xsd:enumeration value="MH"/>
@@ -4006,7 +3630,6 @@
 			<xsd:enumeration value="VI"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-
 		
 	<xsd:simpleType name="string5Base">
 		<xsd:restriction base="xsd:string">
@@ -4018,7 +3641,6 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:maxLength value="10"/>
 		</xsd:restriction>
-
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="string20Base">
@@ -4030,7 +3652,6 @@
 	<xsd:simpleType name="string30Base">
 		<xsd:restriction base="xsd:string">
 			<xsd:maxLength value="30"/>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -4042,7 +3663,6 @@
 	
 	<xsd:simpleType name="string50Base">
 		<xsd:restriction base="xsd:string">
-
 			<xsd:maxLength value="50"/>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -4062,7 +3682,6 @@
 	<xsd:simpleType name="threeValBase">
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">
-
 				threeVal: Applicable to:				
 				Bed Availability
     				1 = Year-round
@@ -4119,7 +3738,6 @@
 	</xsd:simpleType>
 
 	<xsd:simpleType name="twoValBase">
-
 		<xsd:annotation>
 			<xsd:documentation xml:lang="en">	
 				twoVal: Applicable to:
@@ -4162,7 +3780,6 @@
 			<xsd:enumeration value="0"/>
 			<xsd:enumeration value="1"/>
 		</xsd:restriction>
-
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="twoVal2Base">
@@ -4177,7 +3794,6 @@
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1"/>
 			<xsd:enumeration value="2"/>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -4207,7 +3823,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
-
 			<xsd:enumeration value="1">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Food</xsd:documentation>
@@ -4216,7 +3831,6 @@
 			<xsd:enumeration value="2">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Housing placement</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="3">
@@ -4225,7 +3839,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="4">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Temporary housing and other financial aid</xsd:documentation>
 				</xsd:annotation>
@@ -4234,7 +3847,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Transportation</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="6">
 				<xsd:annotation>
@@ -4243,7 +3855,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="7">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Criminal justice/legal services</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -4252,7 +3863,6 @@
 					<xsd:documentation xml:lang="en">Education</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="11">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">HIV/AIDS-related services</xsd:documentation>
@@ -4261,7 +3871,6 @@
 			<xsd:enumeration value="12">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Mental health care/counseling</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="13">
@@ -4270,7 +3879,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="14">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Substance abuse services</xsd:documentation>
 				</xsd:annotation>
@@ -4279,7 +3887,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Employment</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="16">
 				<xsd:annotation>
@@ -4288,7 +3895,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="17">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Day care</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -4297,7 +3903,6 @@
 					<xsd:documentation xml:lang="en">Personal enrichment</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="19">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Referral to other service(s)</xsd:documentation>
@@ -4306,7 +3911,6 @@
 			<xsd:enumeration value="20">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Outreach</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="21">
@@ -4315,7 +3919,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 		</xsd:restriction>
-
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="unit">
@@ -4327,7 +3930,6 @@
 	
 	<xsd:simpleType name="version">
 		<xsd:restriction base="xsd:decimal">
-
 			<xsd:totalDigits value="5"/>
 			<xsd:fractionDigits value="3"/>
 			<xsd:minInclusive value="0.001"/>
@@ -4351,7 +3953,6 @@
 				12 = Don’t know
 				13 = Refused
 			</xsd:documentation>
-
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
 			<xsd:enumeration value="1">
@@ -4360,7 +3961,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="2">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">North Africa</xsd:documentation>
 				</xsd:annotation>
@@ -4369,7 +3969,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Vietnam</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="4">
 				<xsd:annotation>
@@ -4378,7 +3977,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="5">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">South China Sea</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -4387,7 +3985,6 @@
 					<xsd:documentation xml:lang="en">China, Burma, India</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
-
 			<xsd:enumeration value="7">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Korea</xsd:documentation>
@@ -4396,7 +3993,6 @@
 			<xsd:enumeration value="8">
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">South Pacific</xsd:documentation>
-
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="9">
@@ -4405,7 +4001,6 @@
 				</xsd:annotation>
 			</xsd:enumeration>
 			<xsd:enumeration value="10">
-
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Other</xsd:documentation>
 				</xsd:annotation>
@@ -4414,7 +4009,6 @@
 				<xsd:annotation>
 					<xsd:documentation xml:lang="en">Afghanistan</xsd:documentation>
 				</xsd:annotation>
-
 			</xsd:enumeration>
 			<xsd:enumeration value="12">
 				<xsd:annotation>
@@ -4423,7 +4017,6 @@
 			</xsd:enumeration>
 			<xsd:enumeration value="13">
 				<xsd:annotation>
-
 					<xsd:documentation xml:lang="en">Refused</xsd:documentation>
 				</xsd:annotation>
 			</xsd:enumeration>
@@ -4433,7 +4026,6 @@
 	<xsd:simpleType name="zIPCodeBase">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[0-9]{5}(-[0-9]{4})?"/>
-
 		</xsd:restriction>
 	</xsd:simpleType>
 	
@@ -4447,7 +4039,6 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedInt">
-
 			<xsd:enumeration value="1"/>
 			<xsd:enumeration value="8"/>
 			<xsd:enumeration value="9"/>

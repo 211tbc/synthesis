@@ -1,6 +1,5 @@
-
 old way (pylons):
 $:~/myrestservice/synthesis/synthesis> ../../bin/python tests/tbctest1.py
 
 new way (pyramid):
-$:~/myrestservice/synthesis/synthesis> ../../bin/python test_scripts/tbcctest.py
+$:~/myrestservice/synthesis/synthesis> ../../bin/python test_scripts/tbctest.py

@@ -653,7 +653,7 @@ CDA Header
 		<assignedAuthor>
 			<id root="20cf14fb-b65c-4c8c-a54d-b0cca834c18c"/> <!-- If author has an associated representedOrganization with no assignedPerson or assignedAuthoringDevice, then the value for “ClinicalDocument / author /	assignedAuthor / id / @NullFlavor” SHALL be “NA” “Not applicable” 2.16.840.1.113883.5.1008 NullFlavor STATIC.	-->
 			<assignedPerson>
-				<name><prefix>Dr.</prefix><given>Robert</given><family>Dolin</family></name>
+				<name><given>Edward</given><family>Perry</family></name>
 			</assignedPerson>
 			<representedOrganization>
 				<id root="2.16.840.1.113883.19.5"/>
@@ -678,6 +678,7 @@ CDA Header
 			</representedCustodianOrganization>
 		</assignedCustodian>
     </custodian>
+	<!-- Commented this section out since we are currently using the HTTP receivingProviderID to designate recipient
 	<informationRecipient> <!-- Represents to whom or what the summarization is targeted. Corresponds to the CDA R2 ClinicalDocument / informationRecipient participant. This is optional in both CCR and CDA.  CCD MAY contain one or more ClinicalDocument / informationRecipient. -->
         <intendedRecipient>
             <id root="2.16.840.1.113883.19.5"/>
@@ -690,7 +691,7 @@ CDA Header
             <telecom value="tel:(727)333-4444">
             </telecom>
         </intendedRecipient>
-    </informationRecipient>
+    </informationRecipient>-->
 	<!--<legalAuthenticator>
 		<time value="20000407130000+0500"/>
 		<signatureCode code="S"/>
@@ -732,7 +733,7 @@ CDA Header
 				<assignedEntity>
 					<id root="20cf14fb-b65c-4c8c-a54d-b0cca834c18c"/>
 					<assignedPerson>
-						<name><prefix>Dr.</prefix><given>Robert</given><family>Dolin</family></name>
+						<name><given>Edward</given><family>Perry</family></name>
 					</assignedPerson>
 					<representedOrganization>
 						<id root="2.16.840.1.113883.19.5"/>

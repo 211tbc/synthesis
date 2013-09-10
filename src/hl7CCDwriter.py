@@ -156,7 +156,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         authId = ET.SubElement(asgdAuth,"id")
         authId.attrib["root"] = "20cf14fb-b65c-4c8c-a54d-b0cca834c18c"
         asgdPerson = ET.SubElement(asgdAuth,"assignedPerson")
-        self.addAName(asgdPerson, "Dr.", "Robert", "Dolin", None)   # TODO
+        self.addAName(asgdPerson, "", "Edward", "Perry", None)   # TODO
         repOrg = ET.SubElement(asgdAuth,"representedOrganization")
         self.addGroupId(repOrg, "", "2-1-1 Tampa Bay Cares")
 
@@ -165,13 +165,13 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         custodOrg = ET.SubElement(assigned,"representedCustodianOrganization")
         self.addGroupId(custodOrg, "", "2-1-1 Tampa Bay Cares")
 
-        infoRec  = ET.SubElement(self.root_element,"informationRecipient")      # Root 4
-        intended = ET.SubElement(infoRec,"intendedRecipient")
-        intendId = ET.SubElement(intended,"id")
-        intendId.attrib["root"] = "2.16.840.1.113883.19.5"
-        self.addAnAddress(intended, "Suncoast Center address here", "Saint Petersburg", "Florida", "33710")
-        IntendTel = ET.SubElement(intended,"telecom")
-        IntendTel.attrib["value"] = "tel:(727)333-4444"
+        #infoRec  = ET.SubElement(self.root_element,"informationRecipient")      # Root 4
+        #intended = ET.SubElement(infoRec,"intendedRecipient")
+        #intendId = ET.SubElement(intended,"id")
+        #intendId.attrib["root"] = "2.16.840.1.113883.19.5"
+        #self.addAnAddress(intended, "Suncoast Center address here", "Saint Petersburg", "Florida", "33710")
+        #IntendTel = ET.SubElement(intended,"telecom")
+        #IntendTel.attrib["value"] = "tel:(727)333-4444"
 
         legalAuth = ET.SubElement(self.root_element,"legalAuthenticator")       # Root 5
         legalTime = ET.SubElement(legalAuth,"time")
@@ -218,7 +218,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                                                     # ClinicalDocument . documentationOf . serviceEvent @ classCode to 'PCPR'
         seeEntId.attrib["root"] = "20cf14fb-b65c-4c8c-a54d-b0cca834c18c"
         seePers = ET.SubElement(seeEnt,"assignedPerson")
-        self.addAName(seePers, "", "Robert", "Dolin", "")           # TODO
+        self.addAName(seePers, "", "Edward", "Perry", "")           # TODO
         seeRep = ET.SubElement(seeEnt,"representedOrganization")
         self.addGroupId(seeRep, oneSource.source_id_id_str, oneSource.source_name)
 
@@ -265,10 +265,9 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return          # End of ProcessXML()		
 
     def addExtension(self,parent, onePerson, oneServEvt):
-        self.extMap = {"ex" : "http://xsd.alexandriaconsulting.com/repos/trunk/HL7_Informal_Extension.xsd",
-                      "tbc" : "http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd",
-                     "hmis" : "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd",
-                     "airs" : "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
+        self.extMap = {"ex" : "http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd",
+                     "hmis" : "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd",
+                     "airs" : "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
         refsNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}Referrals", nsmap=self.extMap)
 
         #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
@@ -276,12 +275,12 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         for oneRef in referrals:
             taxoRec = self.session.query(dbobjects.Taxonomy).filter(dbobjects.Taxonomy.need_index_id == oneRef.need_index_id).one()
             refNode = ET.SubElement(refsNode,"{"+self.extMap["ex"]+"}Referral") # can be many referral elements inside a 'Referrals'
-            tbcRefID = ET.SubElement(refNode,"{"+self.extMap["tbc"]+"}ReferralID")
+            tbcRefID = ET.SubElement(refNode,"{"+self.extMap["ex"]+"}ReferralID")
             ET.SubElement(tbcRefID,"{"+self.extMap["hmis"]+"}IDNum").text=oneRef.referral_idid_num
             hmisTaxo = ET.SubElement(refNode,"{"+self.extMap["hmis"]+"}Taxonomy")
             ET.SubElement(hmisTaxo,"{"+self.extMap["airs"]+"}Code").text=taxoRec.code   # TODO Done?
             # id | export_index_id | site_service_index_id | need_index_id |  code   
-            tbcSENotes = ET.SubElement(refNode,"{"+self.extMap["tbc"]+"}ServiceEventNotes")
+            tbcSENotes = ET.SubElement(refNode,"{"+self.extMap["ex"]+"}ServiceEventNotes")
             hmisNote = ET.SubElement(tbcSENotes,"{"+self.extMap["hmis"]+"}note")
             self.referredToProviderID = oneRef.referral_agency_referred_to_idid_num
             seNotes = self.session.query(dbobjects.ServiceEventNotes).filter(dbobjects.ServiceEventNotes.service_event_index_id
@@ -412,7 +411,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         if not isNullOrMT(postalCode):
             addZip = ET.SubElement(address,"postalCode")
             addZip.text = postalCode
-	
+            
     def updateReported(self, currentObject):
         # update the reported field of the currentObject being passed in.  These should all exist.
         try:

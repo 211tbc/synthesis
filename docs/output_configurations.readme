@@ -50,7 +50,6 @@ destination':
 encryption': 
 
     Encryption can be set to "none", "openpgp", "3des".
-    Currently, only "none" is supported.
 
 frequency: 
 
@@ -104,8 +103,10 @@ SvcPt XML 2.X proprietary HMIS XML (formerly used in production environments)
 Input Transport Modules:
 RESTful Web Service for Orange County Corrections Data
 
-Planned Output Transport Modules:
+Output Transport Modules:
 SOAP IHE XDS.b Web Service for HL-7 CCD XML
+
+Planned Output Transport Modules
 RESTful Web Service for HL-7 CCD XML	
 
  

@@ -66,7 +66,7 @@ Configuration = \
             'destinationURL': 'localhost',
             'transportConfiguration': 'save',
             'encryption': 'none',
-            'destination': '',
+            'destination': settings.BASE_PATH + '/output_files',
             'frequency': 'asap'
         },
     'iH9HiPbW40JbS5m_':#For HUD files in test_files folder
@@ -76,7 +76,7 @@ Configuration = \
             'destinationURL': 'localhost',
             'transportConfiguration': 'save',
             'encryption': 'none',
-            'destination': '',
+            'destination': settings.BASE_PATH + '/output_files',
             'frequency': 'asap'
         },
     'hl7CCD':  # Project Health Level 7 Continuity of Care Document

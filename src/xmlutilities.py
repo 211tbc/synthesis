@@ -8,34 +8,34 @@ import fileutils
 import pickle
 from conf import settings
 from sys import version 
-from exceptions import SoftwareCompatibilityError
+#from exceptions import SoftwareCompatibilityError
 
 thisVersion = version[0:3]
 if True:
     from lxml import etree as ET
-else:
-    if float(settings.MINPYVERSION) < float(version[0:3]):
-        try:
+#else:
+    #if float(settings.MINPYVERSION) < float(version[0:3]):
+        #try:
             # FIXME ( remove this once done debugging namespace issue )
             #import xml.etree.cElementTree as ET
-            import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement, dump
-        except ImportError:
-            import xml.etree.ElementTree as ET
-            from xml.etree.ElementTree import Element, SubElement
-    elif thisVersion == '2.4':
-        try:
+            #import xml.etree.ElementTree as ET
+            #from xml.etree.ElementTree import Element, SubElement, dump
+        #except ImportError:
+            #import xml.etree.ElementTree as ET
+            #from xml.etree.ElementTree import Element, SubElement
+    #elif thisVersion == '2.4':
+        #try:
         # Try to use the much faster C-based ET.
-            import cElementTree as ET
-            from elementtree.ElementTree import Element, SubElement, dump
-        except ImportError:
+            #import cElementTree as ET
+            #from elementtree.ElementTree import Element, SubElement, dump
+        #except ImportError:
         # Fall back on the pure python one.
-            import elementtree.ElementTree as ET
-            from elementtree.ElementTree import Element, SubElement
-    else:
-        print 'Sorry, please see the minimum requirements to run this Application'
-        theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-        raise SoftwareCompatibilityError, theError
+            #import elementtree.ElementTree as ET
+            #from elementtree.ElementTree import Element, SubElement
+else:
+    print 'Sorry, please see the minimum requirements to run this Application'
+    theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
+    raise theError#, SoftwareCompatibilityError
 
 class IDGeneration:    
     def __init__(self):

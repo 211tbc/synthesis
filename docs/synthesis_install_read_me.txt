@@ -69,6 +69,8 @@ SMTPSERVER = 'smtp.gmail.com'
 SMTPPORT = 587
 
 Note, if importing this virtualenv instance as a pydev project, add /usr/lib/python27 to your path as the last entry, or else certain standard python libs that pydev needs won't be found.  Just make it last in the list, if precedence counts.  
+
+http://docs.pylonsproject.org/projects/pyramid_cookbook/en/latest/debugging/pydev.html
  
 -To generate XML output after you have shredded some test XML: 
 

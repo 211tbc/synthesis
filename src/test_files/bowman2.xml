@@ -1,4 +1,4 @@
-<ext:Sources xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" ext:version="3.0">
+<ext:Sources xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" ext:version="3.0">
     <ext:Source>
         <ext:SourceID>
                 <hmis:IDStr>003</hmis:IDStr>

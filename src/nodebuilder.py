@@ -251,6 +251,8 @@ class NodeBuilder():
             # the remaining transport require file IO
             if self.generateOutputformat != "pseudo":
                 try:
+                    if settings.DEBUG:
+                        print "destination is ", self.outputFilesPath
                     if self.writer.write():
                         #filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
                         filesToTransfer = fileutils.grabFiles(os.path.join(self.outputFilesPath, "*.xml"))

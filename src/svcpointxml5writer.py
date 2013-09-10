@@ -2,9 +2,9 @@ from interpretpicklist import Interpretpicklist
 import dateutils
 from datetime import datetime
 import xmlutilities
-from exceptions import SoftwareCompatibilityError, DataFormatError
+from exceptions import DataFormatError#, SoftwareCompatibilityError
 import logger
-from sys import version
+#from sys import version
 import dbobjects
 from writer import Writer
 from zope.interface import implements

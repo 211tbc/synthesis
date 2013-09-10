@@ -85,7 +85,7 @@ Configuration = \
             'outputFormat': 'hl7ccd',
             'destinationURL': 'localhost',
             'transportConfiguration': 'save',
-            'encryption': 'none',
+            'encryption': 'openpgp',
             'destination': settings.BASE_PATH + '/output_files',
             'frequency': 'asap'
         },

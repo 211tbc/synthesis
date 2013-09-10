@@ -138,9 +138,9 @@ def occtest():
 
     occ_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ext:Sources
-    xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" 
+    xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" 
     xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/OCC_Extend_HUD_HMIS.xsd" 
-    xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
+    xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/OCC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/OCC_Extend_HUD_HMIS.xsd"
     ext:version="3.0">
@@ -235,9 +235,9 @@ def tbctest():
 
     tbc_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <ext:Sources
-    xmlns:airs="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd" 
+    xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" 
     xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" 
-    xmlns:hmis="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
+    xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" 
     ext:version="3.0">

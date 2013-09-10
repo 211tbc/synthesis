@@ -331,8 +331,8 @@ else:
 class HMISXMLWriter(dbobjects.DB):
     
     
-    hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
-    airs_namespace = "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
+    hmis_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" 
+    airs_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}  
 
 
@@ -375,10 +375,10 @@ class HMISXMLWriter(dbobjects.DB):
     def createDoc(self):
         root_element = ET.Element("hmis:Sources")
         root_element.attrib["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-        root_element.attrib["xmlns:airs"]="http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
-        root_element.attrib["xmlns:hmis"]="http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+        root_element.attrib["xmlns:airs"]="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
+        root_element.attrib["xmlns:hmis"]="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
         #root_element.attrib["xsi:noNamespaceSchemaLocation"] = "HUD_HMIS.xsd" 
-        root_element.attrib["xsi:schemaLocation"] = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd http://www.hmis.info/schema/3_0/HUD_HMIS.xsd"
+        root_element.attrib["xsi:schemaLocation"] = "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
         root_element.attrib["hmis:version"] = "3.0"
         root_element.text = "\n"
         return root_element

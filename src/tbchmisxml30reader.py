@@ -17,8 +17,8 @@ class TBCHUDHMISXML30Reader:
     implements (Reader) 
 
     ''' Define XML namespaces '''
-    hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
-    airs_namespace = "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
+    hmis_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" 
+    airs_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
     tbc_namespace = "http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : tbc_namespace}
 

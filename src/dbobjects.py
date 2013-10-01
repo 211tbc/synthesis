@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, MetaData, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.types import DateTime, Date
+from sqlalchemy.types import DateTime, Date, Interval
 from sqlalchemy.pool import NullPool
 from conf import settings
 from logging import Logger
@@ -55,7 +55,7 @@ class SiteServiceParticipation(DB.Base, MapBase):
     site_service_participation_idid_str = Column(String(32))
     site_service_participation_idid_str_date_collected = Column(DateTime(timezone=False))
     site_service_idid_num = Column(String(32))					# JCS
-   #site_service_idid_num_date_collected = Column(DateTime(timezone=False))	# JCS
+    #site_service_idid_num_date_collected = Column(DateTime(timezone=False))	# JCS
     destination = Column(String(32))
     destination_date_collected = Column(DateTime(timezone=False))
     destination_other = Column(String(32))
@@ -255,7 +255,7 @@ class PersonAddress(DB.Base, MapBase):
     id = Column(Integer, primary_key=True)
     person_historical_index_id = Column(Integer, ForeignKey('person_historical.id'))
     export_index_id = Column(Integer, ForeignKey('export.id'))
-    address_period_start_dateColumn = (DateTime(timezone=False))
+    address_period_start_date = Column(DateTime(timezone=False))
     address_period_start_date_date_collected = Column(DateTime(timezone=False))
     address_period_end_date = Column(DateTime(timezone=False))
     address_period_end_date_date_collected = Column(DateTime(timezone=False))
@@ -305,11 +305,11 @@ class PersonAddress(DB.Base, MapBase):
     person_address_delete_occurred_date = Column(DateTime(timezone=False))
     person_address_delete_effective_date = Column(DateTime(timezone=False))
     useexisting = True
-    
- 
+
 class PersonHistorical(DB.Base, MapBase):
     __tablename__ = 'person_historical'
     id = Column(Integer, primary_key=True)
+    call_index_id = Column(Integer, ForeignKey('call.id'))
     export_index_id = Column(Integer, ForeignKey('export.id'))
     person_index_id = Column(Integer, ForeignKey('person.id'))
     site_service_index_id = Column(Integer, ForeignKey('site_service.id'))	# JCS
@@ -814,6 +814,16 @@ class AssignmentPeriod(DB.Base, MapBase):
     assignment_period_end_date = Column(DateTime(timezone=False))
     useexisting = True
     
+class Call(DB.Base, MapBase):
+    __tablename__ = 'call'
+    id = Column(Integer, primary_key=True)
+    site_service_id = Column(String(50))
+    call_id_id_num = Column(String(50))
+    call_id_id_str = Column(String(32))
+    call_time = Column(DateTime(timezone=False))
+    call_duration = Column(Interval())
+    caseworker_id_id_num = Column(String(50))
+    caseworker_id_id_str = Column(String(32))
  
 class ChildEnrollmentStatus(DB.Base, MapBase):
     __tablename__ = 'child_enrollment_status'
@@ -2024,6 +2034,7 @@ class Referral(DB.Base, MapBase):
     export_index_id = Column(Integer, ForeignKey('export.id'))
     person_index_id = Column(Integer, ForeignKey('person.id'))
     need_index_id = Column(Integer, ForeignKey('need.id'))  # ??
+    referral_id_date_effective = Column(DateTime(timezone=False))
     referral_idid_num = Column(String(50))
     referral_idid_str = Column(String(32))
     referral_delete = Column(Integer)
@@ -2035,6 +2046,8 @@ class Referral(DB.Base, MapBase):
     referral_agency_referred_to_name_data_collection_stage = Column(String(50))
     referral_agency_referred_to_name_date_collected = Column(DateTime(timezone=False))
     referral_agency_referred_to_name_date_effective = Column(DateTime(timezone=False))
+    referral_call_idid_num = Column(String(50))
+    referral_call_idid_str = Column(String(50))
     referral_need_idid_num = Column(String(50)) # In TBC, these refer to an already defined Need
     referral_need_idid_str = Column(String(50))
     useexisting = True

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-xmlns="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"          
-xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" blockDefault="" 
+    xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+    xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
 targetNamespace="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
 elementFormDefault="qualified"
 attributeFormDefault="qualified"
 xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd">
     <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"/>
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>
@@ -60,7 +61,7 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Exte
                     <xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.5.</xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
-            <xsd:element name="SiteService" type="hmis:siteService" minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="SiteService" type="ext:siteService" minOccurs="0" maxOccurs="unbounded">
                 <xsd:annotation>
                     <xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section IV: B.6.</xsd:documentation>
                 </xsd:annotation>
@@ -155,9 +156,10 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Exte
     
     <xsd:complexType name="referral">
         <xsd:sequence>
-            <xsd:element name="ReferralID" type="hmis:iDIndex"/>
+            <xsd:element name="ReferralID" type="hmis:iDIndexStamped"/>
             <xsd:element name="AgencyReferredToID" type="hmis:id"/>
             <xsd:element name="AgencyReferredToName" type="hmis:string100"/>
+            <xsd:element name="CallID" type="hmis:id" minOccurs="0"></xsd:element>
             <xsd:choice>
                 <xsd:element name="Need" type="hmis:need"/>
                 <xsd:element name="NeedID" type="hmis:id"/>
@@ -167,7 +169,23 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Exte
     
     <xsd:complexType name="referrals">
         <xsd:sequence>
-            <xsd:element name="Referral" type="referral" maxOccurs="unbounded"/>
+            <xsd:element name="Referral" type="ext:referral" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="call">
+        <xsd:sequence>
+            <xsd:element name="CallID" type="hmis:iDIndex"/>
+            <xsd:element name="CallTime" type="xsd:dateTime"/>
+            <xsd:element name="CallDuration" type="xsd:duration"/>
+            <xsd:element name = "CaseworkerID" type="hmis:iDIndex"/>
+            <!--Add Call Notes?-->
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="calls">
+        <xsd:sequence>
+            <xsd:element name="Call" type="ext:call" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
     
@@ -262,6 +280,71 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Exte
         </xsd:sequence>
     </xsd:complexType>
     
+    <xsd:complexType name="siteService">
+        <xsd:complexContent>
+            <xsd:extension base="airs:tSiteService">
+                <xsd:sequence>
+                    <xsd:element name="ServiceID" type="xsd:nonNegativeInteger"/>
+                    <xsd:element name="SiteID" type="xsd:nonNegativeInteger">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">A "Site" is, in AIRS XML parlance, the parent of a SiteService; a physical location.  This ID links back up to the parent Site.Key.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="Calls" type="ext:calls" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="GeographicCode" type="hmis:geographicCode" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6C" xml:lang="en">For the principal program service site, record the geocode associated with the geographic location of the site.</xsd:documentation>         
+                        </xsd:annotation>   
+                    </xsd:element>
+                    <xsd:element name="HMISAsset" type="hmis:hMISAsset" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">A physical item that can be assigned to an individual.  The two types of assets currently covered by the HMIS Revised Data Standard are housing units and shelter beds, so the generic asset type is extended to make the hMISAsset, which has HMIS-specific asset information.  The aggregate counts of these can serve as a proxy for an Inventory, found in Service.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="HousingType" type="hmis:sevenVal" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6E" xml:lang="en">For the principal program service site, record the appropriate housing type.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="Inventory" type="hmis:inventory" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en" source="2010 HUD HMIS Data and Technical Standards, Section 2.9">Inventory counts aggregate bed and unit info for HUD HMIS reporting.  SiteService.Inventory is used for Housing Inventory Chart (HIC) reporting.  Alternatively, each bed can be individually reported using an asset.</xsd:documentation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.9" xml:lang="en">The revised data stnadards also state: "These data may also be collected separately for distinct sites within a program, as long as they can be aggregated to the program level.".  The placement of Inventory, here within SiteService, accomodates conveying site-based inventories.  However, this is not required, and Inventory is also included as a subelement of Service, so that non-site-based inventories can be conveyed.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="Principal" type="hmis:twoValBase" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6B" xml:lang="en">This yes/no element designates whether this SiteService is the "principal program service site".</xsd:documentation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6B" xml:lang="en">The data standards also track the address of this principal site service.  That is located by completing information for the parent Site (referenced by SiteService.SiteID) of the principal Site Service at airs:tSite.PhysicalAddress.</xsd:documentation>                         
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6B" xml:lang="en">In the data standards, it mentions that "Programs without a principal program service site (e.g., mobile programs such as street outreach and scattered-site housing programs) should record the address of their administrative office."  The administrative office location is located at airs:tAgency.AgencyLocation.tSite.PhysicalAddress.</xsd:documentation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6" xml:lang="en">In the data standards, it mentions that "Programs may choose to record the Site Information data element for each site or facility operated by the program.", so even if a Site Service is not the principal SiteService, information in section 2.6 can still be tracked.</xsd:documentation>
+                        </xsd:annotation>   
+                    </xsd:element>
+                    <xsd:element name="PITCountSet" type="hmis:pITCountSet" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">Holds a set of PIT Count data collected at the program site level.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="SiteServiceEffectivePeriod" type="hmis:dateRangeOpen" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">When this SiteService was entered into the system, for synchronization purposes.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="SiteServiceRecordedDate" type="xsd:dateTime" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation xml:lang="en">When this SiteService was entered into the system, for synchronization purposes.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="SiteServiceType" type="hmis:threeValBase" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation source="2010 HUD HMIS Data and Technical Standards, Section 2.6D" xml:lang="en">For the principal program service site, record the site type as follows: 1. Non-residential: services only. The program only provides supportive services and does not provide overnight accommodations. 2. Residential: special needs and non-special needs. Residential housing (i.e., site that provides overnight accommodation) is located within a building or complex that houses both persons with special needs—e.g., homeless or formerly homeless persons, persons with substance abuseproblems, persons with mental illness, or persons with HIV/AIDS—andpersons without any special needs. 3. Residential: special needs only. Residential housing is located within a building or complex that houses only persons with special needs—e.g., homeless or formerly homeless persons, persons with substance abuse problems, persons with mental illness, persons with HIV/AIDS, persons with a physical disability, and/or elderly persons.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attributeGroup ref="hmis:deleteStampGroup"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>	
     <xsd:complexType name="source">
         <xsd:sequence>                   
             <xsd:element name="SourceID" type="hmis:iDIndex">

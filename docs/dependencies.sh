@@ -1,5 +1,6 @@
 ./bin/pip install lxml==2.2.8
-./bin/pip install SQLAlchemy==0.6.8
+#./bin/pip install SQLAlchemy==0.6.8
+./bin/pip install SQLAlchemy==0.8.2
 ./bin/pip install python-dateutil==1.5
 ./bin/pip install nose
 ./bin/pip install pyinotify

@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ext:Sources
-    xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" 
-    xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd" 
-    xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
-    ext:version="3.0">
+<ext:Sources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd TBC_Extend_HUD_HMIS.xsd"
+ xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
+ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
+ xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" ext:version="3.0">
+
+    <!--xsi:schemaLocation="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"-->
     <ext:Source>
-        <ext:SourceID >
-                <hmis:IDStr>tbctest</hmis:IDStr>
+        <ext:SourceID>
+            <hmis:IDStr>003</hmis:IDStr>
         </ext:SourceID>
         <ext:SoftwareVendor>Vendor Name Here</ext:SoftwareVendor>
         <ext:SoftwareVersion>7.1</ext:SoftwareVersion>
         <ext:SourceName>Source Name Here</ext:SourceName>
         <ext:Export>
-            <ext:ExportID >
+            <ext:ExportID>
                 <!-- Since this is the first export, it's "1".  The second will be "2". -->
-                    <hmis:IDNum>1</hmis:IDNum>
+                <hmis:IDNum>1</hmis:IDNum>
             </ext:ExportID>
             <ext:ExportDate>2011-09-23T18:51:58</ext:ExportDate>
             <ext:ExportPeriod>
-                <!-- This is an example for the month of June. -->                
+                <!-- This is an example for the month of June. -->
                 <hmis:StartDate>2011-09-01T00:00:00</hmis:StartDate>
                 <hmis:EndDate>2011-09-02T23:59:59</hmis:EndDate>
             </ext:ExportPeriod>
@@ -29,8 +29,10 @@
                     <hmis:IDNum>2090888539</hmis:IDNum>
                 </ext:PersonID>
                 <ext:DateOfBirth>
-                        <hmis:Unhashed hmis:dateCollected="2011-05-27T18:51:58">1984-04-21</hmis:Unhashed>
-                    <hmis:DateOfBirthType hmis:dateCollected="2011-05-27T18:51:58">1</hmis:DateOfBirthType>
+                    <hmis:Unhashed hmis:dateCollected="2011-05-27T18:51:58"
+                        >1984-04-21</hmis:Unhashed>
+                    <hmis:DateOfBirthType hmis:dateCollected="2011-05-27T18:51:58"
+                        >1</hmis:DateOfBirthType>
                 </ext:DateOfBirth>
                 <ext:Ethnicity>
                     <hmis:Unhashed hmis:dateCollected="2011-06-25T18:51:58">1</hmis:Unhashed>
@@ -47,7 +49,7 @@
                 <ext:LegalMiddleName>
                     <hmis:Unhashed hmis:dateCollected="2011-03-05T18:51:58">Barclay</hmis:Unhashed>
                 </ext:LegalMiddleName>
-                <!--Here is a standalone need referenced by a referral-->                
+                <!--Here is a standalone need referenced by a referral-->
                 <ext:Need>
                     <hmis:NeedID>
                         <hmis:IDNum>345</hmis:IDNum>
@@ -62,6 +64,15 @@
                     <hmis:PersonHistoricalID>
                         <hmis:IDNum>12345</hmis:IDNum>
                     </hmis:PersonHistoricalID>
+                    <hmis:PersonAddress hmis:dateCollected="2009-11-30T18:51:58">
+                        <hmis:AddressPeriod>
+                            <hmis:StartDate>2009-11-30T00:00:00</hmis:StartDate>
+                        </hmis:AddressPeriod>
+                        <hmis:Line1 hmis:dateCollected="2009-11-30T18:51:58"/>
+                        <hmis:City hmis:dateCollected="2009-11-30T18:51:58">Saint Petersburg</hmis:City>
+                        <hmis:State hmis:dateCollected="2009-11-30T18:51:58">FL</hmis:State>
+                        <hmis:ZIPCode hmis:dateCollected="2009-11-30T18:51:58">33710</hmis:ZIPCode>
+                    </hmis:PersonAddress>
                     <hmis:PersonPhoneNumber hmis:dateCollected="2009-11-30T18:51:58">2346543210</hmis:PersonPhoneNumber>
                 </ext:PersonHistorical>
                 <ext:Race>
@@ -76,8 +87,8 @@
                     <ext:Referrals>
                         <!--Two referrals to the same agency-->
                         <ext:Referral>
-                            <ext:ReferralID>
-                                <hmis:IDNum>12345</hmis:IDNum>
+                            <ext:ReferralID hmis:dateEffective="2009-11-30T18:51:58" hmis:dateCollected="2009-11-30T18:51:58">
+                                <hmis:IDNum>459098</hmis:IDNum>
                             </ext:ReferralID>
                             <!--Extension element -->
                             <ext:AgencyReferredToID>
@@ -85,20 +96,28 @@
                             </ext:AgencyReferredToID>
                             <!--Extension element -->
                             <ext:AgencyReferredToName hmis:dateCollected="2009-11-30T18:51:58">Suncoast Center, Inc.</ext:AgencyReferredToName>
-                            <!--Refers to a standalone need--> 
+                            <!--Refers to a call during which this referral (and perhaps other referrals) was made -->                         
+                            <ext:CallID>
+                                <hmis:IDNum>67464</hmis:IDNum>
+                            </ext:CallID>
+                            <!--Refers to a standalone need-->                         
                             <ext:NeedID>
-                                 <hmis:IDNum>345</hmis:IDNum>
+                                <hmis:IDNum>345</hmis:IDNum>
                             </ext:NeedID>
                         </ext:Referral>
                         <ext:Referral>
-                            <ext:ReferralID>
-                                <hmis:IDNum>12346</hmis:IDNum>
+                            <ext:ReferralID hmis:dateEffective="2009-11-30T18:51:58" hmis:dateCollected="2009-11-30T18:51:58">
+                                <hmis:IDNum>459099</hmis:IDNum>
                             </ext:ReferralID>
                             <ext:AgencyReferredToID>
                                 <hmis:IDNum>11111</hmis:IDNum>
                             </ext:AgencyReferredToID>
                             <ext:AgencyReferredToName hmis:dateCollected="2009-11-30T18:51:58">Suncoast Center, Inc.</ext:AgencyReferredToName>
-                            <!--Here is a nested need within a referral (the other way of referring to a need from a referral)-->                
+                            <!--Refers to a call during which this referral (and perhaps other referrals) was made -->                         
+                            <ext:CallID>
+                                <hmis:IDNum>67464</hmis:IDNum>
+                            </ext:CallID>
+                            <!--Here is a nested need within a referral (the other way of referring to a need from a referral)-->
                             <ext:Need>
                                 <hmis:NeedID>
                                     <hmis:IDNum>346</hmis:IDNum>
@@ -114,7 +133,7 @@
                     <ext:ServiceEventProvisionDate>2011-09-01</ext:ServiceEventProvisionDate>
                     <ext:ServiceEventNotes>
                         <hmis:note>
-                            <hmis:NoteID >
+                            <hmis:NoteID>
                                 <hmis:IDNum>123456</hmis:IDNum>
                             </hmis:NoteID>
                             <hmis:NoteText hmis:dateCollected="2011-09-01T18:51:58" hmis:dateEffective="2011-09-01T18:51:58">Here is some text about the particular service event.</hmis:NoteText>
@@ -128,10 +147,28 @@
                     </ext:ServiceEventNotes>
                 </ext:ServiceEvent>
                 <ext:SocialSecurityNumber>
-                        <hmis:Unhashed hmis:dateCollected="2010-09-15T18:51:58">111111111</hmis:Unhashed>
-                    <hmis:SocialSecNumberQualityCode hmis:dateCollected="2010-09-15T18:51:58" >2</hmis:SocialSecNumberQualityCode>
+                    <hmis:Unhashed hmis:dateCollected="2010-09-15T18:51:58">111111111</hmis:Unhashed>
+                    <hmis:SocialSecNumberQualityCode hmis:dateCollected="2010-09-15T18:51:58"
+                        >2</hmis:SocialSecNumberQualityCode>
                 </ext:SocialSecurityNumber>
             </ext:Person>
+            <ext:SiteService>
+                <airs:Key>3</airs:Key>
+                <ext:ServiceID>23</ext:ServiceID>
+                <ext:SiteID>10023</ext:SiteID>
+                <ext:Calls>
+                    <ext:Call>
+                        <ext:CallID>
+                            <hmis:IDNum>67464</hmis:IDNum>
+                        </ext:CallID>
+                        <ext:CallTime>2010-09-16T19:50:58Z</ext:CallTime>
+                        <ext:CallDuration>P1M</ext:CallDuration>
+                        <ext:CaseworkerID>
+                            <hmis:IDNum>345</hmis:IDNum>
+                        </ext:CaseworkerID>
+                    </ext:Call>
+                </ext:Calls>
+            </ext:SiteService>
         </ext:Export>
     </ext:Source>
 </ext:Sources>

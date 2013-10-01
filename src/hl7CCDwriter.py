@@ -16,6 +16,8 @@ from lxml import etree as ET
 @implementer(Writer)
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
     #implements(Writer) # Writer Interface
+    phone_number = ""
+
 
     def __init__(self, poutDirectory, processingOptions, debugMessages=None):
         print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__
@@ -42,6 +44,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return self.makeHL7Docs("string")
 
     def makeHL7Docs(self,mode):
+        global phone_number
         self.session = self.db.Session()    # This starts a Transaction
         if settings.DEBUG:
             print '==== Self:', self
@@ -52,6 +55,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         # Step through Entrys
         # Step through ServiceEventNotes - and all note_text 
         exports = self.session.query(dbobjects.Export)
+
         hl7_output = []
         for oneExport in exports:
             selink = self.session.query(dbobjects.SourceExportLink).filter(
@@ -81,10 +85,17 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                 # from future queries
                 self.updateReported(onePerson)
                 self.session.commit()       # This is only for updateReported()
+
+                # Get the person's latest received phone number from PersonHistorical
+                personHistoricals = self.session.query(dbobjects.PersonHistorical).filter(dbobjects.PersonHistorical.person_index_id == onePerson.id)
+                #Get the most recent not null (unreported already filtered) phone number (that came in from the referral)
+                for onePersonHistorical in personHistoricals:
+                    if onePersonHistorical.person_phone_number:
+                        phone_number = onePersonHistorical.person_phone_number
                 ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.person_index_id == onePerson.id)
                 for oneServEvt in ServEvts: # One document per event???
                     #print "person is: ", self.person
-                    self.processXML(oneExport, onePerson, oneServEvt, oneSource)       # Create one document
+                    self.processXML(oneExport, onePerson, onePersonHistorical, oneServEvt, oneSource)       # Create one document
                     xmlutilities.indent(self.root_element)  #self.prettify()
                     # Next wraps self.root_element in an ElementTree and writes it to disk
                     if mode=="disk":
@@ -102,7 +113,8 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         newNode = ET.SubElement(parent, nodeName)
         return newNode
 
-    def processXML(self, oneExport, onePerson, oneServEvt, oneSource):
+    def processXML(self, oneExport, onePerson, onePersonHistorical, oneServEvt, oneSource):
+        global phone_number
         if settings.DEBUG:
             print "==== Starting hl7CCDwriter.processXML"
         # That which everything else will live inside of
@@ -133,6 +145,9 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         prId = ET.SubElement(patientRole,"id")
         prId.attrib["extension"] = onePerson.person_id_id_num #"996756A495"     # TODO Done? PersonID.IDNum>2090888539 
         prId.attrib["root"] = "2.16.840.1.113883.19.5"
+        if phone_number:
+            telecom = ET.SubElement(patientRole,"telecom")
+            telecom.attrib["value"] = "tel:" + phone_number
         patient = ET.SubElement(patientRole,"patient")
         self.addAName(patient, '', onePerson.person_legal_first_name_unhashed,
                                    onePerson.person_legal_last_name_unhashed,

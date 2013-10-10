@@ -9,7 +9,7 @@
 ./bin/pip install python-gnupg
 ./bin/pip install sqlalchemy-migrate
 ./bin/pip install paramiko
-./bin/pip install pyramid
+./bin/pip install pyramid==1.4.5
 ./bin/pip install pyramid_controllers==0.3.11
 
 #

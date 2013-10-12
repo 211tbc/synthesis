@@ -17,6 +17,9 @@ from sqlalchemy.sql import select
 from dbobjects import Referral, Person, ServiceEvent
 from lxml import etree
 
+global age
+global personID
+
 def monthlyReferralReport():
     """A script that generates a referral report from the database, and emails it to an program manager."""
 
@@ -38,34 +41,23 @@ def monthlyReferralReport():
     #print "end_of_last_day_last_month: " + str(end_of_last_day_last_month)
     beginning_of_first_day_last_month = datetime(year=now.year, month=(now.month-1), day=1)#, hour = 0, minute=0, second=0)
 
-    report_range_desc = "Report period from: " + '{:%m-%d}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d}'.format(end_of_last_day_last_month)  + "\n"
+    report_range_desc = "Report period from: " + '{:%m-%d-%Y}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d-%Y}'.format(end_of_last_day_last_month)  + "\n"
     text_message += report_range_desc
 
-    s = select([ServiceEvent.id]).where(ServiceEvent.service_event_provision_date >= beginning_of_first_day_last_month).where(ServiceEvent.service_event_provision_date <= end_of_last_day_last_month)
-    result = conn.execute(s)
-
-    for row in result:
-        #print "row is ServiceEvent.id: " + str(row[0])
-        serviceeventprovisiondateResults = conn.execute(select([ServiceEvent.service_event_provision_date]).where(ServiceEvent.id == row[0]))
-        for r in serviceeventprovisiondateResults:
-            service_event_provision_date = r
-            #print "service_event_provision_date: " + str(service_event_provision_date)
-    s1 = select([Referral]).where(Referral.service_event_index_id == s)
-    result1 = conn.execute(s1)
-    subject =  "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
-               "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
+    subject = "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
+        "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
     print subject
+
     #print '{:%Y-%m-%d %H:%M:%S}'.format(beginning_of_first_day_last_month)
     #print '{:%m, %Y}'.format(beginning_of_first_day_last_month)
-    count  ="number of referrals: " + str(result1.rowcount)
-    text_message += count + "\n"
-    text_message += "referrals list:\n"
+
+    #text_message += "referrals list:\n"
     row_id = 1
     htmlroot = etree.Element('html')
     desc = etree.SubElement(htmlroot, 'div')
     desc.text = report_range_desc
     count_text = etree.SubElement(htmlroot, 'div')
-    count_text.text = count
+
     border="1"
     table = etree.SubElement(htmlroot, 'table')
     table.set("border", "1")
@@ -85,43 +77,65 @@ def monthlyReferralReport():
     col7 = etree.SubElement(rw1, 'td')
     col7.text = "client age"
 
-
-    for row1 in result1:
-        s2 = select([Person]).where(Person.id == Referral.person_index_id)
-        result2 = conn.execute(s2)
-        for person in result2:
-            personID = person.person_id_id_num
-            persondob = person.person_date_of_birth_unhashed
-            age = str(calculate_age(persondob))
-        rwx = etree.SubElement(table, 'tr')
-        colx1 = etree.SubElement(rwx, 'td')
-        colx1.text = str(row_id)
-        colx2 = etree.SubElement(rwx, 'td')
-        referral_date = '{:%m-%d-%Y %H:%M}'.format(service_event_provision_date[0])
-        colx2.text = referral_date
-        colx3 = etree.SubElement(rwx, 'td')
-        referred_to = str(row1.referral_agency_referred_to_name)
-        colx3.text = referred_to
-        colx4 = etree.SubElement(rwx, 'td')
-        referred_to_provider_id = str(row1.referral_agency_referred_to_idid_num)
-        colx4.text = referred_to_provider_id
-        colx5 = etree.SubElement(rwx, 'td')
-        call_id = str(row1.referral_call_idid_num)
-        colx5.text = call_id
-        colx6 = etree.SubElement(rwx, 'td')
-        client_id = personID
-        colx6.text = client_id
-        colx7 = etree.SubElement(rwx, 'td')
-        colx7.text = age
+    s = select([ServiceEvent.id]).where(ServiceEvent.service_event_provision_date >= beginning_of_first_day_last_month).where(ServiceEvent.service_event_provision_date <= end_of_last_day_last_month)
+    result = conn.execute(s)
+    count  ="number of referrals: " + str(result.rowcount)
+    text_message += count + "\n"
+    count_text.text = count
 
 
-        m2 = str(row_id) + ") referral date: " + referral_date +\
-            " referred to: " + referred_to +\
-            " referred to provider id: " + referred_to_provider_id +\
-            " call id: "+ call_id + " client id: " + client_id + " client age: " + \
-             age + "\n"
-        text_message += m2
-        row_id += 1
+    for row in result:
+        # "another row is ServiceEvent.id: " + str(row[0])
+        serviceeventprovisiondateResults = conn.execute(select([ServiceEvent.service_event_provision_date]).where(ServiceEvent.id == row[0]))
+        for provision_date in serviceeventprovisiondateResults:
+            service_event_provision_date = provision_date
+            #print "service_event_provision_date: " + str(service_event_provision_date)
+            service_event_id = row[0]
+            s1 = select([Referral]).where(Referral.service_event_index_id == service_event_id)
+            referrals = conn.execute(s1) #resultHUD_HMIS_TBC.xml 1 is a collection of the referrals
+            for referral in referrals:
+                #print "another referral:" + str(referral)
+                #print "looking for Person.id: " + str(referral.person_index_id)
+                s2 = select([Person]).where(Person.id == referral.person_index_id)
+                persons = conn.execute(s2)
+                age = ""
+                personID = ""
+                #print "another person"
+
+                for person in persons:
+                    personID = person.person_id_id_num
+                    #print "person id is: " + personID
+                    persondob = person.person_date_of_birth_unhashed
+                    age = str(calculate_age(persondob))
+                    #print "age is: " + age
+                rwx = etree.SubElement(table, 'tr')
+                colx1 = etree.SubElement(rwx, 'td')
+                colx1.text = str(row_id)
+                colx2 = etree.SubElement(rwx, 'td')
+                referral_date = '{:%m-%d-%Y %H:%M}'.format(service_event_provision_date[0])
+                colx2.text = referral_date
+                colx3 = etree.SubElement(rwx, 'td')
+                referred_to = str(referral.referral_agency_referred_to_name)
+                colx3.text = referred_to
+                colx4 = etree.SubElement(rwx, 'td')
+                referred_to_provider_id = str(referral.referral_agency_referred_to_idid_num)
+                colx4.text = referred_to_provider_id
+                colx5 = etree.SubElement(rwx, 'td')
+                call_id = str(referral.referral_call_idid_num)
+                colx5.text = call_id
+                colx6 = etree.SubElement(rwx, 'td')
+                client_id = personID
+                colx6.text = client_id
+                colx7 = etree.SubElement(rwx, 'td')
+                colx7.text = age
+
+                m2 = str(row_id) + ") referral date: " + referral_date +\
+                    " referred to: " + referred_to +\
+                    " referred to provider id: " + referred_to_provider_id +\
+                    " call id: "+ call_id + " client id: " + client_id + " client age: " + \
+                     age + "\n"
+                text_message += m2
+                row_id += 1
 
     html_message = etree.tostring(htmlroot, pretty_print=True)
     print html_message
@@ -147,29 +161,30 @@ def monthlyReferralReport():
         print "trying to send message"
         print "sending to server: " + settings.SMTPSERVER + " port: " + settings.SMTPPORT
         smtpserver = smtplib.SMTP(settings.SMTPSERVER, settings.SMTPPORT)
-
+        smtpserver.set_debuglevel(0)
         if settings.SMTPAUTH:
             smtpserver.ehlo()
             if settings.SMTPTLS:
                 smtpserver.starttls()
             smtpserver.ehlo
             smtpserver.login(settings.SMTPUSERNAME, settings.SMTPSENDERPWD)
-        smtpserver.sendmail(settings.SMTPSENDER, settings.TBC_REFERRAL_EMAIL_RECIPIENT +
-            "," + settings.TBC_REFERRAL_EMAIL_CC_RECIPIENT , msg.as_string())
+        smtpserver.sendmail(settings.SMTPSENDER, [settings.TBC_REFERRAL_EMAIL_RECIPIENT,settings.TBC_REFERRAL_EMAIL_CC_RECIPIENT], msg.as_string())
         smtpserver.close
-    except:
-        print 'send failed'
+    except Exception as e:
+        print type(e)
+        print 'send failed:' + e.message
 
 def calculate_age(born):  # from: http://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
     today = date.today()
-    try:
-        birthday = born.replace(year=today.year)
-    except ValueError: # raised when birth date is February 29 and the current year is not a leap year
-        birthday = born.replace(year=today.year, day=born.day-1)
-    if birthday > today:
-        return today.year - born.year - 1
-    else:
-        return today.year - born.year
+    if born != None:
+        try:
+            birthday = born.replace(year=today.year)
+        except ValueError: # raised when birth date is February 29 and the current year is not a leap year
+            birthday = born.replace(year=today.year, day=born.day-1)
+        if birthday > today:
+            return today.year - born.year - 1
+        else:
+            return today.year - born.year
 
 if __name__ == "__main__":
     import sys

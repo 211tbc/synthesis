@@ -2034,7 +2034,7 @@ class Referral(DB.Base, MapBase):
     export_index_id = Column(Integer, ForeignKey('export.id'))
     person_index_id = Column(Integer, ForeignKey('person.id'))
     need_index_id = Column(Integer, ForeignKey('need.id'))  # ??
-    referral_id_date_effective = Column(DateTime(timezone=False))
+    #referral_id_date_effective = Column(DateTime(timezone=False))
     referral_idid_num = Column(String(50))
     referral_idid_str = Column(String(32))
     referral_delete = Column(Integer)

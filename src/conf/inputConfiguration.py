@@ -75,23 +75,4 @@ SMTPRECIPIENTS = {
         'FINGERPRINT':'',
         'USES_ENCRYPTION':False
         }
-    # output processing
-    ,"/home/your_username_here/synthesis/synthesis/output_files":
-        {
-        'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['user@host.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
-    ,"/home/your_username_here/synthesis/synthesis/output_files2":
-        {
-        'VENDOR_NAME': '',
-        'SMTPTOADDRESS': ['admin@somehost.com',],
-        'SMTPTOADDRESSCC': [],
-        'SMTPTOADDRESSBCC': [],
-        'FINGERPRINT':'',
-        'USES_ENCRYPTION':False
-        }
     }

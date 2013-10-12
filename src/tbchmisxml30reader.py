@@ -437,7 +437,7 @@ class TBCHUDHMISXML30Reader:
 
         ''' Element paths '''
         xpReferrals = 'ext:Referrals/ext:Referral'
-        xpReferralsReferralDateEffective = 'ext:ReferralID/@hmis:dateEffective'
+        #xpReferralsReferralDateEffective = 'ext:ReferralID/@hmis:dateEffective'
         xpReferralsReferralIDIDNum = 'ext:ReferralID/hmis:IDNum'
         xpReferralsReferralIDIDStr = 'ext:ReferralID/hmis:IDStr'
         xpReferralsReferralDelete = 'ext:ReferralID/@hmis:delete'
@@ -474,7 +474,7 @@ class TBCHUDHMISXML30Reader:
 
                 ''' Map elements to database columns '''
                 hmisxml30reader.existence_test_and_add(self, 'referral_idid_num', referral.xpath(xpReferralsReferralIDIDNum, namespaces = self.nsmap), 'text')
-                hmisxml30reader.existence_test_and_add(self, 'referral_id_date_effective', referral.xpath(xpReferralsReferralDateEffective, namespaces = self.nsmap), 'attribute_date')
+                #hmisxml30reader.existence_test_and_add(self, 'referral_id_date_effective', referral.xpath(xpReferralsReferralDateEffective, namespaces = self.nsmap), 'attribute_date')
                 hmisxml30reader.existence_test_and_add(self, 'referral_idid_num', referral.xpath(xpReferralsReferralIDIDNum, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'referral_idid_str', referral.xpath(xpReferralsReferralIDIDStr, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'referral_delete', referral.xpath(xpReferralsReferralDelete, namespaces = self.nsmap), 'attribute_text')

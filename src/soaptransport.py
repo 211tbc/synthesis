@@ -1,6 +1,6 @@
 #!/usr/bin/env/python
 # -*- coding: utf-8 -*-
-from conf import settings  # @UnusedImport
+from conf import settings, hl7settings
 from conf import outputConfiguration
 from Encryption import *  # @UnusedWildImport
 import urllib2
@@ -318,7 +318,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #SystemUserId = "2A5B7129-6A70-473B-995F-B0A459A4E5C6"
 
         import copy
-        soap_transport_properties = copy.deepcopy(settings.SOAP_TRANSPORT_PROPERTIES)
+        soap_transport_properties = copy.deepcopy(hl7settings.SOAP_TRANSPORT_PROPERTIES)
 
         ccd = ET.fromstring(ccd_data)
 

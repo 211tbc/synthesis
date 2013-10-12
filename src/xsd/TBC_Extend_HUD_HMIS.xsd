@@ -156,7 +156,7 @@ xmlns:ext="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Exte
     
     <xsd:complexType name="referral">
         <xsd:sequence>
-            <xsd:element name="ReferralID" type="hmis:iDIndexStamped"/>
+            <xsd:element name="ReferralID" type="hmis:id"/>
             <xsd:element name="AgencyReferredToID" type="hmis:id"/>
             <xsd:element name="AgencyReferredToName" type="hmis:string100"/>
             <xsd:element name="CallID" type="hmis:id" minOccurs="0"></xsd:element>

@@ -87,7 +87,7 @@
                     <ext:Referrals>
                         <!--Two referrals to the same agency-->
                         <ext:Referral>
-                            <ext:ReferralID hmis:dateEffective="2009-11-30T18:51:58" hmis:dateCollected="2009-11-30T18:51:58">
+                            <ext:ReferralID>
                                 <hmis:IDNum>459098</hmis:IDNum>
                             </ext:ReferralID>
                             <!--Extension element -->
@@ -106,7 +106,7 @@
                             </ext:NeedID>
                         </ext:Referral>
                         <ext:Referral>
-                            <ext:ReferralID hmis:dateEffective="2009-11-30T18:51:58" hmis:dateCollected="2009-11-30T18:51:58">
+                            <ext:ReferralID>
                                 <hmis:IDNum>459099</hmis:IDNum>
                             </ext:ReferralID>
                             <ext:AgencyReferredToID>

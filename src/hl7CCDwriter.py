@@ -89,6 +89,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                 # Get the person's latest received phone number from PersonHistorical
                 personHistoricals = self.session.query(dbobjects.PersonHistorical).filter(dbobjects.PersonHistorical.person_index_id == onePerson.id)
                 #Get the most recent not null (unreported already filtered) phone number (that came in from the referral)
+                onePersonHistorical = None
                 for onePersonHistorical in personHistoricals:
                     if onePersonHistorical.person_phone_number:
                         phone_number = onePersonHistorical.person_phone_number

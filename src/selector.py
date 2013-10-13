@@ -26,6 +26,9 @@ import dbobjects
 from multiprocessing import Process, Array, Value
 import pid                        
 from smtplibrary import smtpInterface
+import socket
+timeout = 30
+socket.setdefaulttimeout(timeout)
 
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
@@ -245,7 +248,7 @@ class FileHandler:
         before = dict ([(f, None) for f in os.listdir (path_to_watch)])
         try:
             while 1:
-                time.sleep (10)
+                time.sleep(10)
                 after = dict ([(f, None) for f in os.listdir (path_to_watch)])
                 added = [f for f in after if not f in before]
                 removed = [f for f in before if not f in after]
@@ -417,12 +420,12 @@ class FileHandler:
             self.file_input_watcher.stop_monitoring()
             raise
         
-    def _spawn_worker_process(self, id, files):
+    def _spawn_worker_process(self, id, files):  # @ReservedAssignment
         # spawn process to process files. don't wait for the spawned process to finish
         p = Process(name="Process-%d" % (id + 1), target=self._worker_process, args=(id, files, ))
         p.start()
 
-    def _worker_process(self, id, files):
+    def _worker_process(self, id, files):  # @ReservedAssignment
         #reverse the list so pop handles them FIFO
         if settings.DEBUG:
             print "entering worker process named: Process-%d" % (id + 1)

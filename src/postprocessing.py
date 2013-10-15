@@ -48,7 +48,7 @@ from logger import Logger
 import fileutils
 import os
 import ftplib
-from exceptions import FTPUploadFailureError, VPNFailure
+from synthesis.exceptions import FTPUploadFailureError, VPNFailure
 from conf import settings
 import paramiko
 from conf import outputConfiguration

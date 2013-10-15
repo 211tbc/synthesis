@@ -1,4 +1,4 @@
-from exceptions import SoftwareCompatibilityError
+from synthesis.exceptions import SoftwareCompatibilityError
 import dbobjects
 import logger
 import xmlutilities

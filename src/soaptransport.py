@@ -10,7 +10,7 @@ import urlparse
 import uuid
 import base64
 import time
-from exceptions import SoftwareCompatibilityError
+from synthesis.exceptions import SoftwareCompatibilityError
 #import dbobjects
 
 # py 2.5 support
@@ -306,7 +306,6 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
     def send_soap_envelope(self, ccd_data, referredToProviderID):
         
-        print "soaptransport generating soap"
         SystemUserId = ""  # @UnusedVariable
         ReceivingProviderId = ""
         # Uncomment this line if you are testing with Netsmart

@@ -2,7 +2,7 @@ from interpretpicklist import Interpretpicklist
 import dateutils
 from datetime import datetime
 import xmlutilities
-from exceptions import DataFormatError#, SoftwareCompatibilityError
+from synthesis.exceptions import DataFormatError#, SoftwareCompatibilityError
 import logger
 #from sys import version
 import dbobjects

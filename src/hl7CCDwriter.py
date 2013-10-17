@@ -12,7 +12,6 @@ from zope.interface import implementer
 from sqlalchemy import or_, between#, and_
 from conf import settings
 from lxml import etree as ET
-phone_number = ""
 
 @implementer(Writer)
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
@@ -35,6 +34,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         self.hl7dateform = "%Y%m%d%H%M%S%z"
         
         self.referredToProviderID = ""
+        self.phone_number = ""
         
     def write(self):        # Called from nodebuilder.run() one time.
         return self.makeHL7Docs("disk")
@@ -43,7 +43,6 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return self.makeHL7Docs("string")
 
     def makeHL7Docs(self,mode):
-        global phone_number
         self.session = self.db.Session()    # This starts a Transaction
         if settings.DEBUG:
             print '==== Self:', self
@@ -91,7 +90,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                 onePersonHistorical = None
                 for onePersonHistorical in personHistoricals:
                     if onePersonHistorical.person_phone_number:
-                        phone_number = onePersonHistorical.person_phone_number
+                        self.phone_number = onePersonHistorical.person_phone_number
                 ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.person_index_id == onePerson.id)
                 for oneServEvt in ServEvts: # One document per event???
                     #print "person is: ", self.person
@@ -114,7 +113,6 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return newNode
 
     def processXML(self, oneExport, onePerson, onePersonHistorical, oneServEvt, oneSource):
-        global phone_number
         if settings.DEBUG:
             print "==== Starting hl7CCDwriter.processXML"
         # That which everything else will live inside of
@@ -145,9 +143,9 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         prId = ET.SubElement(patientRole,"id")
         prId.attrib["extension"] = onePerson.person_id_id_num #"996756A495"     # TODO Done? PersonID.IDNum>2090888539 
         prId.attrib["root"] = "2.16.840.1.113883.19.5"
-        if phone_number:
+        if self.phone_number:
             telecom = ET.SubElement(patientRole,"telecom")
-            telecom.attrib["value"] = "tel:" + phone_number
+            telecom.attrib["value"] = "tel:" + self.phone_number
         patient = ET.SubElement(patientRole,"patient")
         self.addAName(patient, '', onePerson.person_legal_first_name_unhashed,
                                    onePerson.person_legal_last_name_unhashed,

@@ -12,12 +12,11 @@ from zope.interface import implementer
 from sqlalchemy import or_, between#, and_
 from conf import settings
 from lxml import etree as ET
+phone_number = ""
 
 @implementer(Writer)
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
     #implements(Writer) # Writer Interface
-    phone_number = ""
-
 
     def __init__(self, poutDirectory, processingOptions, debugMessages=None):
         print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__

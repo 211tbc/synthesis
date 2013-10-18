@@ -430,7 +430,7 @@ class FileHandler:
         if settings.DEBUG:
             print "entering worker process named: Process-%d" % (id + 1)
         files.reverse() 
-        while files:
+        while len(files) > 0:
             # if the process_list contains a -1, this means that someone stopped the
             # paster server. exit this spawned process.
             if settings.DEBUG:
@@ -442,9 +442,10 @@ class FileHandler:
             if self.exception.value == 1:
                 self.process_list[id] = 0
                 sys.exit(1)
-            if settings.DEBUG:
-                print "Queue.Empty exception, but files list is not empty, so files to process are", files
+            #if settings.DEBUG:
+            #    print "Queue.Empty exception, but files list is not empty, so files to process are", files
             filepathitem = files.pop()
+            print "Files left to process for Process-%d: %d" % (id + 1, len(files))
             if settings.DEBUG:
                 print "%s" % ("*" * 32)
                 print "Within Process-%d" % (id + 1)

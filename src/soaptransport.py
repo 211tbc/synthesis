@@ -565,7 +565,7 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
                 opener = urllib2.build_opener(HTTPSClientAuthHandler(settings.SSL_CERTIFICATE_KEY_FILE, settings.SSL_CERTIFICATE_FILE))
                 urllib2.install_opener(opener)
                 request = urllib2.Request(self._soap_server, soap_env, headers)
-                res = urllib2.urlopen(request)
+                res = urllib2.urlopen(request, timeout=60)
                 response = res.read()
                 if response.find("ResponseStatusType:Success") != -1:
                     return (True, response)

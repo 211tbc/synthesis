@@ -57,7 +57,13 @@ Configuration = \
             'transportConfiguration': 'save',
             'encryption': 'none',
             'destination': settings.BASE_PATH + '/output_files',
-            'frequency': 'asap'
+            'frequency': 'asap',
+            'Testing_SystemUserId':'69470500-66A2-4841-931A-23D226FBC937',
+            'Production_SystemUserId':'2A5B7129-6A70-473B-995F-B0A459A4E5C6',
+            'PEMHS_test_ReceivingProviderId': 'D22D0095-FD2E-4011-BEA4-4479AE92C414',
+            'PEMHS_production_ReceivingProviderId': 'D76C72B3-8DFA-4240-96CC-328B985BB4EA',
+            'Suncoast_test_ReceivingProviderId':'8754B0BB-CC45-465E-9F97-1A9D2F5FE058',
+            'Suncoast_production_ReceivingProviderId': '3634CE56-C001-4CF5-9620-A2E3BAC128AF'
         },
     '334380997':#For HUD files in test_files folder
         {
@@ -145,31 +151,3 @@ Configuration = \
              'transportConfiguration': 'email' 
         },
 }
-
-#############################################################
-# Testing|Production variables for the soaptrasnport module #
-#############################################################
-# Uncomment this line if you are testing with Netsmart
-# No referrals will actually go to the providers, 
-#   which will make them happy during testing
-SystemUserId = "69470500-66A2-4841-931A-23D226FBC937"
-    
-#Uncomment this line if you are communicating with Netsmart Production
-#SystemUserId = "2A5B7129-6A70-473B-995F-B0A459A4E5C6"
-
-
-#old Suncoast Production
-#SuncoastReceivingProviderId = "29F2951F-7F47-451D-AED8-5729F29347D5"
-#Suncoast Production
-#SuncoastReceivingProviderId= "3634CE56-C001-4CF5-9620-A2E3BAC128AF"
-#Suncoast Test
-SuncoastReceivingProviderId= "8754B0BB-CC45-465E-9F97-1A9D2F5FE058"
-
-
-#old PEMHS production
-#PEMHSReceivingProviderId= "3DDFF107-0AD2-4728-8EC6-6305D0F0479D"
-#PEMHS Production
-#PEMHSReceivingProviderId= "D76C72B3-8DFA-4240-96CC-328B985BB4EA"
-#PEMHS Test
-PEMHSReceivingProviderId= "D22D0095-FD2E-4011-BEA4-4479AE92C414"
-

@@ -200,7 +200,8 @@ class NodeBuilder():
                 hl7_output = self.writer.get()
                 for ccd_data, referredToProviderID in hl7_output:
                     soap = soaptransport.SoapEnv(self.queryOptions.configID)
-                    result, details = soap.send_soap_envelope(ccd_data, referredToProviderID)
+                    result, details = soap.send_soap_envelope(ccd_data,
+                        referredToProviderID, self.queryOptions.configID)
                     print result, details
             except:
                 print "*****************************************************************"
@@ -211,7 +212,7 @@ class NodeBuilder():
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
                     (self.transport.upper(), self.generateOutputformat.capitalize()))
-                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
+                smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])#make this [(self.queryOptions.configID)]?
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
                     print "trying to send message"

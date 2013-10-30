@@ -8,6 +8,8 @@ import datetime
 from lxml import etree
 import urllib
 from webob import Request
+from webob import Response
+
 if inputConfiguration.USE_ENCRYPTION:
     from Encryption import *
 from selector import Selector
@@ -206,6 +208,7 @@ class DocsController(RestController):
             if len(schema_name) > 4:
                 schema_name = schema_name[:len(schema_name) - 4]
             message = '202: The posted xml (locally at %s) successfully validated against the %s schema.' % (file_name, schema_name)
+            response = Response()
             response.status_int = 202
             print message
             #move valid file over to regular synthesis input_files directory for shredding

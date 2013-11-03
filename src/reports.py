@@ -13,7 +13,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from synthesis.postgresutils import Utils
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, asc
+from sqlalchemy.engine import ResultProxy
 from dbobjects import Referral, Person, ServiceEvent
 from lxml import etree
 
@@ -44,7 +45,7 @@ def monthlyReferralReport():
     report_range_desc = "Report period from: " + '{:%m-%d-%Y}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d-%Y}'.format(end_of_last_day_last_month)  + "\n"
     text_message += report_range_desc
 
-    subject = "2-1-1 Tampa Bay Cares Referral Report For The " \
+    subject = "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
         "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
     print subject
 
@@ -77,16 +78,19 @@ def monthlyReferralReport():
     col7 = etree.SubElement(rw1, 'td')
     col7.text = "client age"
 
-    s = select([ServiceEvent.id]).where(ServiceEvent.service_event_provision_date >= beginning_of_first_day_last_month).where(ServiceEvent.service_event_provision_date <= end_of_last_day_last_month)
+    s = select([ServiceEvent.id]).where(ServiceEvent.service_event_provision_date\
+        >= beginning_of_first_day_last_month).where(ServiceEvent.\
+        service_event_provision_date <= end_of_last_day_last_month).\
+        order_by(asc(ServiceEvent.service_event_provision_date))
     result = conn.execute(s)
     count  ="number of referrals: " + str(result.rowcount)
     text_message += count + "\n"
     count_text.text = count
 
-
     for row in result:
         # "another row is ServiceEvent.id: " + str(row[0])
-        serviceeventprovisiondateResults = conn.execute(select([ServiceEvent.service_event_provision_date]).where(ServiceEvent.id == row[0]))
+        serviceeventprovisiondateResults = conn.execute(select([ServiceEvent.\
+            service_event_provision_date]).where(ServiceEvent.id == row[0]))
         for provision_date in serviceeventprovisiondateResults:
             service_event_provision_date = provision_date
             #print "service_event_provision_date: " + str(service_event_provision_date)
@@ -101,7 +105,6 @@ def monthlyReferralReport():
                 age = ""
                 personID = ""
                 #print "another person"
-
                 for person in persons:
                     personID = person.person_id_id_num
                     #print "person id is: " + personID

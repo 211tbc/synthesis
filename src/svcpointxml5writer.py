@@ -132,8 +132,6 @@ class SvcPointXML5Writer():
                 self.pullConfiguration(export.export_id)
                 pulledConfigID = export.id
             
-            # update the reported flag for person (This needs to be applied to all objects that we are getting data from)
-            self.updateReported(self.person)
             self.ph = self.person.fk_person_to_person_historical    # JCS This is a list of records
             self.race = self.person.fk_person_to_races
             self.site_service_part = self.person.site_service_participations    # JCS
@@ -158,6 +156,8 @@ class SvcPointXML5Writer():
                     self.child_entry_exit = self.createChildEntryExit(self.client)
                     for ssp in self.site_service_part:
                         self.createEntryExit(self.child_entry_exit, ssp)
+            # update the reported flag for person (This needs to be applied to all objects that we are getting data from)
+            self.updateReported(self.person)
 
         # Query Mechanism for Site Service Participation (Entry Exits) same as for Person?
 # This is only if we want to create an EE summary at the end for all Clients

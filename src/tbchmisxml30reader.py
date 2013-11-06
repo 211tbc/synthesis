@@ -38,8 +38,8 @@ class TBCHUDHMISXML30Reader:
     def process_data(self, tree):
         ''' Shreds the XML document into the database '''
         root_element = tree.getroot()
-        source_ids = self.parse_source(root_element)
-        return source_ids
+        source_id, export_id = self.parse_source(root_element)
+        return source_id, export_id
 
 
     ''' Parse each table '''
@@ -49,8 +49,8 @@ class TBCHUDHMISXML30Reader:
 
         xpSources = '/ext:Sources/ext:Source'
         source_list = root_element.xpath(xpSources, namespaces = self.nsmap)
+        export_id = None
         if source_list is not None:
-            source_ids = []
             for item in source_list:
                 self.parse_dict = {}
                 ''' Element paths '''
@@ -100,16 +100,16 @@ class TBCHUDHMISXML30Reader:
 
                 ''' Shred to database '''
                 source_id = hmisxml30reader.shred(self, self.parse_dict, dbobjects.Source)
-                if source_id != None:
-                    source_ids.append(source_id)
 
                 ''' Parse all exports for this specific source '''
-                self.parse_export(item)
-        return source_ids
+                export_id = self.parse_export(item)
+                break
+        return source_id, export_id
 
     def parse_export(self, element):
         ''' loop through all exports and traverse the tree '''
 
+        export_id = None
         ''' Element paths '''
         xpExport = 'ext:Export'
         xpExportIDIDNum = 'ext:ExportID/hmis:IDNum'
@@ -135,6 +135,8 @@ class TBCHUDHMISXML30Reader:
                 else:
                     self.export_id = test
                     hmisxml30reader.existence_test_and_add(self, 'export_id', test, 'text')
+                if settings.USE_SPAWNED_THREADS == True:
+                    export_id = self.export_id[0].text
                 hmisxml30reader.existence_test_and_add(self, 'export_id_id_num', item.xpath(xpExportIDIDNum, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'export_id_id_str', item.xpath(xpExportIDIDStr, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'export_id_delete', item.xpath(xpExportDelete, namespaces = self.nsmap), 'attribute_text')
@@ -159,7 +161,7 @@ class TBCHUDHMISXML30Reader:
                 hmisxml30reader.parse_service(self, item)
                 hmisxml30reader.parse_site(self, item)
 
-        return
+        return export_id
 
     def parse_person(self, element):
         ''' Element paths '''

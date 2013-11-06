@@ -17,7 +17,7 @@ from lxml import etree as ET
 class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
     #implements(Writer) # Writer Interface
 
-    def __init__(self, poutDirectory, processingOptions, debugMessages=None):
+    def __init__(self, poutDirectory, processingOptions, export_id=None, debugMessages=None):
         print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__
 
         if settings.DEBUG:
@@ -35,6 +35,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         
         self.referredToProviderID = ""
         self.phone_number = ""
+        self.export_id = export_id
         
     def write(self):        # Called from nodebuilder.run() one time.
         return self.makeHL7Docs("disk")
@@ -51,8 +52,33 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         # Step through Persons. For each person,
         # Step through ServiceEvent. For each Service Event, begin a new document, then
         # Step through Entrys
-        # Step through ServiceEventNotes - and all note_text 
-        exports = self.session.query(dbobjects.Export)
+        # Step through ServiceEventNotes - and all note_text
+        
+        exports = list() # Added by FBY on (11-06-2013): 
+        
+        if self.export_id != None:
+            #exports = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == self.export_id)
+            # Added by FBY on (11-06-2013): queries of the export table must take into
+            # account the source id nobebuilder operates with which is stored in self.options.configID
+            export_table_join = self.session.query(dbobjects.Export, dbobjects.SourceExportLink, dbobjects.Source). \
+                    filter(dbobjects.Export.id == dbobjects.SourceExportLink.export_index_id). \
+                    filter(dbobjects.SourceExportLink.source_index_id == dbobjects.Source.id). \
+                    filter(dbobjects.Source.source_id == self.options.configID). \
+                    filter(dbobjects.Export.export_id == self.export_id)
+            # Added by FBY on (11-06-2013): from the join, extract only the export classes
+            for row in export_table_join:
+                exports.append(row.Export)
+        else:
+            #exports = self.session.query(dbobjects.Export)
+            # Added by FBY on (11-06-2013): queries of the export table must take into
+            # account the source id nobebuilder operates with which is stored in self.options.configID
+            export_table_join = self.session.query(dbobjects.Export, dbobjects.SourceExportLink, dbobjects.Source). \
+                    filter(dbobjects.Export.id == dbobjects.SourceExportLink.export_index_id). \
+                    filter(dbobjects.SourceExportLink.source_index_id == dbobjects.Source.id). \
+                    filter(dbobjects.Source.source_id == self.options.configID)
+            # Added by FBY on (11-06-2013): from the join, extract only the export classes
+            for row in export_table_join:
+                exports.append(row.Export)
 
         hl7_output = []
         for oneExport in exports:
@@ -67,23 +93,18 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
             Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.export_index_id == oneExport.id)
             # More filtering for options
             if self.options.reported == True:
-                Persons = Persons.filter(dbobjects.Person.reported == True)
+                Persons = Persons.filter(dbobjects.Person.reported == True).with_lockmode('update')
             elif self.options.unreported == True:
-                Persons = Persons.filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None))
+                Persons = Persons.filter(or_(dbobjects.Person.reported == False, dbobjects.Person.reported == None)).with_lockmode('update')
             elif self.options.reported == None:
                 pass
             # Now apply the dates to the result set.
             if self.options.alldates == None:
-                Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected,
-                                             self.options.startDate, self.options.endDate))
+                #Persons = Persons.filter(between(dbobjects.Person.person_id_date_collected,
+                #                             self.options.startDate, self.options.endDate)).with_lockmode('update')
+                Persons = Persons.filter(between(dbobjects.Export.export_date,
+                                             self.options.startDate, self.options.endDate)).with_lockmode('update')
             for onePerson in Persons:
-                # update the reported field here instead of at the end of the loop
-                # in case an exception is thrown by processXML. Even if there is an
-                # error, the offending record in the Person's table is deactivated hiding it
-                # from future queries
-                self.updateReported(onePerson)
-                self.session.commit()       # This is only for updateReported()
-
                 # Get the person's latest received phone number from PersonHistorical
                 personHistoricals = self.session.query(dbobjects.PersonHistorical).filter(dbobjects.PersonHistorical.person_index_id == onePerson.id)
                 #Get the most recent not null (unreported already filtered) phone number (that came in from the referral)
@@ -102,6 +123,9 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                     else:
                         # here return the ccd document along with it's referral ID
                         hl7_output.append((xmlutilities.printOutXML(self, encoding="UTF-8", method="xml"), self.referredToProviderID))
+                # Since no errors occurred to this point, mark the Person record as being reported
+                self.updateReported(onePerson)
+                self.session.commit()       # This is only for updateReported()
 
         if mode=="disk":
             return True     # Now nodebuilder.run() will find all output files and validate them.

@@ -41,7 +41,7 @@ hl7CCDwriter_loaded = False
 
 class NodeBuilder():
 
-    def __init__(self, queryOptions):
+    def __init__(self, queryOptions, export_id=None):
         print "initializing nodebuilder"
         # initialize dbobjects
         self.mailSystem = smtpInterface(settings)
@@ -51,6 +51,7 @@ class NodeBuilder():
         self.transport = outputConfiguration.Configuration[queryOptions.configID]['transportConfiguration']
         self.encryption = outputConfiguration.Configuration[queryOptions.configID]['encryption']
         self.outputFilesPath = outputConfiguration.Configuration[queryOptions.configID]['destination']
+        self.export_id = export_id
         
         self.queryOptions = queryOptions	# Passed in from QueryObject.getOptions()
         print '==== Output Format', self.generateOutputformat		# JCS
@@ -77,7 +78,8 @@ class NodeBuilder():
                 print "import of HL7 XML Writer failed", e
                 hl7CCDwriter_loaded = False
             if self.transport in ("save", "rest", "soap"):
-                self.writer = hl7CCDwriter(self.outputFilesPath, queryOptions)
+                print "queryOptions: ", queryOptions
+                self.writer = hl7CCDwriter(self.outputFilesPath, queryOptions, export_id=self.export_id)
                 print '==== self.writer:', self.writer
                 self.validator = hl7CCDXMLTest()
                 print '==== self.validator:', self.validator

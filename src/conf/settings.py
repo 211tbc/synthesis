@@ -46,10 +46,10 @@ PGPHOMEDIR = '~/.gnupg'
 PASSPHRASE = ''
 PGP_KEY_ID = ''
 
-# If you wish to use spawned processes, set this flag to True
-USE_SPAWNED_PROCESSES = False
-# Maximum number of processes to maintain
-NUMBER_OF_PROCESSES = 1 
+# If you wish to use spawned threads, set this flag to True
+USE_SPAWNED_THREADS = False
+# Maximum number of threads to maintain
+NUMBER_OF_THREADS = 1 
 
 # subfolder 
 #XSD_PATH = SOURCE_PATH + "/" + "xsd"

@@ -260,7 +260,10 @@ def main(global_config, **settings):
     config.scan()
     app = config.make_wsgi_app()
     # MainProcessor setup the database among other things
-    from multiprocessing import Process
-    p = Process(target=start_mainprocessor, args=())
-    p.start()
+    import threading
+    # the following line suppresses the attribute error '_DummyThread' object has no attribute '_Thread__block'
+    threading._DummyThread._Thread__stop = lambda x: 42
+    t = threading.Thread(target=start_mainprocessor)
+    t.daemon = True
+    t.start()
     return app

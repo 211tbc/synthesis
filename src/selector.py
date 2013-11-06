@@ -23,8 +23,8 @@ import traceback
 import copy
 from synthesis.socketcomm import ServiceController
 import dbobjects
-from multiprocessing import Process, Array, Value
-import pid                        
+import threading
+from multiprocessing import Array, Value
 from smtplibrary import smtpInterface
 import socket
 timeout = 30
@@ -33,10 +33,9 @@ socket.setdefaulttimeout(timeout)
 class FileHandler:
     '''Sets up the watch on the directory, and handles the file once one comes in'''
     
-    def __init__(self, pids):
-        self.paster_ids = pids
-        # define process list in shared memory so each process can alter it
-        self.process_list = Array('i', [0 for i in range(0, settings.NUMBER_OF_PROCESSES)])
+    def __init__(self):
+        # define thread list in shared memory so each thread can alter it
+        self.thread_list = Array('i', [0 for i in range(0, settings.NUMBER_OF_THREADS)])
         self.exception = Value('i', 0)
 
         #change this so that it gets the watch_dir from the .ini file
@@ -92,7 +91,6 @@ class FileHandler:
         self.setProcessingOptions(new_file_loc)
         self.email = XMLProcessorNotifier(new_file_loc)
         self.Router = Router()
-        global valid 
         valid = False
         # test if the sender encrypts data, if so, decrypt, if not, just process
         
@@ -171,9 +169,6 @@ class FileHandler:
                     print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
-        source_ids = list(set(self.selector.source_ids))
-        if settings.DEBUG:
-            print "source ids: ", source_ids
         # *******************************
         # transfer control to nodebuilder
         # *******************************
@@ -182,18 +177,17 @@ class FileHandler:
 
         # first, setup options for nodebuilder
         optParse = QueryObject(suppress_usage_message=True)
-        source_ids = list(set(self.selector.source_ids))
-        if settings.DEBUG:
-            print "source ids: ", source_ids
 
-        for source_id in source_ids:
+        for paired_id in self.selector.paired_ids:
+            source_id = paired_id[0]
+            export_id = paired_id[1]
             if settings.DEBUG:
                 print "nodebuilder generating output for source id:", source_id
             # next call nodebuilder for each source id
             # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
             (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
             try:
-                NODEBUILDER = NodeBuilder(options)
+                NODEBUILDER = NodeBuilder(options, export_id=export_id)
             except:
                 print "*****************************************************************"
                 print "*****************************************************************"
@@ -212,12 +206,11 @@ class FileHandler:
                 print "*****************************************************************"
                 print "*****************************************************************"
                 print "*****************************************************************"
-                continue
             RESULTS = NODEBUILDER.run()
-        # empty list of source ids
-        self.selector.source_ids = list()
+        # empty list of paired ids
+        self.selector.paired_ids = list()
     
-    def nonGUIPOSIXRun(self, paster_ids):
+    def nonGUIPOSIXRun(self):
         #First, see if there are any existing files and process them
         if settings.DEBUG:
             print "First, looking for preexisting files in input location."
@@ -226,9 +219,7 @@ class FileHandler:
         # This will wait until files arrive, once processed, it will loop and start over (unless we get ctrl-C or break)
         if settings.DEBUG:
             print 'monitoring starting ...'
-        # pass paster process ids to monitor method in order to make it possible to stop both (sleeping)
-        # paster servers
-        new_files = self.monitor(paster_ids) 
+        new_files = self.monitor() 
         
         if settings.DEBUG:
             print 'monitoring done ...'
@@ -271,10 +262,10 @@ class FileHandler:
         else:
             if settings.DEBUG:
                 print "We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()"
-            self.nonGUIPOSIXRun(self.paster_ids)  
+            self.nonGUIPOSIXRun()  
             print "back to nonGUIRun, so returning" 
                     
-    def monitor(self, paster_ids):
+    def monitor(self):
         'function to start and stop the monitor' 
         try:
             self.file_input_watcher.monitor()
@@ -289,31 +280,10 @@ class FileHandler:
 #            if settings.DEBUG:    
 #                wait_counter = 0
             while 1:
-                # If some stops the paster server, stop all paster processes
-                if not pid.does_process_exist('pserve', paster_ids):
-                    print "shutting down..."
-                    i = 0
-                    while i < len(self.process_list):
-                        self.process_list[i] = -1
-                        i += 1
-                    self.file_input_watcher.stop_monitoring()
-                    # uncomment the following lines if you want spawned processes to finish
-                    # processing files before exiting.
-                    #for process_state in self.process_list:
-                    #    if process_state == 1:
-                    #        continue
-                    return
-
-                # empty list of source ids if no spawned processes are active
-                if max(self.process_list) == 0 and min(self.process_list) == 0:
-                    self.selector.source_ids = list()
-
-                if settings.DEBUG and settings.USE_SPAWNED_PROCESSES:
-                    print "Process list status: ", self.process_list[:]
-                # if an exception was encountered within a spawned process, wait for all spawned
-                # processes to stop then exit
+                # if an exception was encountered within a spawned thread, wait for all spawned
+                # threadss to stop then exit
                 if self.exception.value == 1:
-                    while self.process_list[:].count(1) > 0:
+                    while self.thread_list[:].count(1) > 0:
                         pass
                     sys.exit(1)
                 #Queue emptying while loop, this always runs until Ctrl+C is called.  If it ever stops, the found files get collected, but go nowhere
@@ -322,14 +292,19 @@ class FileHandler:
 #                    wait_counter+=1
 #                time.sleep(3)
                 try:
-                    file_found_path = self.queue.get(block='true', timeout=_QTO)                    
-                    _QTO = 5
+                    if settings.USE_SPAWNED_THREADS:
+                        file_found_path = self.queue.get(False)
+                    else:
+                        file_found_path = self.queue.get(block='true', timeout=_QTO)
+                        _QTO = 5
                     
                     if file_found_path != None:
                         # append all files into the file stack to be processed.
                         if settings.DEBUG:
                             print "appending files"
                         files.append(file_found_path)
+                        if settings.USE_SPAWNED_THREADS:
+                            raise Queue.Empty
                     if settings.DEBUG:
                         print "files found so far in while loop are ", files
                     continue
@@ -340,17 +315,16 @@ class FileHandler:
                         #if settings.DEBUG:
                             #print "Queue may be empty, but list of files is also empty, so let's keep monitoring"    
                         continue
-                    if settings.USE_SPAWNED_PROCESSES:
-                        # since this flag is True, spawn processes to process the files
-                        for i, process_state in enumerate(self.process_list):
-                            if process_state == 0:
-                                # signify that this process is running by setting its value in the process list to 1
-                                self.process_list[i] = 1
+                    if settings.USE_SPAWNED_THREADS:
+                        # since this flag is True, spawn threads to process the files
+                        for i, thread_state in enumerate(self.thread_list):
+                            if thread_state == 0:
+                                # signify that this thread is running by setting its value in the thread list to 1
+                                self.thread_list[i] = 1
                                 if settings.DEBUG:
-                                    print "Process list status: ", self.process_list[:]
-                                self._spawn_worker_process(i, files)
-                                # clear out the queue in order to use it for the next process
-                                files = list()
+                                    print "Thread list status: ", self.thread_list[:]
+                                self._spawn_worker_thread(i, [files.pop(0), ])
+                                print "number of files waiting to be processed: %d"  % len(files)
                                 break
                     else:
                         #reverse the list so pop handles them FIFO
@@ -370,11 +344,10 @@ class FileHandler:
 
                         # first, setup options for nodebuilder
                         optParse = QueryObject(suppress_usage_message=True)
-                        source_ids = list(set(self.selector.source_ids))
-                        if settings.DEBUG:
-                            print "source ids: ", source_ids
 
-                        for source_id in source_ids:
+                        for paired_id in self.selector.paired_ids:
+                            source_id = paired_id[0]
+                            export_id = paired_id[1]
                             if settings.DEBUG:
                                 print "nodebuilder generating output for source id:", source_id
                             # next call nodebuilder for each source id
@@ -402,13 +375,25 @@ class FileHandler:
                                 print "*****************************************************************"
                                 continue
                             RESULTS = NODEBUILDER.run()
-                        # empty list of source ids
-                        self.selector.source_ids = list()
+                        # empty list of paired ids
+                        self.selector.paired_ids = list()
                     #now go back to checking the Queue
                     continue
 
                 except KeyboardInterrupt:
                     print "KeyboardInterrupt caught in selector.monitor() while loop"
+                    print "shutting down..."
+                    i = 0
+                    while i < len(self.thread_list):
+                        self.thread_list[i] = -1
+                        i += 1
+
+                    # comment the following for loop if you don't want spawned threads to finish
+                    # processing files before exiting.
+                    for thread_state in self.thread_list:
+                        if thread_state == 1:
+                            continue
+
                     self.file_input_watcher.stop_monitoring()
                     break
 
@@ -420,49 +405,47 @@ class FileHandler:
             self.file_input_watcher.stop_monitoring()
             raise
         
-    def _spawn_worker_process(self, id, files):  # @ReservedAssignment
-        # spawn process to process files. don't wait for the spawned process to finish
-        p = Process(name="Process-%d" % (id + 1), target=self._worker_process, args=(id, files, ))
-        p.start()
+    def _spawn_worker_thread(self, id, files):  # @ReservedAssignment
+        # spawn thread to process files. don't wait for spawned thread to finish
+        threading._DummyThread._Thread__stop = lambda x: 42
+        t = threading.Thread(target=self._worker_thread, args=(id, files, ))
+        t.daemon = True
+        t.start()
 
-    def _worker_process(self, id, files):  # @ReservedAssignment
+    def _worker_thread(self, id, files):  # @ReservedAssignment
         #reverse the list so pop handles them FIFO
         if settings.DEBUG:
-            print "entering worker process named: Process-%d" % (id + 1)
+            print "entering worker thread named: Thread-%d" % (id + 1)
         files.reverse() 
-        while len(files) > 0:
-            # if the process_list contains a -1, this means that someone stopped the
-            # paster server. exit this spawned process.
+        while files:
+            # if the thread_list contains a -1, this means that someone stopped the
+            # pyramid server. exit this spawned thread.
             if settings.DEBUG:
-                print "self.process_list", self.process_list[:]
-            if min(self.process_list) == -1:
-                print "The paster server was stopped.....exiting Process-%d" % (id + 1)
+                print "self.thread_list", self.thread_list[:]
+            if min(self.thread_list) == -1:
+                print "The pyramid server was stopped.....exiting Thread-%d" % (id + 1)
                 return
-            # if an exception was encountered within a spawned process, raise it
+            # if an exception was encountered within a spawned thread, raise it
             if self.exception.value == 1:
-                self.process_list[id] = 0
+                self.thread_list[id] = 0
                 sys.exit(1)
             #if settings.DEBUG:
             #    print "Queue.Empty exception, but files list is not empty, so files to process are", files
             filepathitem = files.pop()
-            print "Files left to process for Process-%d: %d" % (id + 1, len(files))
             if settings.DEBUG:
                 print "%s" % ("*" * 32)
-                print "Within Process-%d" % (id + 1)
+                print "Within Thread-%d" % (id + 1)
                 print "%s" % ("*" * 32)
             print "processing ", filepathitem
             try:
                 self.processFiles(filepathitem)
-                source_ids = list(set(self.selector.source_ids))
-                if settings.DEBUG:
-                    print "source ids: ", source_ids
             except KeyboardInterrupt:
-                self.process_list[id] = 0
-                print "KeyboardInterrupt caught in selector._worker_process()"
+                self.thread_list[id] = 0
+                print "KeyboardInterrupt caught in selector._worker_thread()"
                 #self.file_input_watcher.stop_monitoring()
                 self.exception.value = 1
             except:
-                self.process_list[id] = 0
+                self.thread_list[id] = 0
                 print "General Exception"
                 #self.file_input_watcher.stop_monitoring()
                 self.exception.value = 1
@@ -476,18 +459,18 @@ class FileHandler:
 
             # first, setup options for nodebuilder
             optParse = QueryObject(suppress_usage_message=True)
-            source_ids = list(set(self.selector.source_ids))
-            if settings.DEBUG:
-                print "source ids: ", source_ids
 
-            for source_id in source_ids:
+            if len(self.selector.paired_ids) > 0:
+                paired_id = self.selector.paired_ids.pop(0)
+                source_id = paired_id[0]
+                export_id = paired_id[1]
                 if settings.DEBUG:
                     print "nodebuilder generating output for source id:", source_id
                 # next call nodebuilder for each source id
                 # options are: ['startDate', 'endDate', 'alldates', 'reported', 'unreported', 'configID']
                 (options, args) = optParse.parser.parse_args(['-a', '-u', '-i%s' % source_id])
                 try:
-                    NODEBUILDER = NodeBuilder(options)
+                    NODEBUILDER = NodeBuilder(options, export_id=export_id)
                 except:
                     print "*****************************************************************"
                     print "*****************************************************************"
@@ -495,7 +478,7 @@ class FileHandler:
                     synthesis_error = traceback.format_exc()
                     print synthesis_error
                     smtp = smtpInterface(settings)
-                    smtp.setMessageSubject("ERROR -- Synthesis:FileHandler:_worker_process")
+                    smtp.setMessageSubject("ERROR -- Synthesis:FileHandler:_worker_thread")
                     smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                     smtp.setMessage("%s\r\n" % synthesis_error )
                     try:
@@ -506,25 +489,24 @@ class FileHandler:
                     print "*****************************************************************"
                     print "*****************************************************************"
                     print "*****************************************************************"
-                    continue
                 RESULTS = NODEBUILDER.run()
         except KeyboardInterrupt:
-            self.process_list[id] = 0
-            print "KeyboardInterrupt caught in selector._worker_process()"
+            self.thread_list[id] = 0
+            print "KeyboardInterrupt caught in selector._worker_thread()"
             #self.file_input_watcher.stop_monitoring()
             self.exception.value = 1
         except:
-            self.process_list[id] = 0
+            self.thread_list[id] = 0
             print "General Exception"
             #self.file_input_watcher.stop_monitoring()
             self.exception.value = 1
             raise
-        # signify that the process is no longer running
-        self.process_list[id] = 0
+        # signify that the thread is no longer running
+        self.thread_list[id] = 0
         if settings.DEBUG:
-            print "Process list status: ", self.process_list[:]
+            print "Thread list status: ", self.thread_list[:]
         if settings.DEBUG:
-            print "exiting worker process named: Process-%d" % (id + 1)
+            print "exiting worker thread named: Thread-%d" % (id + 1)
 
 class Selector:
     '''Figures out which data format is being received.'''
@@ -533,7 +515,7 @@ class Selector:
         self.db = dbobjects.DB()
         self.db.Base.metadata.create_all()
 
-        self.source_ids = []
+        self.paired_ids = []
 
         if settings.DEBUG:
             print "selector instantiated and figuring out what schema are available"
@@ -571,7 +553,6 @@ class Selector:
         
         if settings.DEBUG:
             print "readers are", readers
-        global results
         results = []
 
         for test in tests:
@@ -603,9 +584,9 @@ class Selector:
                             if settings.DEBUG:
                                 print "readers[test] is: ", readers[test]
                                 print "instance_file_loc: ", instance_file_loc
-                            source_ids = readers[test](instance_file_loc, self.db).shred()
-                            if source_ids != None:
-                                self.source_ids += source_ids
+                            source_id, export_id = readers[test](instance_file_loc, self.db).shred()
+                            if source_id != None:
+                                self.paired_ids.append((source_id, export_id))
                             
         if not results:
             print "results empty"
@@ -1183,9 +1164,9 @@ class TBCHUDHMISXML30InputReader(TBCHUDHMISXML30Reader):
     def shred(self):
         tree = self.reader.read()
         try:
-            source_ids = self.reader.process_data(tree)
-            if source_ids != None:
-                return source_ids
+            source_id, export_id = self.reader.process_data(tree)
+            if source_id != None:
+                return source_id, export_id
         except:
             raise
 

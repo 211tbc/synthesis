@@ -28,7 +28,6 @@ from selector import FileHandler
 import os
 import sys
 from logger import Logger
-import pid
 
 class MainProcessor:
     def __init__(self):
@@ -72,9 +71,7 @@ class MainProcessor:
         try:
             if settings.DEBUG:
                 print "Now instantiating FileHandler"
-            #Get list of paster process ids
-            paster_ids = pid.get_ids_of_process('pserve')
-            FileHandler(paster_ids) 
+            FileHandler() 
             print "calling sys.exit"
             sys.exit
         

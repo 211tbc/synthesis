@@ -24,7 +24,7 @@ else:
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
     raise SoftwareCompatibilityError, theError
 
-PRINT_SOAP_REQUEST = True
+PRINT_SOAP_REQUEST = settings.DEBUG
 
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):  
     def __init__(self, key, cert):  

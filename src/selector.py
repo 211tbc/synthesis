@@ -26,6 +26,7 @@ import dbobjects
 import threading
 from multiprocessing import Array, Value
 from smtplibrary import smtpInterface
+import gc
 import socket
 timeout = 30
 socket.setdefaulttimeout(timeout)
@@ -264,7 +265,7 @@ class FileHandler:
                 print "We have a POSIX system, as determined by nonGUIRun().  So handing off to nonGUIPOSIXRun()"
             self.nonGUIPOSIXRun()  
             print "back to nonGUIRun, so returning" 
-                    
+
     def monitor(self):
         'function to start and stop the monitor' 
         try:
@@ -380,6 +381,8 @@ class FileHandler:
                             RESULTS = NODEBUILDER.run()
                         # empty list of paired ids
                         self.selector.paired_ids = list()
+                    # force garbage collection here
+                    gc.collect() # Added by FBY on 2013-11-07
                     #now go back to checking the Queue
                     continue
 
@@ -593,7 +596,7 @@ class Selector:
                             
         if not results:
             print "results empty"
-        self.results = results # Added by FBY on 2012-01-19                 
+        self.results = results # Added by FBY on 2012-01-19
         return results
 
 class VendorXMLTest:

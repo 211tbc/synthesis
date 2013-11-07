@@ -281,7 +281,7 @@ class FileHandler:
 #                wait_counter = 0
             while 1:
                 # if an exception was encountered within a spawned thread, wait for all spawned
-                # threadss to stop then exit
+                # threads to stop then exit
                 if self.exception.value == 1:
                     while self.thread_list[:].count(1) > 0:
                         pass
@@ -291,6 +291,9 @@ class FileHandler:
 #                    print "waiting for new files...", wait_counter
 #                    wait_counter+=1
 #                time.sleep(3)
+                # Empty out list created in Selector class
+                self.selector.issues = list()
+                self.selector.current_tests = list()
                 try:
                     if settings.USE_SPAWNED_THREADS:
                         file_found_path = self.queue.get(False)

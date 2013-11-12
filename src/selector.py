@@ -349,7 +349,8 @@ class FileHandler:
                         # first, setup options for nodebuilder
                         optParse = QueryObject(suppress_usage_message=True)
 
-                        for paired_id in self.selector.paired_ids:
+                        paired_ids = source_ids = list(set(self.selector.paired_ids))
+                        for paired_id in paired_ids:
                             source_id = paired_id[0]
                             export_id = paired_id[1]
                             if settings.DEBUG:
@@ -379,8 +380,8 @@ class FileHandler:
                                 print "*****************************************************************"
                                 continue
                             RESULTS = NODEBUILDER.run()
-                        # empty list of paired ids
-                        self.selector.paired_ids = list()
+                    # empty list of paired ids
+                    self.selector.paired_ids = list()
                     # force garbage collection here
                     gc.collect() # Added by FBY on 2013-11-07
                     #now go back to checking the Queue

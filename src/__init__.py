@@ -4,7 +4,8 @@ from mainprocessor import MainProcessor
 import os
 import logging
 import fileutils
-
+import subprocess
+import threading
 import datetime
 from lxml import etree
 import urllib
@@ -226,7 +227,6 @@ class DocsController(RestController):
                 try:
                     if not os.path.exists(inputConfiguration.INPUTFILES_PATH[0]):
                         os.mkdir(inputConfiguration.INPUTFILES_PATH[0])
-                    import subprocess
                     mvp = subprocess.Popen('mv %s %s' % (file_full_path, fileutils.getUniqueFileNameForMove(file_full_path, inputConfiguration.INPUTFILES_PATH[0])))
                     # FBY: Wait for the "mv" call to finish
                     mvp.wait()
@@ -260,7 +260,6 @@ def main(global_config, **settings):
     config.scan()
     app = config.make_wsgi_app()
     # MainProcessor setup the database among other things
-    import threading
     # the following line suppresses the attribute error '_DummyThread' object has no attribute '_Thread__block'
     threading._DummyThread._Thread__stop = lambda x: 42
     t = threading.Thread(target=start_mainprocessor)

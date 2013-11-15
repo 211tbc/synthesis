@@ -6,7 +6,7 @@ import traceback
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
-from selector import HUDHMIS30XMLTest, HUDHMIS28XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest#, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest
+from selector_tests import HUDHMIS30XMLTest, HUDHMIS28XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest#, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest
 from errcatalog import catalog
 import os
 from queryobject import QueryObject
@@ -388,6 +388,7 @@ class NodeBuilder():
 #            pass
 #else: 
 #    pass
+
 
 if __name__ == '__main__':
     

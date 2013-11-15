@@ -26,6 +26,9 @@ import dbobjects
 import threading
 from multiprocessing import Array, Value
 from smtplibrary import smtpInterface
+from nodebuilder import NodeBuilder
+from synthesis.queryobject import QueryObject
+from selector_tests import HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest
 import gc
 import socket
 timeout = 30
@@ -170,11 +173,10 @@ class FileHandler:
                     print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
                 self.processFiles(inputFile)
+
         # *******************************
         # transfer control to nodebuilder
         # *******************************
-        from nodebuilder import NodeBuilder
-        from synthesis.queryobject import QueryObject
 
         # first, setup options for nodebuilder
         optParse = QueryObject(suppress_usage_message=True)
@@ -343,8 +345,6 @@ class FileHandler:
                         # *******************************
                         # transfer control to nodebuilder
                         # *******************************
-                        from nodebuilder import NodeBuilder
-                        from synthesis.queryobject import QueryObject
 
                         # first, setup options for nodebuilder
                         optParse = QueryObject(suppress_usage_message=True)
@@ -461,9 +461,6 @@ class FileHandler:
         # transfer control to nodebuilder
         # *******************************
         try:
-            from nodebuilder import NodeBuilder
-            from synthesis.queryobject import QueryObject
-
             # first, setup options for nodebuilder
             optParse = QueryObject(suppress_usage_message=True)
 

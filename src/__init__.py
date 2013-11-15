@@ -3,6 +3,7 @@ from conf import inputConfiguration
 from mainprocessor import MainProcessor
 import os
 import logging
+import fileutils
 
 import datetime
 from lxml import etree
@@ -218,7 +219,6 @@ class DocsController(RestController):
             ###
             if not inputConfiguration.USE_ENCRYPTION:
                 # FBY: Call fileutils.moveFile to move unencrypted files into the input_files folder
-                import fileutils
                 fileutils.moveFile(file_full_path, inputConfiguration.INPUTFILES_PATH[0])
             else:
                 # FBY: For encrypted files, instead of a call to fileutils.moveFile, move

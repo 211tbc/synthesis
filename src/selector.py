@@ -29,7 +29,6 @@ from smtplibrary import smtpInterface
 from nodebuilder import NodeBuilder
 from synthesis.queryobject import QueryObject
 from selector_tests import HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest
-import gc
 import socket
 timeout = 30
 socket.setdefaulttimeout(timeout)
@@ -333,8 +332,6 @@ class FileHandler:
                                 print "number of files waiting to be processed: %d"  % len(files)
                                 break
                     else:
-                        #reverse the list so pop handles them FIFO
-                        files.reverse() 
                         while files:
                             if settings.DEBUG:
                                 print "Queue.Empty exception, but files list is not empty, so files to process are", files
@@ -382,8 +379,6 @@ class FileHandler:
                             RESULTS = NODEBUILDER.run()
                     # empty list of paired ids
                     self.selector.paired_ids = list()
-                    # force garbage collection here
-                    gc.collect() # Added by FBY on 2013-11-07
                     #now go back to checking the Queue
                     continue
 
@@ -420,10 +415,8 @@ class FileHandler:
         t.start()
 
     def _worker_thread(self, id, files):  # @ReservedAssignment
-        #reverse the list so pop handles them FIFO
         if settings.DEBUG:
             print "entering worker thread named: Thread-%d" % (id + 1)
-        files.reverse() 
         while files:
             # if the thread_list contains a -1, this means that someone stopped the
             # pyramid server. exit this spawned thread.

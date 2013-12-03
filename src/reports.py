@@ -45,7 +45,7 @@ def monthlyReferralReport():
     report_range_desc = "Report period from: " + '{:%m-%d-%Y}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d-%Y}'.format(end_of_last_day_last_month)  + "\n"
     text_message += report_range_desc
 
-    subject = "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
+    subject = "2-1-1 Tampa Bay Cares Referral Report For The " \
         "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
     print subject
 

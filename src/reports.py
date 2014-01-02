@@ -40,12 +40,20 @@ def monthlyReferralReport():
     #print "end_of_first_day_this_month: " + str(end_of_first_day_this_month)
     end_of_last_day_last_month = end_of_first_day_this_month - timedelta(days=1)
     #print "end_of_last_day_last_month: " + str(end_of_last_day_last_month)
-    beginning_of_first_day_last_month = datetime(year=now.year, month=(now.month-1), day=1)#, hour = 0, minute=0, second=0)
+
+    if now.month == 1:
+        last_month = 12
+        last_month_year = now.year-1
+    else:
+        last_month = now.month - 1
+        last_month_year = now.year
+
+    beginning_of_first_day_last_month = datetime(year=last_month_year, month=last_month, day=1)#, hour = 0, minute=0, second=0)
 
     report_range_desc = "Report period from: " + '{:%m-%d-%Y}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d-%Y}'.format(end_of_last_day_last_month)  + "\n"
     text_message += report_range_desc
 
-    subject = "2-1-1 Tampa Bay Cares Referral Report For The " \
+    subject = "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
         "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
     print subject
 

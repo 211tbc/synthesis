@@ -530,7 +530,8 @@ class Selector:
         
         #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
         #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
-        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
+        #tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
+        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
         #tests = [HUDHMIS30XMLTest]
         #tests = [HUDHMIS28XMLTest]
         if settings.DEBUG:

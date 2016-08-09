@@ -183,6 +183,7 @@
             <xsd:element name="CallerZIPCode" type="hmis:zIPCodeBase" minOccurs="0"/>
             <xsd:element name="CallerCity" type="xsd:string" minOccurs="0"/>
             <xsd:element name="CallerState" type="hmis:stateBase" minOccurs="0"/>
+            <xsd:element name="CallerHomePhone" type="hmis:phoneNumberBase" minOccurs="0"/>
             <!--Add Call Notes?-->
         </xsd:sequence>
     </xsd:complexType>

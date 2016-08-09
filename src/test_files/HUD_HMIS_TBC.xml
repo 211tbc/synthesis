@@ -168,7 +168,7 @@
                         <ext:CallerZIPCode>33710</ext:CallerZIPCode>
                         <ext:CallerCity>Largo</ext:CallerCity>
                         <ext:CallerState>FL</ext:CallerState>
-                        <ext:CallerHomePhone>(727) 123-1234</ext:CallerHomePhone>
+                        <ext:CallerHomePhone>7272231234</ext:CallerHomePhone>
                     </ext:Call>
                 </ext:Calls>
             </ext:SiteService>

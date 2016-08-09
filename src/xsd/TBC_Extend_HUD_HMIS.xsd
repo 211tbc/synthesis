@@ -2,13 +2,12 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" blockDefault="" 
     xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
     xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
-    targetNamespace="http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
+    targetNamespace="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
     elementFormDefault="qualified"
     attributeFormDefault="qualified"
     xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd">
     <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
-    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsdxsd"/>
-    <xsd:import namespace="https://raw.githubusercontent.com/hmis-interop/xml/v4.1.3/src/HUD_HMIS.xsd" schemaLocation="https://raw.githubusercontent.com/hmis-interop/xml/v4.1.3/src/HUD_HMIS.xsd"/>
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" />
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>
@@ -181,9 +180,9 @@
             <xsd:element name="CallTime" type="xsd:dateTime"/>
             <xsd:element name="CallDuration" type="xsd:duration"/>
             <xsd:element name="CaseworkerID" type="hmis:iDIndex"/>
-            <xsd:element name="CallerZIPCode" type="hmis:zIPCodeBase"/>
-            <xsd:element name="CallerCity" type="xsd:string"/>
-            <xsd:element name="CallerState" type="hmis:stateBase"/>
+            <xsd:element name="CallerZIPCode" type="hmis:zIPCodeBase" minOccurs="0"/>
+            <xsd:element name="CallerCity" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="CallerState" type="hmis:stateBase" minOccurs="0"/>
             <!--Add Call Notes?-->
         </xsd:sequence>
     </xsd:complexType>

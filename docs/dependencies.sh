@@ -1,4 +1,6 @@
 ./bin/pip install lxml==2.2.8
+./bin/pip install markerlib
+./bin/pip install pycrypto
 #./bin/pip install SQLAlchemy==0.6.8
 ./bin/pip install SQLAlchemy==0.8.2
 ./bin/pip install python-dateutil==1.5
@@ -31,6 +33,18 @@ do
             echo "lxml install ... failed!"
         else
             echo "lxml install ... ok."
+        fi
+        if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'markerlib' -print -quit)"
+        then
+            echo "markerlib installed ... failed!"
+        else
+            echo "markerlib installed ... ok."
+        fi
+        if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'Crypto' -print -quit)"
+        then
+            echo "pycrypto installed ... failed!"
+        else
+            echo "pycrypto installed ... ok."
         fi
         if test -z "$(find ./lib/$python_version/site-packages -maxdepth 1 -name 'sqlalchemy' -print -quit)"
         then

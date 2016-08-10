@@ -19,7 +19,7 @@ class TBCHUDHMISXML30Reader:
     ''' Define XML namespaces '''
     hmis_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
     airs_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
-    tbc_namespace = "http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd"
+    tbc_namespace = "https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace, "ext" : tbc_namespace}
 
 
@@ -311,6 +311,10 @@ class TBCHUDHMISXML30Reader:
         xpCaseworkerID = 'ext:CaseworkerID'
         xpCaseworkerIDNum = 'hmis:IDNum'
         xpCaseworkerIDStr = 'hmis:IDStr'
+        xpCallerZIPCode = 'ext:CallerZIPCode'
+        xpCallerCity = 'ext:CallerCity'
+        xpCallerState = 'ext:CallerState'
+        xpCallerHomePhone = 'ext:CallerHomePhone'
 
         # first, read all the standard hmis xml 30 site service items
         hmisxml30reader.parse_site_service(self, element, namespace = 'ext')
@@ -339,6 +343,10 @@ class TBCHUDHMISXML30Reader:
                         hmisxml30reader.existence_test_and_add(self, 'caseworker_id_id_str',
                             caseworkerID[0].xpath(xpCaseworkerIDStr, namespaces = self.nsmap),
                             'text')
+                        hmisxml30reader.existence_test_and_add(self, 'call_caller_zipcode', call.xpath(xpCallerZIPCode, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'call_caller_city', call.xpath(xpCallerCity, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'call_caller_state', call.xpath(xpCallerState, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'call_caller_home_phone', call.xpath(xpCallerHomePhone, namespaces = self.nsmap), 'text')
                         #forget all this following discussion.  It's much easier to just move the call id into the personhistorical and referral records -ECJ 09-21-2013
                             # The IDs for the call's linked personhistorical records and referrals are within those tables, and have the call records linked
                             # PersonHistorical linkage
@@ -455,6 +463,7 @@ class TBCHUDHMISXML30Reader:
         xpReferralsReferralCallIDIDStr = 'ext:CallID/hmis:IDStr'
         xpReferralsReferralNeedIDIDNum = 'ext:NeedID/hmis:IDNum'    # Points to Standalone Need 
         xpReferralsReferralNeedIDIDStr = 'ext:NeedID/hmis:IDStr'    # defined earlier in ext:Person/ext:Need
+        xpReferralsReferralNeedNotes = 'ext:NeedNotes'
 
         referralElements = element.xpath(xpReferrals, namespaces = self.nsmap)
         if referralElements is not None:
@@ -492,6 +501,7 @@ class TBCHUDHMISXML30Reader:
                 hmisxml30reader.existence_test_and_add(self, 'referral_call_idid_str', referral.xpath(xpReferralsReferralCallIDIDStr, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'referral_need_idid_num', referral.xpath(xpReferralsReferralNeedIDIDNum, namespaces = self.nsmap), 'text')
                 hmisxml30reader.existence_test_and_add(self, 'referral_need_idid_str', referral.xpath(xpReferralsReferralNeedIDIDStr, namespaces = self.nsmap), 'text')
+                hmisxml30reader.existence_test_and_add(self, 'referral_need_notes', referral.xpath(xpReferralsReferralNeedNotes, namespaces = self.nsmap), 'text')
 
                 ''' Foreign Keys '''
                 try: hmisxml30reader.existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')

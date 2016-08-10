@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, MetaData, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Boolean, MetaData, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.types import DateTime, Date, Interval
@@ -824,6 +824,12 @@ class Call(DB.Base, MapBase):
     call_duration = Column(Interval())
     caseworker_id_id_num = Column(String(50))
     caseworker_id_id_str = Column(String(32))
+    # FBY : TBC requested|required fields
+    call_caller_zipcode = Column(String(10))
+    call_caller_city = Column(String(128))
+    call_caller_state = Column(String(2))
+    call_caller_home_phone = Column(BigInteger)
+
  
 class ChildEnrollmentStatus(DB.Base, MapBase):
     __tablename__ = 'child_enrollment_status'
@@ -2051,6 +2057,8 @@ class Referral(DB.Base, MapBase):
     referral_need_idid_num = Column(String(50)) # In TBC, these refer to an already defined Need
     referral_need_idid_str = Column(String(50))
     useexisting = True
+    # FBY : TBC requested|required field
+    referral_need_notes = Column(String)
 
 class Source(DB.Base, MapBase):
     __tablename__ = 'source'

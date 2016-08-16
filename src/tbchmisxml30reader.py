@@ -343,10 +343,10 @@ class TBCHUDHMISXML30Reader:
                         hmisxml30reader.existence_test_and_add(self, 'caseworker_id_id_str',
                             caseworkerID[0].xpath(xpCaseworkerIDStr, namespaces = self.nsmap),
                             'text')
-                        hmisxml30reader.existence_test_and_add(self, 'call_caller_zipcode', call.xpath(xpCallerZIPCode, namespaces = self.nsmap), 'text')
-                        hmisxml30reader.existence_test_and_add(self, 'call_caller_city', call.xpath(xpCallerCity, namespaces = self.nsmap), 'text')
-                        hmisxml30reader.existence_test_and_add(self, 'call_caller_state', call.xpath(xpCallerState, namespaces = self.nsmap), 'text')
-                        hmisxml30reader.existence_test_and_add(self, 'call_caller_home_phone', call.xpath(xpCallerHomePhone, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'caller_zipcode', call.xpath(xpCallerZIPCode, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'caller_city', call.xpath(xpCallerCity, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'caller_state', call.xpath(xpCallerState, namespaces = self.nsmap), 'text')
+                        hmisxml30reader.existence_test_and_add(self, 'caller_home_phone', call.xpath(xpCallerHomePhone, namespaces = self.nsmap), 'text')
                         #forget all this following discussion.  It's much easier to just move the call id into the personhistorical and referral records -ECJ 09-21-2013
                             # The IDs for the call's linked personhistorical records and referrals are within those tables, and have the call records linked
                             # PersonHistorical linkage

@@ -2035,6 +2035,9 @@ def parse_person_historical(self, element, pf = 'hmis:'):
             except: pass
             try: existence_test_and_add(self, 'export_index_id', self.export_index_id, 'no_handling')
             except: pass            
+            # FBY New 2016-08-16: Add foreign key for call table
+            try: existence_test_and_add(self, 'call_index_id', self.call_index_id, 'no_handling')
+            except: pass
             ''' Shred to database '''
             shred(self, self.parse_dict, PersonHistorical)
 
@@ -4124,6 +4127,13 @@ def shred(self, records_dict, map_class):
     if map_class.__name__ == "TimeOpen":
         self.time_open_index_id = mapped.id
         print "TimeOpen:",self.time_open_index_id 
+
+    # FBY New 2016-08-16: Make the call id accessible when setting it as a foreign key to
+    # in the person_historical table
+    if map_class.__name__ == "Call":
+        self.call_index_id = mapped.id
+        print "Call:",self.call_index_id
+
     self.parse_dict ={}
     if records_dict.has_key("source_id"):
         return records_dict["source_id"]

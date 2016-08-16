@@ -112,6 +112,11 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                 for onePersonHistorical in personHistoricals:
                     if onePersonHistorical.person_phone_number:
                         self.phone_number = onePersonHistorical.person_phone_number
+                    # FBY New 2016-08-16 : Also check call table for phone number and if present, use it instead.
+                    calls = self.session.query(dbobjects.Call).filter(dbobjects.Call.id == onePersonHistorical.call_index_id)
+                    for oneCall in calls:
+                        if oneCall.caller_home_phone:
+                            self.phone_number = oneCall.caller_home_phone
                 ServEvts = self.session.query(dbobjects.ServiceEvent).filter(dbobjects.ServiceEvent.person_index_id == onePerson.id)
                 for oneServEvt in ServEvts: # One document per event???
                     #print "person is: ", self.person

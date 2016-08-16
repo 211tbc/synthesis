@@ -825,10 +825,10 @@ class Call(DB.Base, MapBase):
     caseworker_id_id_num = Column(String(50))
     caseworker_id_id_str = Column(String(32))
     # FBY : TBC requested|required fields
-    call_caller_zipcode = Column(String(10))
-    call_caller_city = Column(String(128))
-    call_caller_state = Column(String(2))
-    call_caller_home_phone = Column(BigInteger)
+    caller_zipcode = Column(String(10))
+    caller_city = Column(String(128))
+    caller_state = Column(String(2))
+    caller_home_phone = Column(String(10))
 
  
 class ChildEnrollmentStatus(DB.Base, MapBase):

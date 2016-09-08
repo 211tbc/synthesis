@@ -63,7 +63,15 @@ Configuration = \
             'PEMHS_test_ReceivingProviderId': 'D22D0095-FD2E-4011-BEA4-4479AE92C414',
             'PEMHS_production_ReceivingProviderId': 'D76C72B3-8DFA-4240-96CC-328B985BB4EA',
             'Suncoast_test_ReceivingProviderId':'8754B0BB-CC45-465E-9F97-1A9D2F5FE058',
-            'Suncoast_production_ReceivingProviderId': '3634CE56-C001-4CF5-9620-A2E3BAC128AF'
+            'Suncoast_production_ReceivingProviderId': '3634CE56-C001-4CF5-9620-A2E3BAC128AF',
+            'Boley_test_ReceivingProviderId': 'f1eae37d-0a76-5b9c-bdf5-cfd7a9833e06',
+            'Boley_production_ReceivingProviderId': '684ce063-fba0-53d2-85d0-8a9b1fa1aeed',
+            'DFL_test_ReceivingProviderId': '704c697a-0b1d-5e65-bffc-c98cca8ec580',
+            'DFL_production_ReceivingProviderId': '3bcbc4fd-5a46-5e5c-8bce-bf64b0193d35',
+            'GCJFCS_test_ReceivingProviderId': '9ca02513-e97a-55ae-b49d-e6a2db2989e6',
+            'GCJFCS_production_ReceivingProviderId': '66be5455-071b-5257-af3e-dddc81c1ff6b',
+            'OPAR_test_ReceivingProviderId': '80dbd872-9f40-59e3-811f-cc59f31311df',
+            'OPAR_production_ReceivingProviderId': '52021eed-dddb-5f27-82fa-4865438cba65'
         },
     '334380997':#For HUD files in test_files folder
         {

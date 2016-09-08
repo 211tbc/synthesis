@@ -352,6 +352,34 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['PEMHS_test_ReceivingProviderId']
 
+        # for Boley
+        elif referredToProviderID in ['9082', '16537', '15772', '16536', '13686', '15114', '15889', '16327', '15026', '13626', '14337', '13629', '13630', '13632', '13631', '15973', '944', '15432', '9084', '14339', '13708', '14338', '13711', '16535', '13709', '13710', '16283', '16333', '13712', '13687', '14079', '14775', '15254', '15253', '1429', '16375', '9085', '14340', '13707', '14363', '9086', '9087']:
+            if settings.SEND_REFERRALS_TO_PRODUCTION:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_production_ReceivingProviderId']
+            else:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_test_ReceivingProviderId']
+
+        # for Directions for Living
+        elif referredToProviderID in ['9757', '9754', '9755', '9756', '16427', '16425', '16424', '16426', '15364', '9758', '15262', '9759', '16421', '16420', '16419', '15693', '16092', '7651', '14810', '14809', '16555', '13016', '16422', '16423', '15367']:
+            if settings.SEND_REFERRALS_TO_PRODUCTION:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_production_ReceivingProviderId']
+            else:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_test_ReceivingProviderId']
+
+        # for GCJFCS
+        elif referredToProviderID in ['10180', '10183', '15482', '10186', '10182', '10190', '10194', '10195', '15464', '7854']:
+            if settings.SEND_REFERRALS_TO_PRODUCTION:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_production_ReceivingProviderId']
+            else:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_test_ReceivingProviderId']
+
+        # for Operation PAR
+        elif referredToProviderID in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
+            if settings.SEND_REFERRALS_TO_PRODUCTION:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_production_ReceivingProviderId']
+            else:
+                ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
+
         else:
             ReceivingProviderId = ""
 

@@ -59,14 +59,15 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
-    xmlns:wsa="http://www.w3.org/2005/08/addressing">    
+    xmlns:a="http://www.w3.org/2005/08/addressing">
     <soapenv:Header>
-        <wsa:MessageID>urn:uuid:%(MESSAGE_ID_UUID)s</wsa:MessageID>
-        <wsa:Action soapenv:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</wsa:Action>
-        <wsa:To>http://localhost:2647/XdsService/IHEXDSRepository.svc</wsa:To>
-        <wsa:ReplyTo soapenv:mustUnderstand="1">
-            <wsa:Address>https://pix.penguix.net:8024/docs</wsa:Address>
-        </wsa:ReplyTo>
+        <a:MessageID>urn:uuid:%(MESSAGE_ID_UUID)s</a:MessageID>
+        <a:Action soapenv:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
+        <direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination" xmlns:direct="urn:direct:addressing">
+        <direct:from>%(DIRECT_FROM)s</direct:from>
+        <direct:to>%(DIRECT_TO)s</direct:to>
+        <direct:metadata-level>XDS</direct:metadata-level>
+        </direct:addressBlock>
     </soapenv:Header>
     <soapenv:Body>
         <xdsb:ProvideAndRegisterDocumentSetRequest xmlns:xdsb="urn:ihe:iti:xds-b:2007">

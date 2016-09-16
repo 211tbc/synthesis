@@ -61,6 +61,8 @@ SOAP_TRANSPORT_PROPERTIES = {
     "DOCUMENT_ENTRY_UNIQUEID_UUID"      : "2e82c1f6-a085-4c72-9da3-8640a32e42ab", # <== Where does this value come from?
     "SUBMISSION_SET_UUID"               : "a54d6aa5-d40d-43f9-88c5-b4633d873bdd", # <== Where does this value come from?
     "SUBMISSION_SET_ID"                 : "ID_000000_0", # <== Where does this value come from?
+    "DIRECT_FROM"                       : "<Referer From Address used in SOAP envelope header>", # It's not an actual email - it will just send the referral to their referral workflow.
+    "DIRECT_TO"                       : "<A Netsmart TO Address used in SOAP envelope header>",
     #
     # The following are optional
     #

@@ -220,6 +220,8 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                         </rim:Slot>
                         %(REGISTRY_PACKAGE_NAME_TAG)s
                         %(REGISTRY_PACKAGE_DESCRIPTION_TAG)s
+                        <rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>
+                        %(NEED_NOTE)s
                         <rim:Classification
                             classificationScheme="urn:uuid:%(REGISTRY_UUID)s"
                             classifiedObject="%(SOURCE_OBJECT)s" nodeRepresentation=""
@@ -337,6 +339,15 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
         # Source ID <== Where does this come from?
         soap_transport_properties["SOURCE_ID"] = "1.3.6.1.4.1.21367.2009.1.2.1"
+
+        # Taxonomy Code
+        taxonomy_code = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')][0].text
+
+        # Note Text
+        note_text = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')][0].text
+
+        # Needs Note
+        soap_transport_properties["NEED_NOTE"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s  AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
 
         #03/17/2013 ECJ adding referring provider id to differentiate originating source
         # for Suncoast Center

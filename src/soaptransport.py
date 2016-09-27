@@ -59,7 +59,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
-    xmlns:a="http://www.w3.org/2005/08/addressing">
+    xmlns:a="http://www.w3.org/2005/08/addressing">    
     <soapenv:Header>
         <a:MessageID>urn:uuid:%(MESSAGE_ID_UUID)s</a:MessageID>
         <a:Action soapenv:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
@@ -340,46 +340,52 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
         #03/17/2013 ECJ adding referring provider id to differentiate originating source
         # for Suncoast Center
-        if referredToProviderID in ['885','12047','12048','12049','12052','12054','12055','12060','15333','15392','15399','15400','15402','15403','15404','15405','15407','15408','15409','15410','15411','15413','15414','15416','15434','15436','15437','15438','15442','15443','15444','15445','15446','15447','15484','15485','15487','15488','15489','15490','15492','15493','15494','15495','15496','15500','15501','15502','15503','15505','15506','15507','15508','15509','15510','15511','15513','15514','15515','15516','15517','15518','15519','15520','15521','15522','15523','15524','15525','15526','15527','15529','15530','15531','15532','15533','15534','15535','15536','15537','15538']:
+        if str(referredToProviderID) in ['885','12047','12048','12049','12052','12054','12055','12060','15333','15392','15399','15400','15402','15403','15404','15405','15407','15408','15409','15410','15411','15413','15414','15416','15434','15436','15437','15438','15442','15443','15444','15445','15446','15447','15484','15485','15487','15488','15489','15490','15492','15493','15494','15495','15496','15500','15501','15502','15503','15505','15506','15507','15508','15509','15510','15511','15513','15514','15515','15516','15517','15518','15519','15520','15521','15522','15523','15524','15525','15526','15527','15529','15530','15531','15532','15533','15534','15535','15536','15537','15538']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Suncoast_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Suncoast_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'Suncoast@uat.direct.ntst.com'
 
         # for PEMHS    
-        elif referredToProviderID in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
+        elif str(referredToProviderID) in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['PEMHS_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['PEMHS_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'PEMHS@uat.direct.ntst.com'
 
         # for Boley
-        elif referredToProviderID in ['9082', '16537', '15772', '16536', '13686', '15114', '15889', '16327', '15026', '13626', '14337', '13629', '13630', '13632', '13631', '15973', '944', '15432', '9084', '14339', '13708', '14338', '13711', '16535', '13709', '13710', '16283', '16333', '13712', '13687', '14079', '14775', '15254', '15253', '1429', '16375', '9085', '14340', '13707', '14363', '9086', '9087']:
+        elif str(referredToProviderID) in ['9082', '16537', '15772', '16536', '13686', '15114', '15889', '16327', '15026', '13626', '14337', '13629', '13630', '13632', '13631', '15973', '944', '15432', '9084', '14339', '13708', '14338', '13711', '16535', '13709', '13710', '16283', '16333', '13712', '13687', '14079', '14775', '15254', '15253', '1429', '16375', '9085', '14340', '13707', '14363', '9086', '9087']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'BoleyCenter@uat.direct.ntst.com'
 
         # for Directions for Living
-        elif referredToProviderID in ['9757', '9754', '9755', '9756', '16427', '16425', '16424', '16426', '15364', '9758', '15262', '9759', '16421', '16420', '16419', '15693', '16092', '7651', '14810', '14809', '16555', '13016', '16422', '16423', '15367']:
+        elif str(referredToProviderID) in ['9757', '9754', '9755', '9756', '16427', '16425', '16424', '16426', '15364', '9758', '15262', '9759', '16421', '16420', '16419', '15693', '16092', '7651', '14810', '14809', '16555', '13016', '16422', '16423', '15367']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'DirectionsForLiving@uat.direct.ntst.com'
 
         # for GCJFCS
-        elif referredToProviderID in ['10180', '10183', '15482', '10186', '10182', '10190', '10194', '10195', '15464', '7854']:
+        elif str(referredToProviderID) in ['10180', '10183', '15482', '10186', '10182', '10190', '10194', '10195', '15464', '7854']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'GulfCoast@uat.direct.ntst.com'
 
         # for Operation PAR
-        elif referredToProviderID in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
+        elif str(referredToProviderID) in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
+            soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
 
         else:
             ReceivingProviderId = ""

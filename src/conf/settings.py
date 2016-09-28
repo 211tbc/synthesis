@@ -114,6 +114,8 @@ TBC_REFERRAL_EMAIL_CC_RECIPIENT = "another_username@localhost"
 #   are used, so agencies aren't pestered with tests
 SEND_REFERRALS_TO_PRODUCTION = False
 
+# Specify the type of referral email to use when transmitting to a Netsmart endpoint
+USE_TESTING_REFERRAL_EMAIL = True
 
 try:
     from local_settings import *

@@ -345,7 +345,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Suncoast_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Suncoast_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'Suncoast@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'Suncoast@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'Suncoast@direct.ntst.com'
 
         # for PEMHS    
         elif str(referredToProviderID) in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
@@ -353,7 +356,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['PEMHS_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['PEMHS_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'PEMHS@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'PEMHS@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'PEMHS@direct.ntst.com'
 
         # for Boley
         elif str(referredToProviderID) in ['9082', '16537', '15772', '16536', '13686', '15114', '15889', '16327', '15026', '13626', '14337', '13629', '13630', '13632', '13631', '15973', '944', '15432', '9084', '14339', '13708', '14338', '13711', '16535', '13709', '13710', '16283', '16333', '13712', '13687', '14079', '14775', '15254', '15253', '1429', '16375', '9085', '14340', '13707', '14363', '9086', '9087']:
@@ -361,7 +367,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['Boley_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'BoleyCenter@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'BoleyCenter@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'BoleyCenter@direct.ntst.com'
 
         # for Directions for Living
         elif str(referredToProviderID) in ['9757', '9754', '9755', '9756', '16427', '16425', '16424', '16426', '15364', '9758', '15262', '9759', '16421', '16420', '16419', '15693', '16092', '7651', '14810', '14809', '16555', '13016', '16422', '16423', '15367']:
@@ -369,7 +378,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['DFL_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'DirectionsForLiving@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'DirectionsForLiving@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'DirectionsForLiving@direct.ntst.com'
 
         # for GCJFCS
         elif str(referredToProviderID) in ['10180', '10183', '15482', '10186', '10182', '10190', '10194', '10195', '15464', '7854']:
@@ -377,7 +389,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['GCJFCS_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'GulfCoast@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'GulfCoast@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'GulfCoast@direct.ntst.com'
 
         # for Operation PAR
         elif str(referredToProviderID) in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
@@ -385,7 +400,10 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
-            soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
+            if settings.USE_TESTING_REFERRAL_EMAIL:
+                soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
+            else:
+                soap_transport_properties['DIRECT_TO'] = 'OperationPar@direct.ntst.com'
 
         else:
             ReceivingProviderId = ""
@@ -525,15 +543,18 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         #
 
         # Taxonomy Code
-        taxonomy_code = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')][0].text
+        try:
+            taxonomy_code = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')][0].text
 
-        # Note Text
-        note_text = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')][0].text
+            # Note Text
+            note_text = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')][0].text
 
-        # Needs Note
-        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-        soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s  AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
-
+            # Needs Note
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s  AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
+        except:
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = '<rim:Name />'
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = '<rim:Description />'
         # SOAP Attachment
         payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
         ccd = ET.fromstring(ccd_data)

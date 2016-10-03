@@ -545,16 +545,29 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         # Taxonomy Code
         try:
             taxonomy_code = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')][0].text
+        except:
+            taxonomy_code = None
 
-            # Note Text
+        # Note Text
+        try:
             note_text = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')][0].text
+        except:
+            note_text = None
 
-            # Needs Note
+        # Need Notes
+        if note_text == None and taxonomy_code == None:
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim/Name />"""
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
+        elif note_text == None and taxonomy_code != None:
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="AIRS Code: %s" /></rim:Description>""" % (taxonomy_code)
+        elif note_text != None and taxonomy_code == None:
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s" /></rim:Description>""" % (note_text)
+        else:
             soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
             soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s  AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
-        except:
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = '<rim:Name />'
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = '<rim:Description />'
+
         # SOAP Attachment
         payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
         ccd = ET.fromstring(ccd_data)

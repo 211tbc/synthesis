@@ -599,7 +599,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 attachment = base64.b64encode(gpg.encrypt(ccd_data))
         soap_transport_properties["MIME_BORDER_SECTION"] += """
 --MIMEBoundaryurn_uuid_%s
-Content-Type: text/xml; charset=us-ascii
+Content-Type: application/xml; charset=us-ascii
 Content-Transfer-Encoding: binary
 Content-ID: <1.urn:uuid:%s@apache.org>
 Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"

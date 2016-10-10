@@ -73,7 +73,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         <xdsb:ProvideAndRegisterDocumentSetRequest xmlns:xdsb="urn:ihe:iti:xds-b:2007">
             <lcm:SubmitObjectsRequest xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
                 <rim:RegistryObjectList xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
-                    <rim:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/plain" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
+                    <rim:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="application/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
                         <rim:Slot name="creationTime">
                             <rim:ValueList>
                                 <rim:Value>%(CREATION_TIME)s</rim:Value>
@@ -599,7 +599,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 attachment = base64.b64encode(gpg.encrypt(ccd_data))
         soap_transport_properties["MIME_BORDER_SECTION"] += """
 --MIMEBoundaryurn_uuid_%s
-Content-Type: application/xml; charset=us-ascii
+Content-Type: text/xml; charset=us-ascii
 Content-Transfer-Encoding: binary
 Content-ID: <1.urn:uuid:%s@apache.org>
 Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"

@@ -559,14 +559,20 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim/Name />"""
             soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
         elif note_text == None and taxonomy_code != None:
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="AIRS Code: %s" /></rim:Description>""" % (taxonomy_code)
+            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="AIRS Code: %s" /></rim:Description>""" % (taxonomy_code)
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - AIRS Code: %s" /></rim:Name>""" % (taxonomy_code)
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
         elif note_text != None and taxonomy_code == None:
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s" /></rim:Description>""" % (note_text)
+            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s" /></rim:Description>""" % (note_text)
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s" /></rim:Name>""" % (note_text)
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
         else:
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s  AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
+            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
+            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
+            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s AIRS Code: %s" /></rim:Name>""" % (note_text, taxonomy_code)
+            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
 
         # SOAP Attachment
         payload_uuid = str(uuid.uuid4()).replace("-", "").upper()

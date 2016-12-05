@@ -407,6 +407,9 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
         else:
             ReceivingProviderId = ""
+            soap_transport_properties['DIRECT_TO'] = ""
+            # The provider ID  could not be mapped so log receipt as such
+            return (True, "Referral ID %s is unmapped!" % str(referredToProviderID))
 
         # Unique ID <== Where does this come from?
         soap_transport_properties["UNIQUE_ID"] = "1.2009.0827.08.33.5017"

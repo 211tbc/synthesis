@@ -307,7 +307,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         return          # End of ProcessXML()		
 
     def addExtension(self,parent, onePerson, oneServEvt):
-        self.extMap = {"ex" : "http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd",
+        self.extMap = {"ex" : "https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd",
                      "hmis" : "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd",
                      "airs" : "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
         refsNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}Referrals", nsmap=self.extMap)
@@ -327,13 +327,26 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
             self.referredToProviderID = oneRef.referral_agency_referred_to_idid_num
             seNotes = self.session.query(dbobjects.ServiceEventNotes).filter(dbobjects.ServiceEventNotes.service_event_index_id
                                  == oneServEvt.id)
-            for note in seNotes:
+            for i, note in enumerate(seNotes):
                 noteID = ET.SubElement(hmisNote,"{"+self.extMap["hmis"]+"}NoteID")
                 ET.SubElement(noteID,"{"+self.extMap["hmis"]+"}IDNum").text=note.note_id_id_num
-                ET.SubElement(hmisNote,"{"+self.extMap["hmis"]+"}NoteText",
-                               attrib={"{"+self.extMap["hmis"]+"}dateCollected":note.note_text_date_collected.strftime(self.hl7dateform),
-                                       "{"+self.extMap["hmis"]+"}dateEffective":note.note_text_date_effective.strftime(self.hl7dateform)}
-                             ).text=note.note_text
+                if i == 0:
+                    # FBY New 2017-03-09 : Include 'NeedNotes' text if available and append to only one note and not every note.
+                    if oneRef.referral_need_notes != None:
+                        ET.SubElement(hmisNote,"{"+self.extMap["hmis"]+"}NoteText",
+                                       attrib={"{"+self.extMap["hmis"]+"}dateCollected":note.note_text_date_collected.strftime(self.hl7dateform),
+                                               "{"+self.extMap["hmis"]+"}dateEffective":note.note_text_date_effective.strftime(self.hl7dateform)}
+                                     ).text=note.note_text + u' ' + oneRef.referral_need_notes
+                    else:
+                        ET.SubElement(hmisNote,"{"+self.extMap["hmis"]+"}NoteText",
+                                       attrib={"{"+self.extMap["hmis"]+"}dateCollected":note.note_text_date_collected.strftime(self.hl7dateform),
+                                               "{"+self.extMap["hmis"]+"}dateEffective":note.note_text_date_effective.strftime(self.hl7dateform)}
+                                     ).text=note.note_text
+                else:
+                    ET.SubElement(hmisNote,"{"+self.extMap["hmis"]+"}NoteText",
+                                   attrib={"{"+self.extMap["hmis"]+"}dateCollected":note.note_text_date_collected.strftime(self.hl7dateform),
+                                           "{"+self.extMap["hmis"]+"}dateEffective":note.note_text_date_effective.strftime(self.hl7dateform)}
+                                 ).text=note.note_text
 
     def createDoc(self):
         # What about:  <?xml-stylesheet type="text/xsl" href="CDASchemas\cda\Schemas\CCD.xsl"?>

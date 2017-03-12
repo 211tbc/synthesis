@@ -6,6 +6,7 @@ from Encryption import *  # @UnusedWildImport
 import urllib2
 import httplib
 from sys import version
+from lxml import etree
 import urlparse
 import uuid
 import base64
@@ -547,39 +548,34 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
 
         # Taxonomy Code
         try:
-            taxonomy_code = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')][0].text
+            taxonomy_codes = ' '.join([c.text for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd}Code')])
         except:
-            taxonomy_code = None
+            taxonomy_codes = ''
 
         # Note Text
         try:
-            note_text = [c for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')][0].text
+            referal_notes = ' '.join([c.text for c in ccd.iter('{http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd}NoteText')])
         except:
-            note_text = None
+            referal_notes = ''
+            
+        # FBY New 2017-03-12 : NeedNotes text
+        try:
+            need_notes = ' '.join([c.text for c in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}NeedNotes')])
+        except:
+            need_notes = ''
 
-        # Need Notes
-        if note_text == None and taxonomy_code == None:
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim/Name />"""
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
-        elif note_text == None and taxonomy_code != None:
-            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="AIRS Code: %s" /></rim:Description>""" % (taxonomy_code)
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - AIRS Code: %s" /></rim:Name>""" % (taxonomy_code)
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
-        elif note_text != None and taxonomy_code == None:
-            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s" /></rim:Description>""" % (note_text)
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s" /></rim:Name>""" % (note_text)
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
-        else:
-            #soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note" /></rim:Name>"""
-            #soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="%s AIRS Code: %s" /></rim:Description>""" % (note_text, taxonomy_code)
-            soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s AIRS Code: %s" /></rim:Name>""" % (note_text, taxonomy_code)
-            soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description><LocalizedString xml:lang="en-us" charset="UTF-8" value="none" /></rim:Description>"""
+        # FBY New 2017-03-12 : Combine notes and codes
+        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s  Referral Notes - %s" /></rim:Name>""" % (need_notes, taxonomy_codes, referal_notes)
+        soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
+        
+        # FBY New 2017-03-12 : Strip NeedNotes from XML
+        if need_notes != '':
+            for tag in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}NeedNotes'):
+                tag.getparent().remove(tag)
 
         # SOAP Attachment
         payload_uuid = str(uuid.uuid4()).replace("-", "").upper()
-        ccd = ET.fromstring(ccd_data)
+
         ccd_id = ccd.find("{urn:hl7-org:v3}id").attrib.get("extension")
         soap_transport_properties["ASSOCIATION_SECTION"] += """<rim:Association
                     associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
@@ -597,7 +593,7 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         soap_transport_properties["ATTACHMENT_SECTION"] += """<xdsb:Document id="%s">
             <xop:Include href="cid:1.urn:uuid:%s@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
         </xdsb:Document>""" % (soap_transport_properties["DOCUMENT_OBJECT"], payload_uuid)
-        attachment = ccd_data
+        attachment = etree.tostring(ccd, encoding='utf8', method='xml', pretty_print=True)
         if self._encryption_type != "none":
             if self._encryption_type == "3des":
                 keyiv = get_incoming_3des_key_iv()

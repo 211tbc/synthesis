@@ -232,7 +232,7 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="Referrals" type="ext:referrals" minOccurs="0"/>
-            <xsd:element name="ServiceEventAIRSCode" type="hmis:string50Base" minOccurs="0">	
+            <xsd:element name="ServiceEventAIRSCode" type="xsd:string" minOccurs="0">	
                 <xsd:annotation>
                     <xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
                 </xsd:annotation>

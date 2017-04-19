@@ -2,10 +2,10 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" blockDefault="" 
     xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
     xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
-    targetNamespace="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
+    targetNamespace="https://raw.githubusercontent.com/211tbc/synthesis/relaxed-airs-code/src/xsd/TBC_Extend_HUD_HMIS.xsd"
     elementFormDefault="qualified"
     attributeFormDefault="qualified"
-    xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd">
+    xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/relaxed-airs-code/src/xsd/TBC_Extend_HUD_HMIS.xsd">
     <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
     <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" />
     

@@ -1983,7 +1983,7 @@ class Person(DB.Base, MapBase):
     useexisting = True
     
 #class DeduplicationLink(DB.Base, MapBase):
-    
+ 
  
 class ServiceEvent(DB.Base, MapBase):
     __tablename__ = 'service_event'
@@ -2005,7 +2005,7 @@ class ServiceEvent(DB.Base, MapBase):
     quantity_of_service_date_collected = Column(DateTime(timezone=False))
     quantity_of_service_measure = Column(String(32))
     quantity_of_service_measure_date_collected = Column(DateTime(timezone=False))
-    service_airs_code = Column(String(32))
+    service_airs_code = Column(String(300))
     service_airs_code_date_collected = Column(DateTime(timezone=False))
     service_period_start_date = Column(DateTime(timezone=False))
     service_period_start_date_date_collected = Column(DateTime(timezone=False))

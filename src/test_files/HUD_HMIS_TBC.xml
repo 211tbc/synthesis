@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ext:Sources 
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://raw.githubusercontent.com/211tbc/synthesis/relaxed-airs-code/src/xsd/TBC_Extend_HUD_HMIS.xsd"
  xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
- xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
+ xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/relaxed-airs-code/src/xsd/TBC_Extend_HUD_HMIS.xsd"
  xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" ext:version="3.0">
     <ext:Source>
         <ext:SourceID>
@@ -90,7 +90,7 @@
                             </ext:ReferralID>
                             <!--Extension element -->
                             <ext:AgencyReferredToID>
-                                <hmis:IDNum>11111</hmis:IDNum>
+                                <hmis:IDNum>885</hmis:IDNum>
                             </ext:AgencyReferredToID>
                             <!--Extension element -->
                             <ext:AgencyReferredToName hmis:dateCollected="2009-11-30T18:51:58">Suncoast Center, Inc.</ext:AgencyReferredToName>
@@ -109,7 +109,7 @@
                                 <hmis:IDNum>459099</hmis:IDNum>
                             </ext:ReferralID>
                             <ext:AgencyReferredToID>
-                                <hmis:IDNum>11111</hmis:IDNum>
+                                <hmis:IDNum>885</hmis:IDNum>
                             </ext:AgencyReferredToID>
                             <ext:AgencyReferredToName hmis:dateCollected="2009-11-30T18:51:58">Suncoast Center, Inc.</ext:AgencyReferredToName>
                             <!--Refers to a call during which this referral (and perhaps other referrals) was made -->                         
@@ -129,6 +129,7 @@
                             </ext:Need>
                         </ext:Referral>
                     </ext:Referrals>
+                    <ext:ServiceEventAIRSCode>The text in this field was previously capped to a length of 50 characters. Now this field can hold text that can be up to 300 characters in length..... The text in this field was previously capped to a length of 50 characters. Now this field can hold text that can be up to 300 characters in length.</ext:ServiceEventAIRSCode>
                     <ext:ServiceEventProvisionDate>2011-09-01</ext:ServiceEventProvisionDate>
                     <ext:ServiceEventNotes>
                         <hmis:note>

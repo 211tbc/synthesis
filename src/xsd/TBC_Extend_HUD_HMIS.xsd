@@ -2,12 +2,12 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" blockDefault="" 
     xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
     xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd"
+    xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
     targetNamespace="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd"
     elementFormDefault="qualified"
-    attributeFormDefault="qualified"
-    xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd">
-    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
-    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" />
+    attributeFormDefault="qualified">
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="HUD_HMIS.xsd"/>
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="AIRS_3_0_mod.xsd" />
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>
@@ -232,7 +232,7 @@
                 </xsd:annotation>
             </xsd:element>
             <xsd:element name="Referrals" type="ext:referrals" minOccurs="0"/>
-            <xsd:element name="ServiceEventAIRSCode" type="hmis:string50Base" minOccurs="0">	
+            <xsd:element name="ServiceEventAIRSCode" type="xsd:string" minOccurs="0">	
                 <xsd:annotation>
                     <xsd:documentation xml:lang="en">See HMIS XML Version 3.0 Cumulative Package Overview, Section 3: VI.11.</xsd:documentation>
                 </xsd:annotation>

@@ -7,7 +7,7 @@
     attributeFormDefault="qualified"
     xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/relaxed-airs-code/src/xsd/TBC_Extend_HUD_HMIS.xsd">
     <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"/>
-    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" />
+    <xsd:import namespace="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" schemaLocation="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" />
     
     <xsd:element name="Sources" type="ext:sources">
         <xsd:annotation>

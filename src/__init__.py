@@ -198,7 +198,7 @@ class DocsController(RestController):
 
             # remove multiple source tags
             incoming_doc = etree.parse(file_full_path)
-            ns='{http://xsd.alexandriaconsulting.com/repos/trunk/HUD_HMIS_XML/TBC_Extend_HUD_HMIS.xsd}'
+            ns='{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}'
             for i, src in enumerate(incoming_doc.findall('{0}Source'.format(ns))):
                 if i == 0:
                     # we only care about the first one

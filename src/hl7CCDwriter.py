@@ -312,6 +312,13 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
                      "airs" : "http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" }  #     ex:version="3.0 ???
         refsNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}Referrals", nsmap=self.extMap)
 
+        # FBY New 2017-04-18 : Make the AIRS Code available for inclusion in the soap output
+        try:
+            seNode = ET.SubElement(parent,"{"+self.extMap["ex"]+"}TempServiceEvent")
+            ET.SubElement(seNode,"{"+self.extMap["ex"]+"}TempAirsCode").text=oneServEvt.service_airs_code
+        except:
+            pass
+
         #referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.service_event_index_id == oneServEvt.id)
         referrals = self.session.query(dbobjects.Referral).filter(dbobjects.Referral.person_index_id == onePerson.id)
         for oneRef in referrals:

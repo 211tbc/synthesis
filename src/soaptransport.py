@@ -564,13 +564,26 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
         except:
             need_notes = ''
 
+        # FBY New 2017-04-18 : AIRS Code text
+        try:
+            airs_code = ' '.join([c.text for c in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}TempAirsCode')])
+        except:
+            airs_code = ''
+
         # FBY New 2017-03-12 : Combine notes and codes
-        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s  Referral Notes - %s" /></rim:Name>""" % (need_notes, taxonomy_codes, referal_notes)
+        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s %s  Referral Notes - %s" /></rim:Name>""" % (need_notes, taxonomy_codes, airs_code, referal_notes)
         soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
         
         # FBY New 2017-03-12 : Strip NeedNotes from XML
         if need_notes != '':
             for tag in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}NeedNotes'):
+                tag.getparent().remove(tag)
+
+        # FBY New 2017-04-18 : Strip AirsCode and ServiceEvent from XML
+        if airs_code != '':
+            for tag in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}TempAirsCode'):
+                tag.getparent().remove(tag)
+            for tag in ccd.iter('{https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd}TempServiceEvent'):
                 tag.getparent().remove(tag)
 
         # SOAP Attachment

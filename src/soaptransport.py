@@ -27,6 +27,15 @@ else:
 
 PRINT_SOAP_REQUEST = settings.DEBUG
 
+def ascii_only(text):
+    # If parameter is a string, return only ascii character by replacing non-ascii
+    # characters with whitespace (i.e. ' ')
+    if type(text) == str:
+        temp = ''.join([i if ord(i) < 128 else ' ' for i in text])
+        return temp.strip()
+    else:
+        return text
+
 class HTTPSClientAuthHandler(urllib2.HTTPSHandler):  
     def __init__(self, key, cert):  
         urllib2.HTTPSHandler.__init__(self)  
@@ -625,6 +634,9 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
 %s--MIMEBoundaryurn_uuid_%s--""" % (soap_transport_properties["XML_UUID"], payload_uuid, payload_uuid, attachment, soap_transport_properties["XML_UUID"])
 
         # generate the SOAP envelope
+        for key in soap_transport_properties.keys():
+            # For each property, sanitize the text.
+            soap_transport_properties[key] = ascii_only(soap_transport_properties[key])
         soap_env = self._ENVELOPE_TEMPLATE % soap_transport_properties
 
         # create header

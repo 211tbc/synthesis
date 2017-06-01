@@ -30,9 +30,9 @@ PRINT_SOAP_REQUEST = settings.DEBUG
 def ascii_only(text):
     # If parameter is a string, return only ascii character by replacing non-ascii
     # characters with whitespace (i.e. ' ')
-    if type(text) == str:
+    if type(text) in (str, unicode):
         temp = ''.join([i if ord(i) < 128 else ' ' for i in text])
-        return temp.strip()
+        return temp.encode('ascii', 'ignore')
     else:
         return text
 

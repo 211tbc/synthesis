@@ -1590,7 +1590,7 @@ class Taxonomy(DB.Base, MapBase):
     export_index_id = Column(Integer, ForeignKey('export.id'))
     site_service_index_id = Column(Integer, ForeignKey('site_service.id')) 
     need_index_id = Column(Integer, ForeignKey('need.id')) 
-    code = Column(String(50))
+    code = Column(String(300))
     useexisting = True
     
  

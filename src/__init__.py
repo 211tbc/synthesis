@@ -26,6 +26,8 @@ from .models import (
     Base,
     )
 
+from dbobjects import DB, LastDateTime
+
 #server_root = config['here']
 server_root = 'here'
 log = logging.getLogger(__name__)
@@ -214,6 +216,22 @@ class DocsController(RestController):
             print message
             return response
 
+        # FBY :07/31/2017: Its assumed that we have a file so record that fact that it was received in the
+        #                 last_date_time table
+        db = DB()
+        session = db.Session()
+        try:
+            # Assume that record exists so update it
+            lifecycle_event = session.query(LastDateTime).filter(LastDateTime.event == 'file received').first()
+            lifecycle_event.event_date_time = datetime.datetime.now()
+            session.add(lifecycle_event)
+            session.commit()
+        except:
+            # Assume that record does not exist so insert it
+            lifecycle_event = LastDateTime(event='file received', event_date_time=datetime.datetime.now())
+            session.add(lifecycle_event)
+            session.commit()
+
         # validate XML instance
         try:
             select = Selector()
@@ -252,7 +270,7 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     engine = engine_from_config(settings, 'sqlalchemy.')
-    DBSession.configure(bind=engine)
+    session = DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     config.include('pyramid_controllers')

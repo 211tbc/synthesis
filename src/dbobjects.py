@@ -2102,6 +2102,14 @@ class SystemConfiguration(DB.Base, MapBase):
     userid = Column(Integer)
     useexisting = True
 
+class LastDateTime(DB.Base, MapBase):
+    # FBY: This table is used to record the document lifecycle: received, shredded, transmitted via SOAP
+    __tablename__ = 'last_date_time'
+    id = Column(Integer, primary_key=True)
+    event = Column(String(50))
+    event_date_time = Column(DateTime(timezone=False))        
+    useexisting = True
+
 def test():  
     import postgresutils
     utils = postgresutils.Utils()

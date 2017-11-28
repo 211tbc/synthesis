@@ -10,7 +10,7 @@ class Router:
     def moveUsed(self, file_name):
         if settings.DEBUG:
             print "moving ", file_name, "to", inputConfiguration.USEDFILES_PATH
-        fileutils.moveFile(file_name, inputConfiguration.USEDFILES_PATH)
+        return fileutils.moveFile(file_name, inputConfiguration.USEDFILES_PATH)
 
     def moveFailed(self, fileName):
         fileutils.moveFile(fileName, inputConfiguration.FAILEDFILES_PATH)

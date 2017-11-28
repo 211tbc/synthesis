@@ -15,7 +15,7 @@ from occhmisxml30reader import OCCHUDHMISXML30Reader
 from lxml import etree
 import Queue
 from conf import settings
-from conf import inputConfiguration
+from conf import inputConfiguration, outputConfiguration
 from synthesis.emailprocessor import XMLProcessorNotifier
 from filerouter import Router
 from os import path
@@ -124,9 +124,9 @@ class FileHandler:
                         pass
                     if settings.DEBUG:
                         print "moving to used_files", 
-                    self.Router.moveUsed(new_file_loc)
+                    new_file_name = self.Router.moveUsed(new_file_loc)
 #                    break
-                    return True
+                    return (True, new_file_name)
             
         if valid == False:
             if settings.DEBUG:
@@ -135,11 +135,11 @@ class FileHandler:
             if settings.DEBUG:
                 print "moving to Failed"
             if os.path.isfile(new_file_loc):
-                self.Router.moveFailed(new_file_loc)
+                new_file_name = self.Router.moveFailed(new_file_loc)
             else:
                 if settings.DEBUG:
                     print "Can't move because file doesn't exist.  Shouldn't be trying to move anything to Failed if isn't there."
-            return False
+            return (False, None)
             
 #        except etree.XMLSyntaxError, error:
 #            self.email.notifyValidationFailure(error)
@@ -169,9 +169,15 @@ class FileHandler:
         for folder in inputConfiguration.INPUTFILES_PATH:
             listOfFiles.extend(fileutils.grabFiles(path.join(folder,'*')))
             if settings.DEBUG:
-                    print "list of files grabbed in processExisting is", listOfFiles
+                print "list of files grabbed in processExisting is", listOfFiles
             for inputFile in listOfFiles:
-                self.processFiles(inputFile)
+                successful, processed_file = self.processFiles(inputFile)
+                if successful:
+                    # Send processed files to the processed files folder:
+                    if settings.DEBUG:
+                        print 'Made it this far so send used files to the processed files folder.'
+                    print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
+                    fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
 
         # *******************************
         # transfer control to nodebuilder
@@ -278,6 +284,7 @@ class FileHandler:
             #In other words, the Queue fills up while pyinotify is working.  This empties the Queue, without stopping its function
             
             files = list()
+            processed_files = list()
             _QTO = 5
 #            if settings.DEBUG:    
 #                wait_counter = 0
@@ -337,7 +344,11 @@ class FileHandler:
                                 print "Queue.Empty exception, but files list is not empty, so files to process are", files
                             filepathitem = files.pop()
                             print "processing ", filepathitem
-                            self.processFiles(filepathitem)
+                            status, new_file_name = self.processFiles(filepathitem)
+                            if settings.DEBUG:
+                                print "Readying files to copy into the processed folder"
+                            if status == True:
+                                processed_files.append(new_file_name)
                         
                         # *******************************
                         # transfer control to nodebuilder
@@ -379,6 +390,12 @@ class FileHandler:
                             RESULTS = NODEBUILDER.run()
                     # empty list of paired ids
                     self.selector.paired_ids = list()
+                    # Send processed files to the processed files folder:
+                    if settings.DEBUG:
+                        print 'Made it this far so send used files to the processed files folder.'
+                    for processed_file in processed_files:
+                        print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
+                        fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
                     #now go back to checking the Queue
                     continue
 
@@ -439,6 +456,7 @@ class FileHandler:
             print "processing ", filepathitem
             try:
                 self.processFiles(filepathitem)
+                print filepathitem
             except KeyboardInterrupt:
                 self.thread_list[id] = 0
                 print "KeyboardInterrupt caught in selector._worker_thread()"

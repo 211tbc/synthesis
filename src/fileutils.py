@@ -287,6 +287,7 @@ def moveFile(source_file_path, destination_directory):
         shutil.move(temp_file_path, timestamped_temp_file_path)
         try:
             shutil.move(timestamped_temp_file_path, destination_directory)
+            return timestamped_temp_file_name
         except shutil.Error:# as detail:
             raise
             #print detail

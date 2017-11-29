@@ -396,6 +396,8 @@ class FileHandler:
                     for processed_file in processed_files:
                         print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
                         fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
+                        # Remove processed file from list
+                        processed_files.pop(processed_files.index(processed_file))
                     #now go back to checking the Queue
                     continue
 

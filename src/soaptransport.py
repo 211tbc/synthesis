@@ -358,7 +358,8 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             if settings.USE_TESTING_REFERRAL_EMAIL:
                 soap_transport_properties['DIRECT_TO'] = 'Suncoast@uat.direct.ntst.com'
             else:
-                soap_transport_properties['DIRECT_TO'] = 'Suncoast@direct.ntst.com'
+                #soap_transport_properties['DIRECT_TO'] = 'Suncoast@direct.ntst.com'
+                soap_transport_properties['DIRECT_TO'] = 'SuncoastCenter@suncoast.netsmartdirect.net'
 
         # for PEMHS    
         elif str(referredToProviderID) in ['8169', '15346', '3546', '12605', '15368', '14109','15356','11031','14086','2222','15749','11034','15400']:
@@ -416,10 +417,16 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
                 soap_transport_properties['DIRECT_TO'] = 'OperationPar@direct.ntst.com'
 
         else:
-            ReceivingProviderId = ""
-            soap_transport_properties['DIRECT_TO'] = ""
-            # The provider ID  could not be mapped so log receipt as such
-            return (True, "Referral ID %s is unmapped!" % str(referredToProviderID))
+            # Provider IDs not filtered above are unmapped here.
+            if referredToProviderID == '15473':
+                # Sent document to Netsmart test endpoint.
+                self._soap_server = 'https://labsdev.netsmartcloud.com:444/CareConnectXDR'
+            else:
+                # Log that the Provider ID is unmapped.
+                ReceivingProviderId = ""
+                soap_transport_properties['DIRECT_TO'] = ""
+                # The provider ID  could not be mapped so log receipt as such
+                return (True, "Referral ID %s is unmapped!" % str(referredToProviderID))
 
         # Unique ID <== Where does this come from?
         soap_transport_properties["UNIQUE_ID"] = "1.2009.0827.08.33.5017"
@@ -638,6 +645,8 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
             # For each property, sanitize the text.
             soap_transport_properties[key] = ascii_only(soap_transport_properties[key])
         soap_env = self._ENVELOPE_TEMPLATE % soap_transport_properties
+
+        print 'Sending SOAP document to "%s"' % self._soap_server
 
         # create header
         headers = {

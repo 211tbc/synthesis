@@ -31,5 +31,6 @@ for file in used:
     if len(file[len(file_prefix):]) > 94:
         continue
     if file_dt >= start_dt and file_dt <= end_dt:
-        print 'Moving ' + used_path + '/' + file + ' to ' + input_path + '/' + file
-        shutil.move(used_path + '/' + file, input_path + '/' + file)
+        if file not in processed:
+            print 'Moving ' + used_path + '/' + file + ' to ' + input_path + '/' + file
+            shutil.move(used_path + '/' + file, input_path + '/' + file)

@@ -113,7 +113,7 @@ class smtpInterface:
             while attempts <= 5:
                 attempts += 1
                 try:
-                    server = smtplib.SMTP(self.settings.SMTPSERVER)
+                    server = smtplib.SMTP(self.settings.SMTPSERVER, self.settings.SMTPPORT)
                     if self.settings.SMTPTLS:
                         server.ehlo()
                         server.starttls()

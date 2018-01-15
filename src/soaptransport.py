@@ -661,16 +661,16 @@ Content-Disposition: attachment; name="1.urn:uuid:%s@apache.org"
             "Content-length"    : "%d" % len(soap_env),
             }
 
-        if PRINT_SOAP_REQUEST: # delete this if block
-            import pprint as pp
-            pp.pprint(headers)
-            print soap_env
-            #fo = open('soap_envelope.txt', 'w')
-            #fo.write("\n".join(["%s : %s" % (key, headers[key]) for key in headers.keys()]))
-            #fo.write(soap_env)
-            #fo.flush()
-            #fo.close()
-            #return (True, "True")
+        #if PRINT_SOAP_REQUEST: # delete this if block
+        #    import pprint as pp
+        #    pp.pprint(headers)
+        #    #print soap_env
+        #    #fo = open('soap_envelope.txt', 'w')
+        #    #fo.write("\n".join(["%s : %s" % (key, headers[key]) for key in headers.keys()]))
+        #    #fo.write(soap_env)
+        #    #fo.flush()
+        #    #fo.close()
+        #    #return (True, "True")
 
         # send the SOAP envelope
         try:

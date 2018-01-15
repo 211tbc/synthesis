@@ -47,8 +47,8 @@ if os.name == 'nt':
 else:
     osiswin32 = False
     try:
-        import pyinotify
-        from pyinotify import WatchManager, ThreadedNotifier, ProcessEvent#, EventsCodes
+        from watchdog.observers import Observer
+        from watchdog.events import FileSystemEventHandler
     except ImportError:
         print 'Could not import POSIX pyinotify modules.'
 
@@ -67,7 +67,6 @@ class FileInputWatcher:
         
         # make a notifier (nothing)
         self.notifier1 = None
-        self.notifier2 = None
                 
     def monitor(self):
         '''The command to start monitoring a directory or set of them.'''
@@ -89,13 +88,10 @@ class FileInputWatcher:
     def stop_monitoring(self):  
         '''os independent method to stop monitoring, but only posix uses it.'''
         #print "self.notifier1.started", self.notifier1.__getattribute__('started')
-        if isinstance(self.notifier1, ThreadedNotifier):
+        if isinstance(self.notifier1, Observer):
             #if settings.DEBUG:
                 #print "self.notifier1 is an instance"
-            if isinstance(self.notifier2, ThreadedNotifier):
-                #if settings.DEBUG:
-                    #print "self.notifier2 is an instance"
-                self.watch_posix_stop()
+            self.watch_posix_stop()
                 
         else: 
             if settings.DEBUG:
@@ -145,97 +141,51 @@ class FileInputWatcher:
     def watch_posix_start(self): 
         '''os-specific command to watch'''
         
+        #import pdb; pdb.set_trace()
         # test to see if we already have a notifier object, if not, make it, otherwise we are already watching a set of folders
-        if self.notifier1 == None and self.notifier2 == None:
-            
+        if self.notifier1 == None:
             try:
-                pyinotify.compatibility_mode()
-                print 'pyinotify running in compatibility mode'
-            except:
-                print 'pyinotify running in standard mode'
-            try:
-                #mask = EventsCodes.IN_CREATE |EventsCodes.IN_MOVED_TO 
-                mask = pyinotify.ALL_EVENTS
-                #ECJ20100831 Reason why we have two threads: it never returns control ever to the main loop if only one thread, so no ctrl+c
-                #The second thread is a dummy, so it performs switching/relinquishing control
-                #Eventually, we want to watch many folders, so that is why we are using the ThreadedNotifier, versus the recommended Notifier.
-                #Even then, Notifier is still probably the way to go, but we'll use this as long as it works, because then you don't have to poll/While loop
-                
-                # Thread #1
-                watch_manager1 = WatchManager()
-                self.notifier1 = ThreadedNotifier(watch_manager1, EventHandler(self.queue))
+                self.notifier1 = Observer()
+                print 'Starting the threaded notifier on ', self.dir_to_watch[0]
+                self.notifier1.schedule(EventHandler(self.queue), self.dir_to_watch[0], recursive=False)
                 self.notifier1.start()
-                print 'Starting the threaded notifier on ', self.dir_to_watch
-                watch_manager1.add_watch(self.dir_to_watch, mask)
-                # Thread #2
-                watch_manager2 = WatchManager()
-                self.notifier2 = ThreadedNotifier(watch_manager2, EventHandlerDummy(self.queue))
-                self.notifier2.start()
-                #just watch any place, but don't remove this or Ctrl+C will not work
-                watch_manager2.add_watch(settings.BASE_PATH, mask)
                 if settings.DEBUG:
-                    print "both notifiers started"
-            
+                    print "notifier started"
             except KeyboardInterrupt:
                 print "Keyboard Interrupt in notifier"
                 self.notifier1.stop()
-                self.notifier2.stop()
-                
                 return
             except NameError:
                 self.notifier1.stop()
-                self.notifier2.stop()
                 return ['POSIX Watch Error']
             except:
-                print "General exception caught within notifier while loop, stopping both notifiers now"
+                print "General exception caught within notifier while loop, stopping notifier now"
                 self.notifier1.stop()
-                self.notifier2.stop()
-                
-                # SBB20090903 Turn on verbose mode
-                self.notifier1.VERBOSE = settings.DEBUG
                 print "returning to calling function"
                 return True
-            
+	            
     def watch_posix_stop(self):
         'os specific call to stop monitoring'
         print 'Stopping the threaded notifiers.'
         self.notifier1.stop()
-        print "stopped self.notifier1.stop()"
-        self.notifier2.stop()
-        print "stopped self.notifier2.stop()"
         return
           
-class EventHandler(ProcessEvent): 
+class EventHandler(FileSystemEventHandler): 
     '''Event handler processing create events passed in to the \
     watch manager by the notifier.''' 
     def __init__(self, queue):
         self.queue = queue
             
-    def process_IN_CREATE(self, event):
+    def on_created(self, event):
         '''What happens when a file is added'''
-        if event.name[0] == '.':
-            print 'ignoring ', event.name
-        else:
-            print "Create: %s" %  os.path.join(event.path, event.name)
-            self.queue.put(os.path.join(event.path, event.name))
-            #print "queue is now", self.queue
+        print "e=", event
+        print "Create: %s" % event.src_path
+        self.queue.put(event.src_path)
+        #print "queue is now", self.queue
         
-    def process_IN_MOVED_TO(self, event):
-            '''What happens when a file is added'''
-            if event.name[0] == '.':
-                print 'ignoring ', event.name
-            else:
-                print "In_Moved_To: %s" %  os.path.join(event.path, event.name)
-                self.queue.put(os.path.join(event.path, event.name))
-                print "queue is now", self.queue
-        
-class EventHandlerDummy(ProcessEvent): 
-    '''Event handler processing create events passed in to the \
-    watch manager by the notifier.''' 
-    def __init__(self, queue):
-        self.queue = queue
-            
-    def process_IN_CREATE(self, event):
+    def on_moved(self, event):
         '''What happens when a file is added'''
-        print "Create: %s" %  os.path.join(event.path, event.name)
-        
+        print "e=", event
+        print "In_Moved_To: %s" % event.src_path
+        self.queue.put(event.src_path)
+        print "queue is now", self.queue

@@ -551,14 +551,16 @@ class Selector:
         #tests = [HUDHMIS28XMLTest, HUDHMIS30XMLTest, JFCSXMLTest, PARXMLTest]
         #tests = [HUDHMIS30XMLTest,HUDHMIS28XMLTest]
         #tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, OCCHUDHMIS30XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
-        tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
+        #tests = [HUDHMIS30XMLTest, HUDHMIS28XMLTest, JFCSXMLTest, TBCExtendHUDHMISXMLTest]
         #tests = [HUDHMIS30XMLTest]
         #tests = [HUDHMIS28XMLTest]
+        tests = [TBCExtendHUDHMISXMLTest]
         if settings.DEBUG:
             print "tests are", tests
         #readers = [HUDHMIS28XMLReader, HUDHMIS30XMLReader, JFCSXMLInputReader, PARXMLInputReader]
-        readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader, TBCExtendHUDHMISXMLTest:TBCHUDHMISXML30InputReader}
+        #readers = {HUDHMIS30XMLTest:HUDHMIS30XMLInputReader, HUDHMIS28XMLTest:HUDHMIS28XMLInputReader, OCCHUDHMIS30XMLTest:OCCHUDHMIS30XMLInputReader, JFCSXMLTest:JFCSXMLInputReader, TBCExtendHUDHMISXMLTest:TBCHUDHMISXML30InputReader}
         #readers = {HUDHMIS30XMLTest:GenericXMLReader,HUDHMIS28XMLTest:GenericXMLReader,OCCHUDHMIS30XMLTest:GenericXMLReader}
+        readers = {TBCExtendHUDHMISXMLTest:TBCHUDHMISXML30InputReader}
 
         self.current_tests = tests # Added by FBY on 2012-01-19
         

@@ -2,6 +2,7 @@ from conf import settings
 from conf import inputConfiguration
 from mainprocessor import MainProcessor
 import os
+import sys
 import logging
 import fileutils
 import subprocess
@@ -27,6 +28,20 @@ from .models import (
     )
 
 from dbobjects import DB, LastDateTime
+
+##
+## Begin ## Attempt to add timestamps to pyramid.log entries
+old_f = sys.stdout
+class F:
+    def write(self, x):
+        if len(str(x).strip()) > 0:
+            new_text = "%s -- %s" % (str(datetime.datetime.now()), str(x))
+            old_f.write(new_text + '\n')
+            old_f.flush()
+
+sys.stdout = F()
+## End ## Attempt to add timestamps to pyramid.log entries
+##
 
 #server_root = config['here']
 server_root = 'here'

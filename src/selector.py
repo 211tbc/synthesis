@@ -393,11 +393,20 @@ class FileHandler:
                     # Send processed files to the processed files folder:
                     if settings.DEBUG:
                         print 'Made it this far so send used files to the processed files folder.'
-                    for processed_file in processed_files:
-                        print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
-                        fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
-                        # Remove processed file from list
-                        processed_files.pop(processed_files.index(processed_file))
+                    #for processed_file in processed_files:
+                    #    print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
+                    #    fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
+                    #    # Remove processed file from list
+                    #    processed_files.pop(processed_files.index(processed_file))
+                    
+                    while len(processed_files) > 0:
+                        # This for loop is contained within the while to verify that all files are copied
+                        # to processed_files
+                        for processed_file in processed_files:
+                            print 'Copying ' + inputConfiguration.USEDFILES_PATH + '/' + processed_file + ' to ' + outputConfiguration.PROCESSEDFILES_PATH + '/' + processed_file
+                            fileutils.copyFile(inputConfiguration.USEDFILES_PATH + '/' + processed_file, outputConfiguration.PROCESSEDFILES_PATH  + '/' +  processed_file)
+                            # Remove processed file from list
+                            processed_files.pop(processed_files.index(processed_file))
                     #now go back to checking the Queue
                     continue
 

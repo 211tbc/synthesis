@@ -1,3 +1,6 @@
+./bin/easy_install distribute
+./bin/pip install --upgrade distribute
+./bin/pip install cffi
 ./bin/pip install lxml==2.2.8
 ./bin/pip install markerlib
 ./bin/pip install pycrypto
@@ -13,6 +16,7 @@
 ./bin/pip install paramiko
 ./bin/pip install pyramid==1.4.5
 ./bin/pip install pyramid_controllers==0.3.11
+./bin/pip install watchdog
 
 #
 # very dumb success|fail test

@@ -33,6 +33,20 @@
 
 ~$ sh deploy-synthesis.sh
 
+- In the conf folder you will find the following files:
+
+  conf/hl7settings.py.rename_me
+  conf/inputConfiguration.py.rename_me
+  conf/outputConfiguration.py.rename_me
+  conf/settings.py.rename_me
+
+Remove the ".rename_me" extension form each of these files:
+
+~$ mv conf/hl7settings.py.rename_me conf/hl7settings.py
+~$ mv conf/inputConfiguration.py.rename_me conf/inputConfiguration.py
+~$ mv conf/outputConfiguration.py.rename_me conf/outputConfiguration.py
+~$ mv conf/settings.py.rename_me conf/settings.py
+
 -edit ~/myrestservice/synthesis/synthesis/conf/settings.py with the correct paths/db passwords, etc..  
 BASE_PATH = "/home/your_username_here_ie_$USERNAME/myrestservice/synthesis/synthesis"
 -if you get logging errors on the first start, it's probably because your base base isn't configured correctly

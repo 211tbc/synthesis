@@ -15,7 +15,7 @@ from email.mime.text import MIMEText
 from synthesis.postgresutils import Utils
 from sqlalchemy.sql import select, asc
 from sqlalchemy.engine import ResultProxy
-from dbobjects import Referral, Person, ServiceEvent
+from dbobjects import Referral, Person, ServiceEvent, Export
 from lxml import etree
 
 global age
@@ -86,7 +86,7 @@ def monthlyReferralReport():
     col7 = etree.SubElement(rw1, 'td')
     col7.text = "client age"
 
-    s = select([ServiceEvent.id]).where(ServiceEvent.service_event_provision_date\
+    s = select([ServiceEvent.id, ServiceEvent.export_index_id]).where(ServiceEvent.service_event_provision_date\
         >= beginning_of_first_day_last_month).where(ServiceEvent.\
         service_event_provision_date <= end_of_last_day_last_month).\
         order_by(asc(ServiceEvent.service_event_provision_date))
@@ -123,8 +123,14 @@ def monthlyReferralReport():
                 colx1 = etree.SubElement(rwx, 'td')
                 colx1.text = str(row_id)
                 colx2 = etree.SubElement(rwx, 'td')
-                referral_date = '{:%m-%d-%Y %H:%M}'.format(service_event_provision_date[0])
-                colx2.text = referral_date
+                #referral_date = '{:%m-%d-%Y %H:%M}'.format(service_event_provision_date[0])
+                #colx2.text = referral_date
+                export_query = select([Export]).where(Export.id == row[1])
+                exports = conn.execute(export_query)
+                print 'service_event_id:' + str(service_event_id), 'export id:' + str(ServiceEvent.export_index_id)
+                for export in exports:
+                    export_date = '{:%m-%d-%Y %H:%M}'.format(export.export_date)
+                colx2.text = export_date
                 colx3 = etree.SubElement(rwx, 'td')
                 referred_to = str(referral.referral_agency_referred_to_name)
                 colx3.text = referred_to
@@ -140,7 +146,7 @@ def monthlyReferralReport():
                 colx7 = etree.SubElement(rwx, 'td')
                 colx7.text = age
 
-                m2 = str(row_id) + ") referral date: " + referral_date +\
+                m2 = str(row_id) + ") referral date: " + export_date +\
                     " referred to: " + referred_to +\
                     " referred to provider id: " + referred_to_provider_id +\
                     " call id: "+ call_id + " client id: " + client_id + " client age: " + \
@@ -179,7 +185,7 @@ def monthlyReferralReport():
                 smtpserver.starttls()
             smtpserver.ehlo
             smtpserver.login(settings.SMTPUSERNAME, settings.SMTPSENDERPWD)
-        smtpserver.sendmail(settings.SMTPSENDER, [settings.TBC_REFERRAL_EMAIL_RECIPIENT,settings.TBC_REFERRAL_EMAIL_CC_RECIPIENT], msg.as_string())
+        smtpserver.sendmail(settings.SMTPSENDER, [settings.TBC_REFERRAL_EMAIL_RECIPIENT,settings.TBC_REFERRAL_EMAIL_CC_RECIPIENT, settings.TBC_SUPPORT_EMAIL, settings.TBC_SUPERVISOR_EMAIL], msg.as_string())
         smtpserver.close
     except Exception as e:
         print type(e)

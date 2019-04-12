@@ -58,6 +58,8 @@ KEY_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/3des3.txt' # full d
 IV_PATH = '/home/myrestservice/occ/synthesis/synthesis/conf/IV3.txt' # full directory path to the 3DES IV file
 Make sure those files exist in those places.   
 
+-for decryption of incoming files, the .gnupg keys must be configured with your keys.
+
 -ensure the mode is set to 'TEST' in conf/settings.py.  This creates/wipes the db upon each restart.  Subsequent restarts should be in the 'PROD' mode, if you don't want data to be wiped each restart. 
 -also in conf/inputConfiguration.py, make sure all the paths in are real.  Mainly, put the actual username in, SMTPRECIPIENTS = {    
         "/home/username/myrestservice/synthesis/synthesis/input_files":

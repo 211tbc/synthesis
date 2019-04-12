@@ -3,7 +3,7 @@ synthesis
 
 Health and Human Services Middleware and Data Warehouse
 
-see docs/* for installation information
+see docs/* for installation information (https://github.com/211tbc/synthesis/blob/master/docs/synthesis_install_read_me.txt)
 
 License Information:
 The MIT License

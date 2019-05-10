@@ -97,3 +97,5 @@ http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/output_con
 #http://xsd.alexandriaconsulting.com/trac/browser/trunk/synthesis/docs/generating_output_manually.readme
 
 You can also test the pyramid web service by sending HTTP POST messages with sample XML payload.  Use the HUD HMIS XML for best results.
+
+Running reports [set up a monthly cron job]: synthesis@tbin-linode1:~/tbc-pyramid/synthesis/synthesis$ ../../bin/python reports.py

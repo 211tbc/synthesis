@@ -1,0 +1,83 @@
+<ext:Sources xmlns:ext="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd" xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ext:version="3.0" xsi:schemaLocation="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd">
+<ext:Source>
+<ext:SourceID>
+<hmis:IDStr>003</hmis:IDStr>
+</ext:SourceID>
+<ext:SoftwareVendor>Bowman Systems L.L.C.</ext:SoftwareVendor>
+<ext:SoftwareVersion>5.5</ext:SoftwareVersion>
+<ext:SourceName>ServicePoint-CallPoint</ext:SourceName>
+<ext:Export>
+<ext:ExportID>
+<hmis:IDNum>2064</hmis:IDNum>
+</ext:ExportID>
+<ext:ExportDate>2017-06-24T13:56:18.56-05:00</ext:ExportDate>
+<ext:Person>
+<ext:PersonID>
+<hmis:IDNum>119566</hmis:IDNum>
+</ext:PersonID>
+<ext:DateOfBirth>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1967-03-26</hmis:Unhashed>
+<hmis:DateOfBirthType hmis:dateCollected="2017-06-24T13:53:12">1</hmis:DateOfBirthType>
+</ext:DateOfBirth>
+<ext:Gender>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1</hmis:Unhashed>
+</ext:Gender>
+<ext:LegalFirstName>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:42:10.906-05:00">TestFirstName</hmis:Unhashed>
+</ext:LegalFirstName>
+<ext:LegalLastName>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:42:10.906-05:00">TestLastName</hmis:Unhashed>
+</ext:LegalLastName>
+<ext:Need>
+<hmis:NeedID>
+<hmis:IDNum>2658227</hmis:IDNum>
+</hmis:NeedID>
+<hmis:SiteServiceID>2879694</hmis:SiteServiceID>
+<hmis:NeedStatus>1</hmis:NeedStatus>
+<hmis:Taxonomy>
+<airs:Code>BH-3800.7000 Rent Payment Assistance</airs:Code>
+</hmis:Taxonomy>
+</ext:Need>
+<ext:PersonHistorical>
+<hmis:PersonHistoricalID>
+<hmis:IDNum>2879694</hmis:IDNum>
+</hmis:PersonHistoricalID>
+<hmis:PersonPhoneNumber hmis:dateCollected="2017-06-24T13:42:10.906-05:00">7273698018</hmis:PersonPhoneNumber>
+</ext:PersonHistorical>
+<ext:ServiceEvent>
+<ext:ServiceEventID>
+<hmis:IDNum>2879694</hmis:IDNum>
+</ext:ServiceEventID>
+<ext:SiteServiceID>8712</ext:SiteServiceID>
+<ext:IsReferral>1</ext:IsReferral>
+<ext:Referrals>
+<ext:Referral>
+<ext:ReferralID>
+<hmis:IDNum>2879694</hmis:IDNum>
+</ext:ReferralID>
+<ext:AgencyReferredToID>
+<hmis:IDNum>15473</hmis:IDNum>
+</ext:AgencyReferredToID>
+<ext:AgencyReferredToName hmis:dateCollected="2015-11-13T16:15:44.26-06:00">Directions for Living, Challenge Homeless Preventi</ext:AgencyReferredToName>
+<ext:NeedID>
+<hmis:IDNum>2658227</hmis:IDNum>
+</ext:NeedID>
+</ext:Referral>
+</ext:Referrals>
+<ext:ServiceEventProvisionDate>2017-06-24</ext:ServiceEventProvisionDate>
+<ext:ServiceEventNotes>
+<hmis:note>
+<hmis:NoteID>
+<hmis:IDNum>852583</hmis:IDNum>
+</hmis:NoteID>
+<hmis:NoteText hmis:dateCollected="2017-06-24T13:42:10.906-05:00" hmis:dateEffective="2017-06-24T13:42:10.906-05:00">6-24-20 Test message.</hmis:NoteText>
+</hmis:note>
+</ext:ServiceEventNotes>
+</ext:ServiceEvent>
+<ext:SocialSecurityNumber>
+<hmis:SocialSecNumberQualityCode hmis:dateCollected="2007-09-04T13:27:11.583-05:00">1</hmis:SocialSecNumberQualityCode>
+</ext:SocialSecurityNumber>
+</ext:Person>
+</ext:Export>
+</ext:Source>
+</ext:Sources>

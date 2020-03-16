@@ -412,9 +412,9 @@ Content-ID: <0.urn:uuid:%(START_UUID)s@apache.org>
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
             if settings.USE_TESTING_REFERRAL_EMAIL:
-                soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
+                soap_transport_properties['DIRECT_TO'] = 'OperationPAR@uat.opar.netsmartdirect.net'
             else:
-                soap_transport_properties['DIRECT_TO'] = 'OperationPar@direct.ntst.com'
+                soap_transport_properties['DIRECT_TO'] = 'OperationPAR@opar.netsmartdirect.net'
 
         else:
             # Provider IDs not filtered above are unmapped here.

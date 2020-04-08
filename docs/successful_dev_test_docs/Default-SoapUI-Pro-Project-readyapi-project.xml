@@ -1,0 +1,2911 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="Default SoapUI Pro Project" soapui-version="5.5.0" resourceRoot="" id="61e04082-3ec6-4977-b3af-d6600f20ae9b" abortOnError="false" runType="SEQUENTIAL" activeEnvironment="Default" updated="3.1.0 2020-02-04T16:09:20Z" encryptionMode="Not encrypted" xmlns:con="http://eviware.com/soapui/config">
+  <con:description>Sends requests to SOAP- and REST-based local virtual services on different ports.</con:description>
+  <con:settings>
+    <con:setting id="IncludeOverview">true</con:setting>
+    <con:setting id="IncludeResults">true</con:setting>
+    <con:setting id="FlowLayout">false</con:setting>
+    <con:setting id="ErrorDetails">true</con:setting>
+    <con:setting id="IncludeCoverage">true</con:setting>
+    <con:setting id="GeneratableJUnitReport@Style">Multiple Pages</con:setting>
+    <con:setting id="GeneratableJUnitReport@Folder">C:\dev\htmlreports</con:setting>
+    <con:setting id="ReportTitle">SoapUI Report</con:setting>
+    <con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.TestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  <con:entry key="Report Format(s)" value=""/>
+  <con:entry key="Host:Port" value=""/>
+  <con:entry key="Export JUnit Results" value="false"/>
+  <con:entry key="Export All" value="false"/>
+  <con:entry key="Save After" value="false"/>
+  <con:entry key="Add Settings" value="false"/>
+  <con:entry key="WSS Password Type" value=""/>
+  <con:entry key="TestSuite" value="DocumentRepository_Binding TestSuite"/>
+  <con:entry key="Endpoint" value=""/>
+  <con:entry key="Select Report Type" value=""/>
+  <con:entry key="System Properties" value=""/>
+  <con:entry key="Password" value=""/>
+  <con:entry key="Print Report" value="false"/>
+  <con:entry key="Open Report" value="false"/>
+  <con:entry key="Export JUnit Results with test properties" value="false"/>
+  <con:entry key="Global Properties" value=""/>
+  <con:entry key="Project Properties" value=""/>
+  <con:entry key="Project Password" value=""/>
+  <con:entry key="TestCase" value="&lt;all>"/>
+  <con:entry key="Username" value=""/>
+  <con:entry key="user-settings.xml Password" value=""/>
+  <con:entry key="TestRunner Path" value=""/>
+  <con:entry key="Environment" value="Default"/>
+  <con:entry key="Coverage Report" value="false"/>
+  <con:entry key="Enable UI" value="false"/>
+  <con:entry key="Root Folder" value=""/>
+  <con:entry key="Ignore Errors" value="false"/>
+  <con:entry key="Domain" value=""/>
+  <con:entry key="Tool Args" value=""/>
+  <con:entry key="Save Project" value="false"/>
+</xml-fragment>]]></con:setting>
+  </con:settings>
+  <con:interface xsi:type="con:WsdlInterface" id="f26ec4dd-5fec-4d62-ab2d-c0fcada1ba08" wsaVersion="NONE" name="DocumentRepository_Binding" type="wsdl" bindingName="{urn:ihe:iti:xds-b:2007}DocumentRepository_Binding" soapVersion="1_2" anonymous="optional" definition="file:/home/eric/Desktop/XDS.b_DocumentRepository.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart="file:/home/eric/Desktop/XDS.b_DocumentRepository.wsdl">
+      <con:part>
+        <con:url>file:/home/eric/Desktop/XDS.b_DocumentRepository.wsdl</con:url>
+        <con:content><![CDATA[<!--edited with XMLSpy v2012 rel. 2 sp1 (x64) (http://www.altova.com) by Jim Elden (Accumedic)-->
+<!--This wsdl file is for an XDS.b Document Repository Actor-->
+<definitions name="DocumentRepository" targetNamespace="urn:ihe:iti:xds-b:2007" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ihe="urn:ihe:iti:xds-b:2007" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ns="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:ns1="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+  <documentation>IHE XDS.b Document Repository</documentation>
+  <types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:ihe:iti:xds-b:2007">
+      <!--Include the message schema-->
+      <xsd:include schemaLocation="../schema/IHE/XDS.b_DocumentRepository.xsd"/>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+      <!--Include the message schema-->
+      <xsd:include schemaLocation="../schema/ebRS/rs.xsd"/>
+    </xsd:schema>
+    <!--While no elements are directly used from these schema in the WSDL, 
+      they need to be present here in order for
+      code generating toolkits to work properly-->
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
+      <!--Include the message schema-->
+      <xsd:include schemaLocation="../schema/ebRS/lcm.xsd"/>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+      <!--Include the message schema-->
+      <xsd:include schemaLocation="../schema/ebRS/rim.xsd"/>
+    </xsd:schema>
+    <!--Importing all schemas within one seems to confuse some parsers 
+      and code-generation tools (and may be invalid)	
+    <xsd:schema elementFormDefault="qualified">
+      <xsd:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0"
+        schemaLocation="../schema/ebRS/rs.xsd"/>
+      <xsd:import namespace="urn:ihe:iti:xds-b:2007"
+        schemaLocation="../schema/IHE/XDS.b_DocumentRepository.xsd"/>
+    </xsd:schema>-->
+  </types>
+  <message name="RetrieveDocumentSet_Message">
+    <documentation>Retrieve Document Set</documentation>
+    <part name="body" element="ihe:RetrieveDocumentSetRequest"/>
+  </message>
+  <message name="RetrieveDocumentSetResponse_Message">
+    <documentation>Retrieve Document Set Response</documentation>
+    <part name="body" element="ihe:RetrieveDocumentSetResponse"/>
+  </message>
+  <message name="ProvideAndRegisterDocumentSet-b_Message">
+    <documentation>Provide and Register Document Set</documentation>
+    <part name="body" element="ihe:ProvideAndRegisterDocumentSetRequest"/>
+  </message>
+  <message name="ProvideAndRegisterDocumentSet-bResponse_Message">
+    <documentation>Provide And Register Document Set Response</documentation>
+    <part name="body" element="rs:RegistryResponse"/>
+  </message>
+  <portType name="DocumentRepository_PortType">
+    <operation name="DocumentRepository_RetrieveDocumentSet">
+      <input message="ihe:RetrieveDocumentSet_Message" wsaw:Action="urn:ihe:iti:2007:RetrieveDocumentSet"/>
+      <output message="ihe:RetrieveDocumentSetResponse_Message" wsaw:Action="urn:ihe:iti:2007:RetrieveDocumentSetResponse"/>
+    </operation>
+    <operation name="DocumentRepository_ProvideAndRegisterDocumentSet-b">
+      <input message="ihe:ProvideAndRegisterDocumentSet-b_Message" wsaw:Action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+      <output message="ihe:ProvideAndRegisterDocumentSet-bResponse_Message" wsaw:Action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse"/>
+    </operation>
+  </portType>
+  <binding name="DocumentRepository_Binding" type="ihe:DocumentRepository_PortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="DocumentRepository_ProvideAndRegisterDocumentSet-b">
+      <soap12:operation soapAction="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="DocumentRepository_RetrieveDocumentSet">
+      <soap12:operation soapAction="urn:ihe:iti:2007:RetrieveDocumentSet"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="DocumentRepository_Service">
+    <port name="DocumentRepository_Port_Soap12" binding="ihe:DocumentRepository_Binding">
+      <soap12:address location="http://servicelocation/DocumentRepository_Service"/>
+    </port>
+  </service>
+</definitions>]]></con:content>
+        <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+      </con:part>
+      <con:part>
+        <con:url>file:/home/eric/schema/IHE/XDS.b_DocumentRepository.xsd</con:url>
+        <con:content><![CDATA[<xs:schema targetNamespace="urn:ihe:iti:xds-b:2007" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="urn:ihe:iti:xds-b:2007" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+  <xs:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" schemaLocation="../ebRS/rs.xsd"/>
+  <xs:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="../ebRS/rim.xsd"/>
+  <xs:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" schemaLocation="../ebRS/lcm.xsd"/>
+  <xs:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" schemaLocation="../ebRS/query.xsd"/>
+  <xs:complexType name="RetrieveDocumentSetRequestType">
+    <xs:sequence>
+      <xs:element name="DocumentRequest" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="HomeCommunityId" type="rim:LongName" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>This corresponds to the home attribute of the Identifiable class in regrep RIM (regrep-rim-3.0-os.pdf, page 20)</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="RepositoryUniqueId" type="rim:LongName">
+              <xs:annotation>
+                <xs:documentation>This is the XDSDocumentEntry.repositoryUniqueId attribute in the XDS metadata</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="DocumentUniqueId" type="rim:LongName">
+              <xs:annotation>
+                <xs:documentation>This is the XDSDocumentEntry.uniqueId attribute in the XDS metadata</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RetrieveDocumentSetResponseType">
+    <xs:sequence>
+      <xs:element ref="rs:RegistryResponse"/>
+      <xs:sequence minOccurs="0">
+        <xs:element name="DocumentResponse" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="HomeCommunityId" type="rim:LongName" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>This corresponds to the home attribute of the Identifiable class in regrep RIM (regrep-rim-3.0-os.pdf, page 20)</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="RepositoryUniqueId" type="rim:LongName">
+                <xs:annotation>
+                  <xs:documentation>This is the XDSDocumentEntry.repositoryUniqueId attribute in the XDS metadata</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="DocumentUniqueId" type="rim:LongName">
+                <xs:annotation>
+                  <xs:documentation>This is the XDSDocumentEntry.uniqueId attribute in the XDS metadata</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="NewRepositoryUniqueId" type="rim:LongName" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>This identifies the Document Repository that will support retrieval of the document created as a result of retrieval of the On-Demand Document.  This is required when the On-Demand Document Source supports the Persistence of Retrieved Documents Option.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="NewDocumentUniqueId" type="rim:LongName" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>This identifies the document returned in the response when retrieval is of an On-Demand Document.  This is required when retrieval is of an On-Demand Document.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="mimeType" type="rim:LongName"/>
+              <xs:element name="Document" type="xs:base64Binary"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RetrieveDocumentSetRequest" type="RetrieveDocumentSetRequestType"/>
+  <xs:element name="RetrieveDocumentSetResponse" type="RetrieveDocumentSetResponseType"/>
+  <xs:complexType name="ProvideAndRegisterDocumentSetRequestType">
+    <xs:sequence>
+      <xs:element ref="lcm:SubmitObjectsRequest"/>
+      <xs:sequence minOccurs="0">
+        <xs:element name="Document" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:base64Binary">
+                <xs:attribute name="id" type="xs:anyURI" use="required">
+                  <xs:annotation>
+                    <xs:documentation>This corresponds to the ExtrinsicObject id in the eb RIM metadata a provides a linkage between the actual document data and its metadata</xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProvideAndRegisterDocumentSetRequest" type="ProvideAndRegisterDocumentSetRequestType"/>
+</xs:schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+      <con:part>
+        <con:url>file:/home/eric/schema/ebRS/rs.xsd</con:url>
+        <con:content><![CDATA[<!--$Header: /cvsroot/ebxmlrr/ebxmlrr-spec/misc/3.0/schema/rs.xsd,v 1.9 2005/01/31 22:33:54 farrukh_najmi Exp $-->
+<schema targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:tns="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+  <annotation>
+    <documentation xml:lang="en">The schema for OASIS ebXML Registry Services</documentation>
+  </annotation>
+  <!--Import the rim.xsd file with XML schema mappaing from RIM-->
+  <import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="rim.xsd"/>
+  <complexType name="RegistryRequestType">
+    <annotation>
+      <documentation xml:lang="en">Base type for all ebXML Registry requests</documentation>
+    </annotation>
+    <sequence>
+      <!--every request may be extended using Slots.-->
+      <element maxOccurs="1" minOccurs="0" name="RequestSlotList" type="rim:SlotListType"/>
+    </sequence>
+    <attribute name="id" type="anyURI" use="optional"/>
+    <!--Comment may be used by requestor to describe the request. Used in VersionInfo.comment-->
+    <attribute name="comment" type="string" use="optional"/>
+  </complexType>
+  <element name="RegistryRequest" type="tns:RegistryRequestType"/>
+  <element name="RegistryErrorList">
+    <annotation>
+      <documentation xml:lang="en">The RegistryErrorList is derived from the ErrorList element from the ebXML Message Service Specification</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" ref="tns:RegistryError"/>
+      </sequence>
+      <attribute name="highestSeverity" type="rim:referenceURI" use="optional"/>
+    </complexType>
+  </element>
+  <element name="RegistryError">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="codeContext" type="string" use="required"/>
+          <attribute name="errorCode" type="string" use="required"/>
+          <attribute default="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" name="severity" type="rim:referenceURI"/>
+          <attribute name="location" type="string" use="optional"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+  <complexType name="RegistryResponseType">
+    <annotation>
+      <documentation xml:lang="en">Base type for all ebXML Registry responses</documentation>
+    </annotation>
+    <sequence>
+      <!--every response may be extended using Slots.-->
+      <element maxOccurs="1" minOccurs="0" name="ResponseSlotList" type="rim:SlotListType"/>
+      <element minOccurs="0" ref="tns:RegistryErrorList"/>
+    </sequence>
+    <attribute name="status" type="rim:referenceURI" use="required"/>
+    <!--id is the request if for the request for which this is a response-->
+    <attribute name="requestId" type="anyURI" use="optional"/>
+  </complexType>
+  <element name="RegistryResponse" type="tns:RegistryResponseType"/>
+</schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+      <con:part>
+        <con:url>file:/home/eric/schema/ebRS/rim.xsd</con:url>
+        <con:content><![CDATA[<!--$Header: /cvsroot/ebxmlrr/ebxmlrr-spec/misc/3.0/schema/rim.xsd,v 1.20 2005/02/03 19:28:15 farrukh_najmi Exp $-->
+<schema targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+  <annotation>
+    <documentation xml:lang="en">The schema for OASIS ebXML Registry Information Model</documentation>
+  </annotation>
+  <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+  <!--Begin information model mapping from ebRIM.-->
+  <!--Define Data Types-->
+  <simpleType name="referenceURI">
+    <annotation>
+      <documentation xml:lang="en">referenceURI is used by reference attributes within RIM.
+        Each attribute of type referenceURI references a RegistryObject with
+        specified URI as id.</documentation>
+    </annotation>
+    <restriction base="anyURI"/>
+  </simpleType>
+  <simpleType name="String4">
+    <restriction base="string">
+      <maxLength value="4"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="String8">
+    <restriction base="string">
+      <maxLength value="8"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="String16">
+    <restriction base="string">
+      <maxLength value="16"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="String32">
+    <restriction base="string">
+      <maxLength value="32"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="ShortName">
+    <restriction base="string">
+      <maxLength value="64"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="LongName">
+    <restriction base="string">
+      <maxLength value="256"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="FreeFormText">
+    <restriction base="string">
+      <maxLength value="1024"/>
+    </restriction>
+  </simpleType>
+  <complexType name="InternationalStringType">
+    <sequence maxOccurs="unbounded" minOccurs="0">
+      <element ref="tns:LocalizedString"/>
+    </sequence>
+  </complexType>
+  <element name="InternationalString" type="tns:InternationalStringType"/>
+  <element name="Name" type="tns:InternationalStringType"/>
+  <element name="Description" type="tns:InternationalStringType"/>
+  <complexType name="LocalizedStringType">
+    <attribute ref="xml:lang" default="en-US"/>
+    <attribute default="UTF-8" name="charset"/>
+    <attribute name="value" type="tns:FreeFormText" use="required"/>
+  </complexType>
+  <element name="LocalizedString" type="tns:LocalizedStringType"/>
+  <complexType name="SlotType1">
+    <sequence>
+      <element maxOccurs="1" minOccurs="1" ref="tns:ValueList"/>
+    </sequence>
+    <attribute name="name" type="tns:LongName" use="required"/>
+    <!--slotType value MUST reference a ClassificationNode in the canonical DataType scheme-->
+    <attribute name="slotType" type="tns:referenceURI" use="optional"/>
+  </complexType>
+  <element name="Slot" type="tns:SlotType1"/>
+  <complexType name="ValueListType">
+    <sequence maxOccurs="unbounded" minOccurs="0">
+      <element ref="tns:Value"/>
+    </sequence>
+  </complexType>
+  <element name="ValueList" type="tns:ValueListType"/>
+  <element name="Value" type="tns:LongName"/>
+  <complexType name="SlotListType">
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" ref="tns:Slot"/>
+    </sequence>
+  </complexType>
+  <element name="SlotList" type="tns:SlotListType"/>
+  <complexType name="IdentifiableType">
+    <annotation>
+      <documentation xml:lang="en">Common base type for all types that have unique identity.     
+        If id is provided and is not in proper URN syntax then it is used for
+        linkage within document and is ignored by the registry. In this case the
+        registry generates a UUID URN for id attribute.
+        id must not be null when object is retrieved from the registry.</documentation>
+    </annotation>
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" ref="tns:Slot"/>
+    </sequence>
+    <attribute name="id" type="anyURI" use="required"/>
+    <!--home attribute is required only for remote ObjectRef-->
+    <attribute name="home" type="anyURI" use="optional"/>
+  </complexType>
+  <element name="Identifiable" type="tns:IdentifiableType"/>
+  <complexType name="ObjectRefType">
+    <annotation>
+      <documentation xml:lang="en">Use to reference an Object by its id.
+        Specifies the id attribute of the object as its id attribute.
+        id attribute in ObjectAttributes is exactly the same syntax and semantics as
+        id attribute in RegistryObject.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:IdentifiableType">
+        <!--When true and is a remote ObjectRef then the registry must create a replica for this ObjectRef-->
+        <attribute default="false" name="createReplica" type="boolean"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ObjectRefListType">
+    <sequence maxOccurs="unbounded" minOccurs="0">
+      <element ref="tns:ObjectRef"/>
+    </sequence>
+  </complexType>
+  <element name="ObjectRefList" type="tns:ObjectRefListType"/>
+  <element name="ObjectRef" type="tns:ObjectRefType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="RegistryObjectType">
+    <complexContent>
+      <extension base="tns:IdentifiableType">
+        <sequence maxOccurs="1" minOccurs="0">
+          <element maxOccurs="1" minOccurs="0" ref="tns:Name"/>
+          <element maxOccurs="1" minOccurs="0" ref="tns:Description"/>
+          <element maxOccurs="1" minOccurs="0" name="VersionInfo" type="tns:VersionInfoType"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:Classification"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ExternalIdentifier"/>
+        </sequence>
+        <attribute name="lid" type="anyURI" use="optional"/>
+        <attribute name="objectType" type="tns:referenceURI" use="optional"/>
+        <attribute name="status" type="tns:referenceURI" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="RegistryObject" type="tns:RegistryObjectType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="RegistryObjectListType">
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" ref="tns:Identifiable"/>
+    </sequence>
+  </complexType>
+  <element name="RegistryObjectList" type="tns:RegistryObjectListType"/>
+  <complexType name="AssociationType1">
+    <annotation>
+      <documentation xml:lang="en">Association is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.
+        An Association specifies references to two previously submitted
+        registry entrys.
+        The sourceObject is id of the sourceObject in association
+        The targetObject is id of the targetObject in association</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute name="associationType" type="tns:referenceURI" use="required"/>
+        <attribute name="sourceObject" type="tns:referenceURI" use="required"/>
+        <attribute name="targetObject" type="tns:referenceURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Association" type="tns:AssociationType1" substitutionGroup="tns:Identifiable"/>
+  <complexType name="AuditableEventType">
+    <annotation>
+      <documentation xml:lang="en">An Event that forms an audit trail in ebXML Registry.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <!--List of all objects that have been effected by this event-->
+          <element maxOccurs="1" minOccurs="1" name="affectedObjects" type="tns:ObjectRefListType"/>
+        </sequence>
+        <attribute name="eventType" type="tns:referenceURI" use="required"/>
+        <attribute name="timestamp" type="dateTime" use="required"/>
+        <attribute name="user" type="tns:referenceURI" use="required"/>
+        <attribute name="requestId" type="tns:referenceURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="AuditableEvent" type="tns:AuditableEventType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ClassificationType">
+    <annotation>
+      <documentation xml:lang="en">Classification is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.
+        A Classification specifies references to two registry entrys.
+        The classifiedObject is id of the Object being classified.
+        The classificationNode is id of the ClassificationNode classying the object</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute name="classificationScheme" type="tns:referenceURI" use="optional"/>
+        <attribute name="classifiedObject" type="tns:referenceURI" use="required"/>
+        <attribute name="classificationNode" type="tns:referenceURI" use="optional"/>
+        <attribute name="nodeRepresentation" type="tns:LongName" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Classification" type="tns:ClassificationType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ClassificationNodeType">
+    <annotation>
+      <documentation xml:lang="en">ClassificationNode is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.
+        ClassificationNode is used to submit a Classification tree to the Registry.
+        The parent attribute is the id to the parent node. code is an optional code value for a ClassificationNode
+        often defined by an external taxonomy (e.g. NAICS)</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ClassificationNode"/>
+        </sequence>
+        <attribute name="parent" type="tns:referenceURI" use="optional"/>
+        <attribute name="code" type="tns:LongName" use="optional"/>
+        <attribute name="path" type="string" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ClassificationNode" type="tns:ClassificationNodeType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ClassificationSchemeType">
+    <annotation>
+      <documentation xml:lang="en">ClassificationScheme is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ClassificationNode"/>
+        </sequence>
+        <attribute name="isInternal" type="boolean" use="required"/>
+        <attribute name="nodeType" type="tns:referenceURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ClassificationScheme" type="tns:ClassificationSchemeType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ExternalIdentifierType">
+    <annotation>
+      <documentation xml:lang="en">ExternalIdentifier is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute name="registryObject" type="tns:referenceURI" use="required"/>
+        <attribute name="identificationScheme" type="tns:referenceURI" use="required"/>
+        <attribute name="value" type="tns:LongName" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ExternalIdentifier" type="tns:ExternalIdentifierType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ExternalLinkType">
+    <annotation>
+      <documentation xml:lang="en">ExternalLink is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute name="externalURI" type="anyURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ExternalLink" type="tns:ExternalLinkType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ExtrinsicObjectType">
+    <annotation>
+      <documentation xml:lang="en">ExtrinsicObject is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="ContentVersionInfo" type="tns:VersionInfoType"/>
+        </sequence>
+        <attribute default="application/octet-stream" name="mimeType" type="tns:LongName"/>
+        <attribute default="false" name="isOpaque" type="boolean"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!--Following element decl nneds to be lower case but using upper camel case for backward compatibility-->
+  <element name="ExtrinsicObject" type="tns:ExtrinsicObjectType" substitutionGroup="tns:Identifiable"/>
+  <element name="Address" type="tns:PostalAddressType"/>
+  <complexType name="OrganizationType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:Address"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:TelephoneNumber"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:EmailAddress"/>
+        </sequence>
+        <attribute name="parent" type="tns:referenceURI"/>
+        <attribute name="primaryContact" type="tns:referenceURI" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Organization" type="tns:OrganizationType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="PersonNameType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <attribute name="firstName" type="tns:ShortName" use="optional"/>
+    <attribute name="middleName" type="tns:ShortName" use="optional"/>
+    <attribute name="lastName" type="tns:ShortName" use="optional"/>
+  </complexType>
+  <element name="PersonName" type="tns:PersonNameType"/>
+  <complexType name="EmailAddressType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <attribute name="address" type="tns:ShortName" use="required"/>
+    <attribute name="type" type="tns:String32" use="optional"/>
+  </complexType>
+  <element name="EmailAddress" type="tns:EmailAddressType"/>
+  <complexType name="PostalAddressType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <attribute name="city" type="tns:ShortName" use="optional"/>
+    <attribute name="country" type="tns:ShortName" use="optional"/>
+    <attribute name="postalCode" type="tns:ShortName" use="optional"/>
+    <attribute name="stateOrProvince" type="tns:ShortName" use="optional"/>
+    <attribute name="street" type="tns:ShortName" use="optional"/>
+    <attribute name="streetNumber" type="tns:String32" use="optional"/>
+  </complexType>
+  <element name="PostalAddress" type="tns:PostalAddressType"/>
+  <complexType name="VersionInfoType">
+    <attribute name="versionName" type="tns:String16" use="optional" default="1.1"/>
+    <attribute name="comment" type="string" use="optional"/>
+  </complexType>
+  <complexType name="RegistryPackageType">
+    <annotation>
+      <documentation xml:lang="en">RegistryPackage is the mapping of the same named interface in ebRIM.
+        It extends RegistryObject.
+        A RegistryPackage is a named collection of objects.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:RegistryObjectList"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="RegistryPackage" type="tns:RegistryPackageType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ServiceType">
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ServiceBinding"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Service" type="tns:ServiceType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="ServiceBindingType">
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:SpecificationLink"/>
+        </sequence>
+        <attribute name="service" type="tns:referenceURI" use="required"/>
+        <attribute name="accessURI" type="anyURI" use="optional"/>
+        <attribute name="targetBinding" type="tns:referenceURI" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ServiceBinding" type="tns:ServiceBindingType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="SpecificationLinkType">
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:UsageDescription"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:UsageParameter"/>
+        </sequence>
+        <attribute name="serviceBinding" type="tns:referenceURI" use="required"/>
+        <attribute name="specificationObject" type="tns:referenceURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="SpecificationLink" type="tns:SpecificationLinkType" substitutionGroup="tns:Identifiable"/>
+  <element name="UsageDescription" type="tns:InternationalStringType"/>
+  <element name="UsageParameter" type="tns:FreeFormText"/>
+  <complexType name="TelephoneNumberType">
+    <annotation>
+      <documentation xml:lang="en">TelephoneNumber is the mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <attribute name="areaCode" type="tns:String8" use="optional"/>
+    <attribute name="countryCode" type="tns:String8" use="optional"/>
+    <attribute name="extension" type="tns:String8" use="optional"/>
+    <attribute name="number" type="tns:String16" use="optional"/>
+    <attribute name="phoneType" type="tns:String32" use="optional"/>
+  </complexType>
+  <element name="TelephoneNumber" type="tns:TelephoneNumberType"/>
+  <complexType name="TelephoneNumberListType">
+    <sequence>
+      <element maxOccurs="unbounded" minOccurs="0" ref="tns:TelephoneNumber"/>
+    </sequence>
+  </complexType>
+  <complexType name="PersonType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence maxOccurs="1" minOccurs="1">
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:Address"/>
+          <!--PersonName is optional because it is not needed in SAML Profile 
+          when an external IdentityProvider is used.-->
+          <element maxOccurs="1" minOccurs="0" ref="tns:PersonName"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:TelephoneNumber"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:EmailAddress"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Person" type="tns:PersonType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="UserType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:PersonType"></extension>
+    </complexContent>
+  </complexType>
+  <element name="User" type="tns:UserType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="RegistryType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute name="operator" type="tns:referenceURI" use="required"/>
+        <attribute name="specificationVersion" type="string" use="required"/>
+        <attribute default="P1D" name="replicationSyncLatency" type="duration" use="optional"/>
+        <attribute default="P1D" name="catalogingLatency" type="duration" use="optional"/>
+        <attribute name="conformanceProfile" use="optional" default="registryLite">
+          <simpleType>
+            <restriction base="NCName">
+              <enumeration value="registryFull"/>
+              <enumeration value="registryLite"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Registry" type="tns:RegistryType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="FederationType">
+    <annotation>
+      <documentation xml:lang="en">Mapping of the same named interface in ebRIM.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <attribute default="P1D" name="replicationSyncLatency" type="duration" use="optional"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Federation" type="tns:FederationType" substitutionGroup="tns:Identifiable"/>
+  <complexType name="AdhocQueryType">
+    <annotation>
+      <documentation xml:lang="en">A registry query.
+      A QueryExpression child element is not required when invoking a stored query.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element ref="tns:QueryExpression" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="AdhocQuery" type="tns:AdhocQueryType" substitutionGroup="tns:RegistryObject"/>
+  <complexType name="QueryExpressionType" mixed="true">
+    <sequence>
+      <!--MAY be any query language syntax supported. 
+      MUST support FilterQuery. SHOULD support SQLQuery-->
+      <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="queryLanguage" type="tns:referenceURI" use="required"/>
+  </complexType>
+  <element name="QueryExpression" type="tns:QueryExpressionType"/>
+  <complexType name="NotificationType">
+    <annotation>
+      <documentation>Notification of registry events.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <!--May contain ObjectRefs and RegistryObjects-->
+          <element maxOccurs="1" minOccurs="1" ref="tns:RegistryObjectList"/>
+        </sequence>
+        <attribute name="subscription" type="tns:referenceURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Notification" type="tns:NotificationType"/>
+  <element name="Action" type="tns:ActionType"/>
+  <complexType name="SubscriptionType">
+    <annotation>
+      <documentation xml:lang="en">A Subscription for specified Events in an ebXML V3+ registry.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:RegistryObjectType">
+        <sequence>
+          <element ref="tns:Action" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <!--Ref to a AdhocQueryType instance-->
+        <attribute name="selector" type="tns:referenceURI" use="required"/>
+        <attribute name="startTime" type="dateTime" use="optional"/>
+        <attribute name="endTime" type="dateTime" use="optional"/>
+        <attribute name="notificationInterval" type="duration" use="optional" default="P1D"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="Subscription" type="tns:SubscriptionType" substitutionGroup="tns:Identifiable"/>
+  <complexType abstract="true" name="ActionType">
+    <annotation>
+      <documentation>Abstract Base type for all types of Actions.</documentation>
+    </annotation>
+  </complexType>
+  <complexType name="NotifyActionType">
+    <annotation>
+      <documentation xml:lang="en">Abstract Base type for all types of Notify Actions</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="tns:ActionType">
+        <attribute default="urn:oasis:names:tc:ebxml-regrep:NotificationOptionType:ObjectRefs" type="tns:referenceURI" name="notificationOption"/>
+        <attribute name="endPoint" type="anyURI" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="NotifyAction" type="tns:NotifyActionType" substitutionGroup="tns:Action"/>
+</schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+      <con:part>
+        <con:url>http://www.w3.org/2001/xml.xsd</con:url>
+        <con:content><![CDATA[<?xml-stylesheet href="../2008/09/xsd.xsl" type="text/xsl"?>
+<xs:schema targetNamespace="http://www.w3.org/XML/1998/namespace" xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/1999/xhtml">
+  <xs:annotation>
+    <xs:documentation>
+      <div>
+        <h1>About the XML namespace</h1>
+        <div class="bodytext">
+          <p>This schema document describes the XML namespace, in a form
+      suitable for import by other schema documents.</p>
+          <p>
+            See
+            <a href="http://www.w3.org/XML/1998/namespace.html">http://www.w3.org/XML/1998/namespace.html</a>
+            and
+            <a href="http://www.w3.org/TR/REC-xml">http://www.w3.org/TR/REC-xml</a>
+            for information 
+      about this namespace.
+          </p>
+          <p>Note that local names in this namespace are intended to be
+      defined only by the World Wide Web Consortium or its subgroups.
+      The names currently defined in this namespace are listed below.
+      They should not be used with conflicting semantics by any Working
+      Group, specification, or document instance.</p>
+          <p>
+            See further below in this document for more information about
+            <a href="#usage">how to refer to this schema document from your own
+      XSD schema documents</a>
+            and about
+            <a href="#nsversioning">the
+      namespace-versioning policy governing this schema document</a>
+            .
+          </p>
+        </div>
+      </div>
+    </xs:documentation>
+  </xs:annotation>
+  <xs:attribute name="lang">
+    <xs:annotation>
+      <xs:documentation>
+        <div>
+          <h3>lang (as an attribute name)</h3>
+          <p>denotes an attribute whose value
+       is a language code for the natural language of the content of
+       any element; its value is inherited.  This name is reserved
+       by virtue of its definition in the XML specification.</p>
+        </div>
+        <div>
+          <h4>Notes</h4>
+          <p>Attempting to install the relevant ISO 2- and 3-letter
+      codes as the enumerated possible values is probably never
+      going to be a realistic possibility.</p>
+          <p>
+            See BCP 47 at
+            <a href="http://www.rfc-editor.org/rfc/bcp/bcp47.txt">http://www.rfc-editor.org/rfc/bcp/bcp47.txt</a>
+            and the IANA language subtag registry at
+            <a href="http://www.iana.org/assignments/language-subtag-registry">http://www.iana.org/assignments/language-subtag-registry</a>
+            for further information.
+          </p>
+          <p>The union allows for the 'un-declaration' of xml:lang with
+      the empty string.</p>
+        </div>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:union memberTypes="xs:language">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:union>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="space">
+    <xs:annotation>
+      <xs:documentation>
+        <div>
+          <h3>space (as an attribute name)</h3>
+          <p>denotes an attribute whose
+       value is a keyword indicating what whitespace processing
+       discipline is intended for the content of the element; its
+       value is inherited.  This name is reserved by virtue of its
+       definition in the XML specification.</p>
+        </div>
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:NCName">
+        <xs:enumeration value="default"/>
+        <xs:enumeration value="preserve"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="base" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>
+        <div>
+          <h3>base (as an attribute name)</h3>
+          <p>denotes an attribute whose value
+       provides a URI to be used as the base for interpreting any
+       relative URIs in the scope of the element on which it
+       appears; its value is inherited.  This name is reserved
+       by virtue of its definition in the XML Base specification.</p>
+          <p>
+            See
+            <a href="http://www.w3.org/TR/xmlbase/">http://www.w3.org/TR/xmlbase/</a>
+            for information about this attribute.
+          </p>
+        </div>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="id" type="xs:ID">
+    <xs:annotation>
+      <xs:documentation>
+        <div>
+          <h3>id (as an attribute name)</h3>
+          <p>denotes an attribute whose value
+       should be interpreted as if declared to be of type ID.
+       This name is reserved by virtue of its definition in the
+       xml:id specification.</p>
+          <p>
+            See
+            <a href="http://www.w3.org/TR/xml-id/">http://www.w3.org/TR/xml-id/</a>
+            for information about this attribute.
+          </p>
+        </div>
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attributeGroup name="specialAttrs">
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:space"/>
+    <xs:attribute ref="xml:id"/>
+  </xs:attributeGroup>
+  <xs:annotation>
+    <xs:documentation>
+      <div>
+        <h3>Father (in any context at all)</h3>
+        <div class="bodytext">
+          <p>denotes Jon Bosak, the chair of 
+      the original XML Working Group.  This name is reserved by 
+      the following decision of the W3C XML Plenary and 
+      XML Coordination groups:</p>
+          <blockquote>
+            <p>In appreciation for his vision, leadership and
+	dedication the W3C XML Plenary on this 10th day of
+	February, 2000, reserves for Jon Bosak in perpetuity
+	the XML name "xml:Father".</p>
+          </blockquote>
+        </div>
+      </div>
+    </xs:documentation>
+  </xs:annotation>
+  <xs:annotation>
+    <xs:documentation>
+      <div xml:id="usage" id="usage">
+        <h2>
+          <a name="usage">About this schema document</a>
+        </h2>
+        <div class="bodytext">
+          <p>
+            This schema defines attributes and an attribute group suitable
+      for use by schemas wishing to allow
+            <code>xml:base</code>
+            ,
+            <code>xml:lang</code>
+            ,
+            <code>xml:space</code>
+            or
+            <code>xml:id</code>
+            attributes on elements they define.
+          </p>
+          <p>To enable this, such a schema must import this schema for
+      the XML namespace, e.g. as follows:</p>
+          <pre>&lt;schema . . .>
+           . . .
+           &lt;import namespace="http://www.w3.org/XML/1998/namespace"
+                      schemaLocation="http://www.w3.org/2001/xml.xsd"/></pre>
+          <p>or</p>
+          <pre>&lt;import namespace="http://www.w3.org/XML/1998/namespace"
+                      schemaLocation="http://www.w3.org/2009/01/xml.xsd"/></pre>
+          <p>Subsequently, qualified reference to any of the attributes or the
+      group defined below will have the desired effect, e.g.</p>
+          <pre>&lt;type . . .>
+           . . .
+           &lt;attributeGroup ref="xml:specialAttrs"/></pre>
+          <p>will define a type which will schema-validate an instance element
+      with any of those attributes.</p>
+        </div>
+      </div>
+    </xs:documentation>
+  </xs:annotation>
+  <xs:annotation>
+    <xs:documentation>
+      <div id="nsversioning" xml:id="nsversioning">
+        <h2>
+          <a name="nsversioning">Versioning policy for this schema document</a>
+        </h2>
+        <div class="bodytext">
+          <p>
+            In keeping with the XML Schema WG's standard versioning
+      policy, this schema document will persist at
+            <a href="http://www.w3.org/2009/01/xml.xsd">http://www.w3.org/2009/01/xml.xsd</a>
+            .
+          </p>
+          <p>
+            At the date of issue it can also be found at
+            <a href="http://www.w3.org/2001/xml.xsd">http://www.w3.org/2001/xml.xsd</a>
+            .
+          </p>
+          <p>
+            The schema document at that URI may however change in the future,
+      in order to remain compatible with the latest version of XML
+      Schema itself, or with the XML namespace itself.  In other words,
+      if the XML Schema or XML namespaces change, the version of this
+      document at
+            <a href="http://www.w3.org/2001/xml.xsd">http://www.w3.org/2001/xml.xsd</a>
+            will change accordingly; the version at
+            <a href="http://www.w3.org/2009/01/xml.xsd">http://www.w3.org/2009/01/xml.xsd</a>
+            will not change.
+          </p>
+          <p>Previous dated (and unchanging) versions of this schema 
+      document are at:</p>
+          <ul>
+            <li>
+              <a href="http://www.w3.org/2009/01/xml.xsd">http://www.w3.org/2009/01/xml.xsd</a>
+            </li>
+            <li>
+              <a href="http://www.w3.org/2007/08/xml.xsd">http://www.w3.org/2007/08/xml.xsd</a>
+            </li>
+            <li>
+              <a href="http://www.w3.org/2004/10/xml.xsd">http://www.w3.org/2004/10/xml.xsd</a>
+            </li>
+            <li>
+              <a href="http://www.w3.org/2001/03/xml.xsd">http://www.w3.org/2001/03/xml.xsd</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </xs:documentation>
+  </xs:annotation>
+</xs:schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+      <con:part>
+        <con:url>file:/home/eric/schema/ebRS/lcm.xsd</con:url>
+        <con:content><![CDATA[<!--$Header: /cvsroot/ebxmlrr/ebxmlrr-spec/misc/3.0/schema/lcm.xsd,v 1.5 2005/01/31 22:28:18 farrukh_najmi Exp $-->
+<schema targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:tns="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
+  <annotation>
+    <documentation xml:lang="en">The schema for OASIS ebXML Registry Services</documentation>
+  </annotation>
+  <!--Import the rim.xsd file with XML schema mappaing from RIM-->
+  <import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="rim.xsd"/>
+  <!--Import the rs.xsd file with XML schema for base rs related schema-->
+  <import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" schemaLocation="rs.xsd"/>
+  <element name="SubmitObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The SubmitObjectsRequest allows one to submit a list of RegistryObject elements. Each RegistryEntry element provides metadata for a single submitted object.  Note that the repository item being submitted is in a separate document that is not in this DTD. The ebXML Messaging Services Specfication defines packaging, for submission, of the metadata of a repository item with the repository item itself. The value of the id attribute of the ExtrinsicObject element must be the same as the xlink:href attribute within the Reference element within the Manifest element of the MessageHeader.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:RegistryObjectList"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="UpdateObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The UpdateObjectsRequest allows one to update a list of RegistryObject elements. Each RegistryEntry element provides metadata for a single submitted object.  Note that the repository item being submitted is in a separate document that is not in this DTD. The ebXML Messaging Services Specfication defines packaging, for submission, of the metadata of a repository item with the repository item itself. The value of the id attribute of the ExtrinsicObject element must be the same as the xlink:href attribute within the Reference element within the Manifest element of the MessageHeader.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:RegistryObjectList"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="ApproveObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The ObjectRefList and AdhocQuery identify the list of
+        objects being approved.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:AdhocQuery" minOccurs="0" maxOccurs="1"/>
+            <element ref="rim:ObjectRefList" minOccurs="0" maxOccurs="1"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="DeprecateObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The ObjectRefList and AdhocQuery identify the list of
+        objects being deprecated.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:AdhocQuery" minOccurs="0" maxOccurs="1"/>
+            <element ref="rim:ObjectRefList" minOccurs="0" maxOccurs="1"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="UndeprecateObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The ObjectRefList is the list of
+        refs to the registry entrys being un-deprecated.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:AdhocQuery" minOccurs="0" maxOccurs="1"/>
+            <element ref="rim:ObjectRefList" minOccurs="0" maxOccurs="1"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="RemoveObjectsRequest">
+    <annotation>
+      <documentation xml:lang="en">The ObjectRefList is the list of
+        refs to the registry entrys being removed</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element ref="rim:AdhocQuery" minOccurs="0" maxOccurs="1"/>
+            <element ref="rim:ObjectRefList" minOccurs="0" maxOccurs="1"/>
+          </sequence>
+          <attribute name="deletionScope" default="urn:oasis:names:tc:ebxml-regrep:DeletionScopeType:DeleteAll" type="rim:referenceURI" use="optional"/>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="RelocateObjectsRequest">
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="1" ref="rim:AdhocQuery"/>
+            <element maxOccurs="1" minOccurs="1" name="SourceRegistry" type="rim:ObjectRefType"/>
+            <element maxOccurs="1" minOccurs="1" name="DestinationRegistry" type="rim:ObjectRefType"/>
+            <element maxOccurs="1" minOccurs="1" name="OwnerAtSource" type="rim:ObjectRefType"/>
+            <element maxOccurs="1" minOccurs="1" name="OwnerAtDestination" type="rim:ObjectRefType"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="AcceptObjectsRequest">
+    <!--The ObjectRefList must only contain local ObjectRefs such that they do not specify home attribute-->
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <attribute name="correlationId" type="anyURI" use="required"/>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+      <con:part>
+        <con:url>file:/home/eric/schema/ebRS/query.xsd</con:url>
+        <con:content><![CDATA[<!--$Header: /cvsroot/ebxmlrr/ebxmlrr-spec/misc/3.0/schema/query.xsd,v 1.13 2005/03/29 08:52:10 farrukh_najmi Exp $-->
+<schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:tns="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+  <!--Import the rim.xsd file with XML schema mappaing from RIM-->
+  <import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="rim.xsd"/>
+  <import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" schemaLocation="rs.xsd"/>
+  <complexType name="ResponseOptionType">
+    <attribute default="RegistryObject" name="returnType">
+      <simpleType>
+        <restriction base="NCName">
+          <enumeration value="ObjectRef"/>
+          <enumeration value="RegistryObject"/>
+          <enumeration value="LeafClass"/>
+          <enumeration value="LeafClassWithRepositoryItem"/>
+        </restriction>
+      </simpleType>
+    </attribute>
+    <attribute default="false" name="returnComposedObjects" type="boolean"/>
+  </complexType>
+  <element name="ResponseOption" type="tns:ResponseOptionType"/>
+  <element name="AdhocQueryRequest">
+    <annotation>
+      <documentation xml:lang="en">An Ad hoc query request specifies an ad hoc query.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryRequestType">
+          <sequence>
+            <element maxOccurs="1" minOccurs="1" ref="tns:ResponseOption"/>
+            <element ref="rim:AdhocQuery"/>
+          </sequence>
+          <attribute default="false" name="federated" type="boolean" use="optional"/>
+          <attribute name="federation" type="anyURI" use="optional"/>
+          <attribute default="0" name="startIndex" type="integer"/>
+          <attribute default="-1" name="maxResults" type="integer"/>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="AdhocQueryResponse">
+    <annotation>
+      <documentation xml:lang="en">The response includes a RegistryObjectList which has zero or more
+        RegistryObjects that match the query specified in AdhocQueryRequest.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="rs:RegistryResponseType">
+          <sequence>
+            <element ref="rim:RegistryObjectList"/>
+          </sequence>
+          <attribute default="0" name="startIndex" type="integer"/>
+          <attribute name="totalResultCount" type="integer" use="optional"/>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <complexType name="FilterQueryType" abstract="true">
+    <sequence>
+      <element maxOccurs="1" minOccurs="0" name="PrimaryFilter" type="tns:FilterType"/>
+    </sequence>
+  </complexType>
+  <complexType name="BranchType" abstract="true">
+    <complexContent>
+      <extension base="tns:FilterQueryType"></extension>
+    </complexContent>
+  </complexType>
+  <complexType name="InternationalStringBranchType">
+    <complexContent>
+      <extension base="tns:BranchType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="LocalizedStringFilter" type="tns:FilterType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SlotBranchType">
+    <complexContent>
+      <extension base="tns:BranchType">
+        <sequence/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="RegistryObjectQueryType">
+    <complexContent>
+      <extension base="tns:FilterQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="SlotBranch" type="tns:SlotBranchType"/>
+          <element maxOccurs="1" minOccurs="0" name="NameBranch" type="tns:InternationalStringBranchType"/>
+          <element maxOccurs="1" minOccurs="0" name="DescriptionBranch" type="tns:InternationalStringBranchType"/>
+          <element maxOccurs="1" minOccurs="0" name="VersionInfoFilter" type="tns:FilterType"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ClassificationQuery"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ExternalIdentifierQuery"/>
+          <element maxOccurs="1" minOccurs="0" name="ObjectTypeQuery" type="tns:ClassificationNodeQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="StatusQuery" type="tns:ClassificationNodeQueryType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="SourceAssociationQuery" type="tns:AssociationQueryType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="TargetAssociationQuery" type="tns:AssociationQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="RegistryObjectQuery" type="tns:RegistryObjectQueryType"/>
+  <complexType name="AssociationQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="AssociationTypeQuery" type="tns:ClassificationNodeQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="SourceObjectQuery" type="tns:RegistryObjectQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="TargetObjectQuery" type="tns:RegistryObjectQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="AssociationQuery" type="tns:AssociationQueryType"/>
+  <complexType name="AuditableEventQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="AffectedObjectQuery" type="tns:RegistryObjectQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="EventTypeQuery" type="tns:ClassificationNodeQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="UserQuery" type="tns:UserQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="AuditableEventQuery" type="tns:AuditableEventQueryType"/>
+  <complexType name="ClassificationQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:ClassificationSchemeQuery"/>
+          <element maxOccurs="1" minOccurs="0" name="ClassifiedObjectQuery" type="tns:RegistryObjectQueryType"/>
+          <element maxOccurs="1" minOccurs="0" ref="tns:ClassificationNodeQuery"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ClassificationQuery" type="tns:ClassificationQueryType"/>
+  <complexType name="ClassificationNodeQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="ParentQuery" type="tns:RegistryObjectQueryType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ChildrenQuery" type="tns:ClassificationNodeQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ClassificationNodeQuery" type="tns:ClassificationNodeQueryType"/>
+  <complexType name="ClassificationSchemeQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="ChildrenQuery" type="tns:ClassificationNodeQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="NodeTypeQuery" type="tns:ClassificationNodeQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ClassificationSchemeQuery" type="tns:ClassificationSchemeQueryType"/>
+  <complexType name="ExternalIdentifierQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:RegistryObjectQuery"/>
+          <element maxOccurs="1" minOccurs="0" name="IdentificationSchemeQuery" type="tns:ClassificationSchemeQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ExternalIdentifierQuery" type="tns:ExternalIdentifierQueryType"/>
+  <complexType name="ExternalLinkQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ExternalLinkQuery" type="tns:ExternalLinkQueryType"/>
+  <complexType name="ExtrinsicObjectQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="ContentVersionInfoFilter" type="tns:FilterType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ExtrinsicObjectQuery" type="tns:ExtrinsicObjectQueryType"/>
+  <complexType name="OrganizationQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="AddressFilter" type="tns:FilterType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="TelephoneNumberFilter" type="tns:FilterType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="EmailAddressFilter" type="tns:FilterType"/>
+          <element maxOccurs="1" minOccurs="0" name="ParentQuery" type="tns:OrganizationQueryType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ChildOrganizationQuery" type="tns:OrganizationQueryType"/>
+          <element maxOccurs="1" minOccurs="0" name="PrimaryContactQuery" type="tns:PersonQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="OrganizationQuery" type="tns:OrganizationQueryType"/>
+  <complexType name="RegistryPackageQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType"></extension>
+    </complexContent>
+  </complexType>
+  <element name="RegistryPackageQuery" type="tns:RegistryPackageQueryType"/>
+  <complexType name="ServiceQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:ServiceBindingQuery"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ServiceQuery" type="tns:ServiceQueryType"/>
+  <complexType name="ServiceBindingQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:ServiceQuery"/>
+          <element maxOccurs="unbounded" minOccurs="0" ref="tns:SpecificationLinkQuery"/>
+          <element maxOccurs="1" minOccurs="0" name="TargetBindingQuery" type="tns:ServiceBindingQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="ServiceBindingQuery" type="tns:ServiceBindingQueryType"/>
+  <complexType name="SpecificationLinkQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="UsageDescriptionBranch" type="tns:InternationalStringBranchType"/>
+          <element maxOccurs="1" minOccurs="0" ref="tns:ServiceBindingQuery"/>
+          <element maxOccurs="1" minOccurs="0" name="SpecificationObjectQuery" type="tns:RegistryObjectQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="SpecificationLinkQuery" type="tns:SpecificationLinkQueryType"/>
+  <complexType name="PersonQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="unbounded" minOccurs="0" name="AddressFilter" type="tns:FilterType"/>
+          <element maxOccurs="1" minOccurs="0" name="PersonNameFilter" type="tns:FilterType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="TelephoneNumberFilter" type="tns:FilterType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="EmailAddressFilter" type="tns:FilterType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="PersonQuery" type="tns:PersonQueryType"/>
+  <complexType name="UserQueryType">
+    <complexContent>
+      <extension base="tns:PersonQueryType">
+        <sequence/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="UserQuery" type="tns:UserQueryType"/>
+  <complexType name="RegistryQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="OperatorQuery" type="tns:OrganizationQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="RegistryQuery" type="tns:RegistryQueryType"/>
+  <complexType name="FederationQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="FederationQuery" type="tns:FederationQueryType"/>
+  <complexType name="AdhocQueryQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="QueryExpressionBranch" type="tns:QueryExpressionBranchType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="AdhocQueryQuery" type="tns:AdhocQueryQueryType"/>
+  <complexType name="QueryExpressionBranchType">
+    <complexContent>
+      <extension base="tns:BranchType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="QueryLanguageQuery" type="tns:ClassificationNodeQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NotificationQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" ref="tns:RegistryObjectQuery"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="NotificationQuery" type="tns:NotificationQueryType"/>
+  <complexType name="SubscriptionQueryType">
+    <complexContent>
+      <extension base="tns:RegistryObjectQueryType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="0" name="SelectorQuery" type="tns:AdhocQueryQueryType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="SubscriptionQuery" type="tns:SubscriptionQueryType"/>
+  <!--The Filter type hierarchy-->
+  <complexType name="FilterType">
+    <attribute default="false" name="negate" type="boolean"/>
+  </complexType>
+  <element abstract="true" name="Filter" type="tns:FilterType"/>
+  <complexType name="CompoundFilterType">
+    <complexContent>
+      <extension base="tns:FilterType">
+        <sequence>
+          <element maxOccurs="1" minOccurs="1" name="LeftFilter" type="tns:FilterType"/>
+          <element maxOccurs="1" minOccurs="1" name="RightFilter" type="tns:FilterType"/>
+        </sequence>
+        <attribute name="logicalOperator" use="required">
+          <simpleType>
+            <restriction base="NCName">
+              <enumeration value="AND"/>
+              <enumeration value="OR"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="CompoundFilter" type="tns:CompoundFilterType"/>
+  <complexType name="SimpleFilterType" abstract="true">
+    <complexContent>
+      <extension base="tns:FilterType">
+        <attribute name="domainAttribute" type="string" use="required"/>
+        <attribute name="comparator" use="required">
+          <simpleType>
+            <restriction base="NCName">
+              <enumeration value="LE"/>
+              <enumeration value="LT"/>
+              <enumeration value="GE"/>
+              <enumeration value="GT"/>
+              <enumeration value="EQ"/>
+              <enumeration value="NE"/>
+              <enumeration value="Like"/>
+              <enumeration value="NotLike"/>
+            </restriction>
+          </simpleType>
+        </attribute>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BooleanFilterType">
+    <complexContent>
+      <extension base="tns:SimpleFilterType">
+        <attribute name="value" type="boolean" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="BooleanFilter" type="tns:BooleanFilterType"/>
+  <complexType name="IntegerFilterType">
+    <complexContent>
+      <extension base="tns:SimpleFilterType">
+        <attribute name="value" type="integer" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="IntegerFilter" type="tns:IntegerFilterType"/>
+  <complexType name="FloatFilterType">
+    <complexContent>
+      <extension base="tns:SimpleFilterType">
+        <attribute name="value" type="float" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="FloatFilter" type="tns:FloatFilterType"/>
+  <complexType name="DateTimeFilterType">
+    <complexContent>
+      <extension base="tns:SimpleFilterType">
+        <attribute name="value" type="dateTime" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="DateTimeFilter" type="tns:DateTimeFilterType"/>
+  <complexType name="StringFilterType">
+    <complexContent>
+      <extension base="tns:SimpleFilterType">
+        <attribute name="value" type="string" use="required"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <element name="StringFilter" type="tns:StringFilterType"/>
+</schema>]]></con:content>
+        <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+      </con:part>
+    </con:definitionCache>
+    <con:endpoints>
+      <con:endpoint>http://localhost:8088/</con:endpoint>
+      <con:endpoint>http://servicelocation/DocumentRepository_Service</con:endpoint>
+      <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+    </con:endpoints>
+    <con:operation id="f500f714-de90-43cd-aeb3-3d8f5f622c0e" isOneWay="false" action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b" name="DocumentRepository_ProvideAndRegisterDocumentSet-b" bindingOperationName="DocumentRepository_ProvideAndRegisterDocumentSet-b" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+      <con:settings/>
+      <con:call id="a4155042-20eb-499c-a0b1-7ed80d0af4b4" name="Request 1">
+        <con:settings>
+          <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+        </con:settings>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://servicelocation/DocumentRepository_Service</con:endpoint>
+        <con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn3="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+   <soap:Header/>
+   <soap:Body>
+      <urn:ProvideAndRegisterDocumentSetRequest>
+         <urn1:SubmitObjectsRequest id="?" comment="?">
+            <!--Optional:-->
+            <urn2:RequestSlotList>
+               <!--Zero or more repetitions:-->
+               <urn3:Slot name="?" slotType="?">
+                  <urn3:ValueList>
+                     <urn3:Value>?</urn3:Value>
+                  </urn3:ValueList>
+               </urn3:Slot>
+            </urn2:RequestSlotList>
+            <urn3:RegistryObjectList>
+               <!--Zero or more repetitions:-->
+               <urn3:Identifiable id="?" home="?">
+                  <!--Zero or more repetitions:-->
+                  <urn3:Slot name="?" slotType="?">
+                     <urn3:ValueList>
+                        <urn3:Value>?</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+               </urn3:Identifiable>
+            </urn3:RegistryObjectList>
+         </urn1:SubmitObjectsRequest>
+         <!--1 or more repetitions:-->
+         <urn:Document id="?">cid:653998756867</urn:Document>
+      </urn:ProvideAndRegisterDocumentSetRequest>
+   </soap:Body>
+</soap:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+        <con:wsrmConfig version="1.2"/>
+        <con:environmentSpec>
+          <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:call>
+    </con:operation>
+    <con:operation id="24c77234-8432-4673-8339-3c0ea51fa325" isOneWay="false" action="urn:ihe:iti:2007:RetrieveDocumentSet" name="DocumentRepository_RetrieveDocumentSet" bindingOperationName="DocumentRepository_RetrieveDocumentSet" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+      <con:settings/>
+      <con:call id="bd8c6fed-5767-44f4-981e-04ffba23c19a" name="Request 1">
+        <con:settings/>
+        <con:encoding>UTF-8</con:encoding>
+        <con:endpoint>http://servicelocation/DocumentRepository_Service</con:endpoint>
+        <con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007">
+   <soap:Header/>
+   <soap:Body>
+      <urn:RetrieveDocumentSetRequest>
+         <!--1 or more repetitions:-->
+         <urn:DocumentRequest>
+            <!--Optional:-->
+            <urn:HomeCommunityId>?</urn:HomeCommunityId>
+            <urn:RepositoryUniqueId>?</urn:RepositoryUniqueId>
+            <urn:DocumentUniqueId>?</urn:DocumentUniqueId>
+         </urn:DocumentRequest>
+      </urn:RetrieveDocumentSetRequest>
+   </soap:Body>
+</soap:Envelope>]]></con:request>
+        <con:credentials>
+          <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+          <con:authType>No Authorization</con:authType>
+        </con:credentials>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:RetrieveDocumentSet"/>
+        <con:environmentSpec>
+          <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+            <con:authProfile>No Authorization</con:authProfile>
+          </con:entry>
+        </con:environmentSpec>
+      </con:call>
+    </con:operation>
+  </con:interface>
+  <con:testSuite id="f3c01bec-34b9-4fa2-a01c-4318d2f25dee" name="DocumentRepository_Binding TestSuite">
+    <con:settings/>
+    <con:savedRecentRuns>1</con:savedRecentRuns>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="b9ebfce0-93c8-4c3d-9fb3-ea7126cce9c7" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="DocumentRepository_ProvideAndRegisterDocumentSet-b TestCase" searchProperties="true" timeout="0" maxResults="0">
+      <con:settings/>
+      <con:testStep type="request" id="2d15a7b7-68e8-48e2-9c53-31c6adf91ea4" name="DocumentRepository_ProvideAndRegisterDocumentSet-b" disabled="true">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>DocumentRepository_Binding</con:interface>
+          <con:operation>DocumentRepository_ProvideAndRegisterDocumentSet-b</con:operation>
+          <con:request name="DocumentRepository_ProvideAndRegisterDocumentSet-b" id="0566823a-07e5-4b94-a71f-f0a71608971b" sslKeystore="36651452-19a9-4460-b656-c5098d62a0ea">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+              <con:setting id="WsdlSettings@enable-mtom">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@force_mtom">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+            <con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn3="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+   <soap:Header/>
+   <soap:Body>
+      <urn:ProvideAndRegisterDocumentSetRequest>
+         <urn1:SubmitObjectsRequest id="?" comment="?">
+            <!--Optional:-->
+            <urn2:RequestSlotList>
+               <!--Zero or more repetitions:-->
+               <urn3:Slot name="?" slotType="?">
+                  <urn3:ValueList>
+                     <urn3:Value>?</urn3:Value>
+                  </urn3:ValueList>
+               </urn3:Slot>
+            </urn2:RequestSlotList>
+            <urn3:RegistryObjectList>
+               <!--Zero or more repetitions:-->
+               <urn3:Identifiable id="?" home="?">
+                  <!--Zero or more repetitions:-->
+                  <urn3:Slot name="?" slotType="?">
+                     <urn3:ValueList>
+                        <urn3:Value>?</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+               </urn3:Identifiable>
+            </urn3:RegistryObjectList>
+         </urn1:SubmitObjectsRequest>
+         <!--1 or more repetitions:-->
+         <urn:Document id="?">cid:881851030148</urn:Document>
+      </urn:ProvideAndRegisterDocumentSetRequest>
+   </soap:Body>
+</soap:Envelope>]]></con:request>
+            <con:credentials>
+              <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:wsaConfig action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b" mustUnderstand="NONE" version="200508"/>
+            <con:wsrmConfig version="1.2"/>
+            <con:environmentSpec>
+              <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+                <con:authProfile>Inherit From Parent</con:authProfile>
+              </con:entry>
+            </con:environmentSpec>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="request" id="4ee7c1f9-4ba9-4e4e-af03-d4c7f8c224f5" name="building">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>DocumentRepository_Binding</con:interface>
+          <con:operation>DocumentRepository_ProvideAndRegisterDocumentSet-b</con:operation>
+          <con:request name="building" id="0566823a-07e5-4b94-a71f-f0a71608971b" sslKeystore="synthesis-certificate-key-single.pem">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+              <con:setting id="WsdlSettings@enable-mtom">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@force_mtom">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@inline-response-attachments">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@encode_attachments">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@enable_inline_files">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@expand-mtom-attachments">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@skip_soap_action">false</con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+            <con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn3="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:direct="urn:direct:addressing">
+   <soap:Header>
+      <a:MessageID>123456789</a:MessageID>
+      <a:Action soap:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
+      <direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination">
+         <direct:from>tampa211@211.com</direct:from>
+         <direct:to>OperationPar@uat.direct.ntst.com</direct:to>
+         <direct:metadata-level>XDS</direct:metadata-level>
+      </direct:addressBlock>
+   </soap:Header>
+   <soap:Body>
+      <urn:ProvideAndRegisterDocumentSetRequest>
+         <urn1:SubmitObjectsRequest id="123">
+            <!--Optional:-->
+            <urn3:RegistryObjectList>
+               <!--Zero or more repetitions:-->
+               <urn3:Identifiable id="456">
+                  <!--Zero or more repetitions:-->
+                  <urn3:Slot name="creationTime">
+                     <urn3:ValueList>
+                        <urn3:Value>1980-03-23T10:20:15</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+                  <urn3:Slot name="languageCode">
+                     <urn3:ValueList>
+                        <urn3:Value>en-US</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+               </urn3:Identifiable>
+            </urn3:RegistryObjectList>
+         </urn1:SubmitObjectsRequest>
+         <!--1 or more repetitions of Document-->
+         <Document id="ed13ffc6-f11d-4925-9eda-714c5a9ab847">
+            <xop:Include href="cid:CCD.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+         </Document>
+      </urn:ProvideAndRegisterDocumentSetRequest>
+   </soap:Body>
+</soap:Envelope>]]></con:request>
+            <con:credentials>
+              <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:attachment>
+              <con:name>CCD.xml</con:name>
+              <con:contentType>text/xml</con:contentType>
+              <con:contentId>CCD.xml</con:contentId>
+              <con:url>/home/eric/CCD.xml</con:url>
+              <con:id>e8e17036-1789-47d6-9d87-770020c97aff</con:id>
+            </con:attachment>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:wsaConfig action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b" mustUnderstand="NONE" version="200508"/>
+            <con:wsrmConfig version="1.2"/>
+            <con:environmentSpec>
+              <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+                <con:authProfile>Inherit From Parent</con:authProfile>
+              </con:entry>
+            </con:environmentSpec>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="request" id="1736d86d-b62a-4d5f-8f14-f4d1a8ec3162" name="Valid-Synthesis Request-no-message-parts" disabled="true">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>DocumentRepository_Binding</con:interface>
+          <con:operation>DocumentRepository_ProvideAndRegisterDocumentSet-b</con:operation>
+          <con:request name="Valid-Synthesis Request-no-message-parts" outgoingWss="" incomingWss="" timeout="" sslKeystore="36651452-19a9-4460-b656-c5098d62a0ea" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="ff898b5c-35af-43ab-981f-844aaef96481">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  <con:entry key="Content-type" value="multipart/related; type=application/xop+xml; start=&lt;0.urn:uuid:15093556DA8E42D3BD6D183BBBE23793@apache.org>; start-info=application/soap+xml; boundary=MIMEBoundaryurn_uuid_135A750EBE934B2BAD693FB69021DFE3; action=urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+  <con:entry key="Mime-version" value="1.0"/>
+  <con:entry key="Receivingproviderid" value=""/>
+  <con:entry key="User-agent" value="synthesis"/>
+  <con:entry key="Systemuserid" value="69470500-66A2-4841-931A-23D226FBC937"/>
+</xml-fragment>]]></con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+              <con:setting id="WsdlSettings@enable-mtom">true</con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing">
+   <soapenv:Header>
+      <a:MessageID>urn:uuid:9C7748589C5141A5898B147D237F09E6</a:MessageID>
+      <a:Action soapenv:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
+      <direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination" xmlns:direct="urn:direct:addressing">
+         <direct:from>support@211tampabay.org</direct:from>
+         <direct:to>test@netsmart.com</direct:to>
+         <direct:metadata-level>XDS</direct:metadata-level>
+      </direct:addressBlock>
+   </soapenv:Header>
+   <soapenv:Body>
+      <xdsb:ProvideAndRegisterDocumentSetRequest xmlns:xdsb="urn:ihe:iti:xds-b:2007">
+         <lcm:SubmitObjectsRequest xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
+            <rim:RegistryObjectList xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+               <rim:ExtrinsicObject id="2064" mimeType="text/xml" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1">
+                  <rim:Slot name="creationTime">
+                     <rim:ValueList>
+                        <rim:Value>20200205</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
+                  <rim:Slot name="languageCode">
+                     <rim:ValueList>
+                        <rim:Value>en-US</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
+                  <rim:Slot name="sourcePatientId">
+                     <rim:ValueList>
+                        <rim:Value>119566^^^&amp;3.4.5&amp;ISO</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
+                  <rim:Name/>
+                  <rim:Description/>
+                  <rim:Classification classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d" classifiedObject="2064" nodeRepresentation="" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_1">
+                     <rim:Slot name="authorPerson">
+                        <rim:ValueList>
+                           <rim:Value>^Left^Right^^^</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="2064" nodeRepresentation="History and Physical" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_3">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon classCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="History and Physical"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="2064" nodeRepresentation="1.3.6.1.4.1.21367.2006.7.101" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_4">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon confidentialityCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="Clinical-Staff"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d" classifiedObject="2064" nodeRepresentation="CDAR2/IHE 1.0" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_5">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon formatCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="CDAR2/IHE 1.0"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="2064" nodeRepresentation="Outpatient" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_6">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon healthcareFacilityTypeCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="Outpatient"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="2064" nodeRepresentation="General Medicine" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_7">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon practiceSettingCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="General Medicine"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="2064" nodeRepresentation="34108-1" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_8">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>LOINC</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="Outpatient Evaluation And Management"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:ExternalIdentifier identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427" value="ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="id_9" registryObject="2064">
+                     <rim:Name>
+                        <rim:LocalizedString value="XDSDocumentEntry.patientId"/>
+                     </rim:Name>
+                  </rim:ExternalIdentifier>
+                  <rim:ExternalIdentifier identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab" value="1.2009.0827.08.33.5017" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="id_10" registryObject="2064">
+                     <rim:Name>
+                        <rim:LocalizedString value="XDSDocumentEntry.uniqueId"/>
+                     </rim:Name>
+                  </rim:ExternalIdentifier>
+               </rim:ExtrinsicObject>
+               <rim:RegistryPackage id="SubmissionSet01" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:RegistryPackage">
+                  <rim:Slot name="submissionTime">
+                     <rim:ValueList>
+                        <rim:Value>20200205155052</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
+                  <rim:Name>
+                     <rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note -   Need AIRS Code: BH-3800.7000 Test Message."/>
+                  </rim:Name>
+                  <rim:Description/>
+                  <rim:Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="SubmissionSet01" nodeRepresentation="" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_11"/>
+                  <rim:Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="SubmissionSet01" nodeRepresentation="History and Physical" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification" id="id_2">
+                     <rim:Slot name="codingScheme">
+                        <rim:ValueList>
+                           <rim:Value>Connect-a-thon contentTypeCodes</rim:Value>
+                        </rim:ValueList>
+                     </rim:Slot>
+                     <rim:Name>
+                        <rim:LocalizedString value="History and Physical"/>
+                     </rim:Name>
+                  </rim:Classification>
+                  <rim:ExternalIdentifier identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8" value="1.2009.0827.08.33.5017" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="id_13" registryObject="SubmissionSet01">
+                     <rim:Name>
+                        <rim:LocalizedString value="XDSSubmissionSet.uniqueId"/>
+                     </rim:Name>
+                  </rim:ExternalIdentifier>
+                  <rim:ExternalIdentifier identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" value="1.3.6.1.4.1.21367.2009.1.2.1" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="id_14" registryObject="SubmissionSet01">
+                     <rim:Name>
+                        <rim:LocalizedString value="XDSSubmissionSet.sourceId"/>
+                     </rim:Name>
+                  </rim:ExternalIdentifier>
+                  <rim:ExternalIdentifier identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446" value="ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" id="id_15" registryObject="SubmissionSet01">
+                     <rim:Name>
+                        <rim:LocalizedString value="XDSSubmissionSet.patientId"/>
+                     </rim:Name>
+                  </rim:ExternalIdentifier>
+               </rim:RegistryPackage>
+               <rim:Classification classifiedObject="SubmissionSet01" classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="ID_000000_0" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"/>
+               <rim:Association associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember" sourceObject="SubmissionSet01" targetObject="2064" id="ID_00000000_0" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
+                  <rim:Slot name="SubmissionSetStatus">
+                     <rim:ValueList>
+                        <rim:Value>Original</rim:Value>
+                     </rim:ValueList>
+                  </rim:Slot>
+               </rim:Association>
+            </rim:RegistryObjectList>
+         </lcm:SubmitObjectsRequest>
+      </xdsb:ProvideAndRegisterDocumentSetRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+            <con:assertion type="Valid HTTP Status Codes" id="789d482d-1082-4ea8-8501-2c3fc04e8121" name="Valid HTTP Status Codes">
+              <con:settings/>
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Response SLA Assertion" id="601bda94-1220-4e82-89aa-311e74e3c22c" name="Response SLA">
+              <con:configuration>
+                <SLA>200</SLA>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="SOAP Fault Assertion" id="3fbec051-c4a6-4e82-92a8-7f4ee710f2ac" name="Not SOAP Fault"/>
+            <con:assertion type="Schema Compliance" id="c73a9846-bc56-4cee-a629-c737efb9e92c" name="Schema Compliance">
+              <con:configuration/>
+            </con:assertion>
+            <con:credentials>
+              <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+            <con:wsrmConfig version="1.2"/>
+            <con:environmentSpec>
+              <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+                <con:authProfile>No Authorization</con:authProfile>
+              </con:entry>
+            </con:environmentSpec>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="request" id="3edbf73f-8b27-4cc2-8d90-a86a6d2c862b" name="building-mime" disabled="true">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>DocumentRepository_Binding</con:interface>
+          <con:operation>DocumentRepository_ProvideAndRegisterDocumentSet-b</con:operation>
+          <con:request name="building-mime" id="0566823a-07e5-4b94-a71f-f0a71608971b" sslKeystore="36651452-19a9-4460-b656-c5098d62a0ea">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+              <con:setting id="WsdlSettings@enable-mtom">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@force_mtom">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@inline-response-attachments">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@encode_attachments">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@enable_inline_files">false</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@expand-mtom-attachments">false</con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+            <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>\r
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn3="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:direct="urn:direct:addressing">\r
+   <soap:Header>\r
+   	<a:MessageID>${DataSource#id32}</a:MessageID>\r
+   	<a:Action soap:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>\r
+   	<direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination">\r
+   		<direct:from>tampa211@211.com</direct:from>\r
+   		<direct:to>OperationPar@uat.direct.ntst.com</direct:to>\r
+		<direct:metadata-level>XDS</direct:metadata-level>\r
+	</direct:addressBlock>\r
+   </soap:Header>\r
+   <soap:Body>\r
+      <urn:ProvideAndRegisterDocumentSetRequest>\r
+         <urn1:SubmitObjectsRequest id="${DataSource#id}">\r
+            <!--Optional:-->\r
+            <urn3:RegistryObjectList>\r
+               <!--Zero or more repetitions:-->\r
+               <urn3:Identifiable id="${DataSource#id}">\r
+                  <!--Zero or more repetitions:-->\r
+                  <urn3:Slot name="creationTime">\r
+                     <urn3:ValueList>\r
+                     	<urn3:Value>${DataSource#date}</urn3:Value>\r
+                     </urn3:ValueList>\r
+                  </urn3:Slot>\r
+                  <urn3:Slot name="languageCode">\r
+                     <urn3:ValueList>\r
+                     	<urn3:Value>en-US</urn3:Value>\r
+                     </urn3:ValueList>\r
+                  </urn3:Slot>                            \r
+               </urn3:Identifiable>\r
+            </urn3:RegistryObjectList>\r
+         </urn1:SubmitObjectsRequest>\r
+         <!--1 or more repetitions:-->\r
+         <urn:Document id="${DataSource#id}">cid:${DataSource#id}</urn:Document>\r
+      </urn:ProvideAndRegisterDocumentSetRequest>\r
+   </soap:Body>\r
+</soap:Envelope>\r]]></con:request>
+            <con:credentials>
+              <con:selectedAuthProfile>Inherit From Parent</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:wsaConfig action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b" mustUnderstand="NONE" version="200508"/>
+            <con:wsrmConfig version="1.2"/>
+            <con:environmentSpec>
+              <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+                <con:authProfile>Inherit From Parent</con:authProfile>
+              </con:entry>
+            </con:environmentSpec>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+      <con:reportParameters/>
+      <con:breakPoints>
+        <con:testStepId>4ee7c1f9-4ba9-4e4e-af03-d4c7f8c224f5</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+      <con:breakPoints>
+        <con:testStepId>ccb56877-b858-48de-9aa8-3e9ae5fece0e</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+      <con:breakPoints>
+        <con:testStepId>038bdd57-2359-4a24-b13f-ce5f6e8bcf79</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+    </con:testCase>
+    <con:testCase id="e4b77a19-dbb3-4e18-b4f1-e4e64dfcd5fb" discardOkResults="false" failOnError="true" failTestCaseOnErrors="true" keepSession="false" name="Original_Synthesis_curl" searchProperties="true" timeout="0" disabled="true" maxResults="0">
+      <con:settings/>
+      <con:testStep type="request" id="16621a4f-efc0-48f1-97ef-6d672cf0175e" name="SOAP Request" disabled="true">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>DocumentRepository_Binding</con:interface>
+          <con:operation>DocumentRepository_ProvideAndRegisterDocumentSet-b</con:operation>
+          <con:request name="SOAP Request" outgoingWss="" incomingWss="" timeout="" sslKeystore="36651452-19a9-4460-b656-c5098d62a0ea" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="1945112d-0e0f-48f4-95ed-d97c0a6ad2e0">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  <con:entry key="Content-type" value="multipart/related; type=application/xop+xml; start=&lt;0.urn:uuid:15093556DA8E42D3BD6D183BBBE23793@apache.org>; start-info=application/soap+xml; boundary=MIMEBoundaryurn_uuid_135A750EBE934B2BAD693FB69021DFE3; action=urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+  <con:entry key="Receivingproviderid" value=""/>
+  <con:entry key="User-agent" value="synthesis"/>
+  <con:entry key="Systemuserid" value="69470500-66A2-4841-931A-23D226FBC937"/>
+</xml-fragment>]]></con:setting>
+              <con:setting id="WsdlSettings@enable-mtom">true</con:setting>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@disable-multipart-attachments">true</con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>https://labsdev.netsmartcloud.com:444/CareConnectXDR</con:endpoint>
+            <con:request><![CDATA[--MIMEBoundaryurn_uuid_6D9CFB8F5C0845D78347610179B39D0E
+Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml; action="DocumentRepository_ProvideAndRegisterDocumentSet-b"
+Content-Transfer-Encoding: binary
+Content-ID: <0.urn:uuid:FE856C4092A3488FA62242B57C46548A@apache.org>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:a="http://www.w3.org/2005/08/addressing">    
+    <soapenv:Header>
+        <a:MessageID>urn:uuid:9C7748589C5141A5898B147D237F09E6</a:MessageID>
+        <a:Action soapenv:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
+        <direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination" xmlns:direct="urn:direct:addressing">
+        <direct:from>support@211tampabay.org</direct:from>
+        <direct:to>test@netsmart.com</direct:to>
+        <direct:metadata-level>XDS</direct:metadata-level>
+        </direct:addressBlock>
+    </soapenv:Header>
+    <soapenv:Body>
+        <xdsb:ProvideAndRegisterDocumentSetRequest xmlns:xdsb="urn:ihe:iti:xds-b:2007">
+            <lcm:SubmitObjectsRequest xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0">
+                <rim:RegistryObjectList xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+                    <rim:ExtrinsicObject id="2064" mimeType="text/xml" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1">
+                        <rim:Slot name="creationTime">
+                            <rim:ValueList>
+                                <rim:Value>20200205</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Slot name="languageCode">
+                            <rim:ValueList>
+                                <rim:Value>en-US</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        
+                        
+                        <rim:Slot name="sourcePatientId">
+                            <rim:ValueList>
+                                <rim:Value>119566^^^&amp;3.4.5&amp;ISO</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        
+                        <rim:Name/>
+                        <rim:Description/>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:93606bcf-9494-43ec-9b4e-a7748d1a838d"
+                            classifiedObject="2064" nodeRepresentation=""
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_1">
+                            <rim:Slot name="authorPerson">
+                                <rim:ValueList>
+                                    <rim:Value>^Left^Right^^^</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            
+                            
+                            
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a"
+                            classifiedObject="2064" nodeRepresentation="History and Physical"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_3">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon classCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="History and Physical"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f"
+                            classifiedObject="2064" nodeRepresentation="1.3.6.1.4.1.21367.2006.7.101"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_4">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon confidentialityCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="Clinical-Staff"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"
+                            classifiedObject="2064" nodeRepresentation="CDAR2/IHE 1.0"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_5">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon formatCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="CDAR2/IHE 1.0"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"
+                            classifiedObject="2064" nodeRepresentation="Outpatient"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_6">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon healthcareFacilityTypeCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="Outpatient"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"
+                            classifiedObject="2064" nodeRepresentation="General Medicine"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_7">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon practiceSettingCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="General Medicine"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"
+                            classifiedObject="2064" nodeRepresentation="34108-1"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_8">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>LOINC</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="Outpatient Evaluation And Management"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:ExternalIdentifier
+                            identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"
+                            value="ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
+                            id="id_9" registryObject="2064">
+                            <rim:Name>
+                                <rim:LocalizedString value="XDSDocumentEntry.patientId"/>
+                            </rim:Name>
+                        </rim:ExternalIdentifier>
+                        <rim:ExternalIdentifier
+                            identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"
+                            value="1.2009.0827.08.33.5017"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
+                            id="id_10" registryObject="2064">
+                            <rim:Name>
+                                <rim:LocalizedString value="XDSDocumentEntry.uniqueId"/>
+                            </rim:Name>
+                        </rim:ExternalIdentifier>
+                    </rim:ExtrinsicObject>
+                    <rim:RegistryPackage id="SubmissionSet01"
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:RegistryPackage">
+                        <rim:Slot name="submissionTime">
+                            <rim:ValueList>
+                                <rim:Value>20200205155052</rim:Value>
+                            </rim:ValueList>
+                        </rim:Slot>
+                        <rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note -   Need AIRS Code: BH-3800.7000 Test Message." /></rim:Name>
+                        <rim:Description />
+                        <rim:Classification
+                            classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"
+                            classifiedObject="SubmissionSet01" nodeRepresentation=""
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_11">
+                            <rim:Slot name="authorPerson">
+                                <rim:ValueList>
+                                    <rim:Value>^First^Last^^^</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            
+                            
+                            
+                        </rim:Classification>
+                        <rim:Classification
+                            classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500"
+                            classifiedObject="SubmissionSet01" nodeRepresentation="History and Physical"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"
+                            id="id_2">
+                            <rim:Slot name="codingScheme">
+                                <rim:ValueList>
+                                    <rim:Value>Connect-a-thon contentTypeCodes</rim:Value>
+                                </rim:ValueList>
+                            </rim:Slot>
+                            <rim:Name>
+                                <rim:LocalizedString value="History and Physical"/>
+                            </rim:Name>
+                        </rim:Classification>
+                        <rim:ExternalIdentifier
+                            identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"
+                            value="1.2009.0827.08.33.5017"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
+                            id="id_13" registryObject="SubmissionSet01">
+                            <rim:Name>
+                                <rim:LocalizedString value="XDSSubmissionSet.uniqueId"/>
+                            </rim:Name>
+                        </rim:ExternalIdentifier>
+                        <rim:ExternalIdentifier
+                            identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832"
+                            value="1.3.6.1.4.1.21367.2009.1.2.1"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
+                            id="id_14" registryObject="SubmissionSet01">
+                            <rim:Name>
+                                <rim:LocalizedString value="XDSSubmissionSet.sourceId"/>
+                            </rim:Name>
+                        </rim:ExternalIdentifier>
+                        <rim:ExternalIdentifier
+                            identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"
+                            value="ef77eeda67dd4a2^^^&amp;1.3.6.1.4.1.21367.2005.3.7&amp;ISO"
+                            objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
+                            id="id_15" registryObject="SubmissionSet01">
+                            <rim:Name>
+                                <rim:LocalizedString value="XDSSubmissionSet.patientId"/>
+                            </rim:Name>
+                        </rim:ExternalIdentifier>
+                    </rim:RegistryPackage>
+                    <rim:Classification classifiedObject="SubmissionSet01"
+                        classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" id="ID_000000_0"
+                        objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Classification"/>
+                    <rim:Association
+                    associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
+                    sourceObject="SubmissionSet01" targetObject="2064" id="ID_00000000_0"
+                    objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:Association">
+                    <rim:Slot name="SubmissionSetStatus">
+                        <rim:ValueList>
+                            <rim:Value>Original</rim:Value>
+                        </rim:ValueList>
+                    </rim:Slot>
+                </rim:Association>
+                </rim:RegistryObjectList>
+            </lcm:SubmitObjectsRequest>
+            <xdsb:Document id="2064">
+            <xop:Include href="cid:1.urn:uuid:D0D4EC8056F2447482E61651AB914BA9@apache.org" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+        </xdsb:Document>
+        </xdsb:ProvideAndRegisterDocumentSetRequest>
+    </soapenv:Body>
+</soapenv:Envelope>
+--MIMEBoundaryurn_uuid_6D9CFB8F5C0845D78347610179B39D0E
+Content-Type: text/xml; charset=us-ascii
+Content-Transfer-Encoding: binary
+Content-ID: <1.urn:uuid:D0D4EC8056F2447482E61651AB914BA9@apache.org>
+Content-Disposition: attachment; name="1.urn:uuid:D0D4EC8056F2447482E61651AB914BA9@apache.org"
+
+<ClinicalDocument xmlns:voc="urn:hl7-org:v3/voc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3" xsi:schemaLocation="urn:hl7-org:v3 infrastructure/cda/CDA.xsd">
+  <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+  <templateId root="2.16.840.1.113883.10.20.1"/>
+  <id extension="2064" root="db734647-fc99-424c-a864-7e3cda82e703"/>
+  <code code="34133-9" codeSystem="2.16.840.1.113883.6.1" displayName="Summarization of episode note"/>
+  <title>2-1-1 Tampa Bay Cares Continuity of Care Document</title>
+  <effectiveTime value="20170624185618"/>
+  <confidentialityCode code="Y" codeSystem="2.16.840.1.113883.5.25"/>
+  <languageCode code="en-US"/>
+  <recordTarget>
+    <patientRole>
+      <id extension="119566" root="2.16.840.1.113883.19.5"/>
+      <telecom value="tel:7273698018"/>
+      <patient>
+        <name>
+          <given>TestFirstName</given>
+          <family>TestLastName</family>
+        </name>
+        <administrativeGenderCode code="M" displayName="Male" codeSystem="2.16.840.1.113883.5.1" codeSystemName="AdministrativeGenderCode"/>
+        <birthTime value="19670326000000"/>
+        <ethnicGroupCode codeSystem="2.16.840.1.113883.5.50" codeSystemName="Race and Ethnicity Code Sets"/>
+      </patient>
+      <providerOrganization>
+        <id root="2.16.840.1.113883.19.5" extension="003"/>
+        <name>ServicePoint-CallPoint</name>
+      </providerOrganization>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value="20000407130000+0500"/>
+    <assignedAuthor>
+      <id root="20cf14fb-b65c-4c8c-a54d-b0cca834c18c"/>
+      <assignedPerson>
+        <name>
+          <given>Edward</given>
+          <family>Perry</family>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <id root="2.16.840.1.113883.19.5"/>
+        <name>2-1-1 Tampa Bay Cares</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id root="2.16.840.1.113883.19.5"/>
+        <name>2-1-1 Tampa Bay Cares</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <legalAuthenticator>
+    <time value="20111223130000+0500"/>
+    <signatureCode code="S"/>
+    <assignedEntity>
+      <id nullFlavor="NI"/>
+      <assignedPerson>
+        <name>Edward Perry</name>
+      </assignedPerson>
+      <representedOrganization>
+        <id root="2.16.840.1.113883.19.5" extension="11"/>
+        <name>2-1-1 Tampa Bay Cares</name>
+      </representedOrganization>
+    </assignedEntity>
+  </legalAuthenticator>
+  <documentationOf>
+    <serviceEvent classCode="PCPR">
+      <effectiveTime>
+        <low value="20170624000000"/>
+        <high value="20000407"/>
+      </effectiveTime>
+      <performer typeCode="PRF">
+        <functionCode code="PCP" codeSystem="2.16.840.1.113883.5.88"/>
+        <assignedEntity>
+          <id extension="8712" root="20cf14fb-b65c-4c8c-a54d-b0cca834c18c"/>
+          <assignedPerson>
+            <name>
+              <given>Edward</given>
+              <family>Perry</family>
+            </name>
+          </assignedPerson>
+          <representedOrganization>
+            <id root="2.16.840.1.113883.19.5" extension="003"/>
+            <name>ServicePoint-CallPoint</name>
+          </representedOrganization>
+        </assignedEntity>
+      </performer>
+    </serviceEvent>
+  </documentationOf>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.1.13"/>
+          <code code="48764-5" codeSystem="2.16.840.1.113883.6.1"/>
+          <title>Referral for client services from 2-1-1 Tampa Bay Cares</title>
+          <ex:Referrals xmlns:airs="http://www.hudhdx.info/Resources/Vendors/3_0/AIRS_3_0_mod.xsd" xmlns:ex="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd" xmlns:hmis="http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd">
+            <ex:Referral>
+              <ex:ReferralID>
+                <hmis:IDNum>2879694</hmis:IDNum>
+              </ex:ReferralID>
+              <hmis:Taxonomy>
+                <airs:Code>BH-3800.7000 Rent Payment Assistance</airs:Code>
+              </hmis:Taxonomy>
+              <ex:ServiceEventNotes>
+                <hmis:note>
+                  <hmis:NoteID>
+                    <hmis:IDNum>852583</hmis:IDNum>
+                  </hmis:NoteID>
+                  <hmis:NoteText hmis:dateCollected="20170624184210" hmis:dateEffective="20170624184210">6-24-17 MW  Pure hell over last two years.  Directions for Living appt. July 19th.  lost dog, house, job.  computer technician can\'t concentrate.  paranoia and depression delusions anxiety.  lose energy.  Hapatitis c.  case manager.</hmis:NoteText>
+                </hmis:note>
+              </ex:ServiceEventNotes>
+            </ex:Referral>
+          </ex:Referrals>
+          <ns0:TempServiceEvent xmlns:ns0="https://raw.githubusercontent.com/211tbc/synthesis/master/src/xsd/TBC_Extend_HUD_HMIS.xsd">
+            <ns0:TempAirsCode/>
+          </ns0:TempServiceEvent>
+          <entry typeCode="DRIV">
+            <act classCode="ACT" moodCode="RQO">
+              <templateId root="2.16.840.1.113883.10.20.1.30"/>
+              <code code="23745001" codeSystem="2.16.840.1.113883.6.96" displayName="Documentation procedure"/>
+              <statusCode code="completed"/>
+              <entryRelationship typeCode="RSON">
+                <act classCode="ACT" moodCode="EVN">
+                  <code code="308292007" codeSystem="2.16.840.1.113883.6.96" displayName="Transfer of care"/>
+                  <statusCode code="completed"/>
+                </act>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry>
+            <encounter classCode="ACT" moodCode="EVN"/>
+          </entry>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
+--MIMEBoundaryurn_uuid_6D9CFB8F5C0845D78347610179B39D0E--]]></con:request>
+            <con:assertion type="Valid HTTP Status Codes" id="32c078c7-7a56-47a0-8e31-fcb48404849e" name="Valid HTTP Status Codes">
+              <con:settings/>
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Response SLA Assertion" id="7667ad50-bb2d-44d1-9c4b-3aa3fe8762e9" name="Response SLA">
+              <con:configuration>
+                <SLA>200</SLA>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="SOAP Fault Assertion" id="9256ed54-9d29-451a-97af-440c943f2390" name="Not SOAP Fault"/>
+            <con:assertion type="Schema Compliance" id="b16f0a78-1008-4944-a318-ce594767a2b8" name="Schema Compliance">
+              <con:configuration/>
+            </con:assertion>
+            <con:credentials>
+              <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+              <con:authType>No Authorization</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b"/>
+            <con:wsrmConfig version="1.2"/>
+            <con:environmentSpec>
+              <con:entry environmentId="b838b684-79e0-466c-9332-9e4fe81cac64">
+                <con:authProfile>No Authorization</con:authProfile>
+              </con:entry>
+            </con:environmentSpec>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:properties/>
+    <con:reportParameters/>
+  </con:testSuite>
+  <con:mockService id="9bc0971f-e78c-431f-b21e-6bb0c6365c94" port="8088" path="/" host="localhost" name="DocumentRepository_Binding Virtual Service">
+    <con:settings>
+      <con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting>
+    </con:settings>
+    <con:properties/>
+    <con:constraints>
+      <con:congestion>0</con:congestion>
+      <con:inputBandwidth>-1</con:inputBandwidth>
+      <con:outputBandwidth>-1</con:outputBandwidth>
+      <con:maxThreadPoolCapacity>20</con:maxThreadPoolCapacity>
+      <con:coreThreadPoolCapacity>5</con:coreThreadPoolCapacity>
+      <con:virtError>
+        <con:start>0</con:start>
+        <con:endless>true</con:endless>
+      </con:virtError>
+    </con:constraints>
+    <con:dataSources/>
+    <con:headerValidator type="NONE"/>
+    <con:mockOperation name="DocumentRepository_ProvideAndRegisterDocumentSet-b" id="acfba7ec-e289-4cc0-aaed-17526317846a" interface="DocumentRepository_Binding" operation="DocumentRepository_ProvideAndRegisterDocumentSet-b">
+      <con:settings/>
+      <con:defaultResponse>Response 1</con:defaultResponse>
+      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
+      <con:dispatchConfig/>
+      <con:dispatchXPath/>
+      <con:routeScript/>
+      <con:response name="Response 1" id="d3b9453f-d66c-4a07-b14a-21819881d7d4" httpResponseStatus="200" encoding="UTF-8" dataSource="">
+        <con:settings/>
+        <con:responseContent><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+   <soap:Header/>
+   <soap:Body>
+      <urn:RegistryResponse status="?" requestId="?">
+         <!--Optional:-->
+         <urn:ResponseSlotList>
+            <!--Zero or more repetitions:-->
+            <urn1:Slot name="?" slotType="?">
+               <urn1:ValueList>
+                  <urn1:Value>?</urn1:Value>
+               </urn1:ValueList>
+            </urn1:Slot>
+         </urn:ResponseSlotList>
+         <!--Optional:-->
+         <urn:RegistryErrorList highestSeverity="?">
+            <!--1 or more repetitions:-->
+            <urn:RegistryError codeContext="?" errorCode="?" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" location="?">?</urn:RegistryError>
+         </urn:RegistryErrorList>
+      </urn:RegistryResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:responseContent>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse"/>
+      </con:response>
+    </con:mockOperation>
+    <con:mockOperation name="DocumentRepository_RetrieveDocumentSet" id="64c3295f-6d0a-48e5-8ec6-38adfef171c6" interface="DocumentRepository_Binding" operation="DocumentRepository_RetrieveDocumentSet">
+      <con:settings/>
+      <con:defaultResponse>Response 1</con:defaultResponse>
+      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
+      <con:dispatchConfig/>
+      <con:dispatchXPath/>
+      <con:routeScript/>
+      <con:response name="Response 1" id="80c9559f-67c8-4f49-aae5-ec8ebbf2303e" httpResponseStatus="200" encoding="UTF-8" dataSource="">
+        <con:settings/>
+        <con:responseContent><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+   <soap:Header/>
+   <soap:Body>
+      <urn:RetrieveDocumentSetResponse>
+         <urn1:RegistryResponse status="?" requestId="?">
+            <!--Optional:-->
+            <urn1:ResponseSlotList>
+               <!--Zero or more repetitions:-->
+               <urn2:Slot name="?" slotType="?">
+                  <urn2:ValueList>
+                     <urn2:Value>?</urn2:Value>
+                  </urn2:ValueList>
+               </urn2:Slot>
+            </urn1:ResponseSlotList>
+            <!--Optional:-->
+            <urn1:RegistryErrorList highestSeverity="?">
+               <!--1 or more repetitions:-->
+               <urn1:RegistryError codeContext="?" errorCode="?" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" location="?">?</urn1:RegistryError>
+            </urn1:RegistryErrorList>
+         </urn1:RegistryResponse>
+         <!--1 or more repetitions:-->
+         <urn:DocumentResponse>
+            <!--Optional:-->
+            <urn:HomeCommunityId>?</urn:HomeCommunityId>
+            <urn:RepositoryUniqueId>?</urn:RepositoryUniqueId>
+            <urn:DocumentUniqueId>?</urn:DocumentUniqueId>
+            <!--Optional:-->
+            <urn:NewRepositoryUniqueId>?</urn:NewRepositoryUniqueId>
+            <!--Optional:-->
+            <urn:NewDocumentUniqueId>?</urn:NewDocumentUniqueId>
+            <urn:mimeType>?</urn:mimeType>
+            <urn:Document>cid:884803782941</urn:Document>
+         </urn:DocumentResponse>
+      </urn:RetrieveDocumentSetResponse>
+   </soap:Body>
+</soap:Envelope>]]></con:responseContent>
+        <con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:ihe:iti:2007:RetrieveDocumentSetResponse"/>
+      </con:response>
+    </con:mockOperation>
+  </con:mockService>
+  <con:savedRecentRuns>1</con:savedRecentRuns>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>Some Property</con:name>
+      <con:value>with a value</con:value>
+    </con:property>
+  </con:properties>
+  <con:wssContainer>
+    <con:crypto>
+      <con:source>/home/eric/Desktop/synthesis_stuff/synthesis-certificate-key-single.pem</con:source>
+      <con:password>cheese</con:password>
+      <con:type>KEYSTORE</con:type>
+    </con:crypto>
+  </con:wssContainer>
+  <con:databaseConnectionContainer/>
+  <con:jmsConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+  <con:reporting>
+    <con:reportTemplates>
+      <con:name>SystemPropertiesReport</con:name>
+      <con:path>/home/robert/soapui/bin/reports/subreports/loadtest/LoadTestLog.jrxml</con:path>
+      <con:reportType>COMMON</con:reportType>
+      <con:reportLevel>SUBREPORT</con:reportLevel>
+      <con:nameInReport>LoadTestLog</con:nameInReport>
+      <con:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><![CDATA[<jasperReport xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" language="groovy" pageWidth="535" pageHeight="842" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <template>"../../styles.jrtx"</template>
+ <field name="name" class="java.lang.String"/>
+ <field name="value" class="java.lang.String"/>
+ <columnHeader>
+ <band height="59">
+ <staticText>
+ <reportElement style="ColumnHeader" x="0" y="35" width="122" height="20"/>
+ <textElement textAlignment="Left" verticalAlignment="Middle"/>
+ <text>Name</text>
+ </staticText>
+ <staticText>
+ <reportElement style="ColumnHeader" x="133" y="35" width="40" height="20"/>
+ <textElement textAlignment="Left" verticalAlignment="Middle"/>
+ <text>Value</text>
+ </staticText>
+ <staticText>
+ <reportElement style="SmallHeader" x="0" y="0" width="535" height="34"/>
+ <textElement textAlignment="Left" verticalAlignment="Middle"/>
+ <text>System Properties</text>
+ </staticText>
+ </band>
+ </columnHeader>
+ <detail>
+ <band height="21">
+ <textField>
+ <reportElement x="0" y="1" width="122" height="20"/>
+ <textElement textAlignment="Left" verticalAlignment="Top"/>
+ <textFieldExpression class="java.lang.String">$F{name}</textFieldExpression>
+ </textField>
+ <textField>
+ <reportElement x="133" y="1" width="350" height="20"/>
+ <textElement textAlignment="Left" verticalAlignment="Top"/>
+ <textFieldExpression class="java.lang.String">$F{value}</textFieldExpression>
+ </textField>
+ </band>
+ </detail>
+</jasperReport>]]></con:data>
+      <con:description>NO DESC</con:description>
+      <con:scope>PROJECT</con:scope>
+      <con:dataSource xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+    </con:reportTemplates>
+    <con:reportTemplates/>
+    <con:xmlTemplates/>
+    <con:xmlTemplates/>
+    <con:parameters/>
+    <con:parameters/>
+  </con:reporting>
+  <con:reporting/>
+  <con:beforeRunScript>virtRunner.run("ServiceSoapBinding MockService")
+        virtRunner.run("RESTMockService")</con:beforeRunScript>
+  <con:eventHandlers type="RequestFilter.filterRequest" name="RequestFilter.filterRequest">
+    <con:script>log.info(request.getEndpoint())</con:script>
+  </con:eventHandlers>
+  <con:sensitiveInformation/>
+  <con:environment id="b838b684-79e0-466c-9332-9e4fe81cac64" name="careconnect">
+    <con:service type="SOAP" name="DocumentRepository_Binding">
+      <con:endpoint authProfile="Inherit From Parent" username="" password="" domain="" incomingWss="" outgoingWss="" wssTimeToLive="" wssType="">http://localhost:8088/</con:endpoint>
+    </con:service>
+    <con:property>
+      <con:name>Some Property</con:name>
+      <con:value>with a value</con:value>
+    </con:property>
+    <con:databaseConnectionContainer/>
+    <con:jmsConnectionContainer/>
+  </con:environment>
+  <con:authRepository/>
+  <con:loadUiTest name="Load Test" id="dc4d3ffa-b37e-4591-a668-810082b26254">
+    <con:settings>
+      <con:setting id="soapUIObjectSourceId">01518d1e-ecab-4cc7-9ed2-2f15c3a806a1</con:setting>
+      <con:setting id="soapUIObjectSourceType">soapUIObjectSourceType_RestRequest</con:setting>
+    </con:settings>
+    <con1:loadui-project id="e879b0cf-db06-4cea-800f-58d9c19b1416" label="Load Test" xmlns:con1="http://eviware.com/loadui/config">
+      <con1:properties>
+        <con1:property propagates="true" key="ModelItem.description" type="java.lang.String"/>
+        <con1:property propagates="true" key="CanvasItem.abortOnFinish" type="java.lang.Boolean">false</con1:property>
+        <con1:property propagates="true" key="ModelItem.saveReport" type="java.lang.Boolean">false</con1:property>
+        <con1:property propagates="true" key="ModelItem.reportFolder" type="java.lang.String"/>
+        <con1:property propagates="true" key="ModelItem.reportFormat" type="java.lang.String"/>
+        <con1:property propagates="true" key="Temporary project" type="java.lang.String"/>
+        <con1:property propagates="true" key="ModelItem.rate" type="java.lang.Long">1</con1:property>
+        <con1:property propagates="true" key="ModelItem.loadDistributionType" type="com.smartbear.load.facade.LoadDistributionType">Relative</con1:property>
+        <con1:property propagates="true" key="ModelItem.remoteMode" type="java.lang.String"/>
+        <con1:property propagates="true" key="ModelItem.id" type="java.lang.String">dc4d3ffa-b37e-4591-a668-810082b26254</con1:property>
+      </con1:properties>
+      <con1:attributes>
+        <con1:property key="limits">Time=600;</con1:property>
+      </con1:attributes>
+      <con1:addons/>
+      <con1:scene label="New Scenario" id="7a5e5273-995b-4692-aec5-8c0a1c464a79">
+        <con1:properties>
+          <con1:property propagates="true" key="ModelItem.description" type="java.lang.String"/>
+          <con1:property propagates="true" key="CanvasItem.abortOnFinish" type="java.lang.Boolean">false</con1:property>
+          <con1:property propagates="true" key="SceneItem.followProject" type="java.lang.Boolean">true</con1:property>
+          <con1:property propagates="true" key="SceneItem.scenarioRatePercentage" type="java.lang.Long">100</con1:property>
+          <con1:property propagates="true" key="SceneItem.scenarioRateSpecific" type="java.lang.Long">10</con1:property>
+          <con1:property propagates="true" key="ModelItem.samplerOutputLevel" type="com.eviware.loadui.api.component.SoapUISamplerOutputLevel">TestCaseAndAllTestSteps</con1:property>
+        </con1:properties>
+        <con1:attributes>
+          <con1:property key="limits">Time=600;</con1:property>
+        </con1:attributes>
+        <con1:addons/>
+        <con1:component type="com.eviware.loadui.impl.component.IntervalComponent" label="Interval 1" id="a78f18d6-acd3-4dc9-be41-cadcf36dacfd" category="Scheduler">
+          <con1:properties>
+            <con1:property propagates="true" key="ModelItem.description" type="java.lang.String"/>
+            <con1:property propagates="true" key="stateProperty" type="java.lang.Boolean">true</con1:property>
+            <con1:property propagates="true" key="startAt" type="java.lang.Long">0</con1:property>
+            <con1:property propagates="true" key="duration" type="java.lang.Long">5</con1:property>
+            <con1:property propagates="true" key="unit" type="java.lang.String">Sec</con1:property>
+            <con1:property propagates="true" key="mode" type="java.lang.String">Single</con1:property>
+            <con1:property propagates="true" key="defaultMode" type="java.lang.Boolean">true</con1:property>
+          </con1:properties>
+          <con1:attributes>
+            <con1:property key="com.eviware.loadui.api.model.ComponentItem@type">Interval</con1:property>
+          </con1:attributes>
+          <con1:addons/>
+        </con1:component>
+        <con1:component type="com.eviware.loadui.components.soapui.SoapUISamplerComponent" label="TestSuite:SOAP TestCase" id="dc7b7dc9-401e-4855-b07a-74bb0ee24184" category="Runners">
+          <con1:properties>
+            <con1:property propagates="true" key="ModelItem.description" type="java.lang.String"/>
+            <con1:property propagates="true" key="concurrentSamples" type="java.lang.Long">1000</con1:property>
+            <con1:property propagates="true" key="property_name_is_not_relevant_for_private_property" type="java.lang.Long">9223372036854775807</con1:property>
+            <con1:property propagates="true" key="maxQueueSize" type="java.lang.Long">1000</con1:property>
+            <con1:property propagates="true" key="countDiscarded" type="java.lang.Boolean">false</con1:property>
+            <con1:property propagates="true" key="disabledTestSteps" type="java.lang.String"/>
+            <con1:property propagates="true" key="_thinkTime" type="java.lang.Long">0</con1:property>
+            <con1:property propagates="true" key="ReadyApiTestCase" type="com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase">01518d1e-ecab-4cc7-9ed2-2f15c3a806a1</con1:property>
+            <con1:property propagates="true" key="raiseError" type="java.lang.Boolean">true</con1:property>
+            <con1:property propagates="true" key="outputTestCaseProperties" type="java.lang.Boolean">true</con1:property>
+            <con1:property propagates="true" key="OutputLevel" type="java.lang.String">TestCase only</con1:property>
+            <con1:property propagates="true" key="closeConnectionsAfterRequest" type="java.lang.Boolean">false</con1:property>
+            <con1:property propagates="true" key="disableSoapuiAssertions" type="java.lang.Boolean">false</con1:property>
+            <con1:property propagates="true" key="forceShareDatasources" type="java.lang.Boolean">true</con1:property>
+          </con1:properties>
+          <con1:attributes>
+            <con1:property key="com.eviware.loadui.api.model.ComponentItem@type">Ready API TestCase Runner</con1:property>
+          </con1:attributes>
+          <con1:addons/>
+        </con1:component>
+        <con1:component type="com.eviware.loadui.impl.component.generators.FixedVU" label="Fixed Load 2" id="555165fd-68c8-4800-9da8-1dce049a93b1" category="Generators">
+          <con1:properties>
+            <con1:property propagates="true" key="ModelItem.description" type="java.lang.String"/>
+            <con1:property propagates="true" key="stateProperty" type="java.lang.Boolean">true</con1:property>
+            <con1:property propagates="true" key="limitVU" type="java.lang.Long">25</con1:property>
+            <con1:property propagates="true" key="load" type="java.lang.Long">1</con1:property>
+            <con1:property propagates="true" key="interval" type="java.lang.Long">1000</con1:property>
+          </con1:properties>
+          <con1:attributes>
+            <con1:property key="com.eviware.loadui.api.model.ComponentItem@type">Fixed Load</con1:property>
+          </con1:attributes>
+          <con1:addons/>
+        </con1:component>
+        <con1:connection outputTerminalId="a78f18d6-acd3-4dc9-be41-cadcf36dacfd/outgoingTerminal" inputTerminalId="555165fd-68c8-4800-9da8-1dce049a93b1/stateTerminal"/>
+        <con1:connection outputTerminalId="555165fd-68c8-4800-9da8-1dce049a93b1/triggerTerminal" inputTerminalId="dc7b7dc9-401e-4855-b07a-74bb0ee24184/triggerTerminal"/>
+        <con1:connection outputTerminalId="dc7b7dc9-401e-4855-b07a-74bb0ee24184/runningTerminal" inputTerminalId="555165fd-68c8-4800-9da8-1dce049a93b1/Sample Count"/>
+      </con1:scene>
+      <con1:statistics>
+        <con1:page title="DefaultLoadUIStatisticPage">
+          <con1:chartGroup type="com.eviware.loadui.api.statistics.model.chart.line.LineChartView" title="" groupType="Monitors">
+            <con1:attributes>
+              <con1:property key="GroupId">a78ef32e-154f-4350-aeb7-2770884557de</con1:property>
+            </con1:attributes>
+          </con1:chartGroup>
+        </con1:page>
+      </con1:statistics>
+      <con1:heatUpTime>15</con1:heatUpTime>
+    </con1:loadui-project>
+    <con:loadUITestScenario projectId="e879b0cf-db06-4cea-800f-58d9c19b1416" scenarioId="7a5e5273-995b-4692-aec5-8c0a1c464a79" name="New Scenario" id="1b7ab022-9822-46a0-8a76-2ce447c6aa56">
+      <con:settings/>
+    </con:loadUITestScenario>
+    <con:loadUIPanelData id="e9144b21-16b7-47b6-bc12-6d7215ce3cb5">
+      <con:panel>Log</con:panel>
+    </con:loadUIPanelData>
+    <con:reportParameters/>
+  </con:loadUiTest>
+  <con:tags/>
+</con:soapui-project>

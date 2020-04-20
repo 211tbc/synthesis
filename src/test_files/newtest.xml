@@ -16,7 +16,7 @@
 <hmis:IDNum>119566</hmis:IDNum>
 </ext:PersonID>
 <ext:DateOfBirth>
-<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1967-03-26</hmis:Unhashed>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1970-01-01</hmis:Unhashed>
 <hmis:DateOfBirthType hmis:dateCollected="2017-06-24T13:53:12">1</hmis:DateOfBirthType>
 </ext:DateOfBirth>
 <ext:Gender>

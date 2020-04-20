@@ -4,11 +4,11 @@
 '''
 
 import os#, sys
-from reader import Reader
+from .reader import Reader
 from zope.interface import implementer
 from lxml import etree
 import dateutil.parser
-from dbobjects import *  # @UnusedWildImport
+from .dbobjects import *  # @UnusedWildImport
 
 @implementer(Reader)
 class HMISXML30Reader: 
@@ -3989,7 +3989,7 @@ def existence_test_and_add(self, db_column, query_string, handling):
             #print '==== Query string:', query_string
             return True
         else:
-            print "Need to specify the handling"
+            print("Need to specify the handling")
             return False
     else:
         # SBB20100915 added to handle non-list element values
@@ -4022,15 +4022,15 @@ def persist(self, db_column, query_string):
     
 def shred(self, records_dict, map_class):
     ''' commits the record set to the database '''
-    print 'map_class: ', map_class
-    print 'data: ', records_dict
+    print('map_class: ', map_class)
+    print('data: ', records_dict)
     #print 'self is:', self 
 
     #{'source_name': 'Orange County Corrections', 'software_version': '0.1', 'software_vendor': 'Orange County Corrections', 'source_contact_email': 'i@occ.gov', 'source_id_id_id_str': '003', 'source_id': '003'}
     mapped = map_class(**records_dict)
 
     self.session.add(mapped)
-    print "done adding"
+    print("done adding")
     #self.session.add(mapped)
     self.session.commit()
     
@@ -4038,104 +4038,104 @@ def shred(self, records_dict, map_class):
     if map_class.__name__ == "Source":
         
         self.source_index_id = mapped.id
-        print "Source: ", map_class.source_id
+        print("Source: ", map_class.source_id)
 
     if map_class.__name__ == "Export":
         self.export_index_id = mapped.id
-        print "Export: ", self.export_index_id
+        print("Export: ", self.export_index_id)
         
     if map_class.__name__ == "Household":
         self.household_index_id = mapped.id
-        print "Household: ", self.household_index_id
+        print("Household: ", self.household_index_id)
 
     if map_class.__name__ == "Agency":
         self.agency_index_id = mapped.id
-        print "Agency: ", self.agency_index_id
+        print("Agency: ", self.agency_index_id)
         
     if map_class.__name__ == "AgencyLocation":
         self.agency_location_index_id = mapped.id
-        print "Agency Location: ", self.agency_location_index_id
+        print("Agency Location: ", self.agency_location_index_id)
 
     if map_class.__name__ == "Site":
         self.site_index_id = mapped.id
-        print "Site: ", self.site_index_id
+        print("Site: ", self.site_index_id)
 
     if map_class.__name__ == "SiteService":
         self.site_service_index_id = mapped.id
-        print "SiteService: ", self.site_service_index_id
+        print("SiteService: ", self.site_service_index_id)
 
     if map_class.__name__ == "PitCountSet":
         self.pit_count_set_index_id = mapped.id
-        print "PitCountSet: ", self.pit_count_set_index_id
+        print("PitCountSet: ", self.pit_count_set_index_id)
 
     if map_class.__name__ == "Languages":
         self.languages_index_id = mapped.id
-        print "Languages:",self.languages_index_id
+        print("Languages:",self.languages_index_id)
 
     if map_class.__name__ == "Service":
         self.service_index_id = mapped.id
-        print "Service:",self.service_index_id
+        print("Service:",self.service_index_id)
 
     if map_class.__name__ == "HmisAsset":
         self.hmis_asset_index_id = mapped.id
-        print "HmisAsset:",self.hmis_asset_index_id
+        print("HmisAsset:",self.hmis_asset_index_id)
 
     if map_class.__name__ == "Assignment":
         self.assignment_index_id = mapped.id
-        print "Assignment:",self.assignment_index_id
+        print("Assignment:",self.assignment_index_id)
 
     if map_class.__name__ == "Person":
         self.person_index_id = mapped.id
-        print "Person:",self.person_index_id
+        print("Person:",self.person_index_id)
 
     if map_class.__name__ == "SiteServiceParticipation":
         self.site_service_participation_index_id = mapped.id
-        print "SiteServiceParticipation:",self.site_service_participation_index_id
+        print("SiteServiceParticipation:",self.site_service_participation_index_id)
 
     if map_class.__name__ == "Need":
         self.need_index_id = mapped.id
-        print "Need:",self.need_index_id
+        print("Need:",self.need_index_id)
 
     if map_class.__name__ == "Referral":
         self.referral_index_id = mapped.id
-        print "Referral:",self.referral_index_id
+        print("Referral:",self.referral_index_id)
 
     if map_class.__name__ == "ServiceEvent":
         self.service_event_index_id = mapped.id
-        print "ServiceEvent:",self.service_event_index_id            
+        print("ServiceEvent:",self.service_event_index_id)            
         
     if map_class.__name__ == "PersonHistorical":
         self.person_historical_index_id = mapped.id
-        print "PersonHistorical:",self.person_historical_index_id                              
+        print("PersonHistorical:",self.person_historical_index_id)                              
         
     if map_class.__name__ == "Degree":
         self.degree_index_id = mapped.id
-        print "Degree:",self.degree_index_id                
+        print("Degree:",self.degree_index_id)                
         
     if map_class.__name__ == "ChildEnrollmentStatus":
         self.child_enrollment_status_index_id = mapped.id
-        print "ChildEnrollmentStatus:",self.child_enrollment_status_index_id     
+        print("ChildEnrollmentStatus:",self.child_enrollment_status_index_id)     
         
     if map_class.__name__ == "ResourceInfo":
         self.resource_info_index_id = mapped.id
-        print "ResourceInfo:",self.resource_info_index_id               
+        print("ResourceInfo:",self.resource_info_index_id)               
 
     if map_class.__name__ == "Contact":
         self.contact_index_id = mapped.id
-        print "Contact:",self.contact_index_id                                   
+        print("Contact:",self.contact_index_id)                                   
         
     if map_class.__name__ == "TimeOpen":
         self.time_open_index_id = mapped.id
-        print "TimeOpen:",self.time_open_index_id 
+        print("TimeOpen:",self.time_open_index_id) 
 
     # FBY New 2016-08-16: Make the call id accessible when setting it as a foreign key to
     # in the person_historical table
     if map_class.__name__ == "Call":
         self.call_index_id = mapped.id
-        print "Call:",self.call_index_id
+        print("Call:",self.call_index_id)
 
     self.parse_dict ={}
-    if records_dict.has_key("source_id"):
+    if "source_id" in records_dict.keys():
         return records_dict["source_id"]
     else:
         return None
@@ -4146,7 +4146,7 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    import postgresutils
+    from . import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
@@ -4160,7 +4160,7 @@ def main(argv=None):
         try:
             xml_file = open(inputFile,'r') 
         except:
-            print "Error opening import file"
+            print("Error opening import file")
             
         reader = HMISXML30Reader(xml_file)
         tree = reader.read()

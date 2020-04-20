@@ -1,16 +1,16 @@
-from interpretpicklist import Interpretpicklist
+from .interpretpicklist import Interpretpicklist
 #import dateutils
 #from datetime import datetime
-import xmlutilities
+from . import xmlutilities
 #from exceptions import SoftwareCompatibilityError, DataFormatError
-import logger
+from . import logger
 #from sys import version
-import dbobjects
-from writer import Writer
+from . import dbobjects
+from .writer import Writer
 from zope.interface import implementer
 
 from sqlalchemy import or_, between#, and_
-from conf import settings
+from .conf import settings
 from lxml import etree as ET
 
 @implementer(Writer)
@@ -18,10 +18,10 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
     #implements(Writer) # Writer Interface
 
     def __init__(self, poutDirectory, processingOptions, export_id=None, debugMessages=None):
-        print "==== %s Class Initialized" % self.__class__  # JCS-Doesn't have a __name__
+        print("==== %s Class Initialized" % self.__class__)  # JCS-Doesn't have a __name__
 
         if settings.DEBUG:
-            print "XML File to be dumped to: %s" % poutDirectory
+            print("XML File to be dumped to: %s" % poutDirectory)
             self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)
 
         self.outDirectory = poutDirectory
@@ -46,7 +46,7 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
     def makeHL7Docs(self,mode):
         self.session = self.db.Session()    # This starts a Transaction
         if settings.DEBUG:
-            print '==== Self:', self
+            print('==== Self:', self)
         # Database traversal:
         # Step through Exports. For each Export,
         # Step through Persons. For each person,
@@ -143,10 +143,10 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
 
     def processXML(self, oneExport, onePerson, onePersonHistorical, oneServEvt, oneSource):
         if settings.DEBUG:
-            print "==== Starting hl7CCDwriter.processXML"
+            print("==== Starting hl7CCDwriter.processXML")
         # That which everything else will live inside of
         self.root_element = self.createDoc() # makes root element (not elementTree) with XML header attributes
-        print '==== root created'
+        print('==== root created')
         # Required elements
         typeId = ET.SubElement(self.root_element, "typeId")
         typeId.attrib["extension"] = "POCD_HD000040"
@@ -432,8 +432,11 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         gendCode.attrib["codeSystemName"] = "AdministrativeGenderCode"  # All
 
     def addEthnicity(self, patient, eth_parm):    # int 2
-        if eth_parm in [2, 3, 4, 5, 6, 7] or eth_parm > 9:
-            return
+        try:
+            if eth_parm in [2, 3, 4, 5, 6, 7] or eth_parm > 9:
+                return
+        except:
+            pass
         ethCode = ET.SubElement(patient,"ethnicGroupCode")
         if eth_parm == 0:           # non-hispanic/non-latino (hud)
             ethCode.attrib["code"] = "2186-5"
@@ -472,26 +475,26 @@ class hl7CCDwriter():   # Health Level 7 Continuity of Care Document
         # update the reported field of the currentObject being passed in.  These should all exist.
         try:
             if settings.DEBUG:
-                print 'Updating reporting for object: %s' % currentObject.__class__
+                print('Updating reporting for object: %s' % currentObject.__class__)
             currentObject.reported = True
             #self.commitTransaction()
         except:
-            print "Exception occurred during update the 'reported' flag"
+            print("Exception occurred during update the 'reported' flag")
             pass
 
     def dumpErrors(self):
-        print "Error Reporting"
-        print "-" * 80
+        print("Error Reporting")
+        print("-" * 80)
         for row in range(len(self.errorMsgs)):
-            print "%s %s" % (row, self.errorMsgs[row])
+            print("%s %s" % (row, self.errorMsgs[row]))
 
     def current_picture(self, node):
         ''' Internal function.  Debugging aid for the export module.'''
         if settings.DEBUG:
-            print "Current XML Picture is"
-            print "======================\n" * 2
+            print("Current XML Picture is")
+            print("======================\n" * 2)
             ET.dump(node)
-            print "======================\n" * 2
+            print("======================\n" * 2)
 
 def isNullOrMT(test):   # Expand for numeric?
     if test == None:

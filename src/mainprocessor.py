@@ -22,12 +22,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
-from conf import settings
-import fileutils
-from selector import FileHandler
+from .conf import settings
+from . import fileutils
+from .selector import FileHandler
 import os
 import sys
-from logger import Logger
+from .logger import Logger
 
 class MainProcessor:
     def __init__(self):
@@ -48,7 +48,7 @@ class MainProcessor:
                 
         # test if we are in debug and TEST Mode.  If so we clear out the DB every processing run, PROD mode need should never do this.
         if settings.DEBUG and settings.MODE == 'TEST':								# Only reset the DB in Test mode
-            import postgresutils
+            from . import postgresutils
             utils = postgresutils.Utils()
             utils.blank_database()    
         
@@ -57,7 +57,7 @@ class MainProcessor:
             os.mkdir(settings.LOGS)
         else:
             if settings.DEBUG:
-                print "Logs Directory exists:", settings.LOGS
+                print("Logs Directory exists:", settings.LOGS)
         
         # command argument set's log level or Settings.py
         # ECJ20111117: removed command argument option and now only uses conf/settings.py
@@ -70,13 +70,13 @@ class MainProcessor:
             
         try:
             if settings.DEBUG:
-                print "Now instantiating FileHandler"
+                print("Now instantiating FileHandler")
             FileHandler() 
-            print "calling sys.exit"
+            print("calling sys.exit")
             sys.exit
         
         except KeyboardInterrupt:
-            print 'Stopping: KeyboardInterrupt at MainProcessor.py'
+            print('Stopping: KeyboardInterrupt at MainProcessor.py')
             # need to shutdown the logging system prior to program termination.  This is to flush buffers, send messages etc.	
             debugMessages.__quit__()
             sys.exit()

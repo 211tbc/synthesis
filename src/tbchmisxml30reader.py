@@ -5,16 +5,16 @@
 '''
 
 import sys, os
-from reader import Reader
-from zope.interface import implements  # @UnresolvedImport
+from .reader import Reader
+from zope.interface import implementer  # @UnresolvedImport
 from lxml import etree
-from conf import settings
-import dbobjects
-import hmisxml30reader
+from .conf import settings
+from . import dbobjects
+from . import hmisxml30reader
 
+# Implements reader interface
+@implementer(Reader)
 class TBCHUDHMISXML30Reader:
-    ''' Implements reader interface '''
-    implements (Reader)
 
     ''' Define XML namespaces '''
     hmis_namespace = "http://www.hudhdx.info/Resources/Vendors/3_0/HUD_HMIS.xsd"
@@ -291,7 +291,7 @@ class TBCHUDHMISXML30Reader:
                 ''' Parse sub-tables '''
                 hmisxml30reader.parse_site_service_participation(self, item)
                 hmisxml30reader.parse_need(self, item, 'ext:')
-                print '====', self, item
+                print('====', self, item)
                 self.parse_service_event(item)  #(self, item)
                 hmisxml30reader.parse_person_historical(self, item, pf = 'ext:')
                 hmisxml30reader.parse_release_of_information(self, item)
@@ -360,7 +360,7 @@ class TBCHUDHMISXML30Reader:
                                     #to match (or not use in-memory, but altering the newly committed referral record.
                                     #but this gets into the whole logging versus
                 else:
-                    print "no call elements found"
+                    print("no call elements found")
 
         '''Shred to database'''
         hmisxml30reader.shred(self, self.parse_dict, dbobjects.Call)
@@ -529,11 +529,11 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    import postgresutils
+    from . import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
     db = dbobjects.DB()
-    print "Session = ", db.Session()
+    print("Session = ", db.Session())
 
     #inputFile = os.path.join("%s" % settings.BASE_PATH, "%s" % settings.INPUTFILES_PATH, "HUD_HMIS_3_0_Instance.xml")
     inputFile = "/home/synthesis/myrestservice/synthesis/synthesis/test_files/HUD_HMIS_TBC.xml"
@@ -545,7 +545,7 @@ def main(argv=None):
         try:
             xml_file = open(inputFile,'r')
         except:
-            print "Error opening import file"
+            print("Error opening import file")
 
         reader = TBCHUDHMISXML30Reader(xml_file, db)
         #reader.source_index_id = 1
@@ -553,7 +553,7 @@ def main(argv=None):
         tree = reader.read()
         reader.process_data(tree)
         #xml_file.close()
-    print "my reader is now exiting"
+    print("my reader is now exiting")
 
 if __name__ == "__main__":
     sys.exit(main())

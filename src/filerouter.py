@@ -1,6 +1,6 @@
-import fileutils
-from conf import inputConfiguration
-from conf import settings
+from . import fileutils
+from .conf import inputConfiguration
+from .conf import settings
 
 class Router:
     
@@ -9,7 +9,7 @@ class Router:
     
     def moveUsed(self, file_name):
         if settings.DEBUG:
-            print "moving ", file_name, "to", inputConfiguration.USEDFILES_PATH
+            print("moving ", file_name, "to", inputConfiguration.USEDFILES_PATH)
         return fileutils.moveFile(file_name, inputConfiguration.USEDFILES_PATH)
 
     def moveFailed(self, fileName):

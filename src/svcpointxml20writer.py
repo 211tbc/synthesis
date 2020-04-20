@@ -1,9 +1,9 @@
 import os.path
-from interpretpicklist import Interpretpicklist
+from .interpretpicklist import Interpretpicklist
 from datetime import timedelta, date, datetime
 from time import strptime, time
-import xmlutilities as xmlutilities
-from xmlutilities import IDGeneration
+from . import xmlutilities as xmlutilities
+from .xmlutilities import IDGeneration
 #from mx.DateTime import ISO
 # SBB20070920 Adding exceptions class
 #from clsexceptions import dataFormatError, ethnicityPickNotFound
@@ -11,11 +11,11 @@ from xmlutilities import IDGeneration
 import logging
 
 from sys import version
-from conf import settings
-import exceptions
-import dbobjects as dbobjects
-from writer import Writer
-from zope.interface import implements
+from .conf import settings
+from . import exceptions
+from . import dbobjects as dbobjects
+from .writer import Writer
+from zope.interface import implementer
 
 from sqlalchemy import or_, and_, between
 
@@ -40,19 +40,19 @@ elif thisVersion == '2.4':
         import elementtree.ElementTree as ET
         from elementtree.ElementTree import Element, SubElement
 else:
-    print 'Sorry, please see the minimum requirements to run this Application'
+    print('Sorry, please see the minimum requirements to run this Application')
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise exceptions.SoftwareCompatibilityError, theError
+    raise exceptions.SoftwareCompatibilityError(theError)
 
 def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
+@implementer(Writer)
 class SVCPOINTXML20Writer(dbobjects.DB):
     
     # Writer Interface
-    implements (Writer)
-    
+   
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
@@ -66,7 +66,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         self.isIsoTimeFormat = '%Y-%m-%dT%H:%M:%S'
         
         if settings.DEBUG:
-            print "XML File to be dumped to: %s" % poutDirectory
+            print("XML File to be dumped to: %s" % poutDirectory)
             
         self.outDirectory = poutDirectory
         self.pickList = Interpretpicklist()
@@ -96,7 +96,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         #logging.getLogger('sqlalchemy.orm.unitofwork').setLevel(logging.DEBUG)
     
         if debug == True:
-            print "Debug switch is: %s" % debug
+            print("Debug switch is: %s" % debug)
             self.debugMessages = debugMessages
             
     #SBB20070626 Breaking this function into 2 parts one for the intakes and a second (one) for the outcomes (many) Relationship is 1 to many
@@ -115,40 +115,40 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     # update the reported field of the currentObject being passed in.  These should all exist.
         try:
             if self.debug:
-                print 'Updating reporting for object: %s' % currentObject.__class__
+                print('Updating reporting for object: %s' % currentObject.__class__)
                 currentObject.reported = True
             #currentObject.update()
             #self.session.save(currentObject)
             
         except:
-            print "Exception occured during update the 'reported' flag"
+            print("Exception occured during update the 'reported' flag")
             pass
 
     def prettify(self):
         xmlutilities.indent(self.root_element)
 
     def dumpErrors(self):
-        print "Error Reporting"
-        print "-" * 80
+        print("Error Reporting")
+        print("-" * 80)
         for row in range(len(self.errorMsgs)):
-            print "%s %s" % (row, self.errorMsgs[row])
+            print("%s %s" % (row, self.errorMsgs[row]))
         
     def push_data_intakes(self, intakes):
         if self.debug == True:
-            print "XMLModule Intakes Pushed" 
+            print("XMLModule Intakes Pushed") 
             self.intakes = intakes
 
     def push_data_outcomes(self, outcomes):
         # this is a list of dictionaries.  When formatting the output, need to iterate through the list and then take the dictionary keys to insert the values where needed
         if self.debug == True:
-            print "XMLModule Outcomes Pushed" 
+            print("XMLModule Outcomes Pushed") 
             #print self.intakes
         self.outcomes = outcomes
         
     def push_data_daily_census(self, daily_census):
         # this is a list of dictionaries.  When formatting the output, need to iterate through the list and then take the dictionary keys to insert the values where needed
         if self.debug == True:
-            print "XMLModule daily_census Pushed" 
+            print("XMLModule daily_census Pushed") 
             self.daily_census = daily_census
 
     
@@ -174,7 +174,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     
     def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
         if self.debug == True:
-            print "Appending XML to Base Record"
+            print("Appending XML to Base Record")
     
         # generate the SystemID Number based on the Current Users Data, You must pass in the word 'system' in order to create the current users key.
         self.SystemID = self.iDG.generateSystemID('system')
@@ -285,7 +285,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         #Household = self.mappedObjects.session.query(dbobjects.Household)
         Household = self.session.query(dbobjects.Household).filter(or_(dbobjects.Household.reported == False, dbobjects.Household.reported == None))
         
-        if Household <> None and Household.count() > 0:
+        if Household != None and Household.count() > 0:
             
             # SBB20100310 Households need to be same level as clients with new xml
             #households = self.createHouseholds(records)
@@ -394,17 +394,17 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         # SBB20070702 check if self.intakes has none, this is a daily census that is alone
     def customizeClientPersonalIdentifiers(self, client, recordset):
     
-        if recordset.person_legal_first_name_unhashed <> "" and recordset.person_legal_first_name_unhashed <> None:
+        if recordset.person_legal_first_name_unhashed != "" and recordset.person_legal_first_name_unhashed != None:
             first_name = ET.SubElement(client, "first_name")
             first_name.text = recordset.person_legal_first_name_unhashed
         
-        if recordset.person_legal_last_name_unhashed <> "" and recordset.person_legal_last_name_unhashed <> None:
+        if recordset.person_legal_last_name_unhashed != "" and recordset.person_legal_last_name_unhashed != None:
             last_name = ET.SubElement(client, "last_name")
             last_name.text = recordset.person_legal_last_name_unhashed
         
         #we don't have the following elements for daily_census only clients, but SvcPt requires them:
         # I simulated this w/my datasets.  Column names are as in the program
-        if recordset.person_legal_middle_name_unhashed <> "" and recordset.person_legal_middle_name_unhashed <> None:
+        if recordset.person_legal_middle_name_unhashed != "" and recordset.person_legal_middle_name_unhashed != None:
             mi_initial = ET.SubElement(client, "mi_initial")
             mi_initial.text = self.fixMiddleInitial(recordset.person_legal_middle_name_unhashed)
             
@@ -413,7 +413,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
         fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed)
         #ECJ20071111 Omit SSN if it's blank            
-        if fixedSSN <> "" and fixedSSN <> None:    
+        if fixedSSN != "" and fixedSSN != None:    
             soc_sec_no = ET.SubElement(client, "soc_sec_no")
             soc_sec_no.text = fixedSSN
             
@@ -431,7 +431,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         
         #we don't have the following elements for daily_census only clients, but SvcPt requires them:
         # I simulated this w/my datasets.  Column names are as in the program
-        if recordset['MI'] <> "":
+        if recordset['MI'] != "":
             mi_initial = ET.SubElement(client, "mi_initial")
             mi_initial.text = self.fixMiddleInitial(recordset['MI'])
         
@@ -440,7 +440,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
         fixedSSN = self.fixSSN(recordset['SSN'])    
         #ECJ20071111 Omit SSN if its blank    
-        if fixedSSN <> "":    
+        if fixedSSN != "":    
             soc_sec_no = ET.SubElement(client, "soc_sec_no")
             soc_sec_no.text = fixedSSN
         
@@ -755,20 +755,20 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             exit_date.text = self.fixDate(self.outcom['Exit Date'])
             
         #Shelter does not provide a reason leaving in outcom.csv
-        #if self.pickList.getValue("EereasonLeavingPick", self.outcom['Code']) <> "":
+        #if self.pickList.getValue("EereasonLeavingPick", self.outcom['Code']) != "":
             #reason_leaving = ET.SubElement(member, "reason_leaving")
             #reason_leaving.text = self.pickList.getValue("EereasonLeavingPick", self.outcom['Code'])
             #reason_leaving.tail = "\n"
             #reason_leaving_other = ET.SubElement(entry_exit, "reason_leaving_other")
             #reason_leaving_other.tail = "\n"
-        if self.pickList.getValue("EeDestinationPick", str.rstrip(self.outcom['Service Point Destnation Parse'])) <> "":
+        if self.pickList.getValue("EeDestinationPick", str.rstrip(self.outcom['Service Point Destnation Parse'])) != "":
             destination = ET.SubElement(member, "destination")
             destination.text = self.pickList.getValue("EeDestinationPick", str.rstrip(self.outcom['Service Point Destnation Parse']))
         
-        if self.outcom['Address'] <> "" and\
-            self.outcom['Client ID'] <> "" and\
-            self.outcom['Education'] <> "" and\
-            self.outcom['Partner'] <> "":
+        if self.outcom['Address'] != "" and\
+            self.outcom['Client ID'] != "" and\
+            self.outcom['Education'] != "" and\
+            self.outcom['Partner'] != "":
             notes = ET.SubElement(member, "notes")
             notes.text = self.formatNotesField(notes.text, 'Address', self.outcom['Address'])
             # SBB20070702 Add debugging  to the notes field.  NOTICE: for Production run, Make sure the debug switch is off or notes will be populated with junk data.
@@ -788,7 +788,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         provider_id = ET.SubElement(entry_exit, "provider_id")
         provider_id.text = EE.site_service_idid_num
         
-        if EE.participation_dates_start_date <> "" and EE.participation_dates_start_date <> None:
+        if EE.participation_dates_start_date != "" and EE.participation_dates_start_date != None:
             entry_date = ET.SubElement(entry_exit, "entry_date")
             entry_date.text = self.fixDate(EE.participation_dates_start_date)
             
@@ -800,7 +800,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             
             # SBB20100315 From there grab the PersonIDunhashed and try to use that to pull the members,
             # DEBUG this to figure out why we are failing to make mbr 
-            if EEperson.person_id_unhashed <> None:                # and EEperson.person_id_hashed <> None:
+            if EEperson.person_id_unhashed != None:                # and EEperson.person_id_hashed != None:
                 mbr = self.createMember(mbrs)
                 self.customizeMember(mbr, EE, EEperson)
             
@@ -861,7 +861,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             dbo_veteran = ph.fk_person_historical_to_veteran
             
             # Is client homeless?
-            if ph.hud_homeless <> "" and ph.hud_homeless <> None:
+            if ph.hud_homeless != "" and ph.hud_homeless != None:
                 isclienthomeless = ET.SubElement(dynamiccontent, "isclienthomeless")
                 isclienthomeless.attrib["date_added"] = datetime.now().isoformat()
                 isclienthomeless.attrib["date_effective"] = self.fixDate(ph.hud_homeless_date_collected)
@@ -870,13 +870,13 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             if ph.hud_homeless == '' or ph.hud_homeless == None:
                 isclienthomeless.text = 'false'
         
-            if ph.physical_disability <> "" and ph.physical_disability <> None:
+            if ph.physical_disability != "" and ph.physical_disability != None:
                 hud_disablingcondition = ET.SubElement(dynamiccontent, "hud_disablingcondition")
                 hud_disablingcondition.attrib["date_added"] = datetime.now().isoformat()
                 hud_disablingcondition.attrib["date_effective"] = self.fixDate(ph.physical_disability_date_collected)
                 hud_disablingcondition.text = self.pickList.getValue("ENHANCEDYESNOPickOption", str.strip(ph.physical_disability.upper()))
             
-            if ph.hours_worked_last_week <> "" and ph.hours_worked_last_week <> None:
+            if ph.hours_worked_last_week != "" and ph.hours_worked_last_week != None:
                 hud_hrsworkedlastweek = ET.SubElement(dynamiccontent, 'hud_hrsworkedlastweek')
                 hud_hrsworkedlastweek.attrib["date_added"] = datetime.now().isoformat()
                 hud_hrsworkedlastweek.attrib["date_effective"] = self.fixDate(ph.hours_worked_last_week_date_collected)
@@ -884,7 +884,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             
         # FIXME (when provided solution by Eric)
         #    # Are you prescribed any medications?        
-        #    if self.intakes['PrescriptionMeds'] <> "":
+        #    if self.intakes['PrescriptionMeds'] != "":
         #    areyouprescribedanyme = ET.SubElement(dynamiccontent,"areyouprescribedanyme")
         #    areyouprescribedanyme.text = self.intakes['PrescriptionMeds'].lower()
         #    areyouprescribedanyme.attrib["date_added"] = datetime.now().isoformat()
@@ -892,7 +892,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         
         #    # Is your illness life threatening?
         #    # hivaids_status
-        #    if self.intakes['LifeThreatening'].lower() <> "":
+        #    if self.intakes['LifeThreatening'].lower() != "":
         #    isyourillnesslifethre = ET.SubElement(dynamiccontent,"isyourillnesslifethre")
         #    isyourillnesslifethre.text = self.intakes['LifeThreatening'].lower()
         #    isyourillnesslifethre.attrib["date_added"] = datetime.now().isoformat()
@@ -904,7 +904,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                 if dbo_address[0].zip_quality_code == 1:
                     zipcode = dbo_address[0].zipcode
                 
-            if zipcode <> "" and zipcode <> None:
+            if zipcode != "" and zipcode != None:
                 hud_zipcodelastpermaddr = ET.SubElement(dynamiccontent, "hud_zipcodelastpermaddr")
                 hud_zipcodelastpermaddr.attrib["date_added"] = datetime.now().isoformat()
                 hud_zipcodelastpermaddr.attrib["date_effective"] = self.fixDate(dbo_address[0].zipcode_date_collected)
@@ -921,7 +921,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             
                 
             if len(dbo_address) > 0:
-                if dbo_address[0].line1 <> "":
+                if dbo_address[0].line1 != "":
                     
                     # Reporting Update
                     self.updateReported(dbo_address[0])
@@ -931,14 +931,14 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                     address_2.attrib["date_effective"] = self.fixDate(dbo_address[0].line1_date_collected)
                     address_2.text = dbo_address[0].line1
         
-        #    if self.intakes['USCitizen'].lower() <> "":
+        #    if self.intakes['USCitizen'].lower() != "":
         #    uscitizen = ET.SubElement(dynamiccontent,"uscitizen")
         #    uscitizen.text = self.intakes['USCitizen'].lower()
         #    uscitizen.attrib["date_added"] = datetime.now().isoformat()
         #    uscitizen.attrib["date_effective"] = self.fixDate(self.intakes['IntakeDate'])
         
             # already a True and False just lower the value to make it compliant
-            if str(ph.substance_abuse_problem) <> "" and ph.substance_abuse_problem <> None:
+            if str(ph.substance_abuse_problem) != "" and ph.substance_abuse_problem != None:
                 usealcoholordrugs = ET.SubElement(dynamiccontent, "usealcoholordrugs")
                 usealcoholordrugs.attrib["date_added"] = datetime.now().isoformat()
                 usealcoholordrugs.attrib["date_effective"] = self.fixDate(ph.substance_abuse_problem_date_collected)
@@ -953,7 +953,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                     
                     vet = ssp.veteran_status
                     
-                    if vet <> "" and vet <> None:
+                    if vet != "" and vet != None:
                         veteran = ET.SubElement(dynamiccontent, "veteran")
                         veteran.text = self.pickList.getValue("ENHANCEDYESNOPickOption", str(vet))
                         veteran.attrib["date_added"] = datetime.now().isoformat()
@@ -968,7 +968,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                     self.updateReported(dbv)
                     
                     branch = dbv.military_branch
-                    if str(branch) <> "" and dbv.military_branch <> None:
+                    if str(branch) != "" and dbv.military_branch != None:
                     
                         if hud_militarybranchinfo == None:
                             hud_militarybranchinfo = ET.SubElement(dynamiccontent, "hud_militarybranchinfo")
@@ -979,13 +979,13 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                             militarybranch.attrib["date_effective"] = self.fixDate(dbv.military_branch_date_collected)                        
                             militarybranch.text = self.pickList.getValue("MILITARYBRANCHPickOption", str(branch))
                         
-                #if self.convertIntegerToDate(self.intakes['EntranceDate']) <> None:
+                #if self.convertIntegerToDate(self.intakes['EntranceDate']) != None:
                 #    hud_militarybranchins = ET.SubElement(hud_militarybranchinfo,"hud_militarybranchins")
                 #    hud_militarybranchins.attrib["date_added"] = datetime.now().isoformat()
                 #    hud_militarybranchins.attrib["date_effective"] = self.fixDate(self.intakes['IntakeDate'])            
                 #    hud_militarybranchins.text = self.convertIntegerToDateTime(self.intakes['EntranceDate'])
                 #
-                #if self.convertIntegerToDate(self.intakes['DischargeDate']) <> None:
+                #if self.convertIntegerToDate(self.intakes['DischargeDate']) != None:
                 #    hud_militarybranchinend = ET.SubElement(hud_militarybranchinfo,"hud_militarybranchinend")
                 #    hud_militarybranchinend.attrib["date_added"] = datetime.now().isoformat()
                 #    hud_militarybranchinend.attrib["date_effective"] = self.fixDate(self.intakes['IntakeDate'])            
@@ -1066,7 +1066,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             # ECJ20071121 There can only be one primary reason for homelessness, so if they records show more than one set as true, discard all but one.
             # I'd rather they just populated "PrimeReason"
         
-            if str(ph.hud_homeless) <> '' and ph.hud_homeless <> None:
+            if str(ph.hud_homeless) != '' and ph.hud_homeless != None:
                 primaryreasonforhomle = ET.SubElement(dynamiccontent, "primaryreasonforhomle")
                 primaryreasonforhomle.attrib["date_added"] = datetime.now().isoformat()
                 primaryreasonforhomle.attrib["date_effective"] = self.fixDate(ph.hud_homeless_date_collected)
@@ -1080,20 +1080,20 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             #incomesource.tail = '\n'
             
             if len(dbo_address) > 0:
-                if dbo_address[0].line1 <> "":
-                #if self.intakes['ResidentialCity'] <> "" and self.intakes['ResidentialState'] <> "":
+                if dbo_address[0].line1 != "":
+                #if self.intakes['ResidentialCity'] != "" and self.intakes['ResidentialState'] != "":
                     address_1 = self.createAddress_1(dynamiccontent)
                     self.customizeAddress_1(address_1, dbo_address[0])
                 
-            if str(dbo_address[0].zipcode) <> "" and not dbo_address[0].zipcode == None:
+            if str(dbo_address[0].zipcode) != "" and not dbo_address[0].zipcode == None:
                 address_1 = self.createAddress_1(dynamiccontent)
                 self.customizeAddress_1(address_1, dbo_address[0])    
         
-        #    if self.intakes['Emergency Address'] <> "":
+        #    if self.intakes['Emergency Address'] != "":
         #    emergencycontacts = self.createEmergencyContacts(dynamiccontent)
         #    self.customizeEmergencyContacts(emergencycontacts)
             
-            if str(ph.currently_employed) <> "" and not ph.currently_employed == None:
+            if str(ph.currently_employed) != "" and not ph.currently_employed == None:
                 unemployed = ET.SubElement(dynamiccontent, 'unemployed')
                 unemployed.attrib["date_added"] = datetime.now().isoformat()
                 unemployed.attrib["date_effective"] = self.fixDate(ph.currently_employed_date_collected)                        
@@ -1103,21 +1103,21 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                 unemployed.text = "false"
         
             #This is an assumption that monthly wage = one employer's wage
-            if str(ph.total_income) <> "" and not ph.total_income == None:
+            if str(ph.total_income) != "" and not ph.total_income == None:
                 monthlyincome = ET.SubElement(dynamiccontent, 'hud_totalmonthlyincome')
                 monthlyincome.attrib["date_added"] = datetime.now().isoformat()
                 monthlyincome.attrib["date_effective"] = self.fixDate(ph.total_income_date_collected)
                 monthlyincome.text = ph.total_income
             
-        #    if self.intakes['EmployerName'] <> ""\
-        #    and self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) <> "" \
-        #    and self.intakes['Hours-Week'] <> "" and self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount'])<> "":
+        #    if self.intakes['EmployerName'] != ""\
+        #    and self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) != "" \
+        #    and self.intakes['Hours-Week'] != "" and self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount'])!= "":
         #    workhistory = self.createWorkhistory(dynamiccontent)
         #    
         #    self.customizeWorkhistory(workhistory)
             
-            #if self.intakes['DisabilityDiscription'] <> "":
-            if str(ph.physical_disability) <> "" and not ph.physical_disability == None:
+            #if self.intakes['DisabilityDiscription'] != "":
+            if str(ph.physical_disability) != "" and not ph.physical_disability == None:
                 disabilities_1 = ET.SubElement(dynamiccontent, "disabilities_1")
                 disabilities_1.attrib["date_added"] = datetime.now().isoformat()            
                 self.customizeDisabilities_1(disabilities_1, ph)
@@ -1125,15 +1125,15 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         # Moved these outside the PH Loop, so they don't repeat.  This info comes from person and not personhistorical
         # gender: this is just hard-coded to male for now, since this is a male shelter
         # person_gender_unhashed
-        #if self.pickList.getValue("SexPick","male") <> "":
-        if self.person.person_gender_unhashed <> "" and self.person.person_gender_unhashed <> None:
+        #if self.pickList.getValue("SexPick","male") != "":
+        if self.person.person_gender_unhashed != "" and self.person.person_gender_unhashed != None:
             svpprofgender = ET.SubElement(dynamiccontent, "svpprofgender")
             svpprofgender.attrib["date_added"] = datetime.now().isoformat()
             svpprofgender.attrib["date_effective"] = self.fixDate(self.person.person_gender_date_collected)
             svpprofgender.text = self.pickList.getValue("SexPick", self.person.person_gender_unhashed)
     
         # dob (Date of Birth)
-        if self.person.person_date_of_birth_unhashed <> "" and self.person.person_date_of_birth_unhashed <> None:
+        if self.person.person_date_of_birth_unhashed != "" and self.person.person_date_of_birth_unhashed != None:
             svpprofdob = ET.SubElement(dynamiccontent, "svpprofdob")
             svpprofdob.attrib["date_added"] = datetime.now().isoformat()
             svpprofdob.attrib["date_effective"] = self.fixDate(self.person.person_date_of_birth_date_collected)
@@ -1155,8 +1155,8 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             # Reporting Update
             self.updateReported(self.race[0])
                 
-            if race <> "" and race <> None:
-                if self.pickList.getValue("RacePick", str(race)) <> "":
+            if race != "" and race != None:
+                if self.pickList.getValue("RacePick", str(race)) != "":
                     svpprofrace = ET.SubElement(dynamiccontent, "svpprofrace")
                     svpprofrace.attrib["date_added"] = datetime.now().isoformat()
                     svpprofrace.attrib["date_effective"] = self.fixDate(self.race[0].race_date_collected)                        
@@ -1166,7 +1166,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             #The real solution to the problem is that they need to split Ethnicity/Race into two separate fields.    
             
         ethnicity = self.person.person_ethnicity_unhashed
-        if ethnicity <> "" and ethnicity <> None:
+        if ethnicity != "" and ethnicity != None:
             svpprofeth = ET.SubElement(dynamiccontent, "svpprofeth")
             svpprofeth.attrib["date_added"] = datetime.now().isoformat()
             svpprofeth.attrib["date_effective"] = self.fixDate(self.person.person_ethnicity_date_collected)
@@ -1182,7 +1182,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         #def customize6monthtrackinginforma(self, Sixmonthtrackinginforma):
         
     def customizeDisabilities_1(self, disabilities_1, ph):
-        #if self.intakes['DisabilityDiscription'] <> "":
+        #if self.intakes['DisabilityDiscription'] != "":
         noteondisability = ET.SubElement(disabilities_1, 'noteondisability')
         noteondisability.attrib["date_added"] = datetime.now().isoformat()
         noteondisability.attrib["date_effective"] = self.fixDate(ph.physical_disability_date_collected)
@@ -1194,13 +1194,13 @@ class SVCPOINTXML20Writer(dbobjects.DB):
         return workhistory
             
     def customizeWorkhistory(self, workhistory):    
-        if self.intakes['EmployerName'] <> "":
+        if self.intakes['EmployerName'] != "":
             employername = ET.SubElement(workhistory, 'employername')
             buildWorkhistoryAttributes(employername)
             employername.text = self.intakes['EmployerName']
     
             
-    #        if self.intakes[''] <> "":    
+    #        if self.intakes[''] != "":    
     #            supervisorsname = ET.SubElement(workhistory, 'supervisorsname')
     #            supervisorsname.tail = "\n"
     #            buildWorkhistoryAttributes(supervisorsname)
@@ -1221,17 +1221,17 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     #        employersphonenumber = ET.SubElement(workhistory, 'employersphonenumber')
     #        employersphonenumber.tail = "\n"
     #        buildWorkhistoryAttributes(employersphonenumber)
-        if self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) <> "":
+        if self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus']) != "":
             employmentstatus_1 = ET.SubElement(workhistory, 'employmentstatus_1')
             buildWorkhistoryAttributes(employmentstatus_1)
             employmentstatus_1.text = self.pickList.getValue("EmploymentPick", self.intakes['EmploymentStatus'])
     
-        if self.intakes['Hours-Week'] <> "":
+        if self.intakes['Hours-Week'] != "":
             hoursofworkperweek = ET.SubElement(workhistory, 'hoursofworkperweek')
             buildWorkhistoryAttributes(hoursofworkperweek)
             hoursofworkperweek.text = self.intakes['Hours-Week']
     
-        if self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount']) <> "":
+        if self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount']) != "":
             hourlywage = ET.SubElement(workhistory, 'hourlywage')
             buildWorkhistoryAttributes(hourlywage)
             hourlywage.text = self.calcHourlyWage(self.intakes['MonthlyWage-CheckAmount'])
@@ -1356,7 +1356,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     def writeOutXML(self):
         tree = ET.ElementTree(self.root_element)
         if self.debug == True:
-            print "trying to write XML to: %s " % os.path.join(self.outDirectory, "page.xml")
+            print("trying to write XML to: %s " % os.path.join(self.outDirectory, "page.xml"))
             
         tree.write(os.path.join(self.outDirectory, "page.xml"))
         
@@ -1369,10 +1369,10 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     def current_picture(node):
         ''' Internal function.  Debugging aid for the export module.'''
         if self.debug:
-            print "Current XML Picture is"
-            print "======================\n" * 2
+            print("Current XML Picture is")
+            print("======================\n" * 2)
             dump(node)
-            print "======================\n" * 2
+            print("======================\n" * 2)
     
     def getDateTimeObj(self, inputDate):
         dateParts = inputDate.split('/')
@@ -1417,7 +1417,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     
         
         if input == "":
-            print "empty date encountered!" + self
+            print("empty date encountered!" + self)
         
         else:
             newDate = self.getDateTimeObj(inputDate).date()
@@ -1458,9 +1458,9 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     
                 td = timedelta(days=int(intDate))
                 # Excel dates are Days since 1900-01-01 = 1
-                newDate = date(1900, 01, 01) + td
+                newDate = date(1900, 1, 1) + td
                 if self.debug == True:
-                    print 'Incoming Date is: %s and converted Date is: %s' % (intDate, newDate.isoformat())
+                    print('Incoming Date is: %s and converted Date is: %s' % (intDate, newDate.isoformat()))
             
                 return newDate.isoformat()
     
@@ -1478,14 +1478,14 @@ class SVCPOINTXML20Writer(dbobjects.DB):
     
                 td = timedelta(days=int(intDate))
                 # Excel dates are Days since 1900-01-01 = 1
-                isodate = date(1900, 01, 01) + td
+                isodate = date(1900, 1, 1) + td
                 isodatetime = str(isodate) + 'T00:00:00'
                 if self.debug == True:
-                    print 'Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime)
+                    print('Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime))
                 return isodatetime
     
     def calcHourlyWage(self, monthlyWage):
-        if monthlyWage <> "":
+        if monthlyWage != "":
             if monthlyWage.strip().isdigit():
                 if float(monthlyWage) > 5000.00:
                     hourlyWage = float(monthlyWage) / 160.00
@@ -1497,13 +1497,13 @@ class SVCPOINTXML20Writer(dbobjects.DB):
             hourlyWage = 0.00
             
         if self.debug == True:
-            print str(round(hourlyWage, 2))
+            print(str(round(hourlyWage, 2)))
             
         return str(round(hourlyWage, 2))
     
     def fixMiddleInitial(self, middle_initial):
         fixed_middle_initial = str.lstrip(str.upper(middle_initial))[0]
-    #        if fixed_middle_initial <> middle_initial:
+    #        if fixed_middle_initial != middle_initial:
     #            print "fixed middle_initial"
     #            print middle_initial
     #            print "initial middle_initial"
@@ -1535,7 +1535,7 @@ class SVCPOINTXML20Writer(dbobjects.DB):
                         self.debugMessages.log(">>>> Incoming SSN is INcorrectly formatted.  Original SSN from input file is: %s and Attempted cleaned up SSN is: %s\n" % (originalSSN, incomingSSN))
                         # reformat the string and return
                         theError = (1020, 'Data format error discovered in trying to cleanup incoming SSN: %s, original SSN: %s' % (incomingSSN, originalSSN))
-                        raise dataFormatError, theError
+                        raise dataFormatError(theError)
                 
         # If we are here, we can simply reformat the string into dashes
         if self.debug == True:

@@ -1,9 +1,9 @@
 from synthesis.exceptions import SoftwareCompatibilityError
-import dbobjects
-import logger
-import xmlutilities
+from . import dbobjects
+from . import logger
+from . import xmlutilities
 from sys import version
-from conf import settings
+from .conf import settings
 from datetime import datetime
 from sqlalchemy import and_
 
@@ -323,9 +323,9 @@ elif thisVersion == '2.4':
         import elementtree.ElementTree as ET
         from elementtree.ElementTree import Element, SubElement#IGNORE:@UnusedImport
 else:
-    print 'Sorry, please see the minimum requirements to run this Application'
+    print('Sorry, please see the minimum requirements to run this Application')
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
-    raise SoftwareCompatibilityError, theError
+    raise SoftwareCompatibilityError(theError)
 
 # SBB20100810 Making this generic so it can be configured from the settings file
 class HMISXMLWriter(dbobjects.DB):
@@ -343,7 +343,7 @@ class HMISXMLWriter(dbobjects.DB):
         self.iDG = xmlutilities.IDGeneration()
         self.outDirectory = poutDirectory
         if settings.DEBUG:
-            print "XML File to be dumped to: %s" % poutDirectory
+            print("XML File to be dumped to: %s" % poutDirectory)
             #self.log = logger.Logger(configFile='logging.ini', loglevel=40)# Was
             self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)
         self.options = processingOptions
@@ -2084,7 +2084,7 @@ class HMISXMLWriter(dbobjects.DB):
             name.text = ContactData.name
         # Email        
         AgencyEmailData = self.queryEmail(agencyData.id, ContactData.id)
-        print 'agency contact email results:', AgencyEmailData
+        print('agency contact email results:', AgencyEmailData)
         if AgencyEmailData:
         #self.session.query(dbobjects.Email).filter(and_(dbobjects.Email.agency_index_id == agencyData.id,)).all()
             email = ET.SubElement(xml, "airs:%s" % 'Email')
@@ -2094,7 +2094,7 @@ class HMISXMLWriter(dbobjects.DB):
         # now get the phone and email subelements of Contact
         # Set this to None (FIXME) This needs to be the real thing when we are pulling AKA records that are under sites.
         AgencyPhoneData = self.queryPhone(agencyData.id, ContactData.id)
-        print 'agency contact phone results:', AgencyPhoneData
+        print('agency contact phone results:', AgencyPhoneData)
         #self.session.query(dbobjects.Phone).filter(and_(dbobjects.Phone.agency_index_id == agencyData.id,)).all()
         if AgencyPhoneData:
             phone = ET.SubElement(xml, "airs:%s" % 'Phone')
@@ -2460,7 +2460,7 @@ class HMISXMLWriter(dbobjects.DB):
     
 if __name__ == "__main__":
     
-    from queryobject import QueryObject
+    from .queryobject import QueryObject
     
     optParse = QueryObject()
     options = optParse.getOptions()
@@ -2472,7 +2472,7 @@ if __name__ == "__main__":
             vld.write()        
             
         except exceptions.UndefinedXMLWriter:#IGNORE:@UndefinedVariable
-            print "Please specify a format for outputting your XML"
+            print("Please specify a format for outputting your XML")
             raise
     
     

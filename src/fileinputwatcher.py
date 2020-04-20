@@ -32,7 +32,7 @@ make a non-polling notification.
 global osiswin32
 import os, time
 #from time import sleep
-from conf import settings
+from .conf import settings
 
 # determine what environment we are running under, win32 or POSIX
 if os.name == 'nt':   
@@ -42,7 +42,7 @@ if os.name == 'nt':
         import win32event
         import win32con
     except ImportError:
-        print 'Could not import win32 modules.'     
+        print('Could not import win32 modules.')     
                 
 else:
     osiswin32 = False
@@ -50,17 +50,17 @@ else:
         from watchdog.observers import Observer
         from watchdog.events import FileSystemEventHandler
     except ImportError:
-        print 'Could not import POSIX pyinotify modules.'
+        print('Could not import POSIX pyinotify modules.')
 
 
 class FileInputWatcher:
     '''controlling class for file monitoring'''
 
     def __init__(self, dir_to_watch, queue): 
-        print 'FileInputWatcher Initialized'
+        print('FileInputWatcher Initialized')
         # SBB20090903 Adding debugging capability, not processing multiple file drops into multiple directories.
         if settings.DEBUG:
-            print '*************Debugging On*************'
+            print('*************Debugging On*************')
         
         self.queue = queue
         self.dir_to_watch = dir_to_watch
@@ -70,13 +70,13 @@ class FileInputWatcher:
                 
     def monitor(self):
         '''The command to start monitoring a directory or set of them.'''
-        print 'Monitoring Directories: %s' % self.dir_to_watch
-        print "Watching started at %s" % (time.asctime())
+        print('Monitoring Directories: %s' % self.dir_to_watch)
+        print("Watching started at %s" % (time.asctime()))
         if osiswin32:
-            print 'Watching win32 OS'              
+            print('Watching win32 OS')              
             return self.watch_win32(self.dir_to_watch)
         else:
-            print 'Watching POSIX OS'
+            print('Watching POSIX OS')
             #if settings.DEBUG:
                 #print 'sending to self.watch_posix_start()'
             self.watch_posix_start()
@@ -95,8 +95,8 @@ class FileInputWatcher:
                 
         else: 
             if settings.DEBUG:
-                print "notifiers were not instantiated, so not calling self.watch_posix_stop() again"
-        print 'Done Monitoring'
+                print("notifiers were not instantiated, so not calling self.watch_posix_stop() again")
+        print('Done Monitoring')
                 
     def watch_win32(self, dir_to_watch): 
         '''os-specific watch command'''
@@ -127,9 +127,9 @@ class FileInputWatcher:
                     files_added = [f for f in new_path_contents if not f in old_path_contents]
                     #files_deleted = [f for f in old_path_contents if not f in new_path_contents]      
                     if files_added:
-                        print
-                        print time.asctime ()
-                        print "Added:", files_added or "Nothing"
+                        print()
+                        print(time.asctime ())
+                        print("Added:", files_added or "Nothing")
                         return files_added
                     #print "Deleted:", files_deleted or "Nothing"           
                 win32file.FindNextChangeNotification(change_handle)
@@ -146,27 +146,27 @@ class FileInputWatcher:
         if self.notifier1 == None:
             try:
                 self.notifier1 = Observer()
-                print 'Starting the threaded notifier on ', self.dir_to_watch[0]
+                print('Starting the threaded notifier on ', self.dir_to_watch[0])
                 self.notifier1.schedule(EventHandler(self.queue), self.dir_to_watch[0], recursive=False)
                 self.notifier1.start()
                 if settings.DEBUG:
-                    print "notifier started"
+                    print("notifier started")
             except KeyboardInterrupt:
-                print "Keyboard Interrupt in notifier"
+                print("Keyboard Interrupt in notifier")
                 self.notifier1.stop()
                 return
             except NameError:
                 self.notifier1.stop()
                 return ['POSIX Watch Error']
             except:
-                print "General exception caught within notifier while loop, stopping notifier now"
+                print("General exception caught within notifier while loop, stopping notifier now")
                 self.notifier1.stop()
-                print "returning to calling function"
+                print("returning to calling function")
                 return True
 	            
     def watch_posix_stop(self):
         'os specific call to stop monitoring'
-        print 'Stopping the threaded notifiers.'
+        print('Stopping the threaded notifiers.')
         self.notifier1.stop()
         return
           
@@ -178,14 +178,14 @@ class EventHandler(FileSystemEventHandler):
             
     def on_created(self, event):
         '''What happens when a file is added'''
-        print "e=", event
-        print "Create: %s" % event.src_path
+        print("e=", event)
+        print("Create: %s" % event.src_path)
         self.queue.put(event.src_path)
         #print "queue is now", self.queue
         
     def on_moved(self, event):
         '''What happens when a file is added'''
-        print "e=", event
-        print "In_Moved_To: %s" % event.src_path
+        print("e=", event)
+        print("In_Moved_To: %s" % event.src_path)
         self.queue.put(event.src_path)
-        print "queue is now", self.queue
+        print("queue is now", self.queue)

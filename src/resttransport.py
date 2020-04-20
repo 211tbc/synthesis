@@ -16,14 +16,14 @@ else:
 
 import base64
 try:
-    from conf import outputConfiguration
+    from .conf import outputConfiguration
 except:
     HAS_CONF = False
 try:
-    from Encryption import *
+    from .Encryption import *
 except:
     HAS_ENCRYPTION = False
-import urllib2
+import urllib.request
 import uuid
 
 class REST():
@@ -58,31 +58,31 @@ Content-Type: text/xml
                     attachments += payload % (payload_uuid, filename, filename, data)
             #import pdb; pdb.set_trace()
             if self._url.find("https") == 0:
-                https = urllib2.HTTPSHandler(debuglevel=1)
-                opener = urllib2.build_opener(https)
-                urllib2.install_opener(opener)
-                request = urllib2.Request(self._url)
+                https = urllib.request.HTTPSHandler(debuglevel=1)
+                opener = urllib.request.build_opener(https)
+                urllib.request.install_opener(opener)
+                request = urllib.request.Request(self._url)
                 request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
                 request.add_header("User-Agent", "synthesis")
                 request.add_data(attachments)
                 if PRINT_HTTP_POST:
-                    print request.header_items()
-                    print request.get_data()
-                    print request.get_method()
-                    print request.get_host()
+                    print(request.header_items())
+                    print(request.get_data())
+                    print(request.get_method())
+                    print(request.get_host())
                     return (True, "True")
                 response = urllib2.urlopen(request).read()
             else:
-                print "**** POSTING TO LOCAL SERVER ****" 
-                request = urllib2.Request(self._url)
+                print("**** POSTING TO LOCAL SERVER ****") 
+                request = urllib.request.Request(self._url)
                 request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
                 request.add_header("User-Agent", "synthesis")
                 request.add_data(attachments)
                 if PRINT_HTTP_POST:
-                    print request.header_items()
-                    print request.get_data()
-                    print request.get_method()
-                    print request.get_host()
+                    print(request.header_items())
+                    print(request.get_data())
+                    print(request.get_method())
+                    print(request.get_host())
                     return (True, "True")
                 response = urllib2.urlopen(request).read()
 
@@ -91,7 +91,7 @@ Content-Type: text/xml
                 return (True, response)
             else:
                 return (False, response)
-        except Exception, err:
+        except Exception as err:
             return (False, "An error occurred while performing an HTTP-POST or receiving the response: (%s)" % str(err))
 
     def test_post_local(self, filename, ccd_data, use_base64=False):
@@ -115,14 +115,14 @@ Content-Type: text/xml
                 attachments += payload % (payload_uuid, filename, filename, base64.b64encode(data))
             else:
                 attachments += payload % (payload_uuid, filename, filename, data)
-        http = urllib2.HTTPHandler(debuglevel=1)
-        opener = urllib2.build_opener(http)
-        urllib2.install_opener(opener)
-        request = urllib2.Request(self._url)
+        http = urllib.request.HTTPHandler(debuglevel=1)
+        opener = urllib.request.build_opener(http)
+        urllib.request.install_opener(opener)
+        request = urllib.request.Request(self._url)
         request.add_header("Content-Type", "multipart/form-data; boundary=%s" % payload_uuid)
         request.add_header("User-Agent", "synthesis")
         request.add_data(attachments)
-        response = urllib2.urlopen(request).read()
+        response = urllib.request.urlopen(request).read()
 
         # check for some sign of success within the response
         if response[0:4] == "202:":
@@ -226,9 +226,9 @@ def occtest():
         des3 = DES3()
         encrypted_data = des3.encrypt(occ_xml, keyiv['key'], iv=keyiv['iv'])
         #print encrypted_data
-        print "Result of OCC test (encrypted): ", rest.test_post_local("occtest", [encrypted_data,], use_base64=True)
+        print("Result of OCC test (encrypted): ", rest.test_post_local("occtest", [encrypted_data,], use_base64=True))
     else:
-        print "Result of OCC test (unencrypted): ", rest.test_post_local("occtest", [occ_xml,], use_base64=False)
+        print("Result of OCC test (unencrypted): ", rest.test_post_local("occtest", [occ_xml,], use_base64=False))
 
 def tbctest():
     rest = REST("tbctest", TBC_POST_URL)
@@ -376,9 +376,9 @@ def tbctest():
         gpg = GPG()
         encrypted_data = gpg.encrypt(tbc_xml)
         #print encrypted_data
-        print "Result of TBC test (encrypted): ", rest.test_post_local("tbctest", [encrypted_data,], use_base64=True)
+        print("Result of TBC test (encrypted): ", rest.test_post_local("tbctest", [encrypted_data,], use_base64=True))
     else:
-        print "Result of TBC test (unencrypted): ", rest.test_post_local("tbctest", [tbc_xml,], use_base64=False)
+        print("Result of TBC test (unencrypted): ", rest.test_post_local("tbctest", [tbc_xml,], use_base64=False))
 
 if __name__ == "__main__":
     # testing TBC HTTP-POST

@@ -8,14 +8,14 @@ These can be run ad-hoc and the intent is for them to be run by a cron job (e.g.
 """
 from datetime import datetime, timedelta, date
 from dateutil import parser
-from conf import settings
+from .conf import settings
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from synthesis.postgresutils import Utils
 from sqlalchemy.sql import select, asc
 from sqlalchemy.engine import ResultProxy
-from dbobjects import Referral, Person, ServiceEvent, Export
+from .dbobjects import Referral, Person, ServiceEvent, Export
 from lxml import etree
 
 global age
@@ -53,9 +53,9 @@ def monthlyReferralReport():
     report_range_desc = "Report period from: " + '{:%m-%d-%Y}'.format(beginning_of_first_day_last_month) + " through: " + '{:%m-%d-%Y}'.format(end_of_last_day_last_month)  + "\n"
     text_message += report_range_desc
 
-    subject = "2-1-1 Tampa Bay Cares Referral Report For The " \
+    subject = "Sample 2-1-1 Tampa Bay Cares Referral Report For The " \
         "Month Of " + beginning_of_first_day_last_month.strftime("%B %Y")
-    print subject
+    print(subject)
 
     #print '{:%Y-%m-%d %H:%M:%S}'.format(beginning_of_first_day_last_month)
     #print '{:%m, %Y}'.format(beginning_of_first_day_last_month)
@@ -127,7 +127,7 @@ def monthlyReferralReport():
                 #colx2.text = referral_date
                 export_query = select([Export]).where(Export.id == row[1])
                 exports = conn.execute(export_query)
-                print 'service_event_id:' + str(service_event_id), 'export id:' + str(ServiceEvent.export_index_id)
+                print('service_event_id:' + str(service_event_id), 'export id:' + str(ServiceEvent.export_index_id))
                 for export in exports:
                     export_date = '{:%m-%d-%Y %H:%M}'.format(export.export_date)
                 colx2.text = export_date
@@ -155,9 +155,9 @@ def monthlyReferralReport():
                 row_id += 1
 
     html_message = etree.tostring(htmlroot, pretty_print=True)
-    print html_message
+    print(html_message)
     # Mail out the results in a formatted (html) email report
-    print text_message
+    print(text_message)
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
@@ -175,8 +175,8 @@ def monthlyReferralReport():
     msg.attach(part2)
 
     try:
-        print "trying to send message"
-        print "sending to server: " + settings.SMTPSERVER + " port: " + settings.SMTPPORT
+        print("trying to send message")
+        print("sending to server: " + settings.SMTPSERVER + " port: " + settings.SMTPPORT)
         smtpserver = smtplib.SMTP(settings.SMTPSERVER, settings.SMTPPORT)
         smtpserver.set_debuglevel(0)
         if settings.SMTPAUTH:
@@ -188,8 +188,8 @@ def monthlyReferralReport():
         smtpserver.sendmail(settings.SMTPSENDER, [settings.TBC_REFERRAL_EMAIL_RECIPIENT,settings.TBC_REFERRAL_EMAIL_CC_RECIPIENT, settings.TBC_SUPPORT_EMAIL, settings.TBC_SUPERVISOR_EMAIL], msg.as_string())
         smtpserver.close
     except Exception as e:
-        print type(e)
-        print 'send failed:' + e.message
+        print(type(e))
+        print('send failed:' + e.message)
 
 def calculate_age(born):  # from: http://stackoverflow.com/questions/2217488/age-from-birthdate-in-python
     today = date.today()

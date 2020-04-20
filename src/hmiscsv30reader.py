@@ -4,7 +4,7 @@ everything and doesn't worry about deduplication.  The only thing it enforces
 are exportids, which must be unique.'''
 
 #import sys, os
-from reader import Reader
+from .reader import Reader
 from zope.interface import implementer
 #from lxml import etree
 #from sqlalchemy.exc import IntegrityError
@@ -12,7 +12,7 @@ from zope.interface import implementer
 #import logging
 #from conf import settings
 #import clsExceptions
-import dbobjects
+from . import dbobjects
 #from fileUtils import fileUtilities
 #from errcatalog import catalog
 

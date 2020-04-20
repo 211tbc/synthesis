@@ -82,9 +82,9 @@ def main():
     optParse = QueryObject()
     options = optParse.getOptions()
     if options != None:
-        print options.configID
+        print(options.configID)
 
-    print optParse.parser.parse_args(['-a', '-u', '-i000'])
+    print(optParse.parser.parse_args(['-a', '-u', '-i000']))
 
 if __name__ == '__main__':
     main()

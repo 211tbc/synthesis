@@ -39,7 +39,7 @@ def  fixDate(inputDate):		# JCS
             try:
                 return inputDate.strftime(isIsoTimeFormat)	#self.isIsoTimeFormat)
             except ValueError:
-                print "bad date string passed to fixDate: ", inputDate, " so sending back blank date"
+                print("bad date string passed to fixDate: ", inputDate, " so sending back blank date")
                 #We should return None instead of a blank date, because this might cause validation issues (empty string dates)
                 inputDate = None
                 return inputDate    
@@ -61,7 +61,7 @@ def fixDateNoTime(self, inputDate):
 # test the inputDate length, it might be 08/08/2007 or 08/08/07
     
         if input == "":
-            print "empty date encountered!" + self
+            print("empty date encountered!" + self)
 
         else:
             newDate = self.getDateTimeObj(inputDate).date()
@@ -90,9 +90,9 @@ def convertIntegerToDate(self, intDate):
  
     td = timedelta(days=int(intDate))
     # Excel dates are Days since 1900-01-01 = 1
-    newDate = date(1900,01,01) + td
+    newDate = date(1900,1,1) + td
     if self.debug == True:
-        print 'Incoming Date is: %s and converted Date is: %s' % (intDate, newDate.isoformat())
+        print('Incoming Date is: %s and converted Date is: %s' % (intDate, newDate.isoformat()))
  
     return newDate.isoformat()
         
@@ -110,10 +110,10 @@ def convertIntegerToDateTime(self, intDate):
 
     td = timedelta(days=int(intDate))
     # Excel dates are Days since 1900-01-01 = 1
-    isodate = date(1900,01,01) + td
+    isodate = date(1900,1,1) + td
     isodatetime = str(isodate)+'T00:00:00'
     if self.debug == True:
-        print 'Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime)
+        print('Incoming Date is: %s and converted Date is: %s' % (intDate, isodatetime))
     return isodatetime
 
 def getDateTimeObj(inputDate): 	#:self, 

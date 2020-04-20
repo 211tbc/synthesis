@@ -25,7 +25,7 @@ THE SOFTWARE.
 class Interpretpicklist:
 	
 	def __init__(self):
-		print "started Interpretpicklist"
+		print("started Interpretpicklist")
 		self.pickList = {
 		    # SBB20091021 HMIS only defines 1-4, I enumerated the remaining types
 		    "RELATIONSHIPSPickOption":
@@ -360,5 +360,5 @@ if __name__ == "__main__":
 	files = vld.getValue("entryExitTypePick", "test")
 	lookupValues = vld.pickList.keys()
 	for dicts in lookupValues:
-		print vld.getValue(dicts, "other")
-	print "Valid Files are: ", files
+		print(vld.getValue(dicts, "other"))
+	print("Valid Files are: ", files)

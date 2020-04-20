@@ -1,8 +1,8 @@
-from smtplibrary import smtpInterface
-from conf import settings
-from conf import inputConfiguration
+from .smtplibrary import smtpInterface
+from .conf import settings
+from .conf import inputConfiguration
 import os
-from security import Security
+from .security import Security
 
 class XMLProcessorNotifier(smtpInterface):
     # adding encryption switch.  emailed sensitive data must be encrypted.
@@ -13,7 +13,7 @@ class XMLProcessorNotifier(smtpInterface):
             self.security = Security()
         
         self.mailSystem = smtpInterface(settings)
-        if docName <> '':
+        if docName != '':
             folderName = os.path.split(docName)[0]
             self.mailSystem.setRecipients(inputConfiguration.SMTPRECIPIENTS[folderName])
             self.docName = docName
@@ -40,13 +40,13 @@ class XMLProcessorNotifier(smtpInterface):
             else:
                 attachment = f
             
-            print 'file: %s' % f
+            print('file: %s' % f)
             self.mailSystem.setAttachmentText(attachment)
         try:
             self.sendMessage()
-        except Exception, detail:
+        except Exception as detail:
             if settings.DEBUG:
-                print "problem sending notification", str(detail)
+                print("problem sending notification", str(detail))
             return
         
     def notifyValidationFailure(self, failureMsgs=''):
@@ -56,9 +56,9 @@ class XMLProcessorNotifier(smtpInterface):
                                    'Error is: %s' % (self.docName, failureMsgs))
         try:
             self.sendMessage()
-        except Exception, detail:
+        except Exception as detail:
             if settings.DEBUG:
-                print "problem sending notification", str(detail)
+                print("problem sending notification", str(detail))
             return
         
     def notifyDuplicateDocumentError(self, failureMsgs=''):
@@ -68,9 +68,9 @@ class XMLProcessorNotifier(smtpInterface):
                                    'Error is: %s' % (self.docName, failureMsgs))
         try:
             self.sendMessage()
-        except Exception, detail:
+        except Exception as detail:
             if settings.DEBUG:
-                print "problem sending notification", str(detail)
+                print("problem sending notification", str(detail))
             return
         
     
@@ -79,9 +79,9 @@ class XMLProcessorNotifier(smtpInterface):
         self.mailSystem.setMessage('This email is a notification that we received XML document: %s.  This Document PASSED Validation properly.' % self.docName)
         try:
             self.sendMessage()
-        except Exception, detail:
+        except Exception as detail:
             if settings.DEBUG:
-                print "problem sending notification", str(detail)
+                print("problem sending notification", str(detail))
             return
     
     def sendMessage(self):
@@ -89,9 +89,9 @@ class XMLProcessorNotifier(smtpInterface):
         #mailSystem.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailprocessor.py'))
         try:
             self.mailSystem.sendMessage()
-        except Exception, detail:
+        except Exception as detail:
             if settings.DEBUG:
-                print "problem sending notification through mail system", str(detail)
+                print("problem sending notification through mail system", str(detail))
             return
 
 if __name__ == '__main__':

@@ -5,56 +5,56 @@ class Error(Exception):
 class DuplicateXMLDocumentError(Exception):
     def __init__(self, *args):
         message = "Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2])
-        print message
+        print(message)
         self.message = message
 
 class UndefinedXMLWriter(Exception):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2]))
 
 class DatabaseAuthenticationError(Exception):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[0], args[1], args[2]))
         
 class SoftwareCompatibilityError(Exception):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class XSDError(Exception):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class DBLayerNotFoundError(Exception):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
 
 class VPNFailure(Error):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class FTPUploadFailureError(Error):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class KeyboardInterrupt(Error):
     def __init__(self, *args):
-        print "Intercepted Keyboard Interupt"
+        print("Intercepted Keyboard Interupt")
         
 class FileNotFoundError(Error):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
 
 class DataFormatError(Error):
     def __init__(self, *args):
-            print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+            print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
 
 class InvalidSSNError(Error):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class EthnicityPickNotFound(Error):
     def __init__(self, *args):
-        print "Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2])
+        print("Error %s: \nIndicates: %s\nIn Location: %s" % (args[1], args[0], args[2]))
         
 class InputError(Error):
     """Exception raised for errors in the input.

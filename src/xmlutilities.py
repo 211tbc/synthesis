@@ -2,11 +2,11 @@
 
 #import sys
 import os
-import fileutils
+from . import fileutils
 #import glob
 #import copy
 import pickle
-from conf import settings
+from .conf import settings
 from sys import version 
 #from exceptions import SoftwareCompatibilityError
 
@@ -33,13 +33,13 @@ if True:
             #import elementtree.ElementTree as ET
             #from elementtree.ElementTree import Element, SubElement
 else:
-    print 'Sorry, please see the minimum requirements to run this Application'
+    print('Sorry, please see the minimum requirements to run this Application')
     theError = (1100, 'This application requires Python 2.4 or higher.  You are current using version: %s' % (thisVersion), 'import Error XMLDumper.py')
     raise theError#, SoftwareCompatibilityError
 
 class IDGeneration:    
     def __init__(self):
-        print "xmlutilities initialized..."
+        print("xmlutilities initialized...")
         # initialize the dictionary of sequences
         self.IDNumberSequences = {}
         # get the serialized sequence stored on the Hard drive to init the number generator
@@ -151,7 +151,7 @@ def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
     #print '==== root_element is ', writer_instance.root_element
     tree = ET.ElementTree(writer_instance.root_element)
     if settings.DEBUG:
-        print "trying to write XML to: %s " % os.path.join(writer_instance.outDirectory, "page.xml")
+        print("trying to write XML to: %s " % os.path.join(writer_instance.outDirectory, "page.xml"))
     #check if output directory even exists and create it if it doesn't
     fileutils.checkPath(writer_instance.outDirectory)
     #figure out what to call the new filename.  can't overwrite an existing page.xml
@@ -161,7 +161,7 @@ def writeOutXML(writer_instance, xml_declaration=None, encoding=None):
     tree.write(os.path.join(writer_instance.outDirectory, unique_filename),xml_declaration=xml_declaration,encoding=encoding)	# JCS
             
 def printOutXML(writer_instance, encoding=None, method="xml"):
-    print '==== root_element is ', writer_instance.root_element
+    print('==== root_element is ', writer_instance.root_element)
     tree = ET.ElementTree(writer_instance.root_element)
     # return the XML string containing the CCD 
     return ET.tostring(tree.getroot(), encoding=encoding, method=method)

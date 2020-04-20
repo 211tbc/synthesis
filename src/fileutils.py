@@ -29,10 +29,10 @@ import shutil
 import csv
 from time import sleep as ossleep
 import datetime
-from conf import settings
+from .conf import settings
       
 def sleep(sleepTime):
-    print 'Sleeping for %s' % sleepTime
+    print('Sleeping for %s' % sleepTime)
     ossleep(sleepTime)
     
 def getSmartPath(baseDir, filePath):
@@ -146,30 +146,30 @@ def parseRecord(record, delimiter=","):
 
 def suckFile2(filename):
     records = []
-    print "Ready to suck file2 in %s" % filename
+    print("Ready to suck file2 in %s" % filename)
     try:
         reader = csv.reader(open(filename, "rb"))
         for row in reader:
             records.append(row)
     except:
-        print "ERROR: filename: %s not found.  Please investigate" % filename
+        print("ERROR: filename: %s not found.  Please investigate" % filename)
             
     #print 'sucked in %s records' % reader.line_num
-    print 'sucked in %s records' % len(records)
+    print('sucked in %s records' % len(records))
     
     return records
 
 def suckFile(filename):
     #records = []
-    print "Ready to suck file in %s" % filename
+    print("Ready to suck file in %s" % filename)
     try:
         file1 = open(filename, 'r')
     except:
-        print "ERROR: filename: %s not found.  Please investigate" % filename
+        print("ERROR: filename: %s not found.  Please investigate" % filename)
          
     records = file1.readlines()
         
-    print 'sucked in %s records' % len(records)
+    print('sucked in %s records' % len(records))
     
     return records
 
@@ -204,7 +204,7 @@ def pushIntoDict(dictName, theDict, theKey, theRow, appendRow=False):
 
 def dumpObjToFile(dumpObject, filename):
     # function to dump some type of object to a file (normally a debug list to a file)
-    print "dump File Processing"
+    print("dump File Processing")
     
     f = open(filename, 'w')
     
@@ -219,23 +219,23 @@ def dumpObjToFile(dumpObject, filename):
     f.close()
 
 def grabFiles(directoryToProcess):
-    print "Getting Files"
+    print("Getting Files")
     validFiles = []
     # adding file sucking capability
     files = glob.glob(directoryToProcess)
     # pull list of files
     for f in files:
-        print "processing: %s" % f
+        print("processing: %s" % f)
     
         validFiles.append(f)
     
-    print 'Done Grabbing Files'
+    print('Done Grabbing Files')
     return validFiles
 
 def getTimeStampedFileName(unstamped_file_path):
     '''Simply extract the name of a file from a path string, timestamp the file name, and return a file name string with the modification.'''
     if settings.DEBUG:
-        print "unstamped_file_path in getTimeStampedFileName is: ", unstamped_file_path
+        print("unstamped_file_path in getTimeStampedFileName is: ", unstamped_file_path)
     (old_file_path, old_file_name) = os.path.split(unstamped_file_path)#IGNORE:@UnusedVariable
     old_file_name_prefix = os.path.splitext(old_file_name)[0]
     old_file_name_suffix = os.path.splitext(unstamped_file_path)[1]
@@ -243,7 +243,7 @@ def getTimeStampedFileName(unstamped_file_path):
     stamped_file_name = new_file_name_prefix + old_file_name_suffix
     stamped_file_name = stamped_file_name.replace(' ', '_')
     if settings.DEBUG:
-        print "stamped_file_name in getTimeStampedFileName is: ", stamped_file_name
+        print("stamped_file_name in getTimeStampedFileName is: ", stamped_file_name)
     return stamped_file_name
 
 def getUniqueFileNameForMove(attempted_file_name, destination_directory):
@@ -252,12 +252,12 @@ def getUniqueFileNameForMove(attempted_file_name, destination_directory):
     attempted_file_path = destination_directory + "/" + attempted_file_name
     if settings.DEBUG:
         if os.path.isfile(attempted_file_path):    
-            print "output location", attempted_file_path, "already exists"
+            print("output location", attempted_file_path, "already exists")
     #print "attempted_file_path before getTimeStampedFileName", attempted_file_path       
     stamped_file_path = getTimeStampedFileName(attempted_file_path)
     #print "stamped_file_path in getUniqueFileNameForMove", stamped_file_path
     if os.path.isfile(stamped_file_path):
-        print "The renamed file is also already there, please check this out."
+        print("The renamed file is also already there, please check this out.")
     #stamped_pathname is a whole path, so just return the filename part without path
     (file_path, unique_file_name) = os.path.split(stamped_file_path)#IGNORE:@UnusedVariable
     
@@ -315,9 +315,9 @@ def deleteFile(fileDelete):
     try:
         os.remove(fileDelete)
     except:
-        print "\T\TFAILURE:Deletion of file %s failed" % fileDelete * 3
+        print("\T\TFAILURE:Deletion of file %s failed" % fileDelete * 3)
         raise
-    print "SUCCESS: Deletion of file %s succeeded" % fileDelete
+    print("SUCCESS: Deletion of file %s succeeded" % fileDelete)
     
 def backupFile(project):
     # copy the file to a backup filename we are creating a new copy of the file
@@ -330,11 +330,11 @@ def makeBlock(wording, numChars=0):
         
     if len(wording) >= numChars:
         numChars = len(wording) + 4
-    numSpaces = (numChars - (len(wording) + 2)) / 2
+    numSpaces = int((numChars - (len(wording) + 2)) / 2)
     oddSpacing = (numChars - len(wording)) % 2
-    print numChars * ("*")
-    print "*" + " " * numSpaces + wording + " " * numSpaces + oddSpacing * (" ") + "*"
-    print numChars * ("*")
+    print(numChars * ("*"))
+    print("*" + " " * numSpaces + wording + " " * numSpaces + oddSpacing * (" ") + "*")
+    print(numChars * ("*"))
 
 def sortItems(incomingList, colToSort=''):
     from operator import itemgetter

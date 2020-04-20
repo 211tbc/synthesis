@@ -2,8 +2,8 @@
 
 # Alchemy Libraries
 from zope.interface import implementer
-import dbobjects
-from writer import Writer
+from . import dbobjects
+from .writer import Writer
 
 @implementer(Writer)
 class HMISCSV27Writer(dbobjects.DB):

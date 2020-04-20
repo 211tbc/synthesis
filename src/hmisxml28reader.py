@@ -3,8 +3,8 @@ storing them into a postgresql database.  This is a log database, so it holds
 everything and doesn't worry about deduplication.  The only thing it enforces 
 are exportids, which must be unique.'''
 import sys
-from reader import Reader
-from zope.interface import implements
+from .reader import Reader
+from zope.interface import implementer
 from lxml import etree
 #from sqlalchemy import create_engine, Table, Column, Numeric, Integer, String, Boolean, MetaData, ForeignKey, Sequence
 #from sqlalchemy.orm import sessionmaker, mapper, backref, relation, clear_mappers
@@ -13,17 +13,19 @@ from lxml import etree
 from sqlalchemy.exc import IntegrityError
 import dateutil.parser
 #import logging
-import exceptions
-import dbobjects
-import fileutils
-from errcatalog import catalog
+from . import exceptions
+from . import dbobjects
+from . import fileutils
+from .errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
 #class HMISXML28Reader(dbobjects.DB):
+
+# Implements reader interface
+@implementer(Reader)
 class HMISXML28Reader:#(dbobjects.DB):
-    '''Implements reader interface.'''
-    implements (Reader) 
     
+    ''' Define XML namespaces '''
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
     nsmap = {"hmis" : hmis_namespace, "airs" : airs_namespace}
@@ -71,7 +73,7 @@ class HMISXML28Reader:#(dbobjects.DB):
         except IntegrityError:
             fileutils.makeBlock("CAUGHT INTEGRITY ERROR")
             err = catalog.errorCatalog[1002]
-            raise exceptions.DuplicateXMLDocumentError, (err[0], err[1], 'process_data()'  )
+            raise exceptions.DuplicateXMLDocumentError(err[0], err[1], 'process_data()')
         
         #test join
         #for u,a in self.session.query(Person, Export).filter(Person.export_id==Export.export_id): 
@@ -1647,7 +1649,7 @@ class HMISXML28Reader:#(dbobjects.DB):
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string[0].text))
                 return True
             else:
-                print "need to specify the handling"
+                print("need to specify the handling")
                 return False
         else:
             return False

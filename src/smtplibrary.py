@@ -1,14 +1,14 @@
 import os
 import smtplib
-from conf import settings
-from conf import inputConfiguration
-from logger import Logger
+from .conf import settings
+from .conf import inputConfiguration
+from .logger import Logger
 
 # Import the email modules we'll need
-from email.MIMEMultipart import MIMEMultipart
+from email.mime.multipart import MIMEMultipart
 #from email.MIMEBase import MIMEBase
-from email.MIMEText import MIMEText
-from email.Utils import formatdate#COMMASPACE
+from email.mime.text import MIMEText
+from email.utils import formatdate
 #from email import Encoders
 
 def main():
@@ -21,14 +21,14 @@ def main():
     smtp.formatMessage()
     smtp.setAttachmentText(os.path.join(smtp.settings.BASE_PATH, 'emailprocessor.py'))
     try:
-        print "trying to send message"
+        print("trying to send message")
         smtp.sendMessage()
     except:
-        print 'send failed'
+        print('send failed')
     
 class smtpInterface:
     def __init__(self, settings):
-        print "SMTP Server Started"
+        print("SMTP Server Started")
         self.settings = settings
         self.log = Logger(settings.LOGGING_INI)
         
@@ -107,7 +107,7 @@ class smtpInterface:
         
     def sendMessage(self):
         logged_in = False
-        print "ServerAddress: %s" % self.settings.SMTPSERVER
+        print("ServerAddress: %s" % self.settings.SMTPSERVER)
         if self.settings.SMTPAUTH:
             attempts = 0
             while attempts <= 5:
@@ -119,14 +119,14 @@ class smtpInterface:
                         server.starttls()
                         server.ehlo
                     else: 
-                        print "no TLS tried for smtp" 
+                        print("no TLS tried for smtp") 
                     server.login(self.settings.SMTPSENDER, self.settings.SMTPSENDERPWD)
                     logged_in = True
                     break
                 except smtplib.socket.error:
-                    print "exception: socket error can't connect to smtp server"
+                    print("exception: socket error can't connect to smtp server")
         else: 
-            print "no authentication specified in settings for smtp"
+            print("no authentication specified in settings for smtp")
             server = smtplib.SMTP(self.settings.SMTPSERVER)
         if self.settings.SMTPSENDERPWD != '' and not logged_in and self.settings.SMTPAUTH:
             try:
@@ -134,21 +134,21 @@ class smtpInterface:
             except smtplib.SMTPRecipientsRefused:
                 self.log.logger.exception('smtplib.SMTPRecipientsRefused')
                 if settings.DEBUG:
-                    print "SMTPRecipientsRefused"
+                    print("SMTPRecipientsRefused")
                 return
-            except smtplib.SMTPException, detail:
+            except smtplib.SMTPException as detail:
                 self.log.logger.exception('smtplib.SMTPException')
                 if settings.DEBUG:
-                    print detail.value
+                    print(detail.value)
                 return
             else:
                 if settings.DEBUG:
-                    print "some other type of smtp exception"
+                    print("some other type of smtp exception")
                 return
         else:
             if not logged_in and not self.settings.SMTPAUTH:
-                print "Just sending the message without authentication"
-        print "trying to send the message"
+                print("Just sending the message without authentication")
+        print("trying to send the message")
         server.set_debuglevel(0)
         self.formatMessage()
         server.sendmail(self.fromaddr, self.toaddrs, self.msg.as_string())

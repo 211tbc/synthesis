@@ -24,15 +24,15 @@ THE SOFTWARE.
 import os
 import sys
 import gnupg
-from conf import settings
-import testcase_settings
+from .conf import settings
+from . import testcase_settings
 #from IPython.Shell import IPShellEmbed
-from borg import Borg
+from .borg import Borg
 
 class Security(Borg):
 
 	def __init__(self):
-		print "Class created: %s" % self.__class__.__name__
+		print("Class created: %s" % self.__class__.__name__)
 		Borg.__init__(self)
 		
 		self.gpg = gnupg.GPG(gnupghome=settings.PGPHOMEDIR)
@@ -70,7 +70,7 @@ class Security(Borg):
 		
 	def listKeys(self):
 		keys = self.gpg.list_keys()
-		print keys
+		print(keys)
 		
 	def encrypt(self, payload):
 		# Against a memory String
@@ -101,9 +101,9 @@ def main():
 	stream = open(inputFile, 'r')
 	uData = stream.read()
 	if uData == dData:
-		print 'same'
+		print('same')
 	else:
-		print 'different'
+		print('different')
 	
 	cls.run()
 	cls.listKeys()

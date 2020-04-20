@@ -1,26 +1,26 @@
-from conf import settings
-from conf import inputConfiguration
-import exceptions as exceptions
+from .conf import settings
+from .conf import inputConfiguration
+from . import exceptions as exceptions
 import traceback
 
 #from vendorxmlxxwriter import VendorXMLXXWriter
 
 # for validation
-from selector_tests import HUDHMIS30XMLTest, HUDHMIS28XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest#, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest
-from errcatalog import catalog
+from .selector_tests import HUDHMIS30XMLTest, HUDHMIS28XMLTest, SvcPoint5XMLTest, hl7CCDXMLTest#, JFCSXMLTest, VendorXMLTest, SvcPoint406XMLTest
+from .errcatalog import catalog
 import os
-from queryobject import QueryObject
-from conf import outputConfiguration
-import postprocessing
-import fileutils
-from emailprocessor import XMLProcessorNotifier
-import iniutils
-import resttransport
-import soaptransport
-from Encryption import GPG, DES3, get_incoming_3des_key_iv
+from .queryobject import QueryObject
+from .conf import outputConfiguration
+from . import postprocessing
+from . import fileutils
+from .emailprocessor import XMLProcessorNotifier
+from . import iniutils
+from . import resttransport
+from . import soaptransport
+from .Encryption import GPG, DES3, get_incoming_3des_key_iv
 import uuid
 import shutil
-from smtplibrary import smtpInterface
+from .smtplibrary import smtpInterface
 # from hmisxml30writer import HMISXMLWriter	# JCS 9/25/11
 # from hmisxml28writer import HMISXML28Writer	# JCS 9/25/11
 global hmiscsv30writer_loaded   # "global" does not make vars global - it is supposed to be used inside functions
@@ -42,7 +42,7 @@ hl7CCDwriter_loaded = False
 class NodeBuilder():
 
     def __init__(self, queryOptions, export_id=None):
-        print "initializing nodebuilder"
+        print("initializing nodebuilder")
         # initialize dbobjects
         self.mailSystem = smtpInterface(settings)
         # fixme, need to decipher the query objects against the configuration (table, object, ini, conf..)
@@ -54,35 +54,35 @@ class NodeBuilder():
         self.export_id = export_id
         
         self.queryOptions = queryOptions	# Passed in from QueryObject.getOptions()
-        print '==== Output Format', self.generateOutputformat		# JCS
+        print('==== Output Format', self.generateOutputformat)		# JCS
         if self.generateOutputformat == 'svcpoint5':
             try:
                 from synthesis.svcpointxml5writer import SvcPointXML5Writer
                 #svcptxml5writer_loaded = True
-                print "import of Svcpt XML Writer, version 5 was successful"
+                print("import of Svcpt XML Writer, version 5 was successful")
             except Exception as e:
-                print "import of Svcpt XML Writer, version 5 failed", e
+                print("import of Svcpt XML Writer, version 5 failed", e)
                 #svcptxml5writer_loaded = False
             if self.transport == "save":
                 self.writer = SvcPointXML5Writer(self.outputFilesPath, queryOptions)
-                print '==== self.writer:', self.writer
+                print('==== self.writer:', self.writer)
                 self.validator = SvcPoint5XMLTest()
-                print '==== self.validator:', self.validator
+                print('==== self.validator:', self.validator)
         
         elif self.generateOutputformat == 'hl7ccd':     # JCS
             try:
                 from synthesis.hl7CCDwriter import hl7CCDwriter
                 hl7CCDwriter_loaded = True
-                print "import of HL7 XML Writer was successful"
+                print("import of HL7 XML Writer was successful")
             except Exception as e:
-                print "import of HL7 XML Writer failed", e
+                print("import of HL7 XML Writer failed", e)
                 hl7CCDwriter_loaded = False
             if self.transport in ("save", "rest", "soap"):
-                print "queryOptions: ", queryOptions
+                print("queryOptions: ", queryOptions)
                 self.writer = hl7CCDwriter(self.outputFilesPath, queryOptions, export_id=self.export_id)
-                print '==== self.writer:', self.writer
+                print('==== self.writer:', self.writer)
                 self.validator = hl7CCDXMLTest()
-                print '==== self.validator:', self.validator
+                print('==== self.validator:', self.validator)
 
 #         elif self.generateOutputformat == 'svcpoint406':	# JCS
 #             try:
@@ -118,21 +118,21 @@ class NodeBuilder():
                 #hmisxml28writer_loaded = False
             if self.transport == "save":
                 if settings.DEBUG:
-                    print "destination is ", self.outputFilesPath
+                    print("destination is ", self.outputFilesPath)
                 #self.writer = HMISXML28Writer(self.outputFilesPath, queryOptions)           
                 self.validator = HUDHMIS28XMLTest()
             
         elif self.generateOutputformat == 'hmisxml30':
             try:
-                from hmisxml30writer import HMISXMLWriter#IGNORE:@ImportRedefinition
-                print "import of HMISXMLWriter, version 3.0 occurred successfully"
+                from .hmisxml30writer import HMISXMLWriter#IGNORE:@ImportRedefinition
+                print("import of HMISXMLWriter, version 3.0 occurred successfully")
                 hmisxml30writer_loaded = True
             except Exception as e:
-                print "import of HMISXMLWriter, version 3.0, failed", e
+                print("import of HMISXMLWriter, version 3.0, failed", e)
                 hmisxml30writer_loaded = False
             if self.transport == "save":
                 if settings.DEBUG:
-                    print "destination is ", self.outputFilesPath
+                    print("destination is ", self.outputFilesPath)
                 self.writer = HMISXMLWriter(self.outputFilesPath, queryOptions)                    
                 self.validator = HUDHMIS30XMLTest() 
             
@@ -150,11 +150,11 @@ class NodeBuilder():
 #            self.writer = JFCSXMLWriter()                   
 #            self.validator = JFCSXMLTest()
         elif self.generateOutputformat == 'pseudo':
-            print "Pseudo writer encountered. Skipping..."
+            print("Pseudo writer encountered. Skipping...")
         else:
             # new error cataloging scheme, pull the error from the catalog, then raise the exception (centralize error catalog management)
             err = catalog.errorCatalog[1001]
-            raise exceptions.UndefinedXMLWriter, (err[0], err[1], 'NodeBuilder.__init__() ' + self.generateOutputformat)
+            raise exceptions.UndefinedXMLWriter(err[0], err[1], 'NodeBuilder.__init__() ' + self.generateOutputformat)
             
         #fileStream = open(new_file,'r')
         # validate the file prior to uploading it
@@ -204,58 +204,58 @@ class NodeBuilder():
                     soap = soaptransport.SoapEnv(self.queryOptions.configID)
                     result, details = soap.send_soap_envelope(ccd_data,
                         referredToProviderID, self.queryOptions.configID)
-                    print result, details
+                    print(result, details)
             except:
-                print "*****************************************************************"
-                print "*****************************************************************"
-                print "*****************************************************************"
+                print("*****************************************************************")
+                print("*****************************************************************")
+                print("*****************************************************************")
                 synthesis_error = traceback.format_exc()
-                print synthesis_error
+                print(synthesis_error)
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
                     (self.transport.upper(), self.generateOutputformat.capitalize()))
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])#make this [(self.queryOptions.configID)]?
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
-                    print "trying to send message"
+                    print("trying to send message")
                     smtp.sendMessage()
                 except:
-                    print 'send failed'                
-                print "*****************************************************************"
-                print "*****************************************************************"
-                print "*****************************************************************"
+                    print('send failed')                
+                print("*****************************************************************")
+                print("*****************************************************************")
+                print("*****************************************************************")
         elif self.transport == 'rest':
             try:
                 ccd_data = self.writer.get()
                 rest = resttransport.REST(self.queryOptions.configID)
                 #assert (rest.post(ccd_data)[0] == True), "Sending CCD via REST transport failed!"
                 result, details = rest.post('CCD_%s' % str(uuid.uuid4()).replace('-',''), ccd_data)
-                print result, details
+                print(result, details)
             except:
-                print "*****************************************************************"
-                print "*****************************************************************"
-                print "*****************************************************************"
+                print("*****************************************************************")
+                print("*****************************************************************")
+                print("*****************************************************************")
                 synthesis_error = traceback.format_exc()
-                print synthesis_error
+                print(synthesis_error)
                 smtp = smtpInterface(settings)
                 smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
                     (self.transport.upper(), self.generateOutputformat.capitalize()))
                 smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                 smtp.setMessage("%s\r\n" % synthesis_error )
                 try:
-                    print "trying to send message"
+                    print("trying to send message")
                     smtp.sendMessage()
                 except:
-                    print 'send failed'                
-                print "*****************************************************************"
-                print "*****************************************************************"
-                print "*****************************************************************"
+                    print('send failed')                
+                print("*****************************************************************")
+                print("*****************************************************************")
+                print("*****************************************************************")
         else:
             # the remaining transport require file IO
             if self.generateOutputformat != "pseudo":
                 try:
                     if settings.DEBUG:
-                        print "destination is ", self.outputFilesPath
+                        print("destination is ", self.outputFilesPath)
                     if self.writer.write():
                         #filesToTransfer = fileutils.grabFiles(os.path.join(settings.OUTPUTFILES_PATH, "*.xml"))
                         filesToTransfer = fileutils.grabFiles(os.path.join(self.outputFilesPath, "*.xml"))
@@ -267,7 +267,7 @@ class NodeBuilder():
                             fs = open(eachFile, 'r')
                             if self.validator.validate(fs):
                                 validFiles.append(eachFile)
-                                print 'oK'
+                                print('oK')
                                 # since the file was validated, its OK to encrypt it now.
                                 possible_new_file_name = self.encrypt_file(eachFile)
                                 validFiles[validFiles.index(eachFile)] = possible_new_file_name
@@ -280,7 +280,7 @@ class NodeBuilder():
                         # upload the valid files
                         # how to transport the files (debugging)
                         if self.transport == 'save':
-                            print 'Output Complete...Please see output files: %s' % filesToTransfer
+                            print('Output Complete...Please see output files: %s' % filesToTransfer)
                             
                         if self.transport == 'sys.stdout':
                             for eachFile in validFiles:
@@ -289,7 +289,7 @@ class NodeBuilder():
                                 lines = fs.readlines()
                                 fs.close()              # done with file close handle
                                 for line in lines:
-                                    print line        
+                                    print(line)        
                                     
                         if self.transport == 'sftp':
                             self.pprocess.processFileSFTP(validFiles)
@@ -313,24 +313,24 @@ class NodeBuilder():
                             #results
                             #return results
                 except:
-                    print "*****************************************************************"
-                    print "*****************************************************************"
-                    print "*****************************************************************"
+                    print("*****************************************************************")
+                    print("*****************************************************************")
+                    print("*****************************************************************")
                     synthesis_error = traceback.format_exc()
-                    print synthesis_error
+                    print(synthesis_error)
                     smtp = smtpInterface(settings)
                     smtp.setMessageSubject("ERROR -- Synthesis:NodeBuilder:%s:%s" %
                         (self.transport.upper(), self.generateOutputformat.capitalize()))
                     smtp.setRecipients(inputConfiguration.SMTPRECIPIENTS['testSource'])
                     smtp.setMessage("%s\r\n" % synthesis_error )
                     try:
-                        print "trying to send message"
+                        print("trying to send message")
                         smtp.sendMessage()
                     except:
-                        print 'send failed'                
-                    print "*****************************************************************"
-                    print "*****************************************************************"
-                    print "*****************************************************************"
+                        print('send failed')                
+                    print("*****************************************************************")
+                    print("*****************************************************************")
+                    print("*****************************************************************")
                     
     def formatMsgBody(self):
         msgBody = "Your report was requested on %s. /r/n The report criteria is: \r\n\t StartDate: %s /r/n \t EndDate: %s /r/n /t Previously Reported: %s /r/n /t Previously UnReported: %s' % (datetime.today() ,self.queryOptions.startDate, self.queryOptions.endDate, self.queryOptions.reported, self.queryOptions.unreported)"#IGNORE:@UnusedVariable
@@ -400,7 +400,7 @@ if __name__ == '__main__':
             RESULTS = NODEBUILDER.run()
             
         except exceptions.UndefinedXMLWriter:
-            print "Please specify a format for outputting your XML"
+            print("Please specify a format for outputting your XML")
             raise
 
 

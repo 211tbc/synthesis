@@ -3,10 +3,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.types import DateTime, Date, Interval
 from sqlalchemy.pool import NullPool
-from conf import settings
+from .conf import settings
 from logging import Logger
 
-print "loaded dbobjects module"
+print("loaded dbobjects module")
 
 class DB:
     #print "loaded DB Class" 
@@ -25,10 +25,10 @@ class DB:
 class MapBase():
         def __init__(self, field_dict):
             if settings.DEBUG:
-                print "Base Class created: %s" % self.__class__.__name__
+                print("Base Class created: %s" % self.__class__.__name__)
         #def __init__(self, field_dict):
             if settings.DEBUG:
-                print field_dict
+                print(field_dict)
             for x, y in field_dict.iteritems():
                 self.__setattr__(x,y)
            
@@ -120,7 +120,7 @@ class Races(DB.Base, MapBase):
     id = Column(Integer, primary_key=True)
     person_index_id = Column(Integer, ForeignKey('person.id'))
     export_index_id = Column(Integer, ForeignKey('export.id'))
-    race_unhashed = Column(Integer(2))
+    race_unhashed = Column(Integer)
     race_hashed = Column(String(32))
     race_date_collected = Column(DateTime(timezone=False))
     reported = Column(Boolean)
@@ -208,9 +208,9 @@ class DrugHistory(DB.Base, MapBase):
     export_index_id = Column(Integer, ForeignKey('export.id'))
     drug_history_id = Column(String(32))
     drug_history_id_date_collected = Column(DateTime(timezone=False))
-    drug_code = Column(Integer(2))
+    drug_code = Column(Integer)
     drug_code_date_collected = Column(DateTime(timezone=False))    
-    drug_use_frequency = Column(Integer(2))
+    drug_use_frequency = Column(Integer)
     drug_use_frequency_date_collected = Column(DateTime(timezone=False))
     reported = Column(Boolean)
     useexisting = True
@@ -406,21 +406,21 @@ class PersonHistorical(DB.Base, MapBase):
     ###Veteran (subtable)
     vocational_training = Column(String(32))
     vocational_training_date_collected = Column(DateTime(timezone=False))
-    annual_personal_income = Column(Integer(2))
+    annual_personal_income = Column(Integer)
     annual_personal_income_date_collected = Column(DateTime(timezone=False))
-    employment_status = Column(Integer(2))
+    employment_status = Column(Integer)
     employment_status_date_collected = Column(DateTime(timezone=False))
-    family_size = Column(Integer(2))
+    family_size = Column(Integer)
     family_size_date_collected = Column(DateTime(timezone=False))
-    hearing_impaired = Column(Integer(2))
+    hearing_impaired = Column(Integer)
     hearing_impaired_date_collected = Column(DateTime(timezone=False))
-    marital_status = Column(Integer(2))
+    marital_status = Column(Integer)
     marital_status_date_collected = Column(DateTime(timezone=False))
-    non_ambulatory = Column(Integer(2))
+    non_ambulatory = Column(Integer)
     non_ambulatory_date_collected = Column(DateTime(timezone=False))
-    residential_status = Column(Integer(2))
+    residential_status = Column(Integer)
     residential_status_date_collected = Column(DateTime(timezone=False))
-    visually_impaired = Column(Integer(2))
+    visually_impaired = Column(Integer)
     visually_impaired_date_collected = Column(DateTime(timezone=False))
     reported = Column(Boolean)
     fk_person_historical_to_income_and_sources = relationship('IncomeAndSources',
@@ -1887,7 +1887,7 @@ class FosterChildEver(DB.Base, MapBase):
     id = Column(Integer, primary_key=True)
     export_index_id = Column(Integer, ForeignKey('export.id'))
     person_historical_index_id = Column(Integer, ForeignKey('person_historical.id')) 
-    foster_child_ever = Column(Integer(2))
+    foster_child_ever = Column(Integer)
     foster_child_ever_date_collected = Column(DateTime(timezone=False))
     foster_child_ever_date_effective = Column(DateTime(timezone=False))        
     useexisting = True
@@ -1921,14 +1921,14 @@ class Person(DB.Base, MapBase):
     person_id_date_collected = Column(DateTime(timezone=False))
     person_date_of_birth_hashed = Column(String(32))
     person_date_of_birth_hashed_date_collected = Column(DateTime(timezone=False))
-    person_date_of_birth_unhashed = Column(Date(timezone=False))
+    person_date_of_birth_unhashed = Column(DateTime(timezone=False))
     person_date_of_birth_unhashed_date_collected = Column(DateTime(timezone=False))
     person_ethnicity_hashed = Column(String(32))
-    person_ethnicity_unhashed = Column(Integer(2))
+    person_ethnicity_unhashed = Column(Integer)
     person_ethnicity_hashed_date_collected = Column(DateTime(timezone=False))
     person_ethnicity_unhashed_date_collected = Column(DateTime(timezone=False))
     person_gender_hashed = Column(String(32))
-    person_gender_unhashed = Column(Integer(2))
+    person_gender_unhashed = Column(Integer)
     person_gender_hashed_date_collected = Column(DateTime(timezone=False))
     person_gender_unhashed_date_collected = Column(DateTime(timezone=False))
     person_gender_unhashed_date_effective = Column(DateTime(timezone=False))
@@ -1973,7 +1973,7 @@ class Person(DB.Base, MapBase):
     person_id_delete = Column(String(32))
     person_id_delete_occurred_date = Column(DateTime(timezone=False))
     person_id_delete_effective_date = Column(DateTime(timezone=False))
-    person_date_of_birth_type = Column(Integer(2))
+    person_date_of_birth_type = Column(Integer)
     person_date_of_birth_type_date_collected = Column(DateTime(timezone=False))
     fk_person_to_other_names = relationship('OtherNames', backref='fk_other_names_to_person')
     site_service_participations = relationship("SiteServiceParticipation", backref="person")
@@ -2017,7 +2017,7 @@ class ServiceEvent(DB.Base, MapBase):
     type_of_service_date_collected = Column(DateTime(timezone=False))
     type_of_service_other = Column(String(32))
     type_of_service_other_date_collected = Column(DateTime(timezone=False))
-    type_of_service_par = Column(Integer(2))
+    type_of_service_par = Column(Integer)
     #adding a reported column.  Hopefully this will append the column to the table def.
     reported = Column(Boolean)
     service_event_id_delete = Column(String(32))
@@ -2111,17 +2111,17 @@ class LastDateTime(DB.Base, MapBase):
     useexisting = True
 
 def test():  
-    import postgresutils
+    from . import postgresutils
     utils = postgresutils.Utils()
     utils.blank_database()  
-    print "instantiating db"
+    print("instantiating db")
     db = DB()
     session = db.Session()
     db.Base.metadata.create_all(db.pg_db_engine)
     new = Source(source_id_id_num = 1, source_name='Orange County Corrections')
     session.add(new)
     session.commit()
-    print "done"
+    print("done")
 
 if __name__ == "__main__":
     import sys

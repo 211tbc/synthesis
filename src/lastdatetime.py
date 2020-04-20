@@ -1,6 +1,6 @@
-from conf import settings
-from dbobjects import DB, LastDateTime
-from smtplibrary import smtpInterface
+from .conf import settings
+from .dbobjects import DB, LastDateTime
+from .smtplibrary import smtpInterface
 import datetime
 
 # FBY :07/31/2017: The script needs to run as a cron job once a day

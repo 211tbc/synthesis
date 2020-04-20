@@ -5,17 +5,16 @@
 '''
 
 import sys, os
-from reader import Reader
-from zope.interface import implements
+from .reader import Reader
+from zope.interface import implementer
 from lxml import etree
-from conf import settings
-import dbobjects
-import hmisxml30reader
+from .conf import settings
+from . import dbobjects
+from . import hmisxml30reader
 
+# Implements reader interface
+@implementer(Reader)
 class OCCHUDHMISXML30Reader: 
-    ''' Implements reader interface '''
-    implements (Reader) 
-
     ''' Define XML namespaces '''
     hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
     airs_namespace = "http://www.hmis.info/schema/3_0/AIRS_3_0_mod.xsd"
@@ -426,7 +425,7 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    import postgresutils
+    from . import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
@@ -440,7 +439,7 @@ def main(argv=None):
         try:
             xml_file = open(inputFile,'r') 
         except:
-            print "Error opening import file"
+            print("Error opening import file")
             
         reader = OCCHUDHMISXML30Reader(xml_file)
         tree = reader.read()

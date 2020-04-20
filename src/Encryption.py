@@ -6,8 +6,15 @@ TODO:
 - SHA*
 - testing, testing, testing
 '''
-from conf import settings
-from conf import inputConfiguration
+try:
+    from conf import settings
+except:
+    from .conf import settings
+
+try:
+    from conf import inputConfiguration
+except:
+    from .conf import inputConfiguration
 #from conf import outputConfiguration
 from Crypto.Cipher import AES as baseAES
 from Crypto.Cipher import Blowfish as baseBlowfish
@@ -309,7 +316,7 @@ class PublicKey(Encryption):
 class GPG(PublicKey):
     def __init__(self, pgp_key_id=None, pass_phrase=None):
         PublicKey.__init__(self)
-		
+
         if settings.PGPHOMEDIR is not None:
             self.enc_object = gnupg.GPG(gnupghome=settings.PGPHOMEDIR, verbose=False)
         else:
@@ -318,13 +325,13 @@ class GPG(PublicKey):
         self.pass_phrase = self.pgp_key_id = None
         
         if settings.PASSPHRASE:
-	    self.pass_phrase = settings.PASSPHRASE
+            self.pass_phrase = settings.PASSPHRASE
         
         if settings.PGP_KEY_ID is not None:
             self.pgp_key_id = settings.PGP_KEY_ID
 
         if pass_phrase: 
-	    self.pass_phrase = pass_phrase
+            self.pass_phrase = pass_phrase
         if pgp_key_id: self.pgp_key_id = pgp_key_id
 
     def encrypt(self, data, pgp_key_id=None, pass_phrase=None, sign=True):
@@ -411,7 +418,7 @@ class GPG(PublicKey):
         
     def setKey(self, pgp_key_id):
         self.pgp_key_id = pgp_key_id
-        print "pgp_key_id set to {0}".format(self.pgp_key_id)
+        print("pgp_key_id set to {0}".format(self.pgp_key_id))
         
     def generateKey(self):
         pass
@@ -493,15 +500,15 @@ def main():
         encrypted_data = gpg.encrypt(msg)
         decrypted_data = gpg.decrypt(encrypted_data)
         
-        if debug is True: print "Encrypted = {0}".format(encrypted_data)
-        if debug is True: print "Decrypted = {0}".format(decrypted_data)
+        if debug is True: print("Encrypted = {0}".format(encrypted_data))
+        if debug is True: print("Decrypted = {0}".format(decrypted_data))
      
         if decrypted_data == msg:
-            print "gpg.encrypt() -> Test Passed"
-            print "gpg.decrypt() -> Test Passed"
+            print("gpg.encrypt() -> Test Passed")
+            print("gpg.decrypt() -> Test Passed")
         else:
-            print "!! gpg.encrypt() -> Test Failed !!"
-            print "!! gpg.decrypt() -> Test Failed !!"
+            print("!! gpg.encrypt() -> Test Failed !!")
+            print("!! gpg.decrypt() -> Test Failed !!")
         encrypted_data = decrypted_data = gpg = msg = None
 
         #gpg.encryptFile() and gpg.decryptFile()
@@ -519,15 +526,15 @@ def main():
         decrypted_data = gpg.decryptFile('/tmp/testcase.txt.gpg', '/tmp/testcase.txt')
         #remove('/tmp/testcase.txt.gpg')
 
-        if debug is True: print "Encrypted = {0}".format(encrypted_data)
-        if debug is True: print "Decrypted = {0}".format(decrypted_data)
+        if debug is True: print("Encrypted = {0}".format(encrypted_data))
+        if debug is True: print("Decrypted = {0}".format(decrypted_data))
 
         if decrypted_data == msg:
-            print "gpg.encryptFile() -> Test Passed"
-            print "gpg.decryptFile() -> Test Passed"
+            print("gpg.encryptFile() -> Test Passed")
+            print("gpg.decryptFile() -> Test Passed")
         else:
-            print "!! gpg.encryptFile() -> Test Failed !!"
-            print "!! gpg.decryptFile() -> Test Failed !!"
+            print("!! gpg.encryptFile() -> Test Failed !!")
+            print("!! gpg.decryptFile() -> Test Failed !!")
         encrypted_data = decrypted_data = gpg = msg = None
 
 if __name__ == '__main__':

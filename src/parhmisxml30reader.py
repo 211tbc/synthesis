@@ -5,22 +5,22 @@
 '''
 
 import sys, os
-from reader import Reader
-from zope.interface import implements
+from .reader import Reader
+from zope.interface import implementer
 from lxml import etree
 from sqlalchemy.exc import IntegrityError
 import dateutil.parser
-from conf import settings
-import exceptions
-import dbobjects as dbobjects
-import fileutils
-from errcatalog import catalog
+from .conf import settings
+from . import exceptions
+from . import dbobjects as dbobjects
+from . import fileutils
+from .errcatalog import catalog
 
 #SBB08212010 checked in by ECJ on behalf of SBB
 #class HMISXML30Reader(dbobjects.DB):
+@implementer(Reader)
 class HMISXML30Reader(dbobjects.DB): 
     ''' Implements reader interface '''
-    implements (Reader) 
 
     ''' Define XML namespaces '''
     hmis_namespace = "http://www.hmis.info/schema/3_0/HUD_HMIS.xsd" 
@@ -3935,92 +3935,92 @@ class HMISXML30Reader(dbobjects.DB):
         ''' store foreign keys '''
         if mapping.__name__ == "Source":
             self.source_index_id = mapped.id
-            print "Source:",self.source_index_id
+            print("Source:",self.source_index_id)
 
         if mapping.__name__ == "Export":
             self.export_index_id = mapped.export_id
-            print "Export:",self.export_index_id
+            print("Export:",self.export_index_id)
             
         if mapping.__name__ == "Household":
             self.household_index_id = mapped.id
-            print "Household:",self.household_index_id
+            print("Household:",self.household_index_id)
 
         if mapping.__name__ == "Agency":
             self.agency_index_id = mapped.id
-            print "Agency:",self.agency_index_id
+            print("Agency:",self.agency_index_id)
             
         # SBB20100914 adding new
         if mapping.__name__ == "AgencyLocation":
             self.agency_location_index_id = mapped.id
-            print "Agency Location:",self.agency_location_index_id
+            print("Agency Location:",self.agency_location_index_id)
 
         if mapping.__name__ == "Site":
             self.site_index_id = mapped.id
-            print "Site:",self.site_index_id
+            print("Site:",self.site_index_id)
 
         if mapping.__name__ == "SiteService":
             self.site_service_index_id = mapped.id
-            print "SiteService:",self.site_service_index_id
+            print("SiteService:",self.site_service_index_id)
 
         if mapping.__name__ == "PitCountSet":
             self.pit_count_set_index_id = mapped.id
-            print "PitCountSet:",self.pit_count_set_index_id
+            print("PitCountSet:",self.pit_count_set_index_id)
 
         if mapping.__name__ == "Languages":
             self.languages_index_id = mapped.id
-            print "Languages:",self.languages_index_id
+            print("Languages:",self.languages_index_id)
 
         if mapping.__name__ == "Service":
             self.service_index_id = mapped.id
-            print "Service:",self.service_index_id
+            print("Service:",self.service_index_id)
 
         if mapping.__name__ == "HmisAsset":
             self.hmis_asset_index_id = mapped.id
-            print "HmisAsset:",self.hmis_asset_index_id
+            print("HmisAsset:",self.hmis_asset_index_id)
 
         if mapping.__name__ == "Assignment":
             self.assignment_index_id = mapped.id
-            print "Assignment:",self.assignment_index_id
+            print("Assignment:",self.assignment_index_id)
 
         if mapping.__name__ == "Person":
             self.person_index_id = mapped.id
-            print "Person:",self.person_index_id
+            print("Person:",self.person_index_id)
 
         if mapping.__name__ == "SiteServiceParticipation":
             self.site_service_participation_index_id = mapped.id
-            print "SiteServiceParticipation:",self.site_service_participation_index_id
+            print("SiteServiceParticipation:",self.site_service_participation_index_id)
 
         if mapping.__name__ == "Need":
             self.need_index_id = mapped.id
-            print "Need:",self.need_index_id
+            print("Need:",self.need_index_id)
 
         if mapping.__name__ == "ServiceEvent":
             self.service_event_index_id = mapped.id
-            print "ServiceEvent:",self.service_event_index_id            
+            print("ServiceEvent:",self.service_event_index_id)            
             
         if mapping.__name__ == "PersonHistorical":
             self.person_historical_index_id = mapped.id
-            print "PersonHistorical:",self.person_historical_index_id                              
+            print("PersonHistorical:",self.person_historical_index_id)                              
             
         if mapping.__name__ == "Degree":
             self.degree_index_id = mapped.id
-            print "Degree:",self.degree_index_id                
+            print("Degree:",self.degree_index_id)                
             
         if mapping.__name__ == "ChildEnrollmentStatus":
             self.child_enrollment_status_index_id = mapped.id
-            print "ChildEnrollmentStatus:",self.child_enrollment_status_index_id     
+            print("ChildEnrollmentStatus:",self.child_enrollment_status_index_id)     
             
         if mapping.__name__ == "ResourceInfo":
             self.resource_info_index_id = mapped.id
-            print "ResourceInfo:",self.resource_info_index_id               
+            print("ResourceInfo:",self.resource_info_index_id)               
 
         if mapping.__name__ == "Contact":
             self.contact_index_id = mapped.id
-            print "Contact:",self.contact_index_id                                   
+            print("Contact:",self.contact_index_id)                                   
             
         if mapping.__name__ == "TimeOpen":
             self.time_open_index_id = mapped.id
-            print "TimeOpen:",self.time_open_index_id   
+            print("TimeOpen:",self.time_open_index_id)   
                         
         self.session.commit()
         return
@@ -4049,7 +4049,7 @@ class HMISXML30Reader(dbobjects.DB):
                 #print query_string
                 return True
             else:
-                print "Need to specify the handling"
+                print("Need to specify the handling")
                 return False
         else:
             # SBB20100915 added to handle non-list element values
@@ -4085,7 +4085,7 @@ def main(argv=None):
         argv = sys.argv
 
     ## clear db tables (may have to run twice to get objects linked properly)
-    import postgresutils
+    from . import postgresutils
     UTILS = postgresutils.Utils()
     UTILS.blank_database()
 
@@ -4099,7 +4099,7 @@ def main(argv=None):
         try:
             xml_file = open(inputFile,'r') 
         except:
-            print "Error opening import file"
+            print("Error opening import file")
             
         reader = HMISXML30Reader(xml_file)
         tree = reader.read()

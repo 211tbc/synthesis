@@ -1,14 +1,15 @@
 #!/usr/bin/python env
 
 import sys, os
-from reader import Reader
-from zope.interface import implements
+from .reader import Reader
+from zope.interface import implementer
 from lxml import etree
 import dateutil.parser
-import dbobjects
-from conf import settings
+from . import dbobjects
+from .conf import settings
 from datetime import datetime
 
+@implementer(Reader)
 class JFCSXMLReader:#(dbobjects.DB):
     ''' Synthesis import plugin for JFCS XML 
         JFCS provides 2 simple XML files
@@ -18,8 +19,6 @@ class JFCSXMLReader:#(dbobjects.DB):
         elements to database fields and 
         commits data to the database
     '''
-    
-    implements (Reader)
     
     def __init__(self, xml_file):
         self.xml_file = xml_file
@@ -127,7 +126,7 @@ class JFCSXMLReader:#(dbobjects.DB):
         '''if there is a person, add them'''
         if self.person_index_id is None:
             if settings.DEBUG:
-                print "Error: no person index id found!"
+                print("Error: no person index id found!")
         else: 
             self.existence_test_and_add('person_index_id', self.person_index_id, 'no_handling')
         try:
@@ -250,7 +249,7 @@ class JFCSXMLReader:#(dbobjects.DB):
                 self.parse_members()
             else:
                 if settings.DEBUG:
-                    print "Household ID ", famid, "is already in the database; not adding."
+                    print("Household ID ", famid, "is already in the database; not adding.")
 
     def parse_members(self):
         ''' parse data for members table '''
@@ -270,7 +269,7 @@ class JFCSXMLReader:#(dbobjects.DB):
 
             else:
                 if settings.DEBUG:
-                    print "Household ID ", self.household_index_id, " is already in the database with member id", clientid, "; not adding."
+                    print("Household ID ", self.household_index_id, " is already in the database with member id", clientid, "; not adding.")
         
     def shred(self, parse_dict, mapping):
         '''Commits the record set to the database'''
@@ -321,7 +320,7 @@ class JFCSXMLReader:#(dbobjects.DB):
                 self.persist(db_column, query_string = dateutil.parser.parse(query_string))
                 return True
             else:
-                print "need to specify the handling"
+                print("need to specify the handling")
                 return False
         else:
             return False
@@ -448,7 +447,7 @@ def main(argv=None):
         try:
             xml_file = open(inputFile, 'r')
         except:
-            print "Error opening input file"
+            print("Error opening input file")
                 
         ''' Process input file '''
         reader = JFCSXMLReader(xml_file)

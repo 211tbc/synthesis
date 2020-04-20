@@ -21,7 +21,7 @@
  THE SOFTWARE.''' #IGNORE:W0105
 
 #import clsIniUtils
-from logger import Logger
+from .logger import Logger
 # The MIT License
 # 
 # Copyright (c) 2007 Suncoast Partnership 
@@ -45,13 +45,13 @@ from logger import Logger
 # THE SOFTWARE.
 # 
 
-import fileutils
+from . import fileutils
 import os
 import ftplib
 from synthesis.exceptions import FTPUploadFailureError, VPNFailure
-from conf import settings
+from .conf import settings
 import paramiko
-from conf import outputConfiguration
+from .conf import outputConfiguration
 from datetime import datetime
 
 class PostProcessing(FTPUploadFailureError, VPNFailure):
@@ -86,23 +86,23 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
     def processFileVPN(self, pFiles):
         #self.fileList = pFiles
         rc = self.establishVPN() 
-        if rc <> 0:
+        if rc != 0:
             # failure out
             comm = self.settings['%s_options.vpnconnect' % (self.systemMode)]
             theError = (1095, 'VPN Process failed to connect with command: %s.  Return from command was: %s.  Stopping processing until this can be resolved.  In order to complete processing you can execute command python postprocessing.py which will upload the XML files for Bowman Processing.' % (comm, rc), 'processFile(self)')            
-            raise VPNFailure, theError
+            raise VPNFailure(theError)
         
         rc = self.establishFTP(pFiles)
 
         # disconnect from the VPN
         rc = self.disconnectVPN()
-        if rc <> 0:
+        if rc != 0:
             # failure out
             comm = self.settings['%s_options.vpndisconnect' % (self.systemMode)]
             theError = (1096, 'VPN Process failed to disconnect with command: %s.  Return from command was: %s.  Stopping processing until this can be resolved.  In order to complete processing you can execute command %s' % (comm, rc, comm), 'processFile(self)')            
-            raise VPNFailure, theError
+            raise VPNFailure(theError)
         
-        print 'Processing completed'
+        print('Processing completed')
     
     def establishSFTP(self):
         self.ssh = paramiko.SSHClient()
@@ -127,32 +127,32 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
         
         # first change locations on remote system
         destPath = self.outputConfig['outputpath']
-        if destPath <> "":
+        if destPath != "":
             self.ftp.chdir(destPath)
         
         # put this source on the server
         for file in filesToTransfer:
             if self.debug:
-                print 'writing file: %s to server: %s to dest file: %s' % (file, destPath, os.path.split(file)[1])
+                print('writing file: %s to server: %s to dest file: %s' % (file, destPath, os.path.split(file)[1]))
             # split the filename from the path.
             
             destFile = os.path.split(file)[1]
             self.ftp.put(file, destFile)
             # test if we need to change owner
-            if self.outputConfig['owner'] <> '':
+            if self.outputConfig['owner'] != '':
                 pass
             # test if we need to change the MODe
-            if self.outputConfig['chmod'] <> '':
+            if self.outputConfig['chmod'] != '':
                 self.ftp.chmod(destFile, self.outputConfig['chmod'])
-            if self.outputConfig['group'] <> '':
+            if self.outputConfig['group'] != '':
                 pass
         
             
-            print self.ftp.stat(destFile)
+            print(self.ftp.stat(destFile))
         
         # see if the file is there
         self.ftp.chdir('..')
-        print self.ftp.listdir(path=destPath)
+        print(self.ftp.listdir(path=destPath))
             
     
     def disconnectSFTP(self):
@@ -161,20 +161,20 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
     def establishVPN(self):
         #command = 'vpnc baisix'
         command = self.settings['%s_options.vpnconnect' % (self.systemMode)]
-        print 'Establishing VPN Connection using command: %s' % (command)    
+        print('Establishing VPN Connection using command: %s' % (command))    
         rc = self.spawnProcess(command)
         #rc = os.system(command)
         return rc
         
     def establishFTP(self, pFiles):
         #command = 'ftp baisix.servicept.com'
-        print 'Connecting to FTP '
+        print('Connecting to FTP ')
         self.ftp(pFiles)
     
     def disconnectVPN(self):
-        print 'Disconnecting from VPN'
+        print('Disconnecting from VPN')
         command = self.settings['%s_options.vpncdisconnect' % (self.systemMode)]
-        print 'Disconnecting from VPN Connection using command: %s' % (command)    
+        print('Disconnecting from VPN Connection using command: %s' % (command))    
         # rc = os.system(command)
         rc = self.spawnProcess(command)
         return rc
@@ -209,14 +209,14 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
         fileutils.sleep(int(ftpinitialsleep))
         
         while not ftpUploaded:
-            print "Connecting to: %s" % url
+            print("Connecting to: %s" % url)
             attempt =+ 1
-            print "Attempting FTP Process: %s" % (attempt)
+            print("Attempting FTP Process: %s" % (attempt))
             
             # check the number of retries, we can't do this all day. retries out
             if attempt > ftpretries:
                 theError = (1090, 'FTP Process failed to upload file: %s.  Process timeout parm: %s and sleep parm: %s.  Please check the VPN Connection or the FTP Server at: %s' % (str(pFiles), ftpretries, ftpsleep, url), 'ftp(self)')
-                raise FTPUploadFailureError, theError
+                raise FTPUploadFailureError(theError)
             
             try:        
                 f=ftplib.FTP(url, uname, passwd)
@@ -226,14 +226,14 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
                 fileutils.sleep(int(ftpsleep))
                 continue
             
-            print "Connected"
+            print("Connected")
             
-            print 'Changing Directories to: %s' % destdir
-            print f.cwd(destdir)
+            print('Changing Directories to: %s' % destdir)
+            print(f.cwd(destdir))
             
             if len(pFiles) > 0:
                 for file in pFiles:
-                    print 'Uploading file: %s' % file
+                    print('Uploading file: %s' % file)
                     fo = open(file, 'r')
                     fname = os.path.basename(file)
                     rc = f.storlines('STOR '+fname, fo)
@@ -244,8 +244,8 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
                     else:
                         badFile = self.renameFile(file, False)
                         theError = (1080, 'FTP Error during upload of file: %s.  FTP Server returned: %s.  Stopping the upload process.  Please investigate and start the process again to complete the upload.  File was renamed to: %s' % (fname, rc, badFile), 'ftp(self)')
-                        raise FTPUploadFailureError, rc    
-                        print 'Done uploading files'
+                        raise FTPUploadFailureError(rc)    
+                        print('Done uploading files')
                         
                         fo.close()
             
@@ -256,8 +256,8 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
             
         # Close FTP connection
         # Echo the result of the close command
-        print f.close()
-        print 'FTP Processing Completed, disconnected'
+        print(f.close())
+        print('FTP Processing Completed, disconnected')
         return 0
     
     def renameFile(self, fileName, bSuccess=True):
@@ -284,7 +284,7 @@ class PostProcessing(FTPUploadFailureError, VPNFailure):
         cmdParts = command.split(' ')#IGNORE:@UnusedVariable
         #rc = os.spawnl(os.P_WAIT, cmdParts[0], cmdParts[1])
         rc = os.system(command)
-        print 'Return Code is: %s' % rc
+        print('Return Code is: %s' % rc)
         return rc
     
 if __name__ == '__main__':

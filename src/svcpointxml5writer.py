@@ -1,15 +1,15 @@
-from interpretpicklist import Interpretpicklist
-import dateutils
+from .interpretpicklist import Interpretpicklist
+from . import dateutils
 from datetime import datetime
-import xmlutilities
+from . import xmlutilities
 from synthesis.exceptions import DataFormatError#, SoftwareCompatibilityError
-import logger
+from . import logger
 #from sys import version
-import dbobjects
-from writer import Writer
-from zope.interface import implements
+from . import dbobjects
+from .writer import Writer
+from zope.interface import implementer
 from sqlalchemy import or_, and_, between
-from conf import settings
+from .conf import settings
 from lxml import etree as ET
 
 
@@ -17,9 +17,9 @@ def buildWorkhistoryAttributes(element):
     element.attrib['date_added'] = datetime.now().isoformat()
     element.attrib['date_effective'] = datetime.now().isoformat()
 
+@implementer(Writer)
 class SvcPointXML5Writer():
     # Writer Interface
-    implements(Writer)
 
     hmis_namespace = "http://www.hmis.info/schema/2_8/HUD_HMIS_2_8.xsd" 
     airs_namespace = "http://www.hmis.info/schema/2_8/AIRS_3_0_draft5_mod.xsd"
@@ -31,7 +31,7 @@ class SvcPointXML5Writer():
         #print "%s Class Initialized" % self.__name__
 
         if settings.DEBUG:
-            print "XML File to be dumped to: %s" % poutDirectory
+            print("XML File to be dumped to: %s" % poutDirectory)
             self.log = logger.Logger(configFile=settings.LOGGING_INI, loglevel=40)    # JCS 10/3/11
 
         self.outDirectory = poutDirectory
@@ -49,7 +49,7 @@ class SvcPointXML5Writer():
         self.startTransaction()
         self.processXML()
         self.prettify()
-        print '==== Self:', self
+        print('==== Self:', self)
         xmlutilities.writeOutXML(self, xml_declaration=True, encoding="UTF-8")    # JCS, 1 Sep 2012
         #self.commitTransaction()
         return True
@@ -58,22 +58,22 @@ class SvcPointXML5Writer():
         # update the reported field of the currentObject being passed in.  These should all exist.
         try:
             if settings.DEBUG:
-                print 'Updating reporting for object: %s' % currentObject.__class__
+                print('Updating reporting for object: %s' % currentObject.__class__)
             currentObject.reported = True
             #currentObject.update()
             self.commitTransaction()
         except:
-            print "Exception occurred during update the 'reported' flag"
+            print("Exception occurred during update the 'reported' flag")
             pass
 
     def prettify(self):
         xmlutilities.indent(self.root_element)
 
     def dumpErrors(self):
-        print "Error Reporting"
-        print "-" * 80
+        print("Error Reporting")
+        print("-" * 80)
         for row in range(len(self.errorMsgs)):
-            print "%s %s" % (row, self.errorMsgs[row])
+            print("%s %s" % (row, self.errorMsgs[row]))
 
     def setSysID(self, pSysID):
         self.sysID = pSysID
@@ -88,7 +88,7 @@ class SvcPointXML5Writer():
         # need to use both ExportID and Processing Mode (Test or Prod)
         export = self.session.query(dbobjects.Export).filter(dbobjects.Export.export_id == pExportID).one()
         if settings.DEBUG:
-            print "trying to do pullConfiguration"
+            print("trying to do pullConfiguration")
             #print "export is:", export, "pExportID is", pExportID
             #print "export.export_id is: ", export.export_id
             #print "dbobjects.SystemConfiguration.source_id is ", dbobjects.SystemConfiguration.source_id
@@ -102,11 +102,11 @@ class SvcPointXML5Writer():
     
     def processXML(self): # records represents whatever element you're tacking more onto, like entry_exits or clients
         if settings.DEBUG:
-            print "processXML: Appending XML to Base Record"
+            print("processXML: Appending XML to Base Record")
         self.root_element = self.createDoc() #makes root element with XML header attributes
         #print '==== root created'
         clients = self.createClients(self.root_element) # JCS - tag is <clientRecords> Only node under clients is <Client>
-        print '==== clientRecords created'
+        print('==== clientRecords created')
         
         if self.options.reported == True:
             Persons = self.session.query(dbobjects.Person).filter(dbobjects.Person.reported == True)
@@ -248,24 +248,24 @@ class SvcPointXML5Writer():
         # SBB20070702 check if self.intakes has none, this is a daily census that is alone
     def customizeClientPersonalIdentifiers(self,client,recordset):    # params are: self.client, self.person
     
-        if recordset.person_legal_first_name_unhashed <> "" and recordset.person_legal_first_name_unhashed <> None:
+        if recordset.person_legal_first_name_unhashed != "" and recordset.person_legal_first_name_unhashed != None:
             first_name = ET.SubElement(client, "firstName")
             first_name.text = recordset.person_legal_first_name_unhashed
 
-        if recordset.person_legal_last_name_unhashed <> "" and recordset.person_legal_last_name_unhashed <> None:
+        if recordset.person_legal_last_name_unhashed != "" and recordset.person_legal_last_name_unhashed != None:
             last_name = ET.SubElement(client, "lastName")
             last_name.text = recordset.person_legal_last_name_unhashed
 
         #we don't have the following elements for daily_census only clients, but SvcPt requires them:
         # I simulated this w/my datasets.  Column names are as in the program
-        if recordset.person_legal_middle_name_unhashed <> "" and recordset.person_legal_middle_name_unhashed <> None:
+        if recordset.person_legal_middle_name_unhashed != "" and recordset.person_legal_middle_name_unhashed != None:
             mi_initial = ET.SubElement(client, "mi_initial")
             mi_initial.text = self.fixMiddleInitial(recordset.person_legal_middle_name_unhashed)
             
         # SBB20070831 incoming SSN's are 123456789 and need to be 123-45-6789
         fixedSSN = self.fixSSN(recordset.person_social_security_number_unhashed) # JCS  .person_SSN_unhashed)
                     
-        if fixedSSN <> "" and fixedSSN <> None:        #ECJ20071111 Omit SSN if it's blank
+        if fixedSSN != "" and fixedSSN != None:        #ECJ20071111 Omit SSN if it's blank
             soc_sec_no = ET.SubElement(client, "socSecNoDashed")
             soc_sec_no.text = fixedSSN
             ssn_data_quality = ET.SubElement(client, "ssnDataQualityValue")
@@ -296,11 +296,11 @@ class SvcPointXML5Writer():
         provider_id = ET.SubElement(entry_exit, "provider")
         provider_id.text = '%s' % self.configurationRec.providerid
 
-        if EE.participation_dates_start_date <> "" and EE.participation_dates_start_date <> None:
+        if EE.participation_dates_start_date != "" and EE.participation_dates_start_date != None:
             entry_date = ET.SubElement(entry_exit, "entryDate")
             entry_date.text = dateutils.fixDate(EE.participation_dates_start_date)
 
-            if EE.participation_dates_end_date <> "" and EE.participation_dates_end_date <> None:
+            if EE.participation_dates_end_date != "" and EE.participation_dates_end_date != None:
                 exit_date = ET.SubElement(entry_exit, "exitDate")
                 exit_date.text = dateutils.fixDate(EE.participation_dates_end_date)
         return
@@ -311,21 +311,21 @@ class SvcPointXML5Writer():
 
     def customizeAssessmentData(self, assessment_data):
 
-        if self.person.person_gender_unhashed <> "" and self.person.person_gender_unhashed <> None:
+        if self.person.person_gender_unhashed != "" and self.person.person_gender_unhashed != None:
             persGender = ET.SubElement(assessment_data, "svpprofgender" ) #"gender")
             persGender.attrib["date_added"] = dateutils.fixDate(self.person.person_gender_unhashed_date_collected)
             persGender.attrib["date_effective"] = dateutils.fixDate(self.person.person_gender_unhashed_date_effective)
             persGender.text = str(self.person.person_gender_unhashed)
 
         # dob (Date of Birth)    lots of:SVPPROFDOB    a few:DATEOFBIRTH
-        if self.person.person_date_of_birth_unhashed <> "" and self.person.person_date_of_birth_unhashed <> None:
+        if self.person.person_date_of_birth_unhashed != "" and self.person.person_date_of_birth_unhashed != None:
             dob = ET.SubElement(assessment_data, "svpprofdob")
             dob.attrib["date_added"] = dateutils.fixDate(self.person.person_date_of_birth_unhashed_date_collected)
             dob.attrib["date_effective"] = dateutils.fixDate(datetime.now())    # No date effect. in Person
             dob.text = dateutils.fixDate(self.person.person_date_of_birth_unhashed)
 
         # Ethnicity           lots of:SVPPROFETH    a few:Ethnicity     uses:ETHNICITYPickOption
-        if self.person.person_ethnicity_unhashed <> "" and self.person.person_ethnicity_unhashed <> None:
+        if self.person.person_ethnicity_unhashed != "" and self.person.person_ethnicity_unhashed != None:
             # Our Interpretpicklist basically has 2 options. The schema has 23
             ethText = self.pickList.getValue("EthnicityPick",str(self.person.person_ethnicity_unhashed))
             eth = ET.SubElement(assessment_data, "svpprofeth")
@@ -338,7 +338,7 @@ class SvcPointXML5Writer():
             # JCS schema has 'RACEPickOption' - using existing RacePick for now
             raceText = self.pickList.getValue("RacePick",str(race.race_unhashed))
             # print '==== race:', race.race_unhashed, raceText
-            if raceText <> None:
+            if raceText != None:
                 raceNode = ET.SubElement(assessment_data, "svpprofrace")    # JCS "primaryrace" or "svpprofrace"?
                 raceNode.attrib["date_added"] = dateutils.fixDate(race.race_date_collected)
                 raceNode.attrib["date_effective"] = dateutils.fixDate(race.race_date_effective)
@@ -350,7 +350,7 @@ class SvcPointXML5Writer():
             hs = self.session.query(dbobjects.HousingStatus).filter(dbobjects.HousingStatus.person_historical_index_id == ph.id).one()
             hsText = self.pickList.getValue("HOUSINGSTATUSPickOption",hs.housing_status)
             #print '==== hs:', hsText
-            if hsText <> None:
+            if hsText != None:
                 housingStatus = ET.SubElement(assessment_data, "svp_hud_housingstatus")    # JCS
                 housingStatus.attrib["date_added"] = dateutils.fixDate(hs.housing_status_date_collected)
                 housingStatus.attrib["date_effective"] = dateutils.fixDate(hs.housing_status_date_effective)
@@ -358,7 +358,7 @@ class SvcPointXML5Writer():
 
             foster = self.session.query(dbobjects.FosterChildEver).filter(dbobjects.FosterChildEver.person_historical_index_id == ph.id).one()
             fosterText = self.pickList.getValue("ENHANCEDYESNOPickOption",str(foster.foster_child_ever))
-            if fosterText <> None:
+            if fosterText != None:
                 fosterEver = ET.SubElement(assessment_data, "x20wereyoueverafoster")    # JCS
                 fosterEver.attrib["date_added"] = dateutils.fixDate(foster.foster_child_ever_date_collected)
                 fosterEver.attrib["date_effective"] = dateutils.fixDate(foster.foster_child_ever_date_effective)
@@ -368,7 +368,7 @@ class SvcPointXML5Writer():
         losapr = self.session.query(dbobjects.LengthOfStayAtPriorResidence).filter(dbobjects.LengthOfStayAtPriorResidence.person_historical_index_id == ph.id).one()
         losaprText = self.pickList.getValue("LENGTHOFTHESTAYPickOption",losapr.length_of_stay_at_prior_residence)
         #print '==== losapr:', losaprText
-        if losaprText <> None:
+        if losaprText != None:
             lengthOfStay = ET.SubElement(assessment_data, "hud_lengthofstay")    # JCS
             lengthOfStay.attrib["date_added"] = dateutils.fixDate(losapr.length_of_stay_at_prior_residence_date_collected)
             lengthOfStay.attrib["date_effective"] = dateutils.fixDate(losapr.length_of_stay_at_prior_residence_date_effective)
@@ -378,7 +378,7 @@ class SvcPointXML5Writer():
         tols = self.session.query(dbobjects.PriorResidence).filter(dbobjects.PriorResidence.person_historical_index_id == ph.id).one()
         tolsText = self.pickList.getValue("LIVINGSITTYPESPickOption",tols.prior_residence_code)
         #print '==== (prior) tols:', tolsText
-        if tolsText <> None:
+        if tolsText != None:
             priorLiving = ET.SubElement(assessment_data, "typeoflivingsituation")    # JCS
             priorLiving.attrib["date_added"] = dateutils.fixDate(tols.prior_residence_code_date_collected)
             priorLiving.attrib["date_effective"] = dateutils.fixDate(tols.prior_residence_code_date_effective)
@@ -389,7 +389,7 @@ class SvcPointXML5Writer():
         pdyn = self.session.query(dbobjects.PhysicalDisability).filter(dbobjects.PhysicalDisability.person_historical_index_id == ph.id).one()
         pdynText = pdyn.has_physical_disability
         #print '==== pdyn:', pdynText
-        if pdynText <> None:
+        if pdynText != None:
             physDisabYN = ET.SubElement(assessment_data, "svpphysicaldisabilit")    # JCS
             physDisabYN.attrib["date_added"] = dateutils.fixDate(pdyn.has_physical_disability_date_collected)
             # This is required, but input is usually blank - something plugs in now()
@@ -401,14 +401,14 @@ class SvcPointXML5Writer():
         vvs = self.session.query(dbobjects.VeteranVeteranStatus).filter(dbobjects.VeteranVeteranStatus.person_historical_index_id == ph.id).one()
         vvsText = vvs.veteran_status
         #print '==== vvs:', vvsText
-        if vvsText <> None:
+        if vvsText != None:
             vetStat = ET.SubElement(assessment_data, "veteran")    # JCS
             vetStat.attrib["date_added"] = dateutils.fixDate(vvs.veteran_status_date_collected)
             vetStat.attrib["date_effective"] = dateutils.fixDate(vvs.veteran_status_date_effective)
             vetStat.text = vvsText
 
 #    def customizeDisabilities_1(self, disabilities_1, ph):
-#        #if self.intakes['DisabilityDiscription'] <> "":
+#        #if self.intakes['DisabilityDiscription'] != "":
 #        noteondisability = ET.SubElement(disabilities_1,'noteondisability')
 #        noteondisability.attrib["date_added"] = dateutils.fixDate(datetime.now())
 #        noteondisability.attrib["date_effective"] = dateutils.fixDate(ph.physical_disability_date_collected)
@@ -417,13 +417,13 @@ class SvcPointXML5Writer():
     def current_picture(self, node):
         ''' Internal function.  Debugging aid for the export module.'''
         if settings.DEBUG:
-            print "Current XML Picture is"
-            print "======================\n" * 2
+            print("Current XML Picture is")
+            print("======================\n" * 2)
             ET.dump(node)
-            print "======================\n" * 2
+            print("======================\n" * 2)
 
     def calcHourlyWage(self, monthlyWage):
-        if monthlyWage <> "":
+        if monthlyWage != "":
             if monthlyWage.strip().isdigit():
                 if float(monthlyWage) > 5000.00:
                     hourlyWage = float(monthlyWage) / 160.00#IGNORE:@UnusedVariable
@@ -458,7 +458,7 @@ class SvcPointXML5Writer():
                     theError = (1020, 'Data format error discovered in trying to cleanup incoming SSN: %s, original SSN: %s' % (incomingSSN, originalSSN))
                     if settings.DEBUG:
                         self.debugMessages.log(">>>> Incoming SSN is INcorrectly formatted.  Original SSN from input file is: %s and Attempted cleaned up SSN is: %s\n" % (originalSSN, incomingSSN))
-                    raise DataFormatError, theError
+                    raise DataFormatError(theError)
 
         # If we are here, we can simply reformat the string into dashes
         if settings.DEBUG:

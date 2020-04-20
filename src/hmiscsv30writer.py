@@ -4,10 +4,10 @@ import os
 from sqlalchemy import or_, and_
 from zope.interface import implementer
 import csv
-from conf import settings
+from .conf import settings
 #import exceptions
-import dbobjects
-from writer import Writer
+from . import dbobjects
+from .writer import Writer
  
 @implementer(Writer)
 class HmisCSV30Writer():
@@ -141,23 +141,23 @@ class HmisCSV30Writer():
  
     def __init__(self, outDirectory, processingOptions, debug=False, debugMessages=None):
         if settings.DEBUG:
-            print "CSV Files to be created in: %s" % outDirectory
+            print("CSV Files to be created in: %s" % outDirectory)
  
         self.outDirectory = outDirectory
         #self.pickList = Interpretpicklist()
         self.errorMsgs = []
         self.debug = debug
  
-        print "Setting up dbobjects..."
+        print("Setting up dbobjects...")
         import time
         startReal = time.time()
         self.mappedObjects = dbobjects.DB()
         endReal = time.time()
-        print "dbobjects setup finished after %0.2f real seconds." % (endReal - startReal)
+        print("dbobjects setup finished after %0.2f real seconds." % (endReal - startReal))
  
  
         if debug == True:
-            print "Debug switch is: %s" % debug
+            print("Debug switch is: %s" % debug)
             self.debugMessages = debugMessages
  
         self.options = processingOptions
@@ -171,38 +171,38 @@ class HmisCSV30Writer():
  
     def startTransaction(self):
         self.session = self.mappedObjects.session(echo_uow=True)
-        print "Starting transaction..."
+        print("Starting transaction...")
  
  
     def commitTransaction(self):
         self.session.commit()
-        print "Transaction committed."
+        print("Transaction committed.")
  
  
     def openFile(self, fileName):
         try:
             filePath = os.path.join(self.outDirectory, fileName)
-            print "Opening CSV output file %s for writing... " % filePath,
+            print("Opening CSV output file %s for writing... " % filePath, end=' ')
             file1 = open(filePath, "wt+")
-            print "opened."
+            print("opened.")
             return file1
  
         except:
-            print "Unable to open CSV output file %s for writing!" % filePath
+            print("Unable to open CSV output file %s for writing!" % filePath)
             raise
  
  
     def closeCsvFiles(self):
-        print "Closing CSV output files... ",
+        print("Closing CSV output files... ", end=' ')
         for file1 in self.openFiles:
             try:
                 file1.close()
  
             except:
-                print "Unable to close CSV output file"
+                print("Unable to close CSV output file")
                 raise
  
-        print "all closed."
+        print("all closed.")
  
  
     def outputStr(self, maxlen, str1):
@@ -276,7 +276,7 @@ class HmisCSV30Writer():
         # TBD: Do we care which row record gets returned?
          
         if self.debug:
-            print "\n* %s = %s" % (table, row)
+            print("\n* %s = %s" % (table, row))
  
         retVal = []
         for column in columns:
@@ -306,7 +306,7 @@ class HmisCSV30Writer():
             return None
          
         if self.debug:
-            print "\n* barrier = ", barrier
+            print("\n* barrier = ", barrier)
              
         try:
             barrierCd = barrier.barrier_code
@@ -328,7 +328,7 @@ class HmisCSV30Writer():
             return None
          
         if self.debug:
-            print "\n* members = ", members
+            print("\n* members = ", members)
              
         try:
             rel = members.relationship_to_head_of_household
@@ -349,7 +349,7 @@ class HmisCSV30Writer():
             return (None, None)
          
         if self.debug:
-            print "\n* person_address = ", address
+            print("\n* person_address = ", address)
              
         zipCode = None
         zipQual = None
@@ -375,7 +375,7 @@ class HmisCSV30Writer():
             return None
          
         if self.debug:
-            print "\n* reasons_for_leaving=", reason
+            print("\n* reasons_for_leaving=", reason)
              
         try:
             reasonCd = reason.reason_for_leaving
@@ -396,7 +396,7 @@ class HmisCSV30Writer():
             return None
          
         if self.debug:
-            print "\n* person_historical=", historical
+            print("\n* person_historical=", historical)
              
         try:
             phIndex = historical.id
@@ -487,7 +487,7 @@ class HmisCSV30Writer():
     #######################################
  
     def getNonCashBenefitsData(self, phIndex):
-        print "in gncbd"
+        print("in gncbd")
         nonCashBens = self.session.query(dbobjects.NonCashBenefits)\
             .filter(dbobjects.NonCashBenefits.person_historical_index_id == phIndex)
  
@@ -497,17 +497,17 @@ class HmisCSV30Writer():
         for nonCashBen in nonCashBens:
             try:
                 if self.debug:
-                    print "\n* non_cash_benefits=", nonCashBen
+                    print("\n* non_cash_benefits=", nonCashBen)
  
                 yield nonCashBen
                  
             except:
-                print "Unable to obtain data from non_cash_benefits table!"
+                print("Unable to obtain data from non_cash_benefits table!")
                 raise
  
  
     def getIncomeAndSourcesData(self, phIndex):
-        print "in gisd"
+        print("in gisd")
         incomes = self.session.query(dbobjects.IncomeAndSources)\
             .filter(dbobjects.IncomeAndSources.person_historical_index_id == phIndex)
  
@@ -517,12 +517,12 @@ class HmisCSV30Writer():
         for income in incomes:
             try:
                 if self.debug:
-                    print "\n* income_and_sources=", income
+                    print("\n* income_and_sources=", income)
  
                 yield income
                  
             except:
-                print "Unable to obtain data from income_and_sources table!"
+                print("Unable to obtain data from income_and_sources table!")
                 raise
  
  
@@ -531,8 +531,8 @@ class HmisCSV30Writer():
             .filter(dbobjects.PersonHistorical.person_index_id == personIndex)
  
         if not historicals.count():
-            print "Warning: no data in person_historical table for person %s." \
-                  % personId
+            print("Warning: no data in person_historical table for person %s." \
+                  % personId)
             return
          
         else:
@@ -545,12 +545,12 @@ class HmisCSV30Writer():
         for historical in historicals:
             try:
                 if self.debug:
-                    print "\n* person_historical=", historical
+                    print("\n* person_historical=", historical)
  
                 yield historical
                  
             except:
-                print "Unable to obtain data from person_historical table!"
+                print("Unable to obtain data from person_historical table!")
                 raise
  
  
@@ -559,7 +559,7 @@ class HmisCSV30Writer():
             .filter(dbobjects.ServiceEvent.person_index_id == personIndex)
  
         if not serviceEvents.count():
-            print "Warning: no data in service_event table for person %s." % personId
+            print("Warning: no data in service_event table for person %s." % personId)
             return
          
         else:
@@ -572,12 +572,12 @@ class HmisCSV30Writer():
         for serviceEvent in serviceEvents:
             try:
                 if self.debug:
-                    print "\n* service_event=", serviceEvent
+                    print("\n* service_event=", serviceEvent)
  
                 yield serviceEvent
                  
             except:
-                print "Unable to obtain data from service_event table!"
+                print("Unable to obtain data from service_event table!")
                 raise
  
  
@@ -586,8 +586,8 @@ class HmisCSV30Writer():
             .filter(dbobjects.SiteServiceParticipation.fk_participation_to_person == personIndex)
  
         if not participations.count():
-            print "Warning: no data in site_service_participation table for person %s." \
-                  % personId
+            print("Warning: no data in site_service_participation table for person %s." \
+                  % personId)
             return
          
         else:
@@ -600,12 +600,12 @@ class HmisCSV30Writer():
         for participation in participations:
             try:
                 if self.debug:
-                    print "\n* site_service_participation=", participation
+                    print("\n* site_service_participation=", participation)
  
                 yield participation
                  
             except:
-                print "Unable to obtain data from site_service_participation table!"
+                print("Unable to obtain data from site_service_participation table!")
                 raise
  
  
@@ -614,7 +614,7 @@ class HmisCSV30Writer():
                       .filter(dbobjects.Person.export_index_id == exportId)
  
         if exportId == None:
-            print "listen, bub, you cant select on null export id"
+            print("listen, bub, you cant select on null export id")
              
         # TBD: Figure out if/how to correctly handle reported:
         """
@@ -625,8 +625,8 @@ class HmisCSV30Writer():
         """
  
         if not persons.count():
-            print "Warning: there's no data in person table for export %s." \
-                  % exportId
+            print("Warning: there's no data in person table for export %s." \
+                  % exportId)
             return
          
         else:
@@ -638,12 +638,12 @@ class HmisCSV30Writer():
         for person in persons:
             try:
                 if self.debug:
-                    print "\n* person=", person
+                    print("\n* person=", person)
  
                 yield person
                  
             except:
-                print "Unable to obtain data from person table!"
+                print("Unable to obtain data from person table!")
                 raise
  
  
@@ -652,8 +652,8 @@ class HmisCSV30Writer():
             .filter(dbobjects.Inventory.site_service_index_id == siteServiceIndex)
  
         if not inventories.count():
-            print "Warning: no data in inventory for site_service_id %s." \
-                  % siteServiceIndex
+            print("Warning: no data in inventory for site_service_id %s." \
+                  % siteServiceIndex)
             return
          
         else:
@@ -665,12 +665,12 @@ class HmisCSV30Writer():
         for inventory in inventories:
             try:
                 if self.debug:
-                    print "\n* inventory=", inventory
+                    print("\n* inventory=", inventory)
                      
                 yield inventory
  
             except:
-                print "Unable to obtain data from inventory table!"
+                print("Unable to obtain data from inventory table!")
                 raise
  
  
@@ -679,7 +679,7 @@ class HmisCSV30Writer():
                       .filter(dbobjects.Region.site_service_id == siteServiceId)
  
         if not regions.count():
-            print "Warning: no data in region for site_service_id %s." % siteServiceId
+            print("Warning: no data in region for site_service_id %s." % siteServiceId)
             return
          
         else:
@@ -691,12 +691,12 @@ class HmisCSV30Writer():
         for region in regions:
             try:
                 if self.debug:
-                    print "\n* region=", region
+                    print("\n* region=", region)
                      
                 yield region
  
             except:
-                print "Unable to obtain data from region table!"
+                print("Unable to obtain data from region table!")
                 raise
  
  
@@ -706,8 +706,8 @@ class HmisCSV30Writer():
                   .filter(dbobjects.SiteService.site_index_id == siteIndex)
  
         if not siteServices.count():
-            print "Warning: no data in site_service for site index %s." \
-                  % siteIndex
+            print("Warning: no data in site_service for site index %s." \
+                  % siteIndex)
             return
          
         else:
@@ -719,12 +719,12 @@ class HmisCSV30Writer():
         for siteService in siteServices:
             try:
                 if self.debug:
-                    print "\n* site_service=", siteService
+                    print("\n* site_service=", siteService)
                      
                 yield siteService
  
             except:
-                print "Unable to obtain data from siteService table!"
+                print("Unable to obtain data from siteService table!")
                 raise
  
  
@@ -738,8 +738,8 @@ class HmisCSV30Writer():
                                dbobjects.Agency.id == dbobjects.Site.agency_index_id))
  
         if not agencyPrograms.count():
-            print "Warning: no data in (agency x service x site) for export %s." \
-                  % self.exportId
+            print("Warning: no data in (agency x service x site) for export %s." \
+                  % self.exportId)
             return
          
         else:
@@ -751,14 +751,14 @@ class HmisCSV30Writer():
         for agency, service, site in agencyPrograms:
             try:
                 if self.debug:
-                    print "\n* agency=", agency
-                    print "\n* service=", service
-                    print "\n* site=", site
+                    print("\n* agency=", agency)
+                    print("\n* service=", service)
+                    print("\n* site=", site)
                      
                 yield (agency, service, site)
  
             except:
-                print "Unable to obtain data from agency, service, site tables!"
+                print("Unable to obtain data from agency, service, site tables!")
                 raise
  
  
@@ -767,18 +767,18 @@ class HmisCSV30Writer():
                       .filter(dbobjects.Source.id == exportId).first()
                        
         if not sources:
-            print "Warning: there's no data in source table for export %s." \
-                  % exportId
+            print("Warning: there's no data in source table for export %s." \
+                  % exportId)
             return None
  
         try:
             if self.debug:
-                print "\n* source=", sources
+                print("\n* source=", sources)
  
             return sources
                          
         except:
-            print "Unable to obtain data from source table!"
+            print("Unable to obtain data from source table!")
             raise
  
  
@@ -786,7 +786,7 @@ class HmisCSV30Writer():
         exports = self.session.query(dbobjects.Export)
  
         if not exports.count():
-            print "Warning: there's no data in export table."
+            print("Warning: there's no data in export table.")
             return
          
         else:
@@ -798,11 +798,11 @@ class HmisCSV30Writer():
         for export in exports:
             try:
                 if self.debug:
-                    print "\n* export=", export
+                    print("\n* export=", export)
                 yield export
  
             except:
-                print "Unable to obtain data from export table!"
+                print("Unable to obtain data from export table!")
                 raise
  
  
@@ -852,7 +852,7 @@ class HmisCSV30Writer():
                                            "ContactMade", "contact_date", "contact_site")
                  
             except:
-                print "Unable to interpret data from service_event table!"
+                print("Unable to interpret data from service_event table!")
                 raise
  
             # TBD: Other fields to implement:
@@ -901,12 +901,12 @@ class HmisCSV30Writer():
             ]
  
             try:
-                print "\n* DataRow (ServiceEvent)= ", dataRow
+                print("\n* DataRow (ServiceEvent)= ", dataRow)
                 self.serviceEventWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["serviceEvent"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["serviceEvent"])
                 raise
  
  
@@ -947,12 +947,12 @@ class HmisCSV30Writer():
                     self.incBensWriter = csv.writer(self.incBensFile,
                                                     quoting=csv.QUOTE_NONNUMERIC)
                  
-                print "\n* DataRow (IncomeBenefits)= ", dataRow
+                print("\n* DataRow (IncomeBenefits)= ", dataRow)
                 self.incBensWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["incBens"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["incBens"])
                 raise
  
  
@@ -993,7 +993,7 @@ class HmisCSV30Writer():
                 relationship = self.getRelationshipToHeadData(hhId)
  
             except:
-                print "Unable to interpret data from site_service_participation table!"
+                print("Unable to interpret data from site_service_participation table!")
                 raise
  
             # TBD: Other fields to implement:
@@ -1030,12 +1030,12 @@ class HmisCSV30Writer():
             ]
  
             try:
-                print "\n* DataRow (ProgramParticipation)= ", dataRow
+                print("\n* DataRow (ProgramParticipation)= ", dataRow)
                 self.participationWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["participation"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["participation"])
                 raise
  
             self.createServiceEventRecs(personIndex, personId, phIndex)
@@ -1115,7 +1115,7 @@ class HmisCSV30Writer():
                 schoolBarrier  = self.getSchoolBarrier(cesIndex)
                  
             except:
-                print "Unable to interpret data from client_historical table!"
+                print("Unable to interpret data from client_historical table!")
                 raise
  
             # TBD: Other fields to implement:
@@ -1183,12 +1183,12 @@ class HmisCSV30Writer():
             ]
  
             try:
-                print "\n* DataRow (ClientHistorical)= ", dataRow
+                print("\n* DataRow (ClientHistorical)= ", dataRow)
                 self.historicalWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["historical"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["historical"])
                 raise
  
             self.createIncomeBenefitsRecs(phIndex, personId)
@@ -1217,7 +1217,7 @@ class HmisCSV30Writer():
                 releaseOfInfo = self.getReleaseGrantedData(personIndex)
  
             except:
-                print "Unable to interpret data from person table!"
+                print("Unable to interpret data from person table!")
                 raise
  
             (primaryRace, secondaryRace) = self.getRacesData(personIndex)
@@ -1257,12 +1257,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (Client)= ", dataRow
+                    print("\n* DataRow (Client)= ", dataRow)
                 self.clientWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["client"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["client"])
                 raise
  
             self.createClientHistoricalRecs(personIndex, personId)
@@ -1295,7 +1295,7 @@ class HmisCSV30Writer():
                 dateUpdated = None
                  
             except:
-                print "Unable to interpret data from inventory tables!"
+                print("Unable to interpret data from inventory tables!")
                 raise
  
             # Build data row list:
@@ -1323,12 +1323,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (Inventory)= ", dataRow
+                    print("\n* DataRow (Inventory)= ", dataRow)
                 self.inventoryWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["inventory"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["inventory"])
                 raise
  
  
@@ -1349,7 +1349,7 @@ class HmisCSV30Writer():
                 dateUpdated = None
  
             except:
-                print "Unable to interpret data from region tables!"
+                print("Unable to interpret data from region tables!")
                 raise
  
             # Build data row list:
@@ -1366,12 +1366,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (Regions)= ", dataRow
+                    print("\n* DataRow (Regions)= ", dataRow)
                 self.regionsWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["regions"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["regions"])
                 raise
  
  
@@ -1394,7 +1394,7 @@ class HmisCSV30Writer():
                 dateUpdated = None
  
             except:
-                print "Unable to interpret data from site, site_service tables!"
+                print("Unable to interpret data from site, site_service tables!")
                 raise
  
             # Build data row list:
@@ -1415,12 +1415,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (SiteInfo)= ", dataRow
+                    print("\n* DataRow (SiteInfo)= ", dataRow)
                 self.siteInfoWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["siteInfo"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["siteInfo"])
                 raise
  
             self.createRegionsRecs(siteService, orgId)
@@ -1460,7 +1460,7 @@ class HmisCSV30Writer():
                 dateUpdated = None
  
             except:
-                print "Unable to interpret data from agency, service, and/or site tables!"
+                print("Unable to interpret data from agency, service, and/or site tables!")
                 raise
  
             # Build data row list:
@@ -1485,12 +1485,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (AgencyProgram)= ", dataRow
+                    print("\n* DataRow (AgencyProgram)= ", dataRow)
                 self.agencyWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["agency"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["agency"])
                 raise
  
             self.createSiteInformationRecs(site, orgId)
@@ -1513,7 +1513,7 @@ class HmisCSV30Writer():
                 #swVersion = export.export_software_version
  
             except:
-                print "Unable to interpret data from export table!"
+                print("Unable to interpret data from export table!")
                 raise
  
              
@@ -1533,7 +1533,7 @@ class HmisCSV30Writer():
                 swVersion = getattr(source, "software_version", None)
                      
             except:
-                    print "Unable to interpret data from source table!"
+                    print("Unable to interpret data from source table!")
                     raise
  
             # TBD: Other fields to implement:
@@ -1572,12 +1572,12 @@ class HmisCSV30Writer():
  
             try:
                 if self.debug:
-                    print "\n* DataRow (Export)= ", dataRow
+                    print("\n* DataRow (Export)= ", dataRow)
                 self.exportWriter.writerow(dataRow)
                  
             except:
-                print "Unable to write record to CSV file %s!" \
-                      % HmisCSV30Writer.files["export"]
+                print("Unable to write record to CSV file %s!" \
+                      % HmisCSV30Writer.files["export"])
                 raise
  
             self.createAgencyProgramRecs(exportIndex)
@@ -1593,6 +1593,6 @@ class HmisCSV30Writer():
         self.createCsvFiles()
         self.closeCsvFiles()
         self.commitTransaction()
-        print "Export finished."
+        print("Export finished.")
  
         return True

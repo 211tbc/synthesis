@@ -1,18 +1,18 @@
 '''Document validation tests used by the selector module and the nodebuilder module.'''
 from lxml import etree
-from conf import settings
-import fileutils
+from .conf import settings
+from . import fileutils
 
 class VendorXMLTest:
     '''Stub for any specific vendor's non-standardized XML format.'''
     def __init__(self):
         self.name = 'Vendor XML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         
     def validate(self, instance_filename):
         '''implementation of interface's validate method'''
-        print '\nThe', self.name, 'test not implemented.'
-        print '...but intended to validate', instance_filename
+        print('\nThe', self.name, 'test not implemented.')
+        print('...but intended to validate', instance_filename)
         return False
 
 class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
@@ -20,9 +20,9 @@ class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
     def __init__(self):
         self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'TBCExtendHUDHMISXML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         self.schema_filename = settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml']
-        print "settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml'] is: ", settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml']
+        print("settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml'] is: ", settings.SCHEMA_DOCS['tbc_extend_hud_hmis_xml'])
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -37,24 +37,24 @@ class TBCExtendHUDHMISXMLTest:	# JCS New 2012-01-05
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             pass
 
 class HUDHMIS28XMLTest:
@@ -62,7 +62,7 @@ class HUDHMIS28XMLTest:
     def __init__(self):
         self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'HUDHMIS28XML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_2_8']
     
     def validate(self, instance_stream):
@@ -81,24 +81,24 @@ class HUDHMIS28XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             pass   
 
 class HUDHMIS30XMLTest:
@@ -106,9 +106,9 @@ class HUDHMIS30XMLTest:
     def __init__(self):
         self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'HUDHMIS30XML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         self.schema_filename = settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
-        print "settings.SCHEMA_DOCS['hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['hud_hmis_xml_3_0']
+        print("settings.SCHEMA_DOCS['hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['hud_hmis_xml_3_0'])
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
@@ -125,24 +125,24 @@ class HUDHMIS30XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             pass
 
 
@@ -151,16 +151,16 @@ class OCCHUDHMIS30XMLTest:
     def __init__(self):
         self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'OCCHUDHMIS30XML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         self.schema_filename = settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0']
-        print "settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0']
+        print("settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0'] is: ", settings.SCHEMA_DOCS['occ_hud_hmis_xml_3_0'])
     
     def validate(self, instance_stream):
         '''This specific data format's validation process.'''
         try:
             schema = open(self.schema_filename,'r')
         except:
-            print "couldn't open schema file", self.schema_filename
+            print("couldn't open schema file", self.schema_filename)
         schema_parsed = etree.parse(schema)
         schema_parsed_xsd = etree.XMLSchema(schema_parsed)
         # make a copy of the stream, validate against the copy not the real stream
@@ -173,31 +173,31 @@ class OCCHUDHMIS30XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     self.issues = detailed_results # Added by FBY on 2012-01-19
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     self.issues = error # Added by FBY on 2012-01-19
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             pass
         
 class SvcPoint20XMLTest:
     '''Load in the SVCPoint Schema, version 2.0.'''
     def __init__(self):
         self.name = 'Svcpt 2.0 XML'
-        print 'running the Svcpt 2.0 XML test'
+        print('running the Svcpt 2.0 XML test')
         self.schema_filename = settings.SCHEMA_DOCS['svcpoint_2_0_xml']
     
     def validate(self, instance_stream):
@@ -215,30 +215,30 @@ class SvcPoint20XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  '\
+            , error)
             raise 
 
 class SvcPoint406XMLTest:
     '''Load in the SVCPoint Schema, version 4.06'''
     def __init__(self):
         self.name = 'Svc406 XML'
-        print 'running the Svcpt 4.06 XML test'
+        print('running the Svcpt 4.06 XML test')
         self.schema_filename = settings.SCHEMA_DOCS['svcpoint_4_0_6_xml']
     
     def validate(self, instance_stream):
@@ -257,30 +257,30 @@ class SvcPoint406XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  '\
+            , error)
             raise
 
 class SvcPoint5XMLTest:
     '''Load in the SVCPoint Schema, version 5.00'''
     def __init__(self):
         self.name = 'Svc5 XML'
-        print 'running the Svcpt 5.00 XML test'
+        print('running the Svcpt 5.00 XML test')
         self.schema_filename = settings.SCHEMA_DOCS['svcpoint_5_xml']
     
     def validate(self, instance_stream):
@@ -299,29 +299,29 @@ class SvcPoint5XMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                    was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                    was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             raise
 
 class hl7CCDXMLTest:
     '''Load in the HL7 CCD Schema'''
     def __init__(self):
         self.name = 'hl7 CCD XML'
-        print 'running the hl7 CCD XML test'
+        print('running the hl7 CCD XML test')
         self.schema_filename = settings.SCHEMA_DOCS['hl7_ccd_xml']
     
     def validate(self, instance_stream):
@@ -338,22 +338,22 @@ class hl7CCDXMLTest:
                 fileutils.makeBlock('The %s successfully validated.' % self.name)
                 return results
             if results == False:
-                print 'The xml did not successfully validate against %s' % self.name
+                print('The xml did not successfully validate against %s' % self.name)
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                    was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                    was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  ', error)
             raise
 
 class JFCSXMLTest:
@@ -369,7 +369,7 @@ class JFCSXMLTest:
     def __init__(self):
         self.issues = "" # Added by FBY on 2012-01-19
         self.name = 'JFCS'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         
         ''' Define schemas and elements for testing '''
         self.service_event_schema_filename = settings.SCHEMA_DOCS['jfcs_service_event_xml']
@@ -385,42 +385,42 @@ class JFCSXMLTest:
         copy_instance_stream = copy.copy(instance_filename)
        
         try: 
-            print "Determining by service event schema"
+            print("Determining by service event schema")
             results = self.schemaTest(copy_instance_stream, self.service_event_schema_filename)
             if results == True:
                 fileutils.makeBlock('JFCS service event XML data found.  Determined by service event schema.')
                 JFCSXMLInputReader.data_type = 'service_event'
                 return results
-            print "Determining by client schema"
+            print("Determining by client schema")
             results = self.schemaTest(copy_instance_stream, self.client_schema_filename)
             if results == True:
                 fileutils.makeBlock('JFCS client XML data found.  Determined by client schema.')
                 JFCSXMLInputReader.data_type = 'client'
                 return results
-            print "Determining by service event elements."
+            print("Determining by service event elements.")
             if self.service_event_elements is not None:
-                print self.service_event_elements
+                print(self.service_event_elements)
                 results = self.elementTest(copy_instance_stream, self.service_event_elements)
                 if results == True:
                     fileutils.makeBlock('JFCS service event XML data found.  Determined by service event elements.')
                     JFCSXMLInputReader.data_type = 'service_event'
                     return results
-            print "Determining by client elements."
+            print("Determining by client elements.")
             if self.client_elements is not None:
-                print self.client_elements
+                print(self.client_elements)
                 results = self.elementTest(copy_instance_stream, self.client_elements)
                 if results == True:
                     fileutils.makeBlock('JFCS client XML data found.  Determined by client elements.')
                     JFCSXMLInputReader.data_type = 'client'
                     return results
-                print "returning False"
+                print("returning False")
                 return False
             else:
-                print "All the JFCS Tests Failed, returning False"
+                print("All the JFCS Tests Failed, returning False")
                 self.issues = "All the JFCS Tests Failed, returning False"
                 return False
-        except Exception, exception:
-            print 'XML Syntax Error in validate.  There appears to be malformed XML.  ', exception
+        except Exception as exception:
+            print('XML Syntax Error in validate.  There appears to be malformed XML.  ', exception)
             self.issues = 'XML Syntax Error in validate.  There appears to be malformed XML.  %s' % str(exception)
             return False
     
@@ -433,28 +433,28 @@ class JFCSXMLTest:
             instance_parsed = etree.parse(copy_instance_stream)
             results = schema_parsed_xsd.validate(instance_parsed)
             return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error in schemaTest.  There appears to be malformed XML.  ', error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error in schemaTest.  There appears to be malformed XML.  ', error)
             return False
         
     def elementTest(self, copy_instance_stream, elements):
         '''Attempt to find elements in the input file by searching the tree'''
-        print "inside element test"
-        print "elements are: ", elements
+        print("inside element test")
+        print("elements are: ", elements)
         xml_doc = etree.parse(copy_instance_stream)
         for e in elements:
             search_term = ".//" + e
             if xml_doc.find(search_term) is None:
-                print "returning False from inside elementTest"
+                print("returning False from inside elementTest")
                 return False
-        print "returning True  from inside elementTest"
+        print("returning True  from inside elementTest")
         return True
     
 class PARXMLTest:
     '''Load in the HUD HMIS Extended Schema for Operation PAR'''
     def __init__(self):
         self.name = 'PARXML'
-        print 'running the', self.name, 'test'
+        print('running the', self.name, 'test')
         self.schema_filename = settings.SCHEMA_DOCS['operation_par_xml']
 
     '''Find elements with or without specific xsd type'''
@@ -525,7 +525,7 @@ class PARXMLTest:
                 for e in xml_root.iter():
                     if str(e.tag) in elements_maxlength:
                         if len(e.text) > 32:
-                            print 'XML Error.  Value %s exceeds database field length.' % str(e.tag)
+                            print('XML Error.  Value %s exceeds database field length.' % str(e.tag))
                             return False    ## remove this when testing and perform manual truncate in PARXMLReader()
                 
                 #return False ## return invalid, use this to only test validation of string lengths and exit                        
@@ -533,24 +533,24 @@ class PARXMLTest:
                 fileutils.makeBlock('The Operation PAR XML successfully validated.')
                 return results
             if results == False:
-                print 'The xml did not successfully validate against \
-                Operation PAR XML.'
+                print('The xml did not successfully validate against \
+                Operation PAR XML.')
                 try:
                     detailed_results = schema_parsed_xsd.assertValid\
                     (instance_parsed)
-                    print detailed_results
+                    print(detailed_results)
                     return results
-                except etree.DocumentInvalid, error:
-                    print 'Document Invalid Exception.  Here is the detail:'
-                    print error
+                except etree.DocumentInvalid as error:
+                    print('Document Invalid Exception.  Here is the detail:')
+                    print(error)
                     return results
             if results == None:
-                print "The validator erred and couldn't determine if the xml \
-                was either valid or invalid."
+                print("The validator erred and couldn't determine if the xml \
+                was either valid or invalid.")
                 return results
-        except etree.XMLSyntaxError, error:
-            print 'XML Syntax Error.  There appears to be malformed XML.  '\
-            , error
+        except etree.XMLSyntaxError as error:
+            print('XML Syntax Error.  There appears to be malformed XML.  '\
+            , error)
             raise 
         
 #The MIT License

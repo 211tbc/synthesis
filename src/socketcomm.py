@@ -59,17 +59,17 @@ class ServiceController:
 		else:
 			port = self.clientPort
 			
-		print "waiting on port", port
+		print("waiting on port", port)
 		
 		while 1:
 			# receiving data
 			data, addr = self.s.recvfrom(1024)
-			print "Received: ", data, "from:", addr
+			print("Received: ", data, "from:", addr)
 			
 			if data == 'synthesis:status':
 				self.send("synthesis:running")	
 			if data == 'synthesis:stop':
-				print "stopping hard"
+				print("stopping hard")
 				sys.exit(0)
 
 #The MIT License

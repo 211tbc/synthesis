@@ -1,0 +1,38 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ihe:iti:xds-b:2007" xmlns:urn1="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:urn2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns:urn3="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:direct="urn:direct:addressing">
+   <soap:Header>
+      <a:MessageID>123456789</a:MessageID>
+      <a:Action soap:mustUnderstand="1">urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b</a:Action>
+      <direct:addressBlock a:IsReferenceParameter="true" a:relay="true" a:role="urn:direct:addressing:destination">
+         <direct:from>tampa211@211.com</direct:from>
+         <direct:to>OperationPar@uat.direct.ntst.com</direct:to>
+         <direct:metadata-level>XDS</direct:metadata-level>
+      </direct:addressBlock>
+   </soap:Header>
+   <soap:Body>
+      <urn:ProvideAndRegisterDocumentSetRequest>
+         <urn1:SubmitObjectsRequest id="123">
+            <!--Optional:-->
+            <urn3:RegistryObjectList>
+               <!--Zero or more repetitions:-->
+               <urn3:Identifiable id="456">
+                  <!--Zero or more repetitions:-->
+                  <urn3:Slot name="creationTime">
+                     <urn3:ValueList>
+                        <urn3:Value>1980-03-23T10:20:15</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+                  <urn3:Slot name="languageCode">
+                     <urn3:ValueList>
+                        <urn3:Value>en-US</urn3:Value>
+                     </urn3:ValueList>
+                  </urn3:Slot>
+               </urn3:Identifiable>
+            </urn3:RegistryObjectList>
+         </urn1:SubmitObjectsRequest>
+         <!--1 or more repetitions of Document-->
+         <Document id="ed13ffc6-f11d-4925-9eda-714c5a9ab847">
+            <xop:Include href="cid:CCD.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+         </Document>
+      </urn:ProvideAndRegisterDocumentSetRequest>
+   </soap:Body>
+</soap:Envelope>

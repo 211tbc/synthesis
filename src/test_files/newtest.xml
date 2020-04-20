@@ -16,7 +16,7 @@
 <hmis:IDNum>119566</hmis:IDNum>
 </ext:PersonID>
 <ext:DateOfBirth>
-<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1970-01-01</hmis:Unhashed>
+<hmis:Unhashed hmis:dateCollected="2017-06-24T13:53:12">1967-03-26</hmis:Unhashed>
 <hmis:DateOfBirthType hmis:dateCollected="2017-06-24T13:53:12">1</hmis:DateOfBirthType>
 </ext:DateOfBirth>
 <ext:Gender>
@@ -70,7 +70,7 @@
 <hmis:NoteID>
 <hmis:IDNum>852583</hmis:IDNum>
 </hmis:NoteID>
-<hmis:NoteText hmis:dateCollected="2017-06-24T13:42:10.906-05:00" hmis:dateEffective="2017-06-24T13:42:10.906-05:00">6-24-17 MW  can't concentrate.  paranoia and anxiety.</hmis:NoteText>
+<hmis:NoteText hmis:dateCollected="2017-06-24T13:42:10.906-05:00" hmis:dateEffective="2017-06-24T13:42:10.906-05:00">6-24-20 Test message.</hmis:NoteText>
 </hmis:note>
 </ext:ServiceEventNotes>
 </ext:ServiceEvent>

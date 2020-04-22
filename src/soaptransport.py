@@ -84,7 +84,7 @@ Content-ID: %(START_UUID)s
          <urn1:SubmitObjectsRequest id="%(OBJECT_ID_UUID)s">
             <!--Optional:-->
             <urn3:RegistryObjectList>
-               <urn1:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
+               <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
                   <!--Zero or more repetitions:-->
                   <urn3:Identifiable id="%(IDENTITY_ID_UUID)s">
                      <!--Zero or more repetitions:-->
@@ -99,13 +99,13 @@ Content-ID: %(START_UUID)s
                         </urn3:ValueList>
                      </urn3:Slot>
                   </urn3:Identifiable>
-               </urn1:ExtrinsicObject>
+               </urn3:ExtrinsicObject>
             </urn3:RegistryObjectList>
          </urn1:SubmitObjectsRequest>
          <!--1 or more repetitions of Document-->
-         <Document id="%(DOCUMENT_OBJECT)s">
+         <urn:Document id="%(DOCUMENT_OBJECT)s">
             <xop:Include href="cid:CCD_%(UNIQUE_ID)s.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
-         </Document>
+         </urn:Document>
       </urn:ProvideAndRegisterDocumentSetRequest>
    </soap:Body>
 </soap:Envelope>%(MIME_BORDER_SECTION)s""".replace("\t","")

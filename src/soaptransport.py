@@ -84,7 +84,6 @@ Content-ID: %(START_UUID)s
          <urn1:SubmitObjectsRequest id="%(OBJECT_ID_UUID)s">
             <!--Optional:-->
             <urn3:RegistryObjectList>
-               <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
                   <!--Zero or more repetitions:-->
                   <urn3:Identifiable id="%(IDENTITY_ID_UUID)s">
                      <!--Zero or more repetitions:-->
@@ -99,6 +98,10 @@ Content-ID: %(START_UUID)s
                         </urn3:ValueList>
                      </urn3:Slot>
                   </urn3:Identifiable>
+                  <urn3:RegistryPackage id="%(SOURCE_OBJECT)s">
+                     %(REGISTRY_PACKAGE_NAME_TAG)s
+                  </urn3:RegistryPackage>
+                  <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s" />
                </urn3:ExtrinsicObject>
             </urn3:RegistryObjectList>
          </urn1:SubmitObjectsRequest>
@@ -405,7 +408,7 @@ Content-ID: %(START_UUID)s
             airs_code = ''
 
         # FBY New 2017-03-12 : Combine notes and codes
-        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s %s  Referral Notes - %s" /></rim:Name>""" % (need_notes, taxonomy_codes, airs_code, referal_notes)
+        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<urn3:Name><urn3:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s %s  Referral Notes - %s" /></urn3:Name>""" % (need_notes, taxonomy_codes, airs_code, referal_notes)
         soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
         
         # FBY New 2017-03-12 : Strip NeedNotes from XML

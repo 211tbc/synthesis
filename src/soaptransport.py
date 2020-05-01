@@ -102,12 +102,11 @@ Content-ID: %(START_UUID)s
                      %(REGISTRY_PACKAGE_NAME_TAG)s
                   </urn3:RegistryPackage>
                   <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s" />
-               </urn3:ExtrinsicObject>
             </urn3:RegistryObjectList>
          </urn1:SubmitObjectsRequest>
          <!--1 or more repetitions of Document-->
          <urn:Document id="%(DOCUMENT_OBJECT)s">
-            <xop:Include href="cid:CCD_%(UNIQUE_ID)s.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+            <xop:Include href="cid:CCD_%(UNIQUE_ID)s.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include" />
          </urn:Document>
       </urn:ProvideAndRegisterDocumentSetRequest>
    </soap:Body>
@@ -229,7 +228,7 @@ Content-ID: %(START_UUID)s
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
             if settings.USE_TESTING_REFERRAL_EMAIL:
-                soap_transport_properties['DIRECT_TO'] = 'OperationPAR@uat.opar.netsmartdirect.net'
+                soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
             else:
                 soap_transport_properties['DIRECT_TO'] = 'OperationPAR@opar.netsmartdirect.net'
 
@@ -490,7 +489,7 @@ Content-Disposition: attachment; name="CCD_%s.xml"; filename="CCD_%s.xml"
         soap_env = soap_env.replace("\\\'", "\'")
         soap_env = soap_env.replace("\n\'", "")
         
-        #print(soap_env)
+        print(soap_env)
         
         #while '\\\\' in soap_env:
         #    soap_env = soap_env.replace('\\\\', '\\')
@@ -555,7 +554,8 @@ Content-Disposition: attachment; name="CCD_%s.xml"; filename="CCD_%s.xml"
                 request = urllib.request.Request(self._soap_server, soap_env.encode(), headers)
                 res = urllib.request.urlopen(request, timeout=60)
                 response = res.read()
-                #print(response)
+                soap_response = ET.fromstring(bytes(response))
+                print(str(ET.tostring(soap_response, pretty_print=True, encoding="unicode")))
                 if str(response).find("ResponseStatusType:Success") != -1:
                     return (True, response)
                 else:

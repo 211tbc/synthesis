@@ -222,7 +222,7 @@ Content-ID: %(START_UUID)s
                 soap_transport_properties['DIRECT_TO'] = 'GulfCoast@direct.ntst.com'
 
         # for Operation PAR
-        elif str(referredToProviderID) in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
+        elif str(referredToProviderID) in ['15473','10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_production_ReceivingProviderId']
             else:
@@ -234,7 +234,7 @@ Content-ID: %(START_UUID)s
 
         else:
             # Provider IDs not filtered above are unmapped here.
-            if referredToProviderID == '15473':
+            if referredToProviderID == '00000':
                 # Sent document to Netsmart test endpoint.
                 self._soap_server = 'https://labsdev.netsmartcloud.com:444/CareConnectXDR'
                 self._host = urllib.parse.urlparse(self._soap_server).netloc

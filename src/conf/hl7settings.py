@@ -2,7 +2,7 @@ __author__ = 'eric'
 
 SOAP_TRANSPORT_PROPERTIES = {
     "CCD"                               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
-    "SOURCE_OBJECT"                     : "SubmissionSet01",
+    "SOURCE_OBJECT"                     : "789",
     "DOCUMENT_OBJECT"                   : "Document01",
     "ASSOCIATION_SECTION"               : "", # <== Leave this blank. It will be assigned by the soaptransport module.
     "ATTACHMENT_SECTION"                : "", # <== Leave this blank. It will be assigned by the soaptransport module.
@@ -61,7 +61,9 @@ SOAP_TRANSPORT_PROPERTIES = {
     "DOCUMENT_ENTRY_UNIQUEID_UUID"      : "2e82c1f6-a085-4c72-9da3-8640a32e42ab", # <== Where does this value come from?
     "SUBMISSION_SET_UUID"               : "a54d6aa5-d40d-43f9-88c5-b4633d873bdd", # <== Where does this value come from?
     "SUBMISSION_SET_ID"                 : "ID_000000_0", # <== Where does this value come from?
-    "DIRECT_FROM"                       : "support@211tampabay.org", # It's not an actual email - it will just send the referral to their referral workflow.
+    #"DIRECT_FROM"                       : "tampa211@211.com", # TEST: It's not an actual email - it will just send the referral to their referral workflow.
+    "DIRECT_FROM"                       : "support@211tampabay.org", # PROD: actual email - it will just send the referral to their referral workflow.
+
     "DIRECT_TO"                       : "OperationPar@uat.direct.ntst.com",
     #
     # The following are optional

@@ -84,7 +84,6 @@ Content-ID: %(START_UUID)s
          <urn1:SubmitObjectsRequest id="%(OBJECT_ID_UUID)s">
             <!--Optional:-->
             <urn3:RegistryObjectList>
-               <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s">
                   <!--Zero or more repetitions:-->
                   <urn3:Identifiable id="%(IDENTITY_ID_UUID)s">
                      <!--Zero or more repetitions:-->
@@ -99,12 +98,15 @@ Content-ID: %(START_UUID)s
                         </urn3:ValueList>
                      </urn3:Slot>
                   </urn3:Identifiable>
-               </urn3:ExtrinsicObject>
+                  <urn3:RegistryPackage id="%(SOURCE_OBJECT)s">
+                     %(REGISTRY_PACKAGE_NAME_TAG)s
+                  </urn3:RegistryPackage>
+                  <urn3:ExtrinsicObject id="%(DOCUMENT_OBJECT)s" mimeType="text/xml" objectType="urn:uuid:%(EXTRINSIC_OBJECT_UUID)s" />
             </urn3:RegistryObjectList>
          </urn1:SubmitObjectsRequest>
          <!--1 or more repetitions of Document-->
          <urn:Document id="%(DOCUMENT_OBJECT)s">
-            <xop:Include href="cid:CCD_%(UNIQUE_ID)s.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+            <xop:Include href="cid:CCD_%(UNIQUE_ID)s.xml" xmlns:xop="http://www.w3.org/2004/08/xop/include" />
          </urn:Document>
       </urn:ProvideAndRegisterDocumentSetRequest>
    </soap:Body>
@@ -220,19 +222,19 @@ Content-ID: %(START_UUID)s
                 soap_transport_properties['DIRECT_TO'] = 'GulfCoast@direct.ntst.com'
 
         # for Operation PAR
-        elif str(referredToProviderID) in ['10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
+        elif str(referredToProviderID) in ['15473','10940', '10919', '15588', '10954', '10939', '15579', '10921', '10937', '10943', '15581', '8133', '10935', '14921', '15589', '15582', '10933', '15590', '10936', '16064', '15702', '13294', '15563', '4766', '10945', '10949', '15755', '15587', '12567', '14102']:
             if settings.SEND_REFERRALS_TO_PRODUCTION:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_production_ReceivingProviderId']
             else:
                 ReceivingProviderId = outputConfiguration.Configuration[source_id]['OPAR_test_ReceivingProviderId']
             if settings.USE_TESTING_REFERRAL_EMAIL:
-                soap_transport_properties['DIRECT_TO'] = 'OperationPAR@uat.opar.netsmartdirect.net'
+                soap_transport_properties['DIRECT_TO'] = 'OperationPar@uat.direct.ntst.com'
             else:
                 soap_transport_properties['DIRECT_TO'] = 'OperationPAR@opar.netsmartdirect.net'
 
         else:
             # Provider IDs not filtered above are unmapped here.
-            if referredToProviderID == '15473':
+            if referredToProviderID == '00000':
                 # Sent document to Netsmart test endpoint.
                 self._soap_server = 'https://labsdev.netsmartcloud.com:444/CareConnectXDR'
                 self._host = urllib.parse.urlparse(self._soap_server).netloc
@@ -405,7 +407,7 @@ Content-ID: %(START_UUID)s
             airs_code = ''
 
         # FBY New 2017-03-12 : Combine notes and codes
-        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<rim:Name><rim:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s %s  Referral Notes - %s" /></rim:Name>""" % (need_notes, taxonomy_codes, airs_code, referal_notes)
+        soap_transport_properties["REGISTRY_PACKAGE_NAME_TAG"] = """<urn3:Name><urn3:LocalizedString xml:lang="en-us" charset="UTF-8" value="Need Note - %s  Need AIRS Code: %s %s  Referral Notes - %s" /></urn3:Name>""" % (need_notes, taxonomy_codes, airs_code, referal_notes)
         soap_transport_properties["REGISTRY_PACKAGE_DESCRIPTION_TAG"] = """<rim:Description />"""
         
         # FBY New 2017-03-12 : Strip NeedNotes from XML
@@ -487,7 +489,7 @@ Content-Disposition: attachment; name="CCD_%s.xml"; filename="CCD_%s.xml"
         soap_env = soap_env.replace("\\\'", "\'")
         soap_env = soap_env.replace("\n\'", "")
         
-        #print(soap_env)
+        print(soap_env)
         
         #while '\\\\' in soap_env:
         #    soap_env = soap_env.replace('\\\\', '\\')
@@ -552,7 +554,8 @@ Content-Disposition: attachment; name="CCD_%s.xml"; filename="CCD_%s.xml"
                 request = urllib.request.Request(self._soap_server, soap_env.encode(), headers)
                 res = urllib.request.urlopen(request, timeout=60)
                 response = res.read()
-                #print(response)
+                soap_response = ET.fromstring(bytes(response))
+                print(str(ET.tostring(soap_response, pretty_print=True, encoding="unicode")))
                 if str(response).find("ResponseStatusType:Success") != -1:
                     return (True, response)
                 else:

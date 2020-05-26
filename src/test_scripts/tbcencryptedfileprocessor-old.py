@@ -35,7 +35,7 @@ if use_apache:
     #import pdb; pdb.set_trace()
     resp = urllib2.urlopen(req, context=context)
 else:
-    req = urllib2.Request('http://0.0.0.0:5001/docs', xml_payload, headers)
+    req = urllib2.Request('http://0.0.0.0:6543/docs', xml_payload, headers)
     #import pdb; pdb.set_trace()
     resp = urllib2.urlopen(req)
 

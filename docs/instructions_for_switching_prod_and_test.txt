@@ -1,9 +1,9 @@
-1) change the sender email "DIRECT FROM" in conf/hl7settings.py
+1) change the sender email "DIRECT FROM" in conf/hl7settings.py (comments indicate which to use)
 https://github.com/211tbc/synthesis/blob/1aa0675f666855bb2f4683be73eb557a12baa8bf/src/conf/hl7settings.py#L64
 
 2) change the endpoint in conf/outputconfiguration.py (labsdev test or the ntst prod one)
 
-3) in conf/settings.py
+3) in conf/settings.py (for prod)
     SEND_REFERRALS_TO_PRODUCTION = True
     USE_TESTING_REFERRAL_EMAIL = False
 

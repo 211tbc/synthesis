@@ -6,7 +6,7 @@ import urllib.request
 import base64
 from Encryption import *
 import conf.settings
-tbc = open('test_files/newtest.xml', 'r')
+tbc = open('test_files/unitest.xml', 'r')
 xml = tbc.read()
 tbc.close()
 gpg = GPG()

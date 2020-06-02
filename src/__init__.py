@@ -146,6 +146,7 @@ def post(docs, request):
         #decrypt file if using decryption
         #assume file is encrypted, since it can be difficult to tell if it is.  We could look for XML structures, but how do you easily tell bad/invalid  XML apart from encrypted?  If not encrypted, that's a problem.
         #decrypt file
+        needs_utf8_encoding = False
         if inputConfiguration.USE_ENCRYPTION:
             try:
                 encrypted_file = open(file_full_path, 'r') 
@@ -167,7 +168,11 @@ def post(docs, request):
                         # decrypt stream
                         decrypted_stream = cobj.decrypt(encrypted_stream, keyiv['key'], iv=keyiv['iv'])
                         # test if the resulting decrypted_stream is XML
-                        xml_test = etree.XML(decrypted_stream)
+                        try:
+                            xml_test = etree.XML(decrypted_stream)
+                        except:
+                            needs_utf8_encoding = True
+                            xml_test = etree.XML(decrypted_stream.encode('utf-8'))
                         data_decrypted = True
                         xml_test = None
                         break
@@ -177,11 +182,21 @@ def post(docs, request):
                         # decrypt stream
                         decrypted_stream = cobj.decrypt(encrypted_stream)
                         # test if the resulting decrypted_stream is XML
-                        xml_test = etree.XML(decrypted_stream)
+                        try:
+                            xml_test = etree.XML(decrypted_stream)
+                        except:
+                            needs_utf8_encoding = True
+                            xml_test = etree.XML(decrypted_stream.encode('utf-8'))
                         data_decrypted = True
                         xml_test = None
                         break
-                except:
+                except Exception as e:
+                    print('@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#')
+                    print('!!!!!!!! Possible decryption issue !!!!!!!')
+                    print('@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#')
+                    print(e)
+                    print('@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#')
+                    print('@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#')
                     continue
 
             if data_decrypted:

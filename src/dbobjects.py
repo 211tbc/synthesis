@@ -1,12 +1,9 @@
-import sys
-from os import path
-sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from sqlalchemy import create_engine, Column, Integer, BigInteger, String, Boolean, MetaData, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.types import DateTime, Date, Interval
 from sqlalchemy.pool import NullPool
-from conf import settings
+from .conf import settings
 from logging import Logger
 
 print("loaded dbobjects module")

@@ -6,19 +6,16 @@ Stand-alone functions to handle the generation of any kind of report.
 These can be run ad-hoc and the intent is for them to be run by a cron job (e.g. monthly) and 
     emailed to a configured (conf/settings.py report recipient).
 """
-import sys
-from os import path
-sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from datetime import datetime, timedelta, date
 from dateutil import parser
-from conf import settings
+from .conf import settings
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from synthesis.postgresutils import Utils
 from sqlalchemy.sql import select, asc
 from sqlalchemy.engine import ResultProxy
-from dbobjects import Referral, Person, ServiceEvent, Export
+from .dbobjects import Referral, Person, ServiceEvent, Export
 from lxml import etree
 
 global age
@@ -201,13 +198,13 @@ def calculate_age(born):  # from: http://stackoverflow.com/questions/2217488/age
             birthday = born.replace(year=today.year)
         except ValueError: # raised when birth date is February 29 and the current year is not a leap year
             birthday = born.replace(year=today.year, day=born.day-1)
-        if birthday > datetime(today.year, today.month, today.day):
+        if birthday > today:
             return today.year - born.year - 1
         else:
             return today.year - born.year
 
-if __name__ == "__main__" and __package__ is None:
-    from os import sys
+if __name__ == "__main__":
+    import sys
     monthlyReferralReport()
     sys.exit()
         
